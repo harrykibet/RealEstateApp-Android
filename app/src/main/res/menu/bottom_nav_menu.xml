@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Home Tab -->
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_menu_home"
+        android:title="@string/home"/>
+
+    <!-- Explore Tab -->
+    <item
+        android:id="@+id/mapsFragment"
+        android:icon="@drawable/ic_menu_explore"
+        android:title="@string/explore" />
+
+    <!-- Add Property Tab -->
+    <item
+        android:id="@+id/addPropertyFragment"
+        android:icon="@drawable/ic_menu_add_property"
+        android:title="@string/add_property4" />
+
+    <!-- Favorites Tab -->
+    <item
+        android:id="@+id/favoritesFragment"
+        android:icon="@drawable/ic_menu_favorite"
+        android:title="@string/favorites2" />
+
+    <!-- Profile Tab -->
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_menu_profile"
+        android:title="@string/profile" />
+
+</menu>

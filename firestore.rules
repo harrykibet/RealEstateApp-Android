@@ -1,0 +1,63 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection rules
+    match /users/{userId} {
+      allow read: if request.auth.uid == userId || request.auth.token.admin == true; // Only the user or admins can read user data
+      allow write: if request.auth.uid == userId; // Only the user can write to their own data
+
+      // Liked properties sub-collection rules
+      match /likedProperties/{propertyId} {
+          allow read: if request.auth.uid == userId; // Allow userId to read their own liked properties
+
+          // Allow users to create a like entry for a property they haven't liked yet
+          allow create: if request.auth.uid == userId;
+
+          // Allow users to update only their own liked properties
+          allow update: if request.auth.uid == userId;
+
+          // Allow users to delete only their own liked properties
+          allow delete: if request.auth.uid == userId;
+      }
+
+      // Owned properties sub-collection rules
+      match /ownedProperties/{propertyId} {
+          allow read: if request.auth.uid == userId; // Allow userId to read their own properties
+
+          // Allow the owner to create a new property entry
+          allow create: if request.auth.uid == userId;
+
+          // Allow the owner to update only their own properties
+          allow update: if request.auth.uid == userId;
+
+          // Allow the owner to delete only their own properties
+          allow delete: if request.auth.uid == userId;
+      }
+    }
+
+    // Properties collection rules
+    match /properties/{propertyId} {
+      allow read: if true; // Everyone can read properties
+      allow write: if request.auth.uid == resource.data.ownerId || request.auth.token.admin == true; // Only owner or admin can write
+
+      // Likes sub-collection rules
+      match /likes/{userId} {
+          allow read: if request.auth != null; // Authenticated users can read likes
+
+          // Allow create if the document doesn't exist
+          allow create: if request.auth.uid == userId;
+
+          // Allow update only by the original liker
+          allow update: if request.auth.uid == userId;
+
+          // Optionally, allow delete if only the original liker can remove their like
+          allow delete: if request.auth.uid == userId;
+      }
+
+      // Comments sub-collection rules
+      match /comments/{commentId} {
+          allow read: if request.auth != null; // Authenticated users can read comments
+          allow write: if request.auth != null; // All authenticated users can add comments
+      }
+    }
+  }
+}

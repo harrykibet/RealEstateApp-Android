@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature_profile_nav_graph"
+    app:startDestination="@id/profileFragment">
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.application.real_estate_app.feature_profile.fragments.ProfileFragment"
+        tools:layout="@layout/fragment_profile"
+        android:label="@string/profile_picture">
+        <deepLink
+            android:id = "@+id/profileFragmentDeepLink"
+            app:uri="https://real_estate_app.com/profile" />
+    </fragment>
+</navigation>

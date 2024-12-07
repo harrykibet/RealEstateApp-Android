@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature_explore_nav_graph"
+    app:startDestination="@id/mapsFragment">
+
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.application.real_estate_app.feature_explore.fragments.MapsFragment"
+        android:label="@string/search_location"
+        tools:layout="@layout/fragment_maps">
+        <deepLink
+            android:id="@+id/mapFragmentDeepLink"
+            app:uri="https://real_estate_app.com/maps"/>
+    </fragment>
+
+</navigation>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="required">@color/colorOnPrimarySoft</color>
+    <color name="optional">@color/colorOnPrimarySoft</color>
+    <color name="colorOnPrimarySoft">#333333</color>
+    <color name="colorOnPrimary">#000000</color>
+    <color name="strokeColor">@color/light_gray</color>
+    <color name="colorButton">#3700B3</color>
+    <color name="black">#FF000000</color>
+    <color name="green">#00FF00</color>
+    <color name="dark_gray">#FF444444</color>
+    <color name="light_gray">#FFCCCCCC</color>
+    <color name="editTextBackground">@color/light_gray</color>
+</resources>
