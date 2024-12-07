@@ -22,6 +22,9 @@ General Features
 📱 Screenshots
 
 ![Screenshot_20241207-211258](https://github.com/user-attachments/assets/8dd198ca-d423-4157-bb03-43a1eb527507)
+![Screenshot_20241207-211313](https://github.com/user-attachments/assets/27e76a27-0520-4f00-8217-2cbc4e472ebe)
+![Screenshot_20241207-211242](https://github.com/user-attachments/assets/fa30586f-ced9-4ee7-bf95-3b4788b3cd85)
+
 
 🛠️ Architecture & Design
 The app is built using Clean Architecture and MMVM model for scalability, maintainability, and testability.
