@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="optional">@color/colorOnPrimarySoft</color>
+    <color name="dark_gray">#FF444444</color>
+    <color name="strokeColor">#80000000</color>
+    <color name="colorButton">#3700B3</color>
+    <color name="editTextBackground">@color/dark_gray</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnPrimarySoft">#B3FFFFFF</color> <!-- 70% opacity -->
+</resources>

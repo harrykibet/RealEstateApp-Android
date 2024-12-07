@@ -1,0 +1,41 @@
+package com.application.real_estate_app.data.models
+
+import com.application.real_estate_app.domain.models.User
+import com.application.real_estate_app.domain.models.UserType
+
+data class UserEntity(
+    val userId: String = "",
+    val name: String = "",
+    val email: String = "",
+    val phoneNumber: String = "",
+    val profilePictureUrl: String = "",
+    val userType: String = "TENANT",  // Storing as String for FireStore compatibility
+    val verified: Boolean = false,
+    val likedProperties: List<String> = emptyList()
+) {
+    // Map to Domain Model
+    fun toDomainModel() = User(
+        userId = userId,
+        name = name,
+        email = email,
+        phoneNumber = phoneNumber,
+        profilePictureUrl = profilePictureUrl,
+        userType = UserType.valueOf(userType), // Convert String to Enum
+        verified = verified,
+        likedProperties = likedProperties
+    )
+
+    companion object {
+        // Map from Domain Model
+        fun fromDomainModel(user: User) = UserEntity(
+            userId = user.userId,
+            name = user.name,
+            email = user.email,
+            phoneNumber = user.phoneNumber,
+            profilePictureUrl = user.profilePictureUrl,
+            userType = user.userType.name, // Convert Enum to String
+            verified = user.verified,
+            likedProperties = user.likedProperties
+        )
+    }
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature_property_nav_graph"
+    app:startDestination="@id/addPropertyFragment">
+
+    <!-- Add Property Fragment -->
+    <fragment
+        android:id="@+id/addPropertyFragment"
+        android:name="com.application.real_estate_app.feature_property.fragments.AddPropertyFragment"
+        tools:layout="@layout/fragment_add_property">
+
+        <deepLink
+            android:id="@+id/addPropertyFragmentDeepLink"
+            app:uri="https://real_estate_app.com/addPropertyFragment"
+            />
+
+        <action
+            android:id="@+id/action_addPropertyFragment_to_mediaSelectionFragment"
+            app:destination="@id/mediaSelectionFragment" />
+
+        <action
+            android:id="@+id/action_addPropertyFragment_to_mapSelectionFragment"
+            app:destination="@id/mapSelectionFragment" />
+    </fragment>
+
+    <!-- Image Selection Fragment -->
+    <fragment
+        android:id="@+id/mediaSelectionFragment"
+        android:name="com.application.real_estate_app.feature_property.fragments.MediaSelectionFragment"
+        tools:layout="@layout/fragment_media_selection">
+    </fragment>
+
+    <!-- Map Selection Fragment -->
+    <fragment
+        android:id="@+id/mapSelectionFragment"
+        android:name="com.application.real_estate_app.feature_property.fragments.MapSelectionFragment"
+        tools:layout="@layout/fragment_map_selection">
+    </fragment>
+
+</navigation>
