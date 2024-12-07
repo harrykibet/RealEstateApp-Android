@@ -6,5 +6,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor() : ViewModel() {
+    // Your ViewModel logic here
     data class LogoutEvent(val message: String = "User logged out")
 }
