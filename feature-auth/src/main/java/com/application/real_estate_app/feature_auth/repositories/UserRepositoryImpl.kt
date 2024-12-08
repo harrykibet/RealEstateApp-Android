@@ -5,9 +5,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import android.util.Log
 import com.application.real_estate_app.feature_auth.interfaces.AuthService
-import kotlinx.coroutines.tasks.await
 
-class UserRepository @Inject constructor(
+class UserRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val authService: AuthService
 ) {
