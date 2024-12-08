@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="google_maps_key">\"\"</string>
+    <string name="google_maps_key">"AIzaSyAMbM4FJlF3OZ2ok1gwXsndHXDO6YnB_H4"</string>
     <string name="search_location">Search location</string>
 </resources>
