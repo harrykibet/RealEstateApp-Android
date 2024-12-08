@@ -4,14 +4,13 @@ import com.application.real_estate_app.domain.models.User
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import android.util.Log
-import com.application.real_estate_app.feature_auth.interfaces.AuthService
+import com.application.real_estate_app.domain.interfaces.IUserRepository
 
 class UserRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val authService: AuthService
-) {
+    private val firestore: FirebaseFirestore
+) : IUserRepository {
 
-    fun createUserIfNotExists(userId: String, user: User) {
+    override fun createUserIfNotExists(userId: String, user: User) {
         //TODO("Add more relevant methods such as updating and deleting a user info ")
         val userRef = firestore.collection("users").document(userId)
 

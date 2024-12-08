@@ -16,31 +16,24 @@
         android:theme="@style/Theme.RentalApp"
         tools:targetApi="31">
 
-        <!-- SplashScreenActivity: Used as Launcher only for API < 31 -->
+
         <activity
             android:name=".activities.SplashScreenActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.Material3.DayNight.NoActionBar"
-            tools:targetApi="30"> <!-- Only applies to API 30 and below -->
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- MainActivity: Used as Launcher for API 31+ -->
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|uiMode">
-            <intent-filter tools:targetApi="31"> <!-- Only applies to API 31+ -->
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
             <intent-filter> <!-- Deep linking support -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
