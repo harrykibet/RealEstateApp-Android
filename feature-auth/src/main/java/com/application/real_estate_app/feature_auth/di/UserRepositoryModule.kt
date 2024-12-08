@@ -14,5 +14,5 @@ abstract class UserRepositoryModule {
     //Bind the IUserRepository to UserRepositoryImpl
     @Binds
     @Singleton
-    abstract fun bindIUserRepository(userRepositoryImpl: UserRepositoryImpl) : IUserRepository
+    abstract fun bindIUserRepository(userRepositoryImpl: UserRepositoryImpl): IUserRepository
 }
