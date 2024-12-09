@@ -39,7 +39,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var db: FirebaseFirestore
     private lateinit var placesClient: PlacesClient
     private var zoomOutCount = 0
-    private val maxZoomOutAttempts = 3 // Limit to 3 zoom-outs
+    private val maxZoomOutAttempts = 1 // Limit to 1 zoom-out
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
