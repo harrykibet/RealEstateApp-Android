@@ -18,7 +18,7 @@ const logger = require("firebase-functions/logger");
 //   response.send("Hello from Firebase!");
 // });
 
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const { ImageAnnotatorClient } = require('@google-cloud/vision');
 const visionClient = new ImageAnnotatorClient();
