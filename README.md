@@ -5,7 +5,7 @@ The Real Estate Listing App is designed to simplify the process of finding renta
 For Tenants
     • Search Properties: Browse and filter rental properties based on preferences (location, type, price range, etc.).
     • Interactive Map View: Locate properties on a map for better context.
-    • Property Details: View property images, descriptions, amenities, and pricing.
+    • Property Details: View property images and videos, descriptions, amenities, and pricing.
     • User Reviews and Ratings: Read feedback from other tenants.
 For Property Owners
     • Property Management: Add, update, and manage multiple property listings.
@@ -27,33 +27,45 @@ General Features
 
 
 🛠️ Architecture & Design
-The app is built using Clean Architecture and MMVM model for scalability, maintainability, and testability.
+The app is built using Clean Architecture and MVVM model for scalability, maintainability, and testability.
 Modules
     1. app: Main entry point.
-    2. core-ui: Reusable UI components and themes.
-    3. core-utils: Utility classes and extensions.
-    4. data: Handles APIs, Firestore, and repositories.
+    2. ui-components: Reusable UI components and themes.
+    3. core: Utility classes and extensions.
+    4. data: Handles APIs, FireStore, and repositories.
     5. domain: Business logic and use cases.
     6. feature-auth: Manages login and signup functionalities.
-    7. feature-home: Handles the home screen and property listings.
-    8. feature-property: Detailed property view and management.
-    9. feature-profile: User profile and settings.
-    10. network: API configuration and utilities.
+    7. feature-explore: Handles property searches
+    8. feature-home: Handles the home screen and property listings.
+    9. feature-property: Handles Create, Update and Delete of properties
+    10. feature-profile: User profile and settings.
+    11. network: API configuration and utilities.
+    12. feature-payments: Handles all aspects of payments processing.
+    13. machine-learning: Handles advanced User verification, analytics, property recommendations and market predictions.
+    14. buildSrc: Not a module, but a directory for centralized dependency management.
 Technologies Used
     • Kotlin: Primary programming language.
-    • Jetpack Components: ViewModel, LiveData, Navigation, Room, Data Binding, WorkManager.
-    • Firebase: Firestore (database), Storage, Authentication.
+    • Jetpack Components: ViewModel, LiveData, Navigation, Room, Data Binding, View Binding.
+    • Firebase: FireStore (database), Storage, Authentication, Cloud Functions.
     • Glide: For image loading.
+    . Kapt : For annotation processing.
+    . Room: For local data persistence.
+    . Google ML Kit: For on-device AI tasks.
+    . Python Cloud Functions - For Google Cloud Vision AI API tasks.
+    . Media3 ExoPlayer: For video content.
     • Material Design 3: For modern UI components.
-    • Coroutines & Flow: For asynchronous tasks and reactive programming.
+    • Kotlin Coroutines & Flow: For asynchronous tasks and reactive programming.
     • Hilt: For dependency injection.
+    . Green Robot Event Bus: For publish and subscribe events
     • Lottie Animations: For engaging animations.
     • Safaricom Daraja API: For secure M-Pesa payments.
 
 ⚙️ Installation
 Prerequisites
     • Android Studio Giraffe or later.
-    • Minimum SDK: 23 (Android 6.0, Marshmallow)
+    • Minimum SDK: 24 (Android 7.0, Marshmallow)
+    . Target  SDK: 35 
+    . Compile SDK: 35
     • Recommended: Gradle 8.0+
 Steps
     1. Clone the repository:

@@ -27,6 +27,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -36,10 +37,12 @@ import kotlin.math.sqrt
 class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var db: FirebaseFirestore
     private lateinit var placesClient: PlacesClient
     private var zoomOutCount = 0
     private val maxZoomOutAttempts = 1 // Limit to 1 zoom-out
+
+    @Inject
+    lateinit var db: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,13 +60,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         placesClient = Places.createClient(requireContext())
 
         //initialize FireStore and Location services
-        db = FirebaseFirestore.getInstance()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         //set up the map
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        mapFragment.getMapAsync(this@MapsFragment)
 
         // Set up the search bar
         setupSearchBar(view)
@@ -84,9 +86,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private fun searchLocation(query: String) {
         zoomOutCount = 0
-
-        // Initialize the Places client
-        val placesClient = Places.createClient(requireContext())
+        //TODO("Create an adapter to display autocomplete predictions")
 
         // Build the autocomplete predictions request
         val autocompleteRequest = FindAutocompletePredictionsRequest.builder()
@@ -108,7 +108,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                     placesClient.fetchPlace(placeRequest)
                         .addOnSuccessListener { placeResponse ->
-                            val latLng = placeResponse.place.latLng
+                            @Suppress("DEPRECATION")
+                            val latLng = placeResponse.place.latLng //latlng is deprecated
                             if (latLng != null) {
                                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
 
@@ -188,6 +189,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private fun loadNearbyProperties(userLat: Double, userLng: Double) {
         val nearbyDistanceThreshold = 10.0 // Distance in kilometers
         var propertiesFound = false
+        //TODO("Create a property repository method for the below logic")
 
         db.collection("properties")
             .get()

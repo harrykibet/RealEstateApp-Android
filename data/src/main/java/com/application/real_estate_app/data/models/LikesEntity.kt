@@ -5,10 +5,11 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 data class LikesEntity(
-    val userId: String = "",
+    val userId: String? = null,
     @ServerTimestamp val likedAt: Date? = null
 ) {
     // Map to Domain Model
+    @Suppress("unused")
     fun toDomainModel() = Likes(
         userId = userId,
         likedAt = likedAt

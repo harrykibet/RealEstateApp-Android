@@ -6,6 +6,7 @@
   "functions": [
     {
       "source": "functions",
+      "timeoutSeconds": "300",
       "codebase": "default",
       "ignore": [
         "node_modules",
@@ -16,6 +17,17 @@
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    },
+    {
+      "source": "python",
+      "codebase": "python",
+      "ignore": [
+        "venv",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
       ]
     }
   ]

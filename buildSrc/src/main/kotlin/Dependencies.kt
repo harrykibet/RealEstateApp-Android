@@ -1,3 +1,5 @@
+@file:Suppress("ConstPropertyName")
+
 object Versions {
     // Core
     const val kotlin = "1.9.10"
@@ -55,12 +57,14 @@ object Versions {
     // Room
     const val room = "2.6.1"
 
-    // GOOGLE  ML Kit
+    // GOOGLE  ML Kit On-Device
     const val mlKitBarcodeScanning = "17.1.0"
     const val mlKitTextRecognitionOnDevice = "16.0.1"
-    const val mlKitTextRecognitionCloud = "19.0.1"
     const val mlKitFaceDetection = "16.1.7"
     const val mlKitImageLabelingOnDevice = "17.0.9"
+
+    // GOOGLE ML Kit Cloud-Based
+    const val mlKitTextRecognitionCloud = "19.0.1"
     const val mlKitImageLabelingCloud = "16.0.8"
 
     // JUnit
@@ -96,12 +100,15 @@ object Libs {
         const val firebaseAuth = "com.google.firebase:firebase-auth-ktx"
         const val firebaseFirestore = "com.google.firebase:firebase-firestore-ktx"
         const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
+        const val playIntergrity = "com.google.firebase:firebase-appcheck-playintegrity"
+        const val appCheckDebug = "com.google.firebase:firebase-appcheck-debug"
 
         // Google Play Services
         const val playServicesMaps = "com.google.android.gms:play-services-maps:${Versions.playServicesMaps}"
         const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.playServicesLocation}"
         const val places = "com.google.android.libraries.places:places:${Versions.places}"
         const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.playServicesAuth}"
+
 
         // Glide
         const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
@@ -165,13 +172,20 @@ object ProjectModules {
     const val domain = ":domain"
     const val data = ":data"
     const val core = ":core"
-    const val featureHome = ":feature-home"
-    const val featureProperty = ":feature-property"
-    const val featureAuth = ":feature-auth"
+    const val featureHome = ":feature_home"
+    const val featureProperty = ":feature_property"
+    const val featureAuth = ":feature_auth"
     const val featureExplore = ":feature_explore"
-    const val featureProfile = ":feature-profile"
-    const val uiComponents = ":ui-components"
+    const val featureProfile = ":feature_profile"
+    const val uiComponents = ":ui_components"
     const val network = ":network"
     const val app = ":app"
-    const val machineLearning = ":machine_learning"
+    const val localization = ":localization"
+    const val security = ":security"
+    const val ai_ml = ":ai_ml"
+    const val featurePayments = ":feature_payments"
+    const val featureMarketPlace = ":feature_marketplace"
+    const val featureFavorites = ":feature_favorites"
+    const val featureChats = ":feature_chats"
+    const val featureNotifications = ":feature_notifications"
 }

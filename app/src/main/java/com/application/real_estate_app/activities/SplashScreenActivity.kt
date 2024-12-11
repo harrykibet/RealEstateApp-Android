@@ -1,5 +1,6 @@
 package com.application.real_estate_app.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.application.real_estate_app.feature_auth.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
 
@@ -16,11 +18,11 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Only show splash screen logic if running on API 30 or below
+        // Only show splash screen if running on Android 11 or below
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
             checkAuthentication()
         } else {
-            // In case this is mistakenly launched on Android 12+, redirect to MainActivity
+            // In case this is launched on Android 12+, redirect to MainActivity
             redirectToMainActivity(isAuthenticated = false)
         }
     }
