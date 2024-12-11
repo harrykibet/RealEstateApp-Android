@@ -34,7 +34,7 @@ class PropertyRepositoryImpl @Inject constructor(
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): Boolean {
-        val propertyId = property.id ?: db.collection("properties").document().id // Always generate a new ID if null
+        val propertyId = db.collection("properties").document().id // Always generate a new ID
 
         return try {
             uploadStatus.value = true // Uploading process started
@@ -79,6 +79,7 @@ class PropertyRepositoryImpl @Inject constructor(
         uris: List<Uri>,
         mediaType: String
     ): List<String> {
+        //TODO("Compress media items before uploads")
         val urls = mutableListOf<String>()
         uris.forEachIndexed { index, uri ->
             val filePath = "properties/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"

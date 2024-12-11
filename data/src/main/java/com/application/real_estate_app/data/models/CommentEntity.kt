@@ -5,9 +5,9 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 data class CommentEntity(
-    val id: String = "",
-    val userId: String = "",
-    val commentText: String = "",
+    val id: String? = null,
+    val userId: String? = null,
+    val commentText: String? = null,
     @ServerTimestamp val timeStamp: Date? = null
 ) {
     // Map to Domain Model

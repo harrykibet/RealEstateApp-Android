@@ -57,6 +57,9 @@ dependencies {
         // Domain Module
         implementation(project(ProjectModules.domain))
 
+        // Network Module
+        implementation(project(ProjectModules.network))
+
         // Testing
         testImplementation(Libs.junit)
         androidTestImplementation(Libs.testExtJUnit)

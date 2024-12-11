@@ -14,8 +14,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.application.real_estate_app.R
+import com.application.real_estate_app.core.events.LoginEvent
+import com.application.real_estate_app.core.events.LogoutEvent
 import com.application.real_estate_app.feature_auth.viewModels.AuthViewModel
-import com.application.real_estate_app.feature_profile.viewmodels.ProfileViewModel
 import com.application.real_estate_app.utilities.FireStoreConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
+    private lateinit var bottomNavigationView: BottomNavigationView
     private val authViewModel: AuthViewModel by viewModels() // ViewModel for checking authentication
 
 
@@ -45,35 +47,35 @@ class MainActivity : AppCompatActivity() {
         // Initialize the NavController
         navController = navHostFragment.navController
 
+        bottomNavigationView = findViewById(R.id.bottomNavigation)
+
         // Check if authentication status is passed in the intent for Android 11 and below
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
             val isAuthenticated = intent.getBooleanExtra("USER_AUTHENTICATED", false)
             navigateBasedOnAuthentication(isAuthenticated)
         }
+        // Android 12 +
+        else{
+            authViewModel.checkAuthentication() // Trigger the authentication check
 
-        authViewModel.checkAuthentication() // Trigger the authentication check
-
-        // Keep the splash screen visible until authentication check completes
-        val content = findViewById<View>(android.R.id.content)
-        content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-            override fun onPreDraw(): Boolean {
-                // Check if the authentication check is complete
-                return if (authViewModel.isAuthCheckComplete()) {
-                    content.viewTreeObserver.removeOnPreDrawListener(this)
-                    authViewModel.isUserLoggedIn.value?.let { isAuthenticated ->
-                        Toast.makeText(this@MainActivity, "Authentication Status: $isAuthenticated", Toast.LENGTH_SHORT).show()
-                        navigateBasedOnAuthentication(isAuthenticated)
+            // Keep the splash screen visible until authentication check completes
+            val content = findViewById<View>(android.R.id.content)
+            content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    // Check if the authentication check is complete
+                    return if (authViewModel.isAuthCheckComplete()) {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        // Authentication status
+                        authViewModel.isUserLoggedIn.value?.let { isAuthenticated ->
+                            Toast.makeText(this@MainActivity, "Authentication Status: $isAuthenticated", Toast.LENGTH_SHORT).show()
+                            navigateBasedOnAuthentication(isAuthenticated)
+                        }
+                        true // Proceed with normal rendering
+                    } else {
+                        false // Hold off on drawing the UI
                     }
-                    true // Proceed with normal rendering
-                } else {
-                    false // Hold off on drawing the UI
                 }
-            }
-        })
-
-        // Observe authentication status
-        authViewModel.isUserLoggedIn.observe(this) { isAuthenticated ->
-            navigateBasedOnAuthentication(isAuthenticated)
+            })
         }
 
         // Initialize FireStore settings
@@ -89,7 +91,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showHomeFragment() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         // Set bottom navigation visibility
         bottomNavigationView.visibility = View.VISIBLE
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
@@ -102,7 +103,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoginFragment() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigationView.visibility = View.GONE // Hide BottomNavigationView
 
         //Clear all the previous fragments from the back stack
@@ -117,8 +117,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.homeFragment -> {
@@ -150,7 +148,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        onBackPressedDispatcher.addCallback(this) {
+        onBackPressedDispatcher.addCallback(this@MainActivity) {
             if (!navController.popBackStack()) {
                 finish()
             }
@@ -164,21 +162,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)  // Register to listen for events
+        EventBus.getDefault().register(this@MainActivity)  // Register to listen for events
     }
 
     override fun onStop() {
         super.onStop()
-        EventBus.getDefault().unregister(this)  // Unregister when the activity stops
+        EventBus.getDefault().unregister(this@MainActivity)  // Unregister when the activity stops
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onLogoutEvent(event: ProfileViewModel.LogoutEvent) {
+    fun onLogoutEvent(event: LogoutEvent) {
         showLoginFragment()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onLoginEvent(event: AuthViewModel.LoginEvent) {
+    fun onLoginEvent(event: LoginEvent) {
         showHomeFragment()
     }
 }

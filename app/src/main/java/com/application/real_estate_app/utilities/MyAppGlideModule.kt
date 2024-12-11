@@ -13,6 +13,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @GlideModule
 class MyAppGlideModule : AppGlideModule() {
+    @Suppress("unused")
     private val customStrategy = GlideExecutor.UncaughtThrowableStrategy { throwable ->
         Log.e("GlideError", "Uncaught throwable in Glide executor", throwable)
         // Log the error to Firebase Crashlytics

@@ -106,11 +106,14 @@ dependencies {
         implementation(Libs.firebaseAuth)
         implementation(Libs.firebaseFirestore)
         implementation(Libs.firebaseStorage)
+        implementation(Libs.appCheckDebug)
+        implementation(Libs.playIntergrity)
 
         // Google Play Services
         implementation(Libs.playServicesMaps)
         implementation(Libs.playServicesLocation)
         implementation(Libs.places)
+
 
         // Glide
         implementation(Libs.glide)
@@ -146,7 +149,7 @@ dependencies {
        androidTestImplementation(Libs.testExtJUnit)
        androidTestImplementation(Libs.espressoCore)
 
-        // Module implementations
+        // Project Modules
         implementation(project(ProjectModules.featureHome))
         implementation(project(ProjectModules.data))
         implementation(project(ProjectModules.core))
@@ -157,7 +160,14 @@ dependencies {
         implementation(project(ProjectModules.featureExplore))
         implementation(project(ProjectModules.featureProfile))
         implementation(project(ProjectModules.uiComponents))
-        //implementation(project(ProjectModules.machineLearning))
+        //implementation(project(ProjectModules.ai_ml))
+        //implementation(project(ProjectModules.featurePayments))
+        //implementation(project(ProjectModules.featureMarketPlace))
+        //implementation(project(ProjectModules.featureChats))
+        //implementation(project(ProjectModules.security))
+        //implementation(project(ProjectModules.featureNotifications))
+        //implementation(project(ProjectModules.localization))
+        //implementation(project(ProjectModules.featureFavorites))
 }
 
 

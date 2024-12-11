@@ -3,12 +3,13 @@ package com.application.real_estate_app.data.models
 import com.application.real_estate_app.domain.models.User
 import com.application.real_estate_app.domain.models.UserType
 
+@Suppress("unused")
 data class UserEntity(
-    val userId: String = "",
-    val name: String = "",
-    val email: String = "",
-    val phoneNumber: String = "",
-    val profilePictureUrl: String = "",
+    val userId: String? = null,
+    val name: String? = null,
+    val email: String? = null,
+    val phoneNumber: String? = null,
+    val profilePictureUrl: String? = null,
     val userType: String = "TENANT",  // Storing as String for FireStore compatibility
     val verified: Boolean = false,
     val likedProperties: List<String> = emptyList()

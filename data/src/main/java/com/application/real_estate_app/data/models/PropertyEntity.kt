@@ -6,14 +6,14 @@ import java.util.Date
 
 data class PropertyEntity(
     var id: String? = null,
-    val title: String = "",
-    val description: String = "",
-    val price: Double = 0.0,
+    val title: String? = null,
+    val description: String? = null,
+    val price: Double? = null,
     var imageUrl: List<String> = emptyList(),
     var videoUrl: List<String> = emptyList(),
     val video: Boolean = false,
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     @ServerTimestamp val createdAt: Date? = null,
     val ownerId: String? = null,
     val ownerName: String? = null,
@@ -21,7 +21,7 @@ data class PropertyEntity(
     val contactEmail: String? = null,
     val county: String? = null,
     val active: Boolean = true,
-    val viewsCount: Int = 0,
+    val viewsCount: Int? = null,
     val propertyType: String? = null,
     val bedrooms: Int? = null,
     val bathrooms: Int? = null,
@@ -35,6 +35,7 @@ data class PropertyEntity(
     val available: Boolean = true
 ) {
     companion object {
+        @Suppress("unused")
         fun fromDocumentSnapshot(snapshot: DocumentSnapshot): PropertyEntity {
             return snapshot.toObject(PropertyEntity::class.java) ?: PropertyEntity()
         }
