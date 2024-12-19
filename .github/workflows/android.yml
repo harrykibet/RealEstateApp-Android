@@ -12,36 +12,38 @@ jobs:
 
     steps:
       # Checkout the code
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       # Set executable permission for gradlew
-      - name: Set executable permission for gradlew
+      - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
 
       # Set up JDK 17
-      - name: Set up JDK 17
+      - name: Set Up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
-      # Decode and store keystore
+      # Decode and store the keystore
       - name: Decode and Store Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./keystore.jks
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
 
       # Generate gradle.properties for signing
-      - name: Generate gradle.properties
+      - name: Generate Gradle Properties for Signing
         run: |
-          echo "signingStoreFile=keystore.jks" >> ~/.gradle/gradle.properties
-          echo "signingStorePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ~/.gradle/gradle.properties
-          echo "signingKeyAlias=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
-          echo "signingKeyPassword=${{ secrets.KEY_PASSWORD }}" >> ~/.gradle/gradle.properties
+          mkdir -p ~/.gradle
+          cat <<EOF >> ~/.gradle/gradle.properties
+          signingStoreFile=keystore.jks
+          signingStorePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          signingKeyAlias=${{ secrets.KEY_ALIAS }}
+          signingKeyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
 
       # Cache Gradle dependencies
-      - name: Cache Gradle dependencies
+      - name: Cache Gradle Dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -52,15 +54,15 @@ jobs:
             ${{ runner.os }}-gradle
 
       # Generate local.properties
-      - name: Generate local.properties
+      - name: Generate Local Properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
       # Build the APK
-      - name: Build with Gradle
+      - name: Build APK with Gradle
         run: ./gradlew assembleRelease
 
-      # SonarCloud Analysis using Gradle task
-      - name: SonarCloud Analysis
+      # SonarCloud Analysis
+      - name: Run SonarCloud Analysis
         run: ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -68,8 +70,8 @@ jobs:
           SONAR_ORG: ${{ secrets.SONAR_ORG }}
 
       # Upload APK as an artifact
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: app/debug/app-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
