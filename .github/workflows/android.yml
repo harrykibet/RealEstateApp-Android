@@ -61,7 +61,7 @@ jobs:
 
       # SonarCloud Analysis
       - name: SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v1
+        uses: sonarsource/sonarcloud-github-action@v4
         with:
           organization: ${{ secrets.SONAR_ORG }}
           projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
