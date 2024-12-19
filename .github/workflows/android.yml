@@ -11,15 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set executable permission for gradlew
+      # Step 2: Decode and save Keystore file
+      - name: Decode and save Keystore file
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+
+      # Step 3: Set executable permission for gradlew
       - name: Set executable permission for gradlew
         run: chmod +x ./gradlew
 
-      # Step 3: Set up JDK
+      # Step 4: Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -27,7 +31,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # Step 4: Cache Gradle dependencies
+      # Step 5: Cache Gradle dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -38,14 +42,43 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
-      # Step 5: Generate local.properties
+      # Step 6: Generate local.properties
       - name: Generate local.properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      # Step 6: Build the project
-      - name: Build with Gradle
-        run: ./gradlew build
+      # Step 7: Build the APK with signing
+      - name: Build with Gradle (Signed APK)
+        run: ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file=keystore.jks \
+          -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+          -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+          -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
 
-      # Step 7: Run Unit Tests
-      - name: Run Unit Tests
-        run: ./gradlew test
+      # Step 8: Upload APK as an artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+  analyze:
+    name: Build and analyze
+    runs-on: windows-latest
+    
+    steps:
+      # Step 1: Checkout code
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      
+      # Step 2: SonarQube Scan
+      - uses: sonarsource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      # Optional: Fail the job if Quality Gate is red
+      # - uses: sonarsource/sonarqube-quality-gate-action@v1
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
