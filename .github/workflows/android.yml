@@ -38,10 +38,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
-      # Step 5: Build the project
+      # Step 5: Generate local.properties
+      - name: Generate local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      # Step 6: Build the project
       - name: Build with Gradle
         run: ./gradlew build
 
-      # Step 6: Run Unit Tests
+      # Step 7: Run Unit Tests
       - name: Run Unit Tests
         run: ./gradlew test
