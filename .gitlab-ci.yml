@@ -12,31 +12,31 @@ cache:
 # Build Job
 build:
   stage: build
-  image: openjdk:17
+  image: ghcr.io/cirruslabs/android-sdk:33
   script:
-    - apt-get update -y
-    - apt-get install -y wget unzip
-    - wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip
-    - unzip commandlinetools-linux-7302050_latest.zip -d $ANDROID_HOME/cmdline-tools
-    - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --licenses
-    - $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30"
     - ./gradlew clean assembleRelease
   artifacts:
     paths:
       - app/build/outputs/apk/release/app-release.apk
     expire_in: 1 hour
 
-# Test Job (if you want to run tests, adapt as needed)
+# Test Job (optional, ensure your project includes tests)
 test:
   stage: test
-  image: openjdk:17
+  image: ghcr.io/cirruslabs/android-sdk:33
   script:
     - ./gradlew test
 
-# Deploy Job (example if you want to deploy somewhere)
+# Deploy Job (includes deployment artifacts)
 deploy:
   stage: deploy
-  image: openjdk:17
+  image: ghcr.io/cirruslabs/android-sdk:33
+  dependencies:
+    - build  # Ensure deployment depends on build stage artifacts
   script:
-    - echo "Deploying app"
-    # Add your deployment steps here, e.g., uploading to a server or an artifact repository
+    - mv app/build/outputs/apk/release/app-release.apk app-release-${CI_COMMIT_REF_NAME}.apk
+    - echo "Deployment completed: app-release-${CI_COMMIT_REF_NAME}.apk"
+  artifacts:
+    paths:
+      - app-release-${CI_COMMIT_REF_NAME}.apk
+    expire_in: 7 days
