@@ -15,19 +15,15 @@ build:
   image: ghcr.io/cirruslabs/android-sdk:33
   script:
     - chmod +x ./gradlew  # Set executable permission for gradlew
-    - apt-get update -y
-    - apt-get install -y wget unzip
-    - wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip
-    - unzip commandlinetools-linux-7302050_latest.zip -d $ANDROID_HOME/cmdline-tools
-    - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --licenses
-    - $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30"
+    - yes | sdkmanager --licenses  # Accept licenses
+    - sdkmanager "platform-tools" "platforms;android-33"  # Install required tools
     - ./gradlew clean assembleRelease
   artifacts:
     paths:
       - app/build/outputs/apk/release/app-release.apk
     expire_in: 1 hour
 
-# Test Job (if you want to run tests, adapt as needed)
+# Test Job
 test:
   stage: test
   image: ghcr.io/cirruslabs/android-sdk:33
