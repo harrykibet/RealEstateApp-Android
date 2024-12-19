@@ -5,11 +5,4 @@ import android.media.Image
 import com.google.mlkit.vision.common.InputImage
 
 object ImageUtils {
-    fun fromBitmap(bitmap: Bitmap): InputImage {
-        return InputImage.fromBitmap(bitmap, 0)
-    }
-
-    fun fromMediaImage(image: Image, rotation: Int): InputImage {
-        return InputImage.fromMediaImage(image, rotation)
-    }
 }
