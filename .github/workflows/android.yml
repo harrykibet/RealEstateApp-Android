@@ -19,7 +19,7 @@ jobs:
       - name: Set executable permission for gradlew
         run: chmod +x ./gradlew
 
-      # Set up JDK
+      # Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -61,11 +61,9 @@ jobs:
 
       # SonarCloud Analysis
       - name: SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v4
+        uses: sonarsource/sonarcloud-github-action@v2  # Use latest version (v2)
         with:
-          organization: ${{ secrets.SONAR_ORG }}
           projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-          token: ${{ secrets.SONAR_TOKEN }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
