@@ -59,6 +59,16 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleRelease
 
+      # SonarCloud Analysis
+      - name: SonarCloud Analysis
+        uses: sonarsource/sonarcloud-github-action@v1
+        with:
+          organization: ${{ secrets.SONAR_ORG }}
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          token: ${{ secrets.SONAR_TOKEN }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       # Upload APK as an artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
