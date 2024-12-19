@@ -1,0 +1,75 @@
+name: Android CI with Keystore Signing
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set executable permission for gradlew
+      - name: Set executable permission for gradlew
+        run: chmod +x ./gradlew
+
+      # Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # Decode and store keystore
+      - name: Decode and Store Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./keystore.jks
+
+      # Generate gradle.properties for signing
+      - name: Generate gradle.properties
+        run: |
+          echo "signingStoreFile=keystore.jks" >> ~/.gradle/gradle.properties
+          echo "signingStorePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ~/.gradle/gradle.properties
+          echo "signingKeyAlias=${{ secrets.KEY_ALIAS }}" >> ~/.gradle/gradle.properties
+          echo "signingKeyPassword=${{ secrets.KEY_PASSWORD }}" >> ~/.gradle/gradle.properties
+
+      # Cache Gradle dependencies
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+
+      # Generate local.properties
+      - name: Generate local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      # Build the APK
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease
+
+      # SonarCloud Analysis using Gradle task
+      - name: SonarCloud Analysis
+        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+
+      # Upload APK as an artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/debug/app-release.apk
