@@ -60,22 +60,6 @@ jobs:
         with:
           name: release-apk
           path: app/build/outputs/apk/release/app-release.apk
-
-  analyze:
-    name: Build and analyze
-    runs-on: windows-latest
-    
-    steps:
-      # Step 1: Checkout code
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      
-      # Step 2: SonarQube Scan
-      - uses: sonarsource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
       # Optional: Fail the job if Quality Gate is red
       # - uses: sonarsource/sonarqube-quality-gate-action@v1
