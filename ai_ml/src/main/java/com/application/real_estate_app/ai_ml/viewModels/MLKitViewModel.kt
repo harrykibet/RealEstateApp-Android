@@ -1,4 +1,4 @@
-package com.application.real_estate_app.machine_learning.viewModels
+package com.application.real_estate_app.ai_ml.viewModels
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

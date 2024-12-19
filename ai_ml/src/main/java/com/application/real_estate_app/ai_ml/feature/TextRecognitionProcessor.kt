@@ -1,4 +1,4 @@
-package com.application.real_estate_app.machine_learning.feature
+package com.application.real_estate_app.ai_ml.feature
 
 class TextRecognitionProcessor {
 }

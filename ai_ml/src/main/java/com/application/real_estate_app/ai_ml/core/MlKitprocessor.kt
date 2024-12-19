@@ -1,6 +1,4 @@
-package com.application.real_estate_app.machine_learning.core
-
-import com.google.mlkit.vision.common.InputImage
+package com.application.real_estate_app.ai_ml.core
 
 abstract class MLKitProcessor {
 }
