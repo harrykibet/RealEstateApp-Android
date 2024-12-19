@@ -59,13 +59,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleRelease
 
-      # SonarCloud Analysis
+      # SonarCloud Analysis using Gradle task
       - name: SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v2
-        with:
-          entryPoint: ./gradlew
-          args: sonarqube
-          projectBaseDir: .  # Optional if you're running analysis from the root directory
+        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
