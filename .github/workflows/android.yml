@@ -61,11 +61,15 @@ jobs:
 
       # SonarCloud Analysis
       - name: SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v2  # Use latest version (v2)
+        uses: sonarsource/sonarcloud-github-action@v2
         with:
-          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          entryPoint: ./gradlew
+          args: sonarqube
+          projectBaseDir: .  # Optional if you're running analysis from the root directory
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
 
       # Upload APK as an artifact
       - name: Upload APK
