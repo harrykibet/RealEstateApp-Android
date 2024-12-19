@@ -35,7 +35,6 @@ deploy:
     - build  # Ensure deployment depends on build stage artifacts
   script:
     - mv app/build/outputs/apk/release/app-release.apk app-release-${CI_COMMIT_REF_NAME}.apk
-    - echo "Deployment completed: app-release-${CI_COMMIT_REF_NAME}.apk"
   artifacts:
     paths:
       - app-release-${CI_COMMIT_REF_NAME}.apk
