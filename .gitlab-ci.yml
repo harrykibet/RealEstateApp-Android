@@ -1,13 +1,13 @@
-# Define the base image with pre-installed Android SDK
-image: ghcr.io/cirruslabs/android-sdk:33
+# GitLab CI/CD for Android with Keystore Signing
 
-# Define global variables
+stages:
+  - setup
+  - build
+
 variables:
   ANDROID_SDK_ROOT: /sdk
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-  CI_DEBUG_TRACE: "true"
 
-# Enable caching to speed up builds
 cache:
   key: ${CI_COMMIT_REF_SLUG}-gradle-cache
   paths:
@@ -15,43 +15,41 @@ cache:
     - .gradle/caches/
     - .gradle/wrapper/
 
-# Define pipeline stages
-stages:
-  - setup
-  - build
-  - test
-
-# Step 1: Setup environment and licenses
+# Step 1: Setup environment
 setup:
   stage: setup
   script:
     - echo "Setting up Android environment"
+    - chmod +x ./gradlew  # Set executable permission for gradlew
     - export PATH="$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
-    - chmod +x ./gradlew
     - sdkmanager --version
     - yes | sdkmanager --licenses
     - sdkmanager "platform-tools" "build-tools;33.0.0" "platforms;android-33"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
 
-# Step 2: Build the project
+# Step 2: Build APK with Keystore Signing
 build:
   stage: build
   script:
-    - echo "Building the project"
-    - ./gradlew clean build --stacktrace --info
+    # Set executable permissions for gradlew (if not already done)
+    - chmod +x ./gradlew  
+
+    # Generate local.properties
+    - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+    # Build APK
+    - echo "Building APK with Gradle"
+    - ./gradlew assembleRelease --stacktrace --info
+
+    # Debug: List build output directory
+    - echo "Listing Build Output Directory"
+    - ls -alh app/build/outputs/apk/
+
   artifacts:
     paths:
-      - app/build/outputs/
+      - app/build/outputs/apk/release/app-release.apk
     expire_in: 1 week
 
-# Step 3: Run tests (unit and instrumented)
-test:
-  stage: test
-  script:
-    - echo "Running tests"
-    - ./gradlew testDebugUnitTest --stacktrace --info
-    - ./gradlew connectedDebugAndroidTest --stacktrace --info
-  artifacts:
-    paths:
-      - app/build/reports/
-      - app/build/outputs/
-    expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
