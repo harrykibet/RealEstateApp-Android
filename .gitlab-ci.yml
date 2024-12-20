@@ -13,11 +13,14 @@ cache:
 build:
   stage: build
   image: ghcr.io/cirruslabs/android-sdk:33
+  variables:
+    ANDROID_SDK_ROOT: /sdk  # Set the correct Android SDK root
   script:
-    - chmod +x ./gradlew  # Set executable permission for gradlew
+    - chmod +x ./gradlew  # Ensure executable permission for gradlew
+    - sdkmanager --version  # Check if sdkmanager is available
     - yes | sdkmanager --licenses  # Accept licenses
-    - sdkmanager "platform-tools" "platforms;android-33"  # Install required tools
-    - ./gradlew clean assembleRelease
+    - sdkmanager "platform-tools" "platforms;android-33"  # Install platform tools
+    - ./gradlew clean assembleRelease  # Build APK
   artifacts:
     paths:
       - app/build/outputs/apk/release/app-release.apk
@@ -27,19 +30,22 @@ build:
 test:
   stage: test
   image: ghcr.io/cirruslabs/android-sdk:33
+  variables:
+    ANDROID_SDK_ROOT: /sdk  # Set the correct Android SDK root
   script:
-    - chmod +x ./gradlew  # Ensure permission for gradlew
-    - ./gradlew test
+    - chmod +x ./gradlew  # Ensure executable permission for gradlew
+    - ./gradlew test  # Run tests
 
 # Deploy Job
 deploy:
   stage: deploy
   image: ghcr.io/cirruslabs/android-sdk:33
+  variables:
+    ANDROID_SDK_ROOT: /sdk  # Set the correct Android SDK root
   dependencies:
     - build  # Ensure deployment depends on build stage artifacts
   script:
-    - chmod +x ./gradlew  # Ensure permission for gradlew
-    - mv app/build/outputs/apk/release/app-release.apk app-release-${CI_COMMIT_REF_NAME}.apk
+    - mv app/build/outputs/apk/release/app-release.apk app-release-${CI_COMMIT_REF_NAME}.apk  # Rename APK
   artifacts:
     paths:
       - app-release-${CI_COMMIT_REF_NAME}.apk
