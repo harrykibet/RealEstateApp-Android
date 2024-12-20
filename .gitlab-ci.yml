@@ -1,70 +1,63 @@
+# Define the base image with pre-installed Android SDK
+image: ghcr.io/cirruslabs/android-sdk:33
+
+# Define global variables
+variables:
+  ANDROID_SDK_ROOT: /sdk
+  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+  CI_DEBUG_TRACE: "true"
+
+# Enable caching to speed up builds
+cache:
+  key: ${CI_COMMIT_REF_SLUG}-gradle-cache
+  paths:
+    - .gradle/
+    - .gradle/caches/
+    - .gradle/wrapper/
+
+# Define pipeline stages
 stages:
   - setup
   - build
   - test
-  - deploy
 
-variables:
-  ANDROID_SDK_ROOT: /sdk
-  ANDROID_HOME: /sdk
-  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - .gradle/caches/
-    - .gradle/wrapper/
-    - app/build/
-
-# Stage 1: Setup
+# Step 1: Setup environment and licenses
 setup:
   stage: setup
-  image: ghcr.io/cirruslabs/android-sdk:33
   script:
-    - echo "Setting up environment"
+    - echo "Setting up Android environment"
+    - export PATH="$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
     - chmod +x ./gradlew
     - sdkmanager --version
     - yes | sdkmanager --licenses
-    - sdkmanager "platform-tools" "platforms;android-33"
-  rules:
-    - when: always
+    - sdkmanager "platform-tools" "build-tools;33.0.0" "platforms;android-33"
 
-# Stage 2: Build
+# Step 2: Build the project
 build:
   stage: build
-  image: ghcr.io/cirruslabs/android-sdk:33
   script:
-    - echo "Building the APK"
-    - ./gradlew clean assembleRelease --stacktrace --no-daemon
+    - echo "Building the project"
+    - ./gradlew clean build --stacktrace --info
   artifacts:
     paths:
-      - app/build/outputs/apk/release/app-release.apk
+      - app/build/outputs/
     expire_in: 1 week
-  rules:
-    - if: $CI_COMMIT_BRANCH  # Only run on branches
 
-# Stage 3: Test
+# Step 3: Run tests (unit and instrumented)
 test:
   stage: test
-  image: ghcr.io/cirruslabs/android-sdk:33
   script:
     - echo "Running tests"
-    - ./gradlew test --stacktrace --no-daemon
-  rules:
-    - if: $CI_COMMIT_BRANCH  # Only run on branches
-
-# Stage 4: Deploy
-deploy:
-  stage: deploy
-  image: ghcr.io/cirruslabs/android-sdk:33
-  dependencies:
-    - build
-  script:
-    - echo "Deploying the APK"
-    - mv app/build/outputs/apk/release/app-release.apk app-release-${CI_COMMIT_REF_NAME}.apk
+    - ./gradlew testDebugUnitTest --stacktrace --info
+    - ./gradlew connectedDebugAndroidTest --stacktrace --info
   artifacts:
     paths:
-      - app-release-${CI_COMMIT_REF_NAME}.apk
-    expire_in: 7 days
-  rules:
-    - if: $CI_COMMIT_TAG  # Only run on tags
+      - app/build/reports/
+      - app/build/outputs/
+    expire_in: 1 week
+
+# Optional: Notifications on pipeline success or failure
+notifications:
+  stage: deploy
+  script:
+    - echo "Job completed successfully. Check artifacts for results."
