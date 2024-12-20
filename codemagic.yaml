@@ -16,6 +16,10 @@ workflows:
       - name: Build Android release
         script: |
           ./gradlew bundleRelease -PversionCode=1.0 -PversionName=1.0.2
+      - name: Verify APK Directory
+        script: |
+          echo "APK directory contents:"
+          ls -alh app/build/outputs/apk/release/
     artifacts:
       - app/build/outputs/**/*.apk
     publishing:
