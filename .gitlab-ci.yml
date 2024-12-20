@@ -5,8 +5,10 @@ stages:
   - build
 
 variables:
+  ANDROID_HOME: /sdk
   ANDROID_SDK_ROOT: /sdk
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+  PATH: "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.0:$PATH"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}-gradle-cache
@@ -15,35 +17,37 @@ cache:
     - .gradle/caches/
     - .gradle/wrapper/
 
-# Step 1: Setup environment
 setup:
   stage: setup
   script:
-    - echo "Setting up Android environment"
-    - chmod +x ./gradlew  # Set executable permission for gradlew
-    - export PATH="$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
-    - sdkmanager --version
+    # Install Android Command Line Tools
+    - echo "Downloading Android Command Line Tools"
+    - curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+    - mkdir -p $ANDROID_HOME/cmdline-tools
+    - unzip -q commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
+    - mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+    - rm commandlinetools.zip
+
+    # Accept licenses and install SDK components
+    - echo "Installing Android SDK Components"
     - yes | sdkmanager --licenses
     - sdkmanager "platform-tools" "build-tools;33.0.0" "platforms;android-33"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
 
-# Step 2: Build APK with Keystore Signing
 build:
   stage: build
   script:
-    # Set executable permissions for gradlew (if not already done)
-    - chmod +x ./gradlew  
+    # Ensure gradlew is executable
+    - chmod +x ./gradlew
 
     # Generate local.properties
     - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
     # Build APK
-    - echo "Building APK with Gradle"
     - ./gradlew assembleRelease --stacktrace --info
 
     # Debug: List build output directory
-    - echo "Listing Build Output Directory"
     - ls -alh app/build/outputs/apk/
 
   artifacts:
