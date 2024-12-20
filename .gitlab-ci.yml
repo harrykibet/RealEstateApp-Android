@@ -55,9 +55,3 @@ test:
       - app/build/reports/
       - app/build/outputs/
     expire_in: 1 week
-
-# Optional: Notifications on pipeline success or failure
-notifications:
-  stage: deploy
-  script:
-    - echo "Job completed successfully. Check artifacts for results."
