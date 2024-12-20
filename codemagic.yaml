@@ -1,0 +1,36 @@
+workflows:
+  android:
+    name: Android CI with Keystore Signing
+    max_build_duration: 120
+    trigger:
+      events:
+        - push
+        - pull_request
+
+    jobs:
+      - build:
+          name: Build APK with Keystore Signing
+          scripts:
+            # Checkout the code
+            - checkout
+
+            # Set up JDK 17
+            - flutter config --android-sdk $ANDROID_SDK_ROOT
+            - flutter doctor --android-licenses
+
+            # Cache Gradle dependencies
+            - cache:
+                paths:
+                  - ~/.gradle/caches
+                  - ~/.gradle/wrapper
+
+            # Build the APK (Release variant)
+            - flutter build apk --release
+
+            # List build output directory to check if APK exists
+            - ls -alh build/app/outputs/flutter-apk/
+
+            # Upload APK as an artifact
+            - artifact:
+                name: release-apk
+                path: build/app/outputs/flutter-apk/app-release.apk
