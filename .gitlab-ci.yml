@@ -1,59 +1,11 @@
-# GitLab CI/CD for Android with Keystore Signing
-
 stages:
-  - setup
-  - build
+  - test
 
-variables:
-  ANDROID_HOME: /sdk
-  ANDROID_SDK_ROOT: /sdk
-  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-  PATH: "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.0:$PATH"
-
-cache:
-  key: ${CI_COMMIT_REF_SLUG}-gradle-cache
-  paths:
-    - .gradle/
-    - .gradle/caches/
-    - .gradle/wrapper/
-
-setup:
-  stage: setup
+test-job:
+  stage: test
+  image: ubuntu:latest
   script:
-    # Install Android Command Line Tools
-    - echo "Downloading Android Command Line Tools"
-    - curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-    - mkdir -p $ANDROID_HOME/cmdline-tools
-    - unzip -q commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
-    - mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-    - rm commandlinetools.zip
-
-    # Accept licenses and install SDK components
-    - echo "Installing Android SDK Components"
-    - yes | sdkmanager --licenses
-    - sdkmanager "platform-tools" "build-tools;33.0.0" "platforms;android-33"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
-
-build:
-  stage: build
-  script:
-    # Ensure gradlew is executable
-    - chmod +x ./gradlew
-
-    # Generate local.properties
-    - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-
-    # Build APK
-    - ./gradlew assembleRelease --stacktrace --info
-
-    # Debug: List build output directory
-    - ls -alh app/build/outputs/apk/
-
-  artifacts:
-    paths:
-      - app/build/outputs/apk/release/app-release.apk
-    expire_in: 1 week
-
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - echo "Testing GitLab CI/CD"
+    - echo "Running basic commands"
+    - uname -a
+    - echo "Pipeline execution successful!"
