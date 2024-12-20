@@ -1,59 +1,28 @@
 workflows:
-  version: 2
-  android:
-    name: Kotlin Android CI
+  native-android:
+    name: Native Android
     max_build_duration: 120
-    trigger:
-      events:
-        - push
-        - pull_request
-    jobs:
-      - build:
-          name: Build APK with Keystore Signing
-          environment:
-            flutter: stable
-            node: latest
-            android: true
-            cache:
-              - ~/.gradle/caches
-              - ~/.gradle/wrapper
-            ios: false
-            android_sdk: $ANDROID_SDK_ROOT
-          scripts:
-            # Checkout the code
-            - checkout
-
-            # Install dependencies
-            - ./gradlew clean build
-
-            # Set up the Android SDK
-            - yes | sdkmanager --licenses
-            - sdkmanager "platforms;android-30"
-            - sdkmanager "build-tools;30.0.3"
-
-            # Decode and store the keystore
-            - echo $KEYSTORE_BASE64 | base64 --decode > keystore.jks
-
-            # Generate gradle.properties for signing
-            - echo "signingStoreFile=keystore.jks" >> android/gradle.properties
-            - echo "signingStorePassword=$KEYSTORE_PASSWORD" >> android/gradle.properties
-            - echo "signingKeyAlias=$KEY_ALIAS" >> android/gradle.properties
-            - echo "signingKeyPassword=$KEY_PASSWORD" >> android/gradle.properties
-
-            # Cache Gradle dependencies
-            - cache:
-                paths:
-                  - ~/.gradle/caches
-                  - ~/.gradle/wrapper
-
-            # Build the APK (Release variant)
-            - cd android && ./gradlew assembleRelease
-
-            # List build output directory to check if APK exists
-            - ls -alh android/app/build/outputs/apk/release/
-
-            # Upload APK as an artifact
-            - artifact:
-                name: release-apk
-                path: android/app/build/outputs/apk/release/app-release.apk
- 
+    instance_type: mac_mini_m2
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "io.codemagic.androidquicksample"
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Build Android release
+        script: |
+          ./gradlew bundleRelease -PversionCode=1.0 -PversionName=1.0.2
+    artifacts:
+      - app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - trmnjames@gmail.com
+        notify:
+          success: true
+          failure: false
