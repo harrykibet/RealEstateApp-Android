@@ -57,19 +57,15 @@ jobs:
       - name: Generate Local Properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      # Build the APK
-      - name: Build APK with Gradle
+      # Build the APK (Release variant)
+      - name: Build APK with Gradle (Release)
         run: ./gradlew assembleRelease
 
-      # SonarCloud Analysis
-      - name: Run SonarCloud Analysis
-        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+      # Debug: List build output directory to check if APK exists
+      - name: List Build Output Directory
+        run: ls -alh app/build/outputs/apk/
 
-      # Upload APK as an artifact
+      # Upload APK as an artifact (from debug or release folder)
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
