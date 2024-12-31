@@ -167,7 +167,7 @@ object Libs {
         const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"
 }
 
-// Usage in module Gradle files
+// Usage in module build Gradle files
 object ProjectModules {
     const val domain = ":domain"
     const val data = ":data"
@@ -175,7 +175,7 @@ object ProjectModules {
     const val featureHome = ":feature_home"
     const val featureProperty = ":feature_property"
     const val featureAuth = ":feature_auth"
-    const val featureExplore = ":feature_explore"
+    const val featureSearch = ":feature_search"
     const val featureProfile = ":feature_profile"
     const val uiComponents = ":ui_components"
     const val network = ":network"
@@ -188,4 +188,7 @@ object ProjectModules {
     const val featureFavorites = ":feature_favorites"
     const val featureChats = ":feature_chats"
     const val featureNotifications = ":feature_notifications"
+    const val featureComments = ":feature_comments"
+    const val featureSettings = ":feature_settings"
+    const val featureService = ":feature_service"
 }

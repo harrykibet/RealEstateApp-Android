@@ -1,7 +1,7 @@
 package com.application.real_estate_app.feature_auth.di
 
-import com.application.real_estate_app.feature_auth.interfaces.AuthService
-import com.application.real_estate_app.feature_auth.services.AuthServiceImpl
+import com.application.real_estate_app.feature_auth.domain.interfaces.AuthService
+import com.application.real_estate_app.feature_auth.data.services.AuthServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

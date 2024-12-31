@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.FavoritesFragment">
+        tools:context=".ui.fragments.FavoritesFragment">
 
         <!-- Placeholder message for no liked properties -->
         <com.google.android.material.textview.MaterialTextView

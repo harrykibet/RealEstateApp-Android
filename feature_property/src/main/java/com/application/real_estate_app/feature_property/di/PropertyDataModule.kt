@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_property.di
 
-import com.application.real_estate_app.feature_property.data.PropertyData
+import com.application.real_estate_app.feature_property.data.utils.PropertyData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
