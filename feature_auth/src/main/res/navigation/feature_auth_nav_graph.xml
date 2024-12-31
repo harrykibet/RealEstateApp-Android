@@ -6,7 +6,7 @@
     app:startDestination="@id/loginFragment">
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.application.real_estate_app.feature_auth.fragments.LogInFragment"
+        android:name="com.application.real_estate_app.feature_auth.ui.fragments.LogInFragment"
         android:label="@string/login"
         tools:layout="@layout/fragment_log_in">
         <deepLink
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.application.real_estate_app.feature_auth.fragments.SignUpFragment"
+        android:name="com.application.real_estate_app.feature_auth.ui.fragments.SignUpFragment"
         android:label="@string/sign_up"
         tools:layout="@layout/fragment_sign_up">
         <deepLink

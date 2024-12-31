@@ -6,7 +6,7 @@
     app:startDestination="@id/profileFragment">
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.application.real_estate_app.feature_profile.fragments.ProfileFragment"
+        android:name="com.application.real_estate_app.feature_profile.ui.fragments.ProfileFragment"
         tools:layout="@layout/fragment_profile"
         android:label="@string/profile_picture">
         <deepLink

@@ -8,7 +8,7 @@
     <!-- Home Fragment -->
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.application.real_estate_app.feature_home.fragments.HomeFragment"
+        android:name="com.application.real_estate_app.feature_home.ui.fragments.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home">
         <deepLink
@@ -22,7 +22,7 @@
     <!-- Comment Fragment -->
     <fragment
         android:id="@+id/commentFragment"
-        android:name="com.application.real_estate_app.feature_home.fragments.CommentFragment"
+        android:name="com.application.real_estate_app.feature_home.ui.fragments.CommentFragment"
         android:label="Comments"
         tools:layout="@layout/fragment_comment" >
         <deepLink

@@ -6,7 +6,7 @@
     android:clickable="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:focusable="true"
-    tools:context=".fragments.MapSelectionFragment">
+    tools:context=".ui.uploads.fragments.MapSelectionFragment">
 
     <!-- The map fragment -->
     <androidx.fragment.app.FragmentContainerView

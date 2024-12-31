@@ -2,8 +2,8 @@ package com.application.real_estate_app.feature_auth.di
 
 import android.content.Context
 import com.application.real_estate_app.domain.interfaces.AuthRepository
-import com.application.real_estate_app.feature_auth.interfaces.GoogleSignInUtil
-import com.application.real_estate_app.feature_auth.services.AuthCheckerImpl
+import com.application.real_estate_app.feature_auth.domain.interfaces.GoogleSignInUtil
+import com.application.real_estate_app.feature_auth.data.services.AuthCheckerImpl
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds

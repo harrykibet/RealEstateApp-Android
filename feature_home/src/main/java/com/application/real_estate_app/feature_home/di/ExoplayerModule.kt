@@ -8,7 +8,7 @@ import dagger.Provides
 import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import com.application.real_estate_app.feature_home.exoplayer.ExoPlayerManager
+import com.application.real_estate_app.feature_home.ui.exoplayer.ExoPlayerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
