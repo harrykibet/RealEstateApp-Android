@@ -57,6 +57,8 @@ dependencies {
     // Firebase Dependencies
     implementation(platform(Libs.firebaseBom)) // Use BOM for version alignment
     implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
 
     // Domain Layer Module
     implementation(project(ProjectModules.domain))
@@ -64,6 +66,9 @@ dependencies {
     //Glide for image loading
     implementation(Libs.glide)
     kapt(Libs.glideCompiler)
+
+    //Core module
+    implementation(project(ProjectModules.core))
 
     // Google Play Services
     implementation(Libs.playServicesLocation)

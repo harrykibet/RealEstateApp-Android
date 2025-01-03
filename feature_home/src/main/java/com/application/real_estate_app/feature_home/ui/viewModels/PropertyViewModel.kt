@@ -28,7 +28,7 @@ class PropertyViewModel @Inject constructor(
     authChecker: AuthRepository
 ) : ViewModel() {
 
-    private val currentUserId: String? = authChecker.getCurrentUserId()
+    private  val currentUserId: String? = authChecker.getCurrentUserId()
 
     private val _propertyLiveData = MutableLiveData<Property?>()
     val propertyLiveData: LiveData<Property?> get() = _propertyLiveData

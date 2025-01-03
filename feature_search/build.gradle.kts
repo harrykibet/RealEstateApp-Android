@@ -68,6 +68,9 @@ dependencies {
     androidTestImplementation(Libs.testExtJUnit)
     androidTestImplementation(Libs.espressoCore)
 
+    //Core module
+    implementation(project(ProjectModules.core))
+
     // Dagger Hilt for Dependency Injection
     implementation(Libs.hiltAndroid)
     kapt(Libs.hiltAndroidCompiler)

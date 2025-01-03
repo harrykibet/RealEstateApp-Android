@@ -71,6 +71,7 @@ dependencies {
     implementation(platform(Libs.firebaseBom)) // Use BOM for Firebase version alignment
     implementation(Libs.firebaseAuth)
     implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
 
     // Project Module Dependencies
     implementation(project(ProjectModules.domain))
