@@ -14,24 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class PropertyRepositoryModule {
-
-    companion object {
-
-        // Provide FirebaseFireStore instance
-        @Provides
-        @Singleton
-        fun provideFirebaseFireStore(): FirebaseFirestore {
-            return FirebaseFirestore.getInstance()
-        }
-
-        // Provide FirebaseStorage instance
-        @Provides
-        @Singleton
-        fun provideFirebaseStorage(): FirebaseStorage {
-            return FirebaseStorage.getInstance()
-        }
-    }
-
     // Bind IPropertyRepository to its implementation
     @Binds
     @Singleton

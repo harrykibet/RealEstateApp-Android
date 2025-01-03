@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
+    id ("com.google.dagger.hilt.android")
 }
 
 android {
@@ -33,8 +35,32 @@ android {
 }
 
 dependencies {
-    // Core Android dependencies should be empty according to clean architecture principles
-    //Optional testing libraries
+
+
+    // Core Android Libraries
+    implementation(Libs.coreKtx)
+    implementation(Libs.appCompat)
+    implementation(Libs.material)
+
+    // Firebase
+    implementation(platform(Libs.firebaseBom)) // Firebase BOM for managing versions
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
+
+    // Media and UI Libraries
+    implementation(Libs.media3UI)
+    implementation(Libs.media3ExoPlayer)
+    implementation(Libs.media3Hls)
+
+    // Testing Libraries
     testImplementation(Libs.junit)
     androidTestImplementation(Libs.testExtJUnit)
+    androidTestImplementation(Libs.espressoCore)
+
+    // Dagger Hilt for Dependency Injection
+    implementation(Libs.hiltAndroid)
+    kapt(Libs.hiltAndroidCompiler)
+    implementation(Libs.hiltNavigationFragment)
+    kapt(Libs.hiltCompiler)
 }

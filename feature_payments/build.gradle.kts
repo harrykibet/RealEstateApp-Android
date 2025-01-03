@@ -47,6 +47,9 @@ dependencies {
     implementation(Libs.liveDataKtx)
     implementation(Libs.fragmentKtx)
 
+    //Core module
+    implementation(project(ProjectModules.core))
+
     // Dagger Hilt
     implementation(Libs.hiltAndroid)
     kapt(Libs.hiltAndroidCompiler)
