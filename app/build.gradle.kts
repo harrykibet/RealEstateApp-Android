@@ -151,10 +151,7 @@ dependencies {
 
         // Project Modules
         implementation(project(ProjectModules.featureHome))
-        implementation(project(ProjectModules.data))
         implementation(project(ProjectModules.core))
-        implementation(project(ProjectModules.domain))
-        implementation(project(ProjectModules.network))
         implementation(project(ProjectModules.featureProperty))
         implementation(project(ProjectModules.featureAuth))
         implementation(project(ProjectModules.featureSearch))

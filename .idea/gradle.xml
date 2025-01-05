@@ -24,8 +24,6 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/data" />
-            <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/feature_auth" />
             <option value="$PROJECT_DIR$/feature_chats" />
             <option value="$PROJECT_DIR$/feature_comments" />
@@ -40,7 +38,6 @@
             <option value="$PROJECT_DIR$/feature_service" />
             <option value="$PROJECT_DIR$/feature_settings" />
             <option value="$PROJECT_DIR$/localization" />
-            <option value="$PROJECT_DIR$/network" />
             <option value="$PROJECT_DIR$/security" />
             <option value="$PROJECT_DIR$/ui_components" />
           </set>

@@ -13,10 +13,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.application.real_estate_app.domain.interfaces.AuthRepository
+import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.interfaces.IAuthApiCore
 import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
-import com.application.real_estate_app.feature_home.ui.exoplayer.ExoPlayerManager
 import com.application.real_estate_app.feature_home.ui.viewModels.HomeViewModel
 import com.application.real_estate_app.feature_home.ui.viewModels.LikeStatus
 import com.application.real_estate_app.feature_home.ui.viewModels.PropertyViewModel
@@ -33,7 +33,7 @@ class HomeFragment : Fragment() {
     private lateinit var propertyAdapter: PropertyAdapter
 
     @Inject
-    lateinit var authChecker: AuthRepository
+    lateinit var authApi: IAuthApiCore
     @Inject
     lateinit var exoPlayerManager: ExoPlayerManager
 
@@ -56,8 +56,7 @@ class HomeFragment : Fragment() {
 
         val navController = findNavController() // Initialize NavController
 
-        // Assuming you're using FirebaseAuth for authentication
-        val currentUserId = authChecker.getCurrentUserId()
+        val currentUserId = authApi.getCurrentUserId()
 
         // Initialize  PropertyAdapter
         propertyAdapter = PropertyAdapter(
