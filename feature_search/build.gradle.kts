@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_explore"
+    namespace = "com.application.real_estate_app.feature_search"
     compileSdk = 35
 
     kapt{

@@ -74,7 +74,6 @@ dependencies {
     implementation(Libs.firebaseStorage)
 
     // Project Module Dependencies
-    implementation(project(ProjectModules.domain))
     implementation(project(ProjectModules.core))
 
     // Navigation Components

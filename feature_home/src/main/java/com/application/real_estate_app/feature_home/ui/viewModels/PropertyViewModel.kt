@@ -1,18 +1,15 @@
 package com.application.real_estate_app.feature_home.ui.viewModels
 
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.domain.interfaces.AuthRepository
-import com.application.real_estate_app.domain.models.Comment
-import com.application.real_estate_app.domain.models.Property
-import com.application.real_estate_app.domain.interfaces.IPropertyRepository
+import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 enum class LikeStatus {
@@ -24,29 +21,20 @@ enum class LikeStatus {
 
 @HiltViewModel
 class PropertyViewModel @Inject constructor(
-    private val repository: IPropertyRepository,
-    authChecker: AuthRepository
+    private val api: IHomeApi,
+    authApi: IAuthApiCore
 ) : ViewModel() {
 
-    private  val currentUserId: String? = authChecker.getCurrentUserId()
+    private  val currentUserId: String? = authApi.getCurrentUserId()
 
     private val _propertyLiveData = MutableLiveData<Property?>()
     val propertyLiveData: LiveData<Property?> get() = _propertyLiveData
-
-    private val _comments = MutableLiveData<List<Comment?>>()
-    val comments: LiveData<List<Comment?>> get() = _comments
-
-    private val _commentSubmitStatus = MutableLiveData<Boolean>()
-    val commentSubmitStatus: LiveData<Boolean> get() = _commentSubmitStatus
 
     private val _likedStatus = MutableLiveData<LikeStatus>()
     val likedStatus: LiveData<LikeStatus> get() = _likedStatus
 
     private val _likedProperties = MutableLiveData<List<Property>>()
     val likedProperties: LiveData<List<Property>> get() = _likedProperties
-
-    private val _noCommentsPlaceholderVisibility = MutableLiveData<Int>()
-    val noCommentsPlaceholderVisibility: LiveData<Int> get() = _noCommentsPlaceholderVisibility
 
     init {
         loadLikedProperties()
@@ -57,7 +45,7 @@ class PropertyViewModel @Inject constructor(
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
-                    val likedProperties = repository.fetchLikedProperties(currentUserId)
+                    val likedProperties = api.fetchLikedProperties(currentUserId)
                     _likedProperties.postValue(likedProperties)
                 } catch (e: Exception) {
                     Log.e("PropertyViewModel", "Error loading liked properties", e)
@@ -73,7 +61,7 @@ class PropertyViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     isLiked = _likedProperties.value?.any { it.id == propertyId } ?: false
-                    val success = repository.toggleLikeProperty(currentUserId, propertyId)
+                    val success = api.toggleLikeProperty(currentUserId, propertyId)
 
                     if (success) {
                         _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_SUCCESS else LikeStatus.LIKE_SUCCESS
@@ -93,7 +81,7 @@ class PropertyViewModel @Inject constructor(
     fun fetchPropertyById(propertyId: String) {
         viewModelScope.launch {
             try {
-                val property = repository.getPropertyById(propertyId)
+                val property = api.getPropertyById(propertyId)
                 if (property != null) {
                     _propertyLiveData.value = property
                 } else {
@@ -101,42 +89,6 @@ class PropertyViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("PropertyViewModel", "Failed to fetch property", e)
-            }
-        }
-    }
-
-    // Start listening for comments on a specific property
-    fun startListeningForComments(propertyId: String) {
-        viewModelScope.launch {
-            try {
-                repository.listenForComments(propertyId, onError = { exception ->
-                    Log.e("PropertyViewModel", "Error listening for comments", exception)
-                }).catch { exception ->
-                    Log.e("PropertyViewModel", "Error listening for comments", exception)
-                }.collect { commentsList ->
-                    _comments.postValue(commentsList)
-                    _noCommentsPlaceholderVisibility.value = if (commentsList.isEmpty()) View.VISIBLE else View.GONE
-                }
-            } catch (e: Exception) {
-                Log.e("PropertyViewModel", "Error listening for comments", e)
-            }
-        }
-    }
-
-    // Submit a comment for a property
-    fun submitComment(propertyId: String, comment: Comment) {
-        viewModelScope.launch {
-            try {
-                val success = repository.submitComment(propertyId, comment)
-                _commentSubmitStatus.value = success
-                if (success) {
-                    Log.d("PropertyViewModel", "Comment submitted successfully")
-                } else {
-                    Log.e("PropertyViewModel", "Failed to submit comment")
-                }
-            } catch (e: Exception) {
-                _commentSubmitStatus.value = false
-                Log.e("PropertyViewModel", "Error submitting comment", e)
             }
         }
     }

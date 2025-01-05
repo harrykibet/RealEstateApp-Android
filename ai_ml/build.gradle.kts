@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.application.real_estate_app.machine_learning"
+    namespace = "com.application.real_estate_app.ai_ml"
     compileSdk = 35
 
     kapt{
