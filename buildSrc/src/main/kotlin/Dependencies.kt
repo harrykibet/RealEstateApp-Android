@@ -169,8 +169,6 @@ object Libs {
 
 // Usage in module build Gradle files
 object ProjectModules {
-    const val domain = ":domain"
-    const val data = ":data"
     const val core = ":core"
     const val featureHome = ":feature_home"
     const val featureProperty = ":feature_property"

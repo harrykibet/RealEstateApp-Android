@@ -4,14 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.domain.models.Property
-import com.application.real_estate_app.domain.interfaces.IPropertyRepository
+import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: IPropertyRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val api: IHomeApi
+) : ViewModel() {
 
     private val _propertiesLiveData = MutableLiveData<List<Property>>()
     val propertiesLiveData: LiveData<List<Property>> get() = _propertiesLiveData
@@ -25,7 +27,7 @@ class HomeViewModel @Inject constructor(private val repository: IPropertyReposit
     private var lastVisibleDocument: String? = null
     private var canLoadMore = true
 
-    // Fetch properties with repository in a coroutine
+    // Fetch properties with api in a coroutine
     fun fetchProperties(isFirstLoad: Boolean, pageSize: Int) {
         if (!canLoadMore || isLoadingMutable.value == true) return // Prevent redundant fetches
 
@@ -33,7 +35,7 @@ class HomeViewModel @Inject constructor(private val repository: IPropertyReposit
 
         viewModelScope.launch {
             try {
-                val result = repository.fetchPropertiesPaginated(lastVisibleDocument, pageSize)
+                val result = api.fetchPropertiesPaginated(lastVisibleDocument, pageSize)
                 val newProperties = result.first
                 val lastVisible = result.second
 

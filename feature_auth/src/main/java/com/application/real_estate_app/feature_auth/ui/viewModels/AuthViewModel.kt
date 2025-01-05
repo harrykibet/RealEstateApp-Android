@@ -6,10 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.domain.interfaces.IUserRepository
-import com.application.real_estate_app.domain.models.User
-import com.application.real_estate_app.domain.models.UserType
-import com.application.real_estate_app.feature_auth.domain.interfaces.AuthService
+import com.application.real_estate_app.core.data_utils.models.User
+import com.application.real_estate_app.core.data_utils.models.UserType
+import com.application.real_estate_app.feature_auth.domain.interfaces.IAuthApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
@@ -33,8 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val googleSignInClient: GoogleSignInClient,
-    private val authService: AuthService,
-    private val userRepository: IUserRepository
+    private val authApi: IAuthApi
 ) : ViewModel() {
 
     companion object Signing {const val RC_SIGN_IN = 9001}
@@ -56,9 +54,9 @@ class AuthViewModel @Inject constructor(
     val googleSignInResult: LiveData<Result<FirebaseUser?>> = _googleSignInResult
 
     fun loginUser(email: String, password: String): Task<AuthResult> =
-        authService.signInWithEmail(email, password)
+        authApi.signInWithEmail(email, password)
 
-    fun isUserLoggedIn(): Boolean = authService.getCurrentUser() != null
+    fun isUserLoggedIn(): Boolean = authApi.getCurrentUser() != null
 
     fun checkAuthentication() {
         _isUserLoggedIn.postValue(isUserLoggedIn())
@@ -74,12 +72,12 @@ class AuthViewModel @Inject constructor(
         return getCurrentUser()?.phoneNumber != null
     }
 
-    private fun getCurrentUser() = authService.getCurrentUser()
+    private fun getCurrentUser() = authApi.getCurrentUser()
 
     fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         viewModelScope.launch {
             try {
-                authService.getCurrentUser()?.linkWithCredential(credential)?.await()
+                authApi.getCurrentUser()?.linkWithCredential(credential)?.await()
                 _phoneVerificationState.value = VerificationState.Success
             } catch (e: Exception) {
                 _phoneVerificationState.value =
@@ -90,7 +88,7 @@ class AuthViewModel @Inject constructor(
 
     suspend fun resetPassword(email: String){
         try {
-            authService.sendPasswordResetEmail(email)
+            authApi.sendPasswordResetEmail(email)
             _resetPasswordStatus.emit(Result.success(true))
         } catch (e: Exception) {
             _resetPasswordStatus.emit(Result.failure(e))
@@ -101,7 +99,7 @@ class AuthViewModel @Inject constructor(
         phoneNumber: String,
         onVerificationCallbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     ) {
-        val options = PhoneAuthOptions.newBuilder(authService.getFirebaseAuth())
+        val options = PhoneAuthOptions.newBuilder(authApi.getFirebaseAuth())
             .setPhoneNumber(phoneNumber)
             .setTimeout(120L, TimeUnit.SECONDS) // 2 Minutes (120 seconds)
             .setCallbacks(onVerificationCallbacks)
@@ -119,7 +117,7 @@ class AuthViewModel @Inject constructor(
         try {
             val account = task.getResult(ApiException::class.java)
             account?.let {
-                authService.firebaseAuthWithGoogle(it.idToken!!)
+                authApi.firebaseAuthWithGoogle(it.idToken!!)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             _googleSignInResult.value = Result.success(task.result?.user)
@@ -143,7 +141,7 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val result: AuthResult = authService.signUpWithEmail(email, password).await()
+                val result: AuthResult = authApi.signUpWithEmail(email, password).await()
                 val user = User(
                     userId = result.user?.uid.orEmpty(),
                     name = userName,
@@ -154,7 +152,7 @@ class AuthViewModel @Inject constructor(
                     verified = false,
                     likedProperties = emptyList()
                 )
-                userRepository.createUserIfNotExists(user.userId, user)
+                authApi.createUserIfNotExists(user.userId, user)
             } catch (e: Exception) {
                 _phoneVerificationState.value =
                     VerificationState.Error("Sign-up failed: ${e.message}")
@@ -166,7 +164,7 @@ class AuthViewModel @Inject constructor(
     private suspend fun sendEmailVerification() {
         viewModelScope.launch {
             try {
-                authService.getCurrentUser()?.sendEmailVerification()?.await()
+                authApi.getCurrentUser()?.sendEmailVerification()?.await()
             } catch (e: Exception) {
                 _phoneVerificationState.value =
                     VerificationState.Error("Verification email failed: ${e.message}")

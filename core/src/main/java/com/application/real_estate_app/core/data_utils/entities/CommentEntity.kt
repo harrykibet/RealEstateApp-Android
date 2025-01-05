@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core.data_utils.entities
 
-import com.application.real_estate_app.domain.models.Comment
+import com.application.real_estate_app.core.data_utils.models.Comment
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 

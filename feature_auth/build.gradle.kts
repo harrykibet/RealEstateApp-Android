@@ -59,7 +59,6 @@ dependencies {
     implementation(Libs.playServicesAuth)
 
     // Project Module Dependencies
-    implementation(project(ProjectModules.domain))
     implementation(project(ProjectModules.core))
 
     // Navigation Components
