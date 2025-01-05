@@ -76,6 +76,5 @@ dependencies {
     implementation(Libs.eventBus)
 
     //Modules
-    implementation(project(ProjectModules.domain))
     implementation(project(ProjectModules.core))
 }

@@ -60,9 +60,6 @@ dependencies {
     implementation(Libs.firebaseFirestore)
     implementation(Libs.firebaseStorage)
 
-    // Domain Layer Module
-    implementation(project(ProjectModules.domain))
-
     //Glide for image loading
     implementation(Libs.glide)
     kapt(Libs.glideCompiler)

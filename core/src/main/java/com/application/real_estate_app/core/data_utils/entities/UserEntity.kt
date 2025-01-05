@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core.data_utils.entities
 
-import com.application.real_estate_app.domain.models.User
-import com.application.real_estate_app.domain.models.UserType
+import com.application.real_estate_app.core.data_utils.models.User
+import com.application.real_estate_app.core.data_utils.models.UserType
 
 @Suppress("unused")
 data class UserEntity(
@@ -10,7 +10,7 @@ data class UserEntity(
     val email: String? = null,
     val phoneNumber: String? = null,
     val profilePictureUrl: String? = null,
-    val userType: String = "TENANT",  // Storing as String for FireStore compatibility
+    val userType: String = "TENANT",  //DEFAULT VALUE, Storing as String for FireStore compatibility
     val verified: Boolean = false,
     val likedProperties: List<String> = emptyList()
 ) {

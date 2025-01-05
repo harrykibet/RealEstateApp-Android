@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.data_utils.models.Property
-import com.application.real_estate_app.core.interfaces.IAuthRepository
-import com.application.real_estate_app.feature_favorites.ui.adapters.PropertyAdapter
+import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
 import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
 import com.application.real_estate_app.feature_favorites.ui.viewModels.PropertyViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,10 +25,10 @@ class FavoritesFragment : Fragment() {
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var propertyAdapter: PropertyAdapter
+    private lateinit var propertyAdapter: FavoritesAdapter
 
     @Inject
-    lateinit var authChecker: IAuthRepository // Inject AuthService
+    lateinit var authChecker: IAuthApiCore // Inject AuthService
 
     @Inject
     lateinit var exoPlayerManager: ExoPlayerManager
@@ -57,7 +57,7 @@ class FavoritesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val currentUserId = authChecker.getCurrentUserId()
-        propertyAdapter = PropertyAdapter(
+        propertyAdapter = FavoritesAdapter(
             viewModel = propertyViewModel,
             onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId) },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },

@@ -3,11 +3,11 @@ package com.application.real_estate_app.feature_property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.domain.interfaces.AuthRepository
-import com.application.real_estate_app.domain.interfaces.IPropertyRepository
-import com.application.real_estate_app.domain.models.Property
+import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.interfaces.IAuthApiCore
 import com.application.real_estate_app.feature_property.data.utils.PropertyData
 import com.application.real_estate_app.feature_property.data.utils.AddPropertyUiState
+import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -17,18 +17,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
-    private val propertyRepository: IPropertyRepository,
+    private val api: IPropertyApi,
     propertyData: PropertyData,
-    authChecker: AuthRepository
+    authApi: IAuthApiCore
 ) : ViewModel() {
 
-    private val userId = authChecker.getCurrentUserId()
+    private val userId = authApi.getCurrentUserId()
 
     // MutableStateFlow for individual fields
-    private val _isUpLoading = MutableStateFlow(propertyRepository.uploadStatus.value)
+    private val _isUpLoading = MutableStateFlow(api.uploadStatus.value)
     val isUpLoading: StateFlow<Boolean?> = _isUpLoading.asStateFlow()
 
-    private val _uploadingError = MutableStateFlow(propertyRepository.uploadError.value)
+    private val _uploadingError = MutableStateFlow(api.uploadError.value)
     val uploadingError: StateFlow<String?> = _uploadingError.asStateFlow()
 
     private val _title = MutableStateFlow<String?>(null)
@@ -370,7 +370,7 @@ class AddPropertyViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            propertyRepository.uploadProperty(
+            api.uploadProperty(
                 property,
                 state.selectedImageUris,
                 state.selectedVideoUris

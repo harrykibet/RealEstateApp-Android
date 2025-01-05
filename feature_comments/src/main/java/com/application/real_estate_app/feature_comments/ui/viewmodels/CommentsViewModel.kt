@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.models.Comment
-import com.application.real_estate_app.feature_comments.domain.interfaces.IFeatureCommentsRepo
+import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.catch
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val repository: IFeatureCommentsRepo
+    private val repository: ICommentsApi
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<Comment?>>()
