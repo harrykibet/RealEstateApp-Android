@@ -9,6 +9,16 @@ android {
     namespace = "com.application.real_estate_app.feature_favorites"
     compileSdk = 34
 
+    kapt{
+        correctErrorTypes = true
+        useBuildCache = true
+    }
+
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
+
     defaultConfig {
         minSdk = 24
 

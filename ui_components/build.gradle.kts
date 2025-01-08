@@ -8,6 +8,11 @@ android {
     namespace = "com.application.real_estate_app.ui_components"
     compileSdk = 35
 
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
+
     defaultConfig {
         minSdk = 24
 

@@ -14,6 +14,11 @@ android {
         useBuildCache = true
     }
 
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
+
     defaultConfig {
         minSdk = 24
 

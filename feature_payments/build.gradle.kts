@@ -9,6 +9,17 @@ android {
     namespace = "com.application.real_estate_app.feature_payments"
     compileSdk = 35
 
+    kapt{
+        correctErrorTypes = true
+        useBuildCache = true
+    }
+
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
+
+
     defaultConfig {
         minSdk = 24
 
