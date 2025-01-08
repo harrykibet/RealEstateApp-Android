@@ -62,6 +62,9 @@ dependencies {
     implementation(Libs.mlKitTextRecognitionCloud)
     implementation(Libs.mlKitImageLabelingCloud)
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Dagger Hilt
     implementation(Libs.hiltAndroid)
     kapt(Libs.hiltAndroidCompiler)

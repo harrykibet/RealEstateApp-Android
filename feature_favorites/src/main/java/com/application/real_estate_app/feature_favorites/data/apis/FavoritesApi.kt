@@ -16,6 +16,18 @@ class FavoritesApi @Inject constructor(
     private val db: FirebaseFirestore // Injected via DI
 ): IFavoritesApi {
 
+
+    override suspend fun getPropertyById(propertyId: String): Property? {
+        return try {
+            val doc = db.collection("properties").document(propertyId).get().await()
+            // Convert the data model (PropertyEntity) to domain model (Property)
+            doc.toObject(PropertyEntity::class.java)?.toDomainModel()
+        } catch (e: Exception) {
+            Log.e("PropertyRepository", "Error fetching property by ID: ${e.message}")
+            null
+        }
+    }
+
     override suspend fun fetchLikedProperties(userId: String): List<Property> {
         return try {
             val likedPropertyIds = db.collection("users")

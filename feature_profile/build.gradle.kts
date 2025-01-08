@@ -77,4 +77,7 @@ dependencies {
 
     //Modules
     implementation(project(ProjectModules.core))
+
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
 }

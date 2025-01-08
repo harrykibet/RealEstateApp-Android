@@ -76,6 +76,9 @@ dependencies {
     // Project Module Dependencies
     implementation(project(ProjectModules.core))
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Navigation Components
     implementation(Libs.navigationFragment)
     implementation(Libs.navigationUI)
