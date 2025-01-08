@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.application.real_estate_app.feature_home.R
 import com.application.real_estate_app.feature_home.databinding.PropertyItemBinding
-import com.application.real_estate_app.domain.models.Property
 import com.application.real_estate_app.feature_home.ui.viewModels.PropertyViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.feature_home.ui.exoplayer.ExoPlayerManager
+import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.data_utils.models.Property
 
 // Refactor the adapter for performance and reduce the functions it handle
 
