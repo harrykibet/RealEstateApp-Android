@@ -9,6 +9,11 @@ android {
     namespace = "com.application.real_estate_app.core"
     compileSdk = 35
 
+    kapt{
+        correctErrorTypes = true
+        useBuildCache = true
+    }
+
     defaultConfig {
         minSdk = 24
 
