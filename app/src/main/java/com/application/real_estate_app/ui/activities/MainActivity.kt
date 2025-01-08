@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         navController.popBackStack(com.application.real_estate_app.feature_profile.R.id.feature_profile_nav_graph, true)
         navController.popBackStack(com.application.real_estate_app.feature_search.R.id.feature_explore_nav_graph, true)
         navController.popBackStack(com.application.real_estate_app.feature_property.R.id.feature_property_nav_graph, true)
-        navController.popBackStack(com.application.real_estate_app.feature_home.R.id.feature_favorite_nav_graph, true)
+        navController.popBackStack(com.application.real_estate_app.feature_favorites.R.id.feature_favorite_nav_graph, true)
 
         // Navigate to the login fragment
         navController.navigate(com.application.real_estate_app.feature_auth.R.id.feature_auth_nav_graph)
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.favoritesFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_home.R.id.feature_favorite_nav_graph)
+                    navController.navigate(com.application.real_estate_app.feature_favorites.R.id.feature_favorite_nav_graph)
                     true
                 }
 
