@@ -7,6 +7,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -14,5 +15,6 @@ abstract class AuthApiCoreModule {
 
     // Binds the Core module interface IAuthApi_Core  to its implementation
     @Binds
+    @Singleton
     abstract fun bindAuthApiCore(authApi: AuthApiCore): IAuthApiCore
 }
