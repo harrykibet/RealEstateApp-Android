@@ -67,9 +67,9 @@ class HomeFragment : Fragment() {
             },
             onCommentClick = { propertyId ->
                 // Handle comment button click: navigate to CommentFragment
-                val action =
-                    HomeFragmentDirections.actionHomeToComment(propertyId, currentUserId ?: "")
-                navController.navigate(action)
+               // val action =
+                   // HomeFragmentDirections.actionHomeToComment(propertyId, currentUserId ?: "")
+               // navController.navigate(action)
             },
             exoPlayer = exoPlayerManager,
             context = requireContext()
