@@ -67,6 +67,9 @@ dependencies {
     //Core module
     implementation(project(ProjectModules.core))
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Google Play Services
     implementation(Libs.playServicesLocation)
     implementation(Libs.playServicesMaps)

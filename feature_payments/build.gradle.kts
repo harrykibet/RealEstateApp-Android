@@ -50,6 +50,9 @@ dependencies {
     //Core module
     implementation(project(ProjectModules.core))
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Dagger Hilt
     implementation(Libs.hiltAndroid)
     kapt(Libs.hiltAndroidCompiler)

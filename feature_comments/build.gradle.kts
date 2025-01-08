@@ -50,6 +50,9 @@ dependencies {
     implementation(Libs.glide)
     kapt(Libs.glideCompiler)
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Firebase Dependencies
     implementation(platform(Libs.firebaseBom)) // Use BOM for version alignment
     implementation(Libs.firebaseFirestore)

@@ -33,6 +33,9 @@ class FavoritesViewModel @Inject constructor(
     private val _likedStatus = MutableLiveData<LikeStatus>()
     val likedStatus: LiveData<LikeStatus> get() = _likedStatus
 
+    private val _propertyLiveData = MutableLiveData<Property?>()
+    val propertyLiveData: LiveData<Property?> get() = _propertyLiveData
+
     // Load liked properties for the current user
     fun loadLikedProperties() {
         if (currentUserId != null) {
@@ -66,6 +69,22 @@ class FavoritesViewModel @Inject constructor(
                     _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
                     Log.e("PropertyViewModel", "Error toggling like property", e)
                 }
+            }
+        }
+    }
+
+    // Fetch a single property by its ID
+    fun fetchPropertyById(propertyId: String) {
+        viewModelScope.launch {
+            try {
+                val property = api.getPropertyById(propertyId)
+                if (property != null) {
+                    _propertyLiveData.value = property
+                } else {
+                    Log.e("PropertyViewModel", "Property not found")
+                }
+            } catch (e: Exception) {
+                Log.e("PropertyViewModel", "Failed to fetch property", e)
             }
         }
     }

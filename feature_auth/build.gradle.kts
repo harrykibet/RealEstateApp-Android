@@ -65,6 +65,9 @@ dependencies {
     implementation(Libs.navigationFragment)
     implementation(Libs.navigationUI)
 
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
+
     // Event Bus
     implementation(Libs.eventBus)
 

@@ -14,7 +14,7 @@ import com.application.real_estate_app.core.data_utils.models.Property
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
 import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
 import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
-import com.application.real_estate_app.feature_favorites.ui.viewModels.PropertyViewModel
+import com.application.real_estate_app.feature_favorites.ui.viewmodels.FavoritesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class FavoritesFragment : Fragment() {
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var propertyAdapter: FavoritesAdapter
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     @Inject
     lateinit var authChecker: IAuthApiCore // Inject AuthService
@@ -33,7 +33,7 @@ class FavoritesFragment : Fragment() {
     @Inject
     lateinit var exoPlayerManager: ExoPlayerManager
 
-    private val propertyViewModel: PropertyViewModel by viewModels()
+    private val favoritesViewModel: FavoritesViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,15 +51,15 @@ class FavoritesFragment : Fragment() {
         setupObservers()
 
         if (savedInstanceState == null) {
-            propertyViewModel.loadLikedProperties() // Initial load of liked properties
+            favoritesViewModel.loadLikedProperties() // Initial load of liked properties
         }
     }
 
     private fun setupRecyclerView() {
         val currentUserId = authChecker.getCurrentUserId()
-        propertyAdapter = FavoritesAdapter(
-            viewModel = propertyViewModel,
-            onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId) },
+        favoritesAdapter = FavoritesAdapter(
+            viewModel = favoritesViewModel,
+            onClick = { propertyId -> favoritesViewModel.fetchPropertyById(propertyId) },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             context = requireContext(),
             exoPlayer = exoPlayerManager
@@ -67,19 +67,19 @@ class FavoritesFragment : Fragment() {
 
         binding.favoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = propertyAdapter
-            propertyAdapter.attachRecyclerViewScrollListener(this)
+            adapter = favoritesAdapter
+            favoritesAdapter.attachRecyclerViewScrollListener(this)
         }
     }
 
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            propertyViewModel.loadLikedProperties()
+            favoritesViewModel.loadLikedProperties()
         }
     }
 
     private fun setupObservers() {
-        propertyViewModel.likedProperties.observe(viewLifecycleOwner) { properties ->
+        favoritesViewModel.likedProperties.observe(viewLifecycleOwner) { properties ->
             updateUI(properties)
         }
     }
@@ -89,7 +89,7 @@ class FavoritesFragment : Fragment() {
             binding.emptyStateTextView.visibility = View.VISIBLE
         } else {
             binding.emptyStateTextView.visibility = View.GONE
-            propertyAdapter.submitList(properties)
+            favoritesAdapter.submitList(properties)
         }
         binding.swipeRefreshLayout.isRefreshing = false
     }

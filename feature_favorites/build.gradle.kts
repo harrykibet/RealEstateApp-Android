@@ -49,10 +49,17 @@ dependencies {
     // SwipeRefreshLayout
     implementation(Libs.swipeRefreshLayout)
 
+    // Glide for Image Loading
+    implementation(Libs.glide)
+    kapt(Libs.glideCompiler)
+
     // Media and UI Libraries
     implementation(Libs.media3UI)
     implementation(Libs.media3ExoPlayer)
     implementation(Libs.media3Hls)
+
+    //Shared UI-Components
+    implementation(project(ProjectModules.uiComponents))
 
     // Firebase Dependencies
     implementation(platform(Libs.firebaseBom)) // Use BOM for version alignment
