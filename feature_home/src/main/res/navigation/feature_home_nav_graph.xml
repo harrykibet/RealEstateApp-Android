@@ -14,27 +14,5 @@
         <deepLink
             android:id = "@+id/homeFragmentDeepLink"
             app:uri="https://real_estate_app.com/homeFragment"/>
-        <action
-            android:id="@+id/action_homeToComment"
-            app:destination="@id/commentFragment" />
-    </fragment>
-
-    <!-- Comment Fragment -->
-    <fragment
-        android:id="@+id/commentFragment"
-        android:name="com.application.real_estate_app.feature_home.ui.fragments.CommentFragment"
-        android:label="Comments"
-        tools:layout="@layout/fragment_comment" >
-        <deepLink
-            android:id= "@+id/commentFragmentDeepLink"
-            app:uri="https://real_estate_app.com/commentFragment/property/{propertyId}/user/{userId}"/>
-        <argument
-            android:name="propertyId"
-            app:argType = "string"
-            android:defaultValue=""/>
-        <argument
-            android:name="userId"
-            app:argType = "string"
-            android:defaultValue=""/>
     </fragment>
 </navigation>

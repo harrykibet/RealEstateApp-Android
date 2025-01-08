@@ -95,8 +95,9 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun navigateToComments(propertyId: String, currentUserId: String?) {
-        val action = FavoritesFragmentDirections.actionFavoritesToComment(propertyId, currentUserId ?: "")
-        findNavController().navigate(action)
+        // Navigate to feature_comments nav graph or deep link
+        //val action = FavoritesFragmentDirections.actionFavoritesToComment(propertyId, currentUserId ?: "")
+        //findNavController().navigate(action)
     }
     override fun onPause() {
         super.onPause()
