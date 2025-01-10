@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.data_utils.models.Property
