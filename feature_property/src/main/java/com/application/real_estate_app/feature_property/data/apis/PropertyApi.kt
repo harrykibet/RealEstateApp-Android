@@ -3,10 +3,10 @@ package com.application.real_estate_app.feature_property.data.apis
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.application.real_estate_app.core.data_utils.entities.PropertyEntity
+import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.mappers.toEntityModel
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -72,7 +72,6 @@ class PropertyApi @Inject constructor(
         uris: List<Uri>,
         mediaType: String
     ): List<String> {
-        //TODO("Compress media items before uploads")
         val urls = mutableListOf<String>()
         uris.forEachIndexed { index, uri ->
             val filePath = "properties/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"

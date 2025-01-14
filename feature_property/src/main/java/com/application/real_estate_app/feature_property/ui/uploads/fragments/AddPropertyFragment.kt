@@ -27,7 +27,7 @@ import javax.inject.Inject
 class AddPropertyFragment : Fragment() {
 
     private lateinit var binding: FragmentAddPropertyBinding
-    private val viewModel: AddPropertyViewModel by activityViewModels()
+    private val viewModel: AddPropertyViewModel by activityViewModels() //shared ViewModel
 
     @Inject lateinit var propertyData: PropertyData
 

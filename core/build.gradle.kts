@@ -47,6 +47,13 @@ dependencies {
     implementation(Libs.appCompat)
     implementation(Libs.material)
 
+    // Glide for Image Loading
+    implementation(Libs.glide)
+    kapt(Libs.glideCompiler)
+
+    // Ffmpeg
+    implementation(Libs.ffmpeg)
+
     // Firebase
     implementation(platform(Libs.firebaseBom)) // Firebase BOM for managing versions
     implementation(Libs.firebaseAuth)

@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core.data_utils.models
+package com.application.real_estate_app.core.data_utils.data_models
 
 import java.util.Date
 

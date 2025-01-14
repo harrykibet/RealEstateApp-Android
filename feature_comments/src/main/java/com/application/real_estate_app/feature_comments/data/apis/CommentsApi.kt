@@ -1,8 +1,8 @@
 package com.application.real_estate_app.feature_comments.data.apis
 
 import android.util.Log
-import com.application.real_estate_app.core.data_utils.entities.CommentEntity
-import com.application.real_estate_app.core.data_utils.models.Comment
+import com.application.real_estate_app.core.data_utils.db_entities.CommentEntity
+import com.application.real_estate_app.core.data_utils.data_models.Comment
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

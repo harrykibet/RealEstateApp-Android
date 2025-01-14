@@ -1,9 +1,9 @@
 package com.application.real_estate_app.feature_search.data.apis
 
 import android.util.Log
-import com.application.real_estate_app.core.data_utils.entities.PropertyEntity
+import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.feature_search.domain.interfaces.ISearchApi
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

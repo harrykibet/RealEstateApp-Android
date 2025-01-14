@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.application.real_estate_app.core.data_utils.models.Comment
-import com.application.real_estate_app.core.data_utils.models.User
+import com.application.real_estate_app.core.data_utils.data_models.Comment
+import com.application.real_estate_app.core.data_utils.data_models.User
 import com.application.real_estate_app.feature_comments.R
 import com.application.real_estate_app.feature_comments.databinding.ItemCommentBinding
 import com.bumptech.glide.Glide

@@ -8,6 +8,14 @@
     <include app:graph="@navigation/feature_auth_nav_graph"/>
     <include app:graph="@navigation/feature_profile_nav_graph"/>
     <include app:graph="@navigation/feature_property_nav_graph"/>
-    <include app:graph="@navigation/feature_explore_nav_graph"/>
+    <include app:graph="@navigation/feature_search_nav_graph"/>
     <include app:graph="@navigation/feature_favorite_nav_graph"/>
+    <include app:graph="@navigation/feature_comments_nav_graph"/>
+    <include app:graph="@navigation/feature_chats_nav_graph"/>
+    <include app:graph="@navigation/feature_service_nav_graph"/>
+    <include app:graph="@navigation/feature_marketplace_nav_graph"/>
+    <include app:graph="@navigation/feature_payments_nav_graph"/>
+    <include app:graph="@navigation/feature_notifications_nav_graph"/>
+    <include app:graph="@navigation/feature_settings_nav_graph"/>
+    <include app:graph="@navigation/ai_ml_nav_graph"/>
 </navigation>

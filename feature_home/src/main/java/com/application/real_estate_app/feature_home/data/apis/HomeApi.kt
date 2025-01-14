@@ -1,11 +1,11 @@
 package com.application.real_estate_app.feature_home.data.apis
 
 import android.util.Log
-import com.application.real_estate_app.core.data_utils.entities.LikesEntity
-import com.application.real_estate_app.core.data_utils.entities.PropertyEntity
+import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
+import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
-import com.application.real_estate_app.core.data_utils.models.Likes
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Likes
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
