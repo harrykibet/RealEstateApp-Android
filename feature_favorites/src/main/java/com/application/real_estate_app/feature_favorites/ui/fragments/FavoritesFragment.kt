@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_favorites.ui.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
 import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
 import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
@@ -93,11 +95,15 @@ class FavoritesFragment : Fragment() {
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
+    // Navigate via deep link
     private fun navigateToComments(propertyId: String, currentUserId: String?) {
-        // Navigate to feature_comments nav graph or deep link
-        //val action = FavoritesFragmentDirections.actionFavoritesToComment(propertyId, currentUserId ?: "")
-        //findNavController().navigate(action)
+        // Construct the deep link URI
+        val uri = Uri.parse("https://real_estate_app.com/commentFragment/property/$propertyId/user/${currentUserId ?: ""}")
+
+        // Use NavController to navigate with the deep link
+        findNavController().navigate(uri)
     }
+
     override fun onPause() {
         super.onPause()
         exoPlayerManager.pause()

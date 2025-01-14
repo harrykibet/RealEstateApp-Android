@@ -16,7 +16,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.ui_components.R
 import com.application.real_estate_app.feature_favorites.ui.viewmodels.FavoritesViewModel
 

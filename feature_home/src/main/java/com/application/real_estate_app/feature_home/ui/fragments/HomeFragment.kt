@@ -1,6 +1,7 @@
 package com.application.real_estate_app.feature_home.ui.fragments
 
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,20 +61,13 @@ class HomeFragment : Fragment() {
 
         // Initialize  PropertyAdapter
         propertyAdapter = PropertyAdapter(
-            viewModel = propertyViewModel, // Your ViewModel instance
-            onClick = { propertyId ->
-                // Handle property item click: fetch detailed property data
-                propertyViewModel.fetchPropertyById(propertyId)
-            },
-            onCommentClick = { propertyId ->
-                // Handle comment button click: navigate to CommentFragment
-               // val action =
-                   // HomeFragmentDirections.actionHomeToComment(propertyId, currentUserId ?: "")
-               // navController.navigate(action)
-            },
+            viewModel = propertyViewModel,
+            onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId)}, // fetch detailed property data
+            onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             exoPlayer = exoPlayerManager,
-            context = requireContext()
-        )
+            context = requireContext())
+
+
         // Set up RecyclerView and adapter
         binding.featuredPropertiesList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -152,6 +146,16 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+    }
+
+
+    // Navigate via deep link
+    private fun navigateToComments(propertyId: String, currentUserId: String?) {
+        // Construct the deep link URI
+        val uri = Uri.parse("https://real_estate_app.com/commentFragment/property/$propertyId/user/${currentUserId ?: ""}")
+
+        // Use NavController to navigate with the deep link
+        findNavController().navigate(uri)
     }
 
     private fun shouldLoadMore(): Boolean {

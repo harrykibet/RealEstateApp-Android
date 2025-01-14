@@ -32,7 +32,7 @@ class MapSelectionFragment : Fragment(R.layout.fragment_map_selection), OnMapRea
     private var _binding: FragmentMapSelectionBinding? = null
     private val binding get() = _binding!!
     private lateinit var map: GoogleMap
-    private val viewModel: AddPropertyViewModel by activityViewModels()
+    private val viewModel: AddPropertyViewModel by activityViewModels() //shared ViewModel
     private var selectedLocation: LatLng? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 

@@ -3,7 +3,7 @@ package com.application.real_estate_app.feature_property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
 import com.application.real_estate_app.feature_property.data.utils.PropertyData
 import com.application.real_estate_app.feature_property.data.utils.AddPropertyUiState

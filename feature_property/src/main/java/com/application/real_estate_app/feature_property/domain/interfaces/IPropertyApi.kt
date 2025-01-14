@@ -2,7 +2,7 @@ package com.application.real_estate_app.feature_property.domain.interfaces
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 
 interface IPropertyApi {
     // LiveData to monitor the upload status

@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_home.domain.interfaces
 
-import com.application.real_estate_app.core.data_utils.models.Property
+import com.application.real_estate_app.core.data_utils.data_models.Property
 
 
 interface IHomeApi {

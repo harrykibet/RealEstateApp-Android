@@ -26,6 +26,9 @@ object Versions {
     // Lifecycle
     const val lifecycle = "2.8.7"
 
+    // Ffmpeg
+    const val ffmpeg = "5.1.LTS"
+
     // Firebase
     const val firebaseBom = "33.5.1"
 
@@ -141,6 +144,9 @@ object Libs {
 
         // Lottie
         const val lottie = "com.airbnb.android:lottie:${Versions.lottie}"
+
+       // Ffmpeg
+       const val ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.ffmpeg}"
 
         // Room
         const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
