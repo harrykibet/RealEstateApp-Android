@@ -2,6 +2,7 @@ package com.application.real_estate_app.feature_favorites.ui.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -196,7 +197,9 @@ class FavoritesAdapter (
             binding.likeButton.setOnClickListener {
                 val propertyId = property?.id ?: return@setOnClickListener
                 // Toggle like status
-                viewModel.toggleLikeProperty(propertyId)
+                viewModel.toggleLikeProperty(propertyId) { error ->
+                    Log.e("FavoritesViewModel", "Error toggling like: ${error.message}")
+                }
             }
 
             binding.commentButton.setOnClickListener {
@@ -216,8 +219,8 @@ class FavoritesAdapter (
 
             // Observe changes in liked properties to update UI
             viewModel.likedProperties.observeForever {
-                val isLikedUpdated = it.any { likedProperty -> likedProperty.id == property?.id }
-                updateLikeButtonUI(isLikedUpdated)
+                val isLikedUpdated = it?.any { likedProperty -> likedProperty.id == property?.id }
+                updateLikeButtonUI(isLikedUpdated!!)
             }
 
             /*// Add listener for tap-to-play/pause functionality
