@@ -1,19 +1,21 @@
 package com.application.real_estate_app.feature_comments.domain.interfaces
 
+import android.net.ConnectivityManager
 import com.application.real_estate_app.core.data_utils.data_models.Comment
 import kotlinx.coroutines.flow.Flow
 
 interface ICommentsApi {
-    // Listen for Comments
+
     fun listenForComments(
         propertyId: String,
-        onError: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        connectivityManager: ConnectivityManager
     ): Flow<List<Comment?>>
 
-    // Submit Comment
     suspend fun submitComment(
         propertyId: String,
-        comment: Comment
-    ): Boolean
-
+        comment: Comment,
+        connectivityManager: ConnectivityManager,
+        onFailure: (Exception) -> Unit
+    ): Boolean?
 }

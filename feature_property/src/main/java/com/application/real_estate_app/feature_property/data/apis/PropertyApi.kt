@@ -7,6 +7,7 @@ import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntit
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.mappers.toEntityModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -27,13 +28,13 @@ class PropertyApi @Inject constructor(
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): Boolean {
-        val propertyId = db.collection("properties").document().id // Always generate a new ID
+        val propertyId = db.collection(FirestoreCollections.PROPERTIES).document().id // Always generate a new ID
 
         return try {
             uploadStatus.value = true // Uploading process started
 
             // 1. **Create the FireStore document first** with an initial state
-            db.collection("properties")
+            db.collection(FirestoreCollections.PROPERTIES)
                 .document(propertyId)
                 .set(property.toEntityModel().copy(id = propertyId)) // Make sure to store the ID as well
                 .await()
@@ -48,7 +49,7 @@ class PropertyApi @Inject constructor(
                 imageUrl = imageUrls,
                 videoUrl = videoUrls
             )
-            db.collection("properties")
+            db.collection(FirestoreCollections.PROPERTIES)
                 .document(propertyId)
                 .set(updatedPropertyEntity, SetOptions.merge())
                 .await()
@@ -59,10 +60,10 @@ class PropertyApi @Inject constructor(
         } catch (e: Exception) {
             uploadStatus.value = false
             uploadError.value = e.message
-            Log.e("PropertyRepository", "Failed to upload property: ${e.message}")
+            Log.e("PropertyApi", "Failed to upload property: ${e.message}")
 
             // **Clean up incomplete uploads or FireStore documents if necessary**
-            db.collection("properties").document(propertyId).delete().await() // Optional cleanup
+            db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await() // Optional cleanup
             false
         }
     }
@@ -74,7 +75,7 @@ class PropertyApi @Inject constructor(
     ): List<String> {
         val urls = mutableListOf<String>()
         uris.forEachIndexed { index, uri ->
-            val filePath = "properties/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
+            val filePath = "${FirestoreCollections.PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
             val fileRef = storageRef.reference.child(filePath) // Use DI-injected FirebaseStorage
             val downloadUrl = fileRef.putFile(uri).await().storage.downloadUrl.await().toString()
             urls.add(downloadUrl)
@@ -84,31 +85,31 @@ class PropertyApi @Inject constructor(
 
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): Boolean {
         return try {
-            db.collection("properties").document(propertyId).update(updates).await()
+            db.collection(FirestoreCollections.PROPERTIES).document(propertyId).update(updates).await()
             true
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error updating property: ${e.message}")
+            Log.e("PropertyApi", "Error updating property: ${e.message}")
             false
         }
     }
 
     override suspend fun deleteProperty(propertyId: String): Boolean {
         return try {
-            db.collection("properties").document(propertyId).delete().await()
+            db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await()
             true
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error deleting property: ${e.message}")
+            Log.e("PropertyApi", "Error deleting property: ${e.message}")
             false
         }
     }
 
     override suspend fun getPropertyById(propertyId: String): Property? {
         return try {
-            val doc = db.collection("properties").document(propertyId).get().await()
+            val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching property by ID: ${e.message}")
+            Log.e("PropertyApi", "Error fetching property by ID: ${e.message}")
             null
         }
     }

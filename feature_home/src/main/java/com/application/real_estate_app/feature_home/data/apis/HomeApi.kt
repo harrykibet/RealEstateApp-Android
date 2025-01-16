@@ -6,6 +6,7 @@ import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntit
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,11 +23,11 @@ class HomeApi @Inject constructor(
 
     override suspend fun getPropertyById(propertyId: String): Property? {
         return try {
-            val doc = db.collection("properties").document(propertyId).get().await()
+            val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching property by ID: ${e.message}")
+            Log.e("HomeApi", "Error fetching property by ID: ${e.message}")
             null
         }
     }
@@ -39,11 +40,11 @@ class HomeApi @Inject constructor(
         return try {
             // Build the FireStore query
             val query = if (lastVisible == null) {
-                db.collection("properties")
+                db.collection(FirestoreCollections.PROPERTIES)
                     .orderBy("createdAt", Query.Direction.DESCENDING)
                     .limit(pageSize.toLong())
             } else {
-                db.collection("properties")
+                db.collection(FirestoreCollections.PROPERTIES)
                     .orderBy("createdAt", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)  // Start after the last document fetched
                     .limit(pageSize.toLong())
@@ -61,7 +62,7 @@ class HomeApi @Inject constructor(
             // Return the properties and the last document ID
             Pair(properties, newLastVisible)
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching paginated properties: ${e.message}")
+            Log.e("HomeApi", "Error fetching paginated properties: ${e.message}")
             // Return an empty list and null for the last visible document in case of error
             Pair(emptyList(), null)
         }
@@ -69,10 +70,10 @@ class HomeApi @Inject constructor(
 
     override suspend fun toggleLikeProperty(userId: String, propertyId: String): Boolean {
         return try {
-            val likesRef = db.collection("properties").document(propertyId)
-                .collection("likes").document(userId)
-            val likedPropertiesRef = db.collection("users").document(userId)
-                .collection("likedProperties").document(propertyId)
+            val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
+                .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
+            val likedPropertiesRef = db.collection(FirestoreCollections.USERS).document(userId)
+                .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES).document(propertyId)
 
             val isLiked = likedPropertiesRef.get().await().exists()
 
@@ -88,22 +89,22 @@ class HomeApi @Inject constructor(
             }.await()
             true
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error toggling like: ${e.message}")
+            Log.e("HomeApi", "Error toggling like: ${e.message}")
             false
         }
     }
 
     override suspend fun fetchLikedProperties(userId: String): List<Property> {
         return try {
-            val likedPropertyIds = db.collection("users")
+            val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
-                .collection("likedProperties")
+                .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES)
                 .get()
                 .await()
                 .documents.map { it.id }
 
             if (likedPropertyIds.isNotEmpty()) {
-                val propertiesSnapshot = db.collection("properties")
+                val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
                     .whereIn(FieldPath.documentId(), likedPropertyIds)
                     .get()
                     .await()
@@ -113,7 +114,7 @@ class HomeApi @Inject constructor(
                 emptyList()
             }
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching liked properties: ${e.message}")
+            Log.e("HomeApi", "Error fetching liked properties: ${e.message}")
             emptyList()
         }
     }

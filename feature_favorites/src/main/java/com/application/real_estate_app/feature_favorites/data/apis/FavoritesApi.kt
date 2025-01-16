@@ -6,6 +6,7 @@ import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntit
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
@@ -19,26 +20,26 @@ class FavoritesApi @Inject constructor(
 
     override suspend fun getPropertyById(propertyId: String): Property? {
         return try {
-            val doc = db.collection("properties").document(propertyId).get().await()
+            val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching property by ID: ${e.message}")
+            Log.e("FavoritesApi", "Error fetching property by ID: ${e.message}")
             null
         }
     }
 
     override suspend fun fetchLikedProperties(userId: String): List<Property> {
         return try {
-            val likedPropertyIds = db.collection("users")
+            val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
-                .collection("likedProperties")
+                .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES)
                 .get()
                 .await()
                 .documents.map { it.id }
 
             if (likedPropertyIds.isNotEmpty()) {
-                val propertiesSnapshot = db.collection("properties")
+                val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
                     .whereIn(FieldPath.documentId(), likedPropertyIds)
                     .get()
                     .await()
@@ -48,17 +49,17 @@ class FavoritesApi @Inject constructor(
                 emptyList()
             }
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error fetching liked properties: ${e.message}")
+            Log.e("FavoritesApi", "Error fetching liked properties: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun toggleLikeProperty(userId: String, propertyId: String): Boolean {
         return try {
-            val likesRef = db.collection("properties").document(propertyId)
-                .collection("likes").document(userId)
-            val likedPropertiesRef = db.collection("users").document(userId)
-                .collection("likedProperties").document(propertyId)
+            val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
+                .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
+            val likedPropertiesRef = db.collection(FirestoreCollections.USERS).document(userId)
+                .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES).document(propertyId)
 
             val isLiked = likedPropertiesRef.get().await().exists()
 
@@ -74,7 +75,7 @@ class FavoritesApi @Inject constructor(
             }.await()
             true
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error toggling like: ${e.message}")
+            Log.e("FavoritesApi", "Error toggling like: ${e.message}")
             false
         }
     }

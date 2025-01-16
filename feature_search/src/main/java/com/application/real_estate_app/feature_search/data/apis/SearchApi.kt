@@ -4,6 +4,7 @@ import android.util.Log
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.feature_search.domain.interfaces.ISearchApi
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -17,7 +18,7 @@ class SearchApi @Inject constructor(
         limit: Int
     ): List<Property> {
         return try {
-            val propertiesSnapshot = db.collection("properties")
+            val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
                 .whereEqualTo("title", query)
                 .limit(limit.toLong())
                 .get()
@@ -25,7 +26,7 @@ class SearchApi @Inject constructor(
 
             propertiesSnapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
         } catch (e: Exception) {
-            Log.e("PropertyRepository", "Error searching properties: ${e.message}")
+            Log.e("SearchApi", "Error searching properties: ${e.message}")
             emptyList()
         }
     }

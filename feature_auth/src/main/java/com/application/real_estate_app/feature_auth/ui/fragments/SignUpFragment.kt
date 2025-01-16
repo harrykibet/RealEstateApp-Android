@@ -1,5 +1,7 @@
 package com.application.real_estate_app.feature_auth.ui.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,11 +37,17 @@ class SignUpFragment : Fragment() {
 
     private var selectedUserType: UserType? = null
 
+    private lateinit var connectivityManager: ConnectivityManager
+
     private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+
+        // Initialize ConnectivityManager
+        connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,7 +65,9 @@ class SignUpFragment : Fragment() {
 
             if (validateInputs(email, password, phoneNumber, userName)) {
                 startPhoneVerification(phoneNumber) {
-                    authViewModel.registerUser(email, password, userName, phoneNumber, selectedUserType!!)
+                    authViewModel.registerUser(email, password, userName, phoneNumber, selectedUserType!!, {exception ->
+                        showToast("Registration failed: ${exception.message}")
+                    }, connectivityManager)
                 }
             }
         }

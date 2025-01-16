@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.core.navigation.deep_links.DeepLinks
 import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
 import com.application.real_estate_app.feature_home.ui.viewModels.HomeViewModel
@@ -151,12 +152,17 @@ class HomeFragment : Fragment() {
 
     // Navigate via deep link
     private fun navigateToComments(propertyId: String, currentUserId: String?) {
-        // Construct the deep link URI
-        val uri = Uri.parse("https://real_estate_app.com/commentFragment/property/$propertyId/user/${currentUserId ?: ""}")
+        // Construct the deep link URI using the constant
+        val uri = Uri.parse(
+            DeepLinks.COMMENT_FRAGMENT
+            .replace("{propertyId}", propertyId)
+            .replace("{userId}", currentUserId ?: "")
+        )
 
         // Use NavController to navigate with the deep link
         findNavController().navigate(uri)
     }
+
 
     private fun shouldLoadMore(): Boolean {
         val layoutManager = binding.featuredPropertiesList.layoutManager as LinearLayoutManager

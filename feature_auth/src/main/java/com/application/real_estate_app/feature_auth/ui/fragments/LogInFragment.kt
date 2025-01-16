@@ -1,6 +1,8 @@
 package com.application.real_estate_app.feature_auth.ui.fragments
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,12 +32,17 @@ class LogInFragment : Fragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private var _binding: FragmentLogInBinding? = null
+    private lateinit var connectivityManager: ConnectivityManager
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        // Initialize ConnectivityManager
+        connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         _binding = FragmentLogInBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -91,7 +98,13 @@ class LogInFragment : Fragment() {
             val email = binding.emailField.text.toString()
             val password = binding.passwordField.text.toString()
             if (email.isNotEmpty() && password.isNotEmpty()){
-                loginUser(email, password)
+                loginUser(email, password, onFailure = {
+                    Toast.makeText(
+                        requireContext(),
+                        "Login failed: ${it.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
             }
             else {
                 // Show a SnackBar for the user to fill all the fields
@@ -139,8 +152,8 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private fun loginUser(email: String, password: String) {
-        authViewModel.loginUser(email, password).addOnCompleteListener { task ->
+    private fun loginUser(email: String, password: String, onFailure: (Exception) -> Unit) {
+        authViewModel.loginUser(email, password, onFailure, connectivityManager)?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                 EventBus.getDefault().post(LoginEvent()) // Trigger the login event
@@ -169,7 +182,13 @@ class LogInFragment : Fragment() {
             if (email.isNotEmpty()) {
                 lifecycleScope.launch {
                     try {
-                        sendPasswordResetEmail(email)
+                        sendPasswordResetEmail(email, onFailure = {
+                            Toast.makeText(
+                                requireContext(),
+                                "Error sending password reset email: ${it.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        })
                         Log.d("PasswordReset", "Password reset email sent!")
                     } catch (e: Exception) {
                         Log.e("PasswordReset", "Error sending password reset email: ${e.message}")
@@ -185,9 +204,9 @@ class LogInFragment : Fragment() {
         dialog.show()
     }
 
-    private suspend fun sendPasswordResetEmail(email: String) {
+    private suspend fun sendPasswordResetEmail(email: String, onFailure: (Exception) -> Unit) {
         if (email.isNotEmpty()) {
-            authViewModel.resetPassword(email)
+            authViewModel.resetPassword(email, onFailure, connectivityManager)
         } else {
             Toast.makeText(
                 requireContext(),
@@ -201,8 +220,13 @@ class LogInFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == authViewModel.requestCode) {
-            authViewModel.handleGoogleSignInResult(data)
+            authViewModel.handleGoogleSignInResult(data, { exception ->
+                // Handle the failure, e.g., log the error or show a message to the user
+                Log.e("AuthError", "Google Sign-In failed: ${exception.message}")
+                Toast.makeText(requireContext(), "Sign-In failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }, connectivityManager)
         }
     }
 

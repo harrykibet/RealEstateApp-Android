@@ -2,6 +2,7 @@ package com.application.real_estate_app.feature_auth.ui.viewModels
 
 import android.app.Activity
 import android.content.Intent
+import android.net.ConnectivityManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -53,8 +54,8 @@ class AuthViewModel @Inject constructor(
     private val _googleSignInResult = MutableLiveData<Result<FirebaseUser?>>()
     val googleSignInResult: LiveData<Result<FirebaseUser?>> = _googleSignInResult
 
-    fun loginUser(email: String, password: String): Task<AuthResult> =
-        authApi.signInWithEmail(email, password)
+    fun loginUser(email: String, password: String, onFailure: (Exception) -> Unit, connectivityManager: ConnectivityManager): Task<AuthResult>? =
+        authApi.signInWithEmail(email, password, onFailure, connectivityManager)
 
     fun isUserLoggedIn(): Boolean = authApi.getCurrentUser() != null
 
@@ -86,9 +87,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun resetPassword(email: String){
+    suspend fun resetPassword(email: String, onFailure: (Exception) -> Unit,  connectivityManager: ConnectivityManager){
         try {
-            authApi.sendPasswordResetEmail(email)
+            authApi.sendPasswordResetEmail(email, onFailure,  connectivityManager)
             _resetPasswordStatus.emit(Result.success(true))
         } catch (e: Exception) {
             _resetPasswordStatus.emit(Result.failure(e))
@@ -112,13 +113,13 @@ class AuthViewModel @Inject constructor(
         activity.startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    fun handleGoogleSignInResult(data: Intent?) {
+    fun handleGoogleSignInResult(data: Intent?, onFailure: (Exception) -> kotlin.Unit, connectivityManager: ConnectivityManager) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
             val account = task.getResult(ApiException::class.java)
             account?.let {
-                authApi.firebaseAuthWithGoogle(it.idToken!!)
-                    .addOnCompleteListener { task ->
+                authApi.firebaseAuthWithGoogle(it.idToken!!, onFailure, connectivityManager)
+                    ?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             _googleSignInResult.value = Result.success(task.result?.user)
                         } else {
@@ -137,13 +138,16 @@ class AuthViewModel @Inject constructor(
         password: String,
         userName: String,
         phoneNumber: String,
-        userType: UserType
+        userType: UserType,
+        onFailure: (Exception) -> Unit,
+        connectivityManager: ConnectivityManager
     ) {
         viewModelScope.launch {
             try {
-                val result: AuthResult = authApi.signUpWithEmail(email, password).await()
+                val result: AuthResult? =
+                    authApi.signUpWithEmail(email, password, onFailure, connectivityManager)?.await()
                 val user = User(
-                    userId = result.user?.uid.orEmpty(),
+                    userId = result?.user?.uid.orEmpty(),
                     name = userName,
                     email = email,
                     phoneNumber = phoneNumber,
@@ -152,7 +156,7 @@ class AuthViewModel @Inject constructor(
                     verified = false,
                     likedProperties = emptyList()
                 )
-                authApi.createUserIfNotExists(user.userId, user)
+                authApi.createUserIfNotExists(user.userId, user, onFailure, connectivityManager)
             } catch (e: Exception) {
                 _phoneVerificationState.value =
                     VerificationState.Error("Sign-up failed: ${e.message}")
