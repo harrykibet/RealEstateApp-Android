@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_property.data.apis
 
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +9,7 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.mappers.toEntityModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 class PropertyApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
-    private val storageRef: FirebaseStorage // Injected via DI
+    private val storageRef: FirebaseStorage, // Injected via DI
+    private val connectivityManager: ConnectivityManager // Injected via DI
 ) : IPropertyApi {
 
     override val uploadStatus = MutableLiveData<Boolean>()
@@ -26,11 +29,13 @@ class PropertyApi @Inject constructor(
     override suspend fun uploadProperty(
         property: Property,
         imageUris: List<Uri>,
-        videoUris: List<Uri>
-    ): Boolean {
+        videoUris: List<Uri>,
+        onFailure: (Exception) -> Unit
+    ): Boolean? {
         val propertyId = db.collection(FirestoreCollections.PROPERTIES).document().id // Always generate a new ID
 
-        return try {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             uploadStatus.value = true // Uploading process started
 
             // 1. **Create the FireStore document first** with an initial state
@@ -40,8 +45,8 @@ class PropertyApi @Inject constructor(
                 .await()
 
             // 2. Upload images and videos, updating their URLs
-            val imageUrls = uploadMedia(propertyId, imageUris, "images")
-            val videoUrls = uploadMedia(propertyId, videoUris, "videos")
+            val imageUrls = uploadMedia(propertyId, imageUris, "images", onFailure)
+            val videoUrls = uploadMedia(propertyId, videoUris, "videos", onFailure)
 
             // 3. Update the FireStore document with media URLs
             val updatedPropertyEntity = property.toEntityModel().copy(
@@ -57,60 +62,71 @@ class PropertyApi @Inject constructor(
             uploadStatus.value = false // Upload finished
             uploadError.value = null
             true
-        } catch (e: Exception) {
-            uploadStatus.value = false
-            uploadError.value = e.message
-            Log.e("PropertyApi", "Failed to upload property: ${e.message}")
-
-            // **Clean up incomplete uploads or FireStore documents if necessary**
-            db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await() // Optional cleanup
-            false
-        }
+        }, onFailure = { exception ->
+            uploadStatus.value = false // Upload failed
+            uploadError.value = exception.message
+            onFailure(exception)
+            Log.e("PropertyApi", "Network error: ${exception.message}")
+        })
     }
 
     private suspend fun uploadMedia(
         propertyId: String,
         uris: List<Uri>,
-        mediaType: String
+        mediaType: String,
+        onFailure: (Exception) -> Unit
     ): List<String> {
-        val urls = mutableListOf<String>()
-        uris.forEachIndexed { index, uri ->
-            val filePath = "${FirestoreCollections.PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
-            val fileRef = storageRef.reference.child(filePath) // Use DI-injected FirebaseStorage
-            val downloadUrl = fileRef.putFile(uri).await().storage.downloadUrl.await().toString()
-            urls.add(downloadUrl)
-        }
-        return urls
+        return safeApiCallSuspend( connectivityManager = connectivityManager,
+            action = {
+            val urls = mutableListOf<String>()
+            uris.forEachIndexed { index, uri ->
+                val filePath = "${FirestoreCollections.PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
+                val fileRef = storageRef.reference.child(filePath) // Use DI-injected FirebaseStorage
+                val downloadUrl = fileRef.putFile(uri).await().storage.downloadUrl.await().toString()
+                urls.add(downloadUrl)
+            }
+            urls
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("PropertyApi", "Network error: ${exception.message}")
+        }) ?: emptyList()
     }
 
-    override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): Boolean {
-        return try {
+    override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean {
+        return safeApiCallSuspend( connectivityManager = connectivityManager,
+            action = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).update(updates).await()
             true
-        } catch (e: Exception) {
-            Log.e("PropertyApi", "Error updating property: ${e.message}")
-            false
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("PropertyApi", "Network error: ${exception.message}")
+        }) ?: false
     }
 
-    override suspend fun deleteProperty(propertyId: String): Boolean {
-        return try {
+    override suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await()
             true
-        } catch (e: Exception) {
-            Log.e("PropertyApi", "Error deleting property: ${e.message}")
-            false
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("PropertyApi", "Network error: ${exception.message}")
+        }) ?: false
     }
 
-    override suspend fun getPropertyById(propertyId: String): Property? {
-        return try {
+    override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
-        } catch (e: Exception) {
-            Log.e("PropertyApi", "Error fetching property by ID: ${e.message}")
-            null
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("PropertyApi", "Network error: ${exception.message}")
+        })
     }
 }

@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_favorites.data.apis
 
+import android.net.ConnectivityManager
 import android.util.Log
 import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
@@ -7,6 +8,7 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
@@ -14,23 +16,26 @@ import java.util.Date
 import javax.inject.Inject
 
 class FavoritesApi @Inject constructor(
-    private val db: FirebaseFirestore // Injected via DI
+    private val db: FirebaseFirestore, // Injected via DI
+    private val connectivityManager: ConnectivityManager // Injected via DI
 ): IFavoritesApi {
 
 
-    override suspend fun getPropertyById(propertyId: String): Property? {
-        return try {
+    override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
-            // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
-        } catch (e: Exception) {
-            Log.e("FavoritesApi", "Error fetching property by ID: ${e.message}")
-            null
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("FavoritesApi", "Network error: ${exception.message}")
+        })
     }
 
-    override suspend fun fetchLikedProperties(userId: String): List<Property> {
-        return try {
+    override suspend fun fetchLikedProperties(userId: String, onFailure: (Exception) -> Unit): List<Property>? {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
                 .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES)
@@ -48,14 +53,16 @@ class FavoritesApi @Inject constructor(
             } else {
                 emptyList()
             }
-        } catch (e: Exception) {
-            Log.e("FavoritesApi", "Error fetching liked properties: ${e.message}")
-            emptyList()
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("FavoritesApi", "Network error: ${exception.message}")
+        })
     }
 
-    override suspend fun toggleLikeProperty(userId: String, propertyId: String): Boolean {
-        return try {
+    override suspend fun toggleLikeProperty(userId: String, propertyId: String, onFailure: (Exception) -> Unit): Boolean {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
                 .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
             val likedPropertiesRef = db.collection(FirestoreCollections.USERS).document(userId)
@@ -68,15 +75,16 @@ class FavoritesApi @Inject constructor(
                     batch.delete(likesRef)
                     batch.delete(likedPropertiesRef)
                 } else {
-                    val likeData = Likes(userId, Date()) // Domain model (Likes)
-                    batch.set(likesRef, LikesEntity.fromDomainModel(likeData)) // Convert to data model
-                    batch.set(likedPropertiesRef, LikesEntity.fromDomainModel(likeData)) // Convert to data model
+                    val likeData = Likes(userId, Date())
+                    batch.set(likesRef, LikesEntity.fromDomainModel(likeData))
+                    batch.set(likedPropertiesRef, LikesEntity.fromDomainModel(likeData))
                 }
             }.await()
             true
-        } catch (e: Exception) {
-            Log.e("FavoritesApi", "Error toggling like: ${e.message}")
-            false
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("FavoritesApi", "Network error: ${exception.message}")
+        }) ?: false
     }
 }

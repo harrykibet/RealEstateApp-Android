@@ -13,15 +13,16 @@ interface IPropertyApi {
     suspend fun uploadProperty(
         property: Property,
         imageUris: List<Uri>,
-        videoUris: List<Uri>
-    ): Boolean
+        videoUris: List<Uri>,
+        onFailure: (Exception) -> Unit
+    ): Boolean?
 
     // Update Property
-    suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): Boolean
+    suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean
 
     // Delete Property
-    suspend fun deleteProperty(propertyId: String): Boolean
+    suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean
 
     // Get Property by Id
-    suspend fun getPropertyById(propertyId: String): Property?
+    suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property?
 }

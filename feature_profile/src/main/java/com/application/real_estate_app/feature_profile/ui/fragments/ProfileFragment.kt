@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.application.real_estate_app.core.events.LogoutEvent
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
@@ -30,7 +31,9 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
         binding.logoutButton.setOnClickListener {
-            authApi.signOut()
+            authApi.signOut{ exception ->
+                Toast.makeText(requireContext(), "Logout failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
             EventBus.getDefault().post(LogoutEvent()) // Trigger the logout event
         }
         return  binding.root

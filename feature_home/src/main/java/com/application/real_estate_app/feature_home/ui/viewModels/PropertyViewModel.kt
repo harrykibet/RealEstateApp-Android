@@ -37,15 +37,17 @@ class PropertyViewModel @Inject constructor(
     val likedProperties: LiveData<List<Property>> get() = _likedProperties
 
     init {
-        loadLikedProperties()
+        loadLikedProperties{ exception ->
+            Log.e("PropertyViewModel", "Error initializing loading of liked properties", exception)
+        }
     }
 
     // Load liked properties for the current user
-    fun loadLikedProperties() {
+    private fun loadLikedProperties(onFailure: (Exception) -> Unit) {
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
-                    val likedProperties = api.fetchLikedProperties(currentUserId)
+                    val likedProperties = api.fetchLikedProperties(currentUserId, onFailure)
                     _likedProperties.postValue(likedProperties)
                 } catch (e: Exception) {
                     Log.e("PropertyViewModel", "Error loading liked properties", e)
@@ -55,17 +57,17 @@ class PropertyViewModel @Inject constructor(
     }
 
     // Toggle like/unlike status for a property
-    fun toggleLikeProperty(propertyId: String) {
+    fun toggleLikeProperty(propertyId: String, onFailure: (Exception) -> Unit) {
         var isLiked = false  //Default value
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
                     isLiked = _likedProperties.value?.any { it.id == propertyId } ?: false
-                    val success = api.toggleLikeProperty(currentUserId, propertyId)
+                    val success = api.toggleLikeProperty(currentUserId, propertyId, onFailure)
 
                     if (success) {
                         _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_SUCCESS else LikeStatus.LIKE_SUCCESS
-                        loadLikedProperties() // Refresh the liked properties list
+                        loadLikedProperties(onFailure) // Refresh the liked properties list
                     } else {
                         _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
                     }
@@ -78,10 +80,10 @@ class PropertyViewModel @Inject constructor(
     }
 
     // Fetch a single property by its ID
-    fun fetchPropertyById(propertyId: String) {
+    fun fetchPropertyById(propertyId: String, onFailure: (Exception) -> Unit) {
         viewModelScope.launch {
             try {
-                val property = api.getPropertyById(propertyId)
+                val property = api.getPropertyById(propertyId, onFailure)
                 if (property != null) {
                     _propertyLiveData.value = property
                 } else {

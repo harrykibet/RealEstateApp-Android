@@ -21,7 +21,7 @@ class AuthApiCore @Inject constructor(
         return api.getCurrentUserEmail()
     }
 
-    override fun signOut() {
-        api.signOut()
+    override fun signOut(onFailure: (Exception) -> Unit) {
+        api.signOut(onFailure)
     }
 }

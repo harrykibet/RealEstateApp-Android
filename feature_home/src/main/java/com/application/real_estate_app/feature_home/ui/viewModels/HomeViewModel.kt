@@ -28,14 +28,14 @@ class HomeViewModel @Inject constructor(
     private var canLoadMore = true
 
     // Fetch properties with api in a coroutine
-    fun fetchProperties(isFirstLoad: Boolean, pageSize: Int) {
+    fun fetchProperties(isFirstLoad: Boolean, pageSize: Int, onFailure: (Exception) -> Unit) {
         if (!canLoadMore || isLoadingMutable.value == true) return // Prevent redundant fetches
 
         isLoadingMutable.value = true
 
         viewModelScope.launch {
             try {
-                val result = api.fetchPropertiesPaginated(lastVisibleDocument, pageSize)
+                val result = api.fetchPropertiesPaginated(lastVisibleDocument, pageSize, onFailure)
                 val newProperties = result.first
                 val lastVisible = result.second
 

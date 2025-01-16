@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_comments.ui.viewmodels
 
+
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -9,13 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Comment
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val repository: ICommentsApi
+    private val api: ICommentsApi
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<Comment?>>()
@@ -28,37 +29,54 @@ class CommentsViewModel @Inject constructor(
     val noCommentsPlaceholderVisibility: LiveData<Int> get() = _noCommentsPlaceholderVisibility
 
     // Start listening for comments on a specific property
-    fun startListeningForComments(propertyId: String) {
+    fun startListeningForComments(
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ) {
         viewModelScope.launch {
-            try {
-                repository.listenForComments(propertyId, onError = { exception ->
-                    Log.e("PropertyViewModel", "Error listening for comments", exception)
-                }).catch { exception ->
-                    Log.e("PropertyViewModel", "Error listening for comments", exception)
-                }.collect { commentsList ->
-                    _comments.postValue(commentsList)
-                    _noCommentsPlaceholderVisibility.value = if (commentsList.isEmpty()) View.VISIBLE else View.GONE
+            api.listenForComments(
+                propertyId,
+                onFailure = { exception ->
+                    Log.e("CommentsViewModel", "Error listening for comments", exception)
+                    onFailure(exception)
                 }
-            } catch (e: Exception) {
-                Log.e("PropertyViewModel", "Error listening for comments", e)
+            ).catch { exception ->
+                Log.e("CommentsViewModel", "Error in flow listening for comments", exception)
+                onFailure(exception as Exception)
+            }.collect { commentsList ->
+                _comments.postValue(commentsList)
+                _noCommentsPlaceholderVisibility.value =
+                    if (commentsList.isEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
 
     // Submit a comment for a property
-    fun submitComment(propertyId: String, comment: Comment) {
+    fun submitComment(
+        propertyId: String,
+        comment: Comment,
+        onFailure: (Exception) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val success = repository.submitComment(propertyId, comment)
-                _commentSubmitStatus.value = success
-                if (success) {
-                    Log.d("PropertyViewModel", "Comment submitted successfully")
+                val success = api.submitComment(
+                    propertyId,
+                    comment,
+                    onFailure = { exception ->
+                        Log.e("CommentsViewModel", "Error submitting comment", exception)
+                        onFailure(exception)
+                    }
+                )
+                _commentSubmitStatus.value = success ?: false
+                if (success == true) {
+                    Log.d("CommentsViewModel", "Comment submitted successfully")
                 } else {
-                    Log.e("PropertyViewModel", "Failed to submit comment")
+                    Log.e("CommentsViewModel", "Failed to submit comment")
                 }
             } catch (e: Exception) {
                 _commentSubmitStatus.value = false
-                Log.e("PropertyViewModel", "Error submitting comment", e)
+                Log.e("CommentsViewModel", "Error submitting comment", e)
+                onFailure(e)
             }
         }
     }

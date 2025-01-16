@@ -1,5 +1,7 @@
 package com.application.real_estate_app.feature_comments.ui.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -52,7 +54,9 @@ class CommentFragment : BottomSheetDialogFragment() {
         }
 
         // Start listening for comments
-        commentsViewModel.startListeningForComments(propertyId)
+        commentsViewModel.startListeningForComments(propertyId) { exception ->
+            Toast.makeText(requireContext(), "Comments Listening Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+        }
 
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             if (isAdded) {
@@ -92,7 +96,9 @@ class CommentFragment : BottomSheetDialogFragment() {
                     timeStamp = Date()
                 )
 
-                commentsViewModel.submitComment(propertyId, comment)
+                commentsViewModel.submitComment(propertyId, comment) { exception ->
+                    Toast.makeText(requireContext(), "Send Comment Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

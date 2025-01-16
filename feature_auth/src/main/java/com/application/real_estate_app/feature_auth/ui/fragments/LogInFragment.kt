@@ -32,17 +32,12 @@ class LogInFragment : Fragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private var _binding: FragmentLogInBinding? = null
-    private lateinit var connectivityManager: ConnectivityManager
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        // Initialize ConnectivityManager
-        connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
         _binding = FragmentLogInBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -153,7 +148,7 @@ class LogInFragment : Fragment() {
     }
 
     private fun loginUser(email: String, password: String, onFailure: (Exception) -> Unit) {
-        authViewModel.loginUser(email, password, onFailure, connectivityManager)?.addOnCompleteListener { task ->
+        authViewModel.loginUser(email, password, onFailure)?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                 EventBus.getDefault().post(LoginEvent()) // Trigger the login event
@@ -206,7 +201,7 @@ class LogInFragment : Fragment() {
 
     private suspend fun sendPasswordResetEmail(email: String, onFailure: (Exception) -> Unit) {
         if (email.isNotEmpty()) {
-            authViewModel.resetPassword(email, onFailure, connectivityManager)
+            authViewModel.resetPassword(email, onFailure)
         } else {
             Toast.makeText(
                 requireContext(),
@@ -222,11 +217,15 @@ class LogInFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == authViewModel.requestCode) {
-            authViewModel.handleGoogleSignInResult(data, { exception ->
+            authViewModel.handleGoogleSignInResult(data) { exception ->
                 // Handle the failure, e.g., log the error or show a message to the user
                 Log.e("AuthError", "Google Sign-In failed: ${exception.message}")
-                Toast.makeText(requireContext(), "Sign-In failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }, connectivityManager)
+                Toast.makeText(
+                    requireContext(),
+                    "Sign-In failed: ${exception.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

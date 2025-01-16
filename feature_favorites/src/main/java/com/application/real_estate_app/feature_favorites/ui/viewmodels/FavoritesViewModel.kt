@@ -22,13 +22,13 @@ enum class LikeStatus {
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val api: IFavoritesApi,
-    private val authApi: IAuthApiCore
+    authApi: IAuthApiCore
 ) : ViewModel() {
 
     private  val currentUserId: String? = authApi.getCurrentUserId()
 
-    private val _likedProperties = MutableLiveData<List<Property>>()
-    val likedProperties: LiveData<List<Property>> get() = _likedProperties
+    private val _likedProperties = MutableLiveData<List<Property>?>()
+    val likedProperties: LiveData<List<Property>?> get() = _likedProperties
 
     private val _likedStatus = MutableLiveData<LikeStatus>()
     val likedStatus: LiveData<LikeStatus> get() = _likedStatus
@@ -37,11 +37,11 @@ class FavoritesViewModel @Inject constructor(
     val propertyLiveData: LiveData<Property?> get() = _propertyLiveData
 
     // Load liked properties for the current user
-    fun loadLikedProperties() {
+    fun loadLikedProperties(onFailure: (Exception) -> Unit) {
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
-                    val likedProperties = api.fetchLikedProperties(currentUserId)
+                    val likedProperties = api.fetchLikedProperties(currentUserId, onFailure)
                     _likedProperties.postValue(likedProperties)
                 } catch (e: Exception) {
                     Log.e("PropertyViewModel", "Error loading liked properties", e)
@@ -51,17 +51,17 @@ class FavoritesViewModel @Inject constructor(
     }
 
     // Toggle like/unlike status for a property
-    fun toggleLikeProperty(propertyId: String) {
+    fun toggleLikeProperty(propertyId: String, onFailure: (Exception) -> Unit) {
         var isLiked = false  //Default value
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
                     isLiked = _likedProperties.value?.any { it.id == propertyId } ?: false
-                    val success = api.toggleLikeProperty(currentUserId, propertyId)
+                    val success = api.toggleLikeProperty(currentUserId, propertyId, onFailure)
 
                     if (success) {
                         _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_SUCCESS else LikeStatus.LIKE_SUCCESS
-                        loadLikedProperties() // Refresh the liked properties list
+                        loadLikedProperties(onFailure) // Refresh the liked properties list
                     } else {
                         _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
                     }
@@ -74,10 +74,10 @@ class FavoritesViewModel @Inject constructor(
     }
 
     // Fetch a single property by its ID
-    fun fetchPropertyById(propertyId: String) {
+    fun fetchPropertyById(propertyId: String, onFailure: (Exception) -> Unit) {
         viewModelScope.launch {
             try {
-                val property = api.getPropertyById(propertyId)
+                val property = api.getPropertyById(propertyId, onFailure)
                 if (property != null) {
                     _propertyLiveData.value = property
                 } else {

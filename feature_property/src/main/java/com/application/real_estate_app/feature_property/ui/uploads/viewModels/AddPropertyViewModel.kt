@@ -334,7 +334,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     // Upload property
-    fun saveProperty() {
+    fun saveProperty(onFailure: (Exception) -> Unit) {
         if (userId.isNullOrEmpty()) return
 
         val state = _uiState.value
@@ -373,7 +373,8 @@ class AddPropertyViewModel @Inject constructor(
             api.uploadProperty(
                 property,
                 state.selectedImageUris,
-                state.selectedVideoUris
+                state.selectedVideoUris,
+                onFailure
             )
         }
     }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
@@ -29,10 +30,10 @@ class FavoritesFragment : Fragment() {
     private lateinit var favoritesAdapter: FavoritesAdapter
 
     @Inject
-    lateinit var authChecker: IAuthApiCore // Inject AuthService
+    lateinit var authChecker: IAuthApiCore // Inject Authentication API
 
     @Inject
-    lateinit var exoPlayerManager: ExoPlayerManager
+    lateinit var exoPlayerManager: ExoPlayerManager  // Inject ExoPlayer Media Player
 
     private val favoritesViewModel: FavoritesViewModel by viewModels()
 
@@ -52,7 +53,9 @@ class FavoritesFragment : Fragment() {
         setupObservers()
 
         if (savedInstanceState == null) {
-            favoritesViewModel.loadLikedProperties() // Initial load of liked properties
+            favoritesViewModel.loadLikedProperties { exception ->
+                Toast.makeText(requireContext(), "Error loading liked properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+            } // Initial load of liked properties
         }
     }
 
@@ -60,7 +63,10 @@ class FavoritesFragment : Fragment() {
         val currentUserId = authChecker.getCurrentUserId()
         favoritesAdapter = FavoritesAdapter(
             viewModel = favoritesViewModel,
-            onClick = { propertyId -> favoritesViewModel.fetchPropertyById(propertyId) },
+            onClick = { propertyId -> favoritesViewModel.fetchPropertyById(propertyId)
+            { exception ->
+                Toast.makeText(requireContext(), "Error fetching property: ${exception.message}", Toast.LENGTH_SHORT).show()
+            } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             context = requireContext(),
             exoPlayer = exoPlayerManager
@@ -75,7 +81,9 @@ class FavoritesFragment : Fragment() {
 
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            favoritesViewModel.loadLikedProperties()
+            favoritesViewModel.loadLikedProperties{ exception ->
+                Toast.makeText(requireContext(), "Error loading liked properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -85,8 +93,8 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun updateUI(properties: List<Property>) {
-        if (properties.isEmpty()) {
+    private fun updateUI(properties: List<Property>?) {
+        if (properties!!.isEmpty()) {
             binding.emptyStateTextView.visibility = View.VISIBLE
         } else {
             binding.emptyStateTextView.visibility = View.GONE

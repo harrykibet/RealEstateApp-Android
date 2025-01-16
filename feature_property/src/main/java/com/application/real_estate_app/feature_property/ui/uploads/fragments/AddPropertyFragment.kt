@@ -427,7 +427,9 @@ class AddPropertyFragment : Fragment() {
             if (isFormValid()) {
                 showProgressBar()
                 // Proceed with saving the property if all fields are valid
-                viewModel.saveProperty()
+                viewModel.saveProperty { exception ->
+                    Toast.makeText(requireContext(), "Error saving property: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 // If the form is invalid, show appropriate error messages
                 showValidationErrors()

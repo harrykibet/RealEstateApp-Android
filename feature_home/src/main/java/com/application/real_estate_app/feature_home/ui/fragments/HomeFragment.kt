@@ -56,14 +56,15 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navController = findNavController() // Initialize NavController
-
         val currentUserId = authApi.getCurrentUserId()
 
         // Initialize  PropertyAdapter
         propertyAdapter = PropertyAdapter(
             viewModel = propertyViewModel,
-            onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId)}, // fetch detailed property data
+            onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId)  // fetch detailed property data
+            { exception ->
+                Toast.makeText(requireContext(), "Error fetching property: ${exception.message}", Toast.LENGTH_SHORT).show()
+            } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             exoPlayer = exoPlayerManager,
             context = requireContext())
@@ -83,7 +84,9 @@ class HomeFragment : Fragment() {
             // Avoid repeated refreshes
             if (!binding.swipeRefreshLayout.isRefreshing) {
                 binding.swipeRefreshLayout.isRefreshing = true
-                homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize)
+                homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize) { exception ->
+                    Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -112,7 +115,9 @@ class HomeFragment : Fragment() {
 
         // Load properties (initial load)
         if (savedInstanceState == null) {
-            homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize)
+            homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize) { exception ->
+                Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Set up scroll listener for pagination
@@ -144,6 +149,8 @@ class HomeFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (shouldLoadMore()) {
                     homeViewModel.fetchProperties(isFirstLoad = false, pageSize = pageSize)
+                    { exception ->
+                        Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()}
                 }
             }
         })

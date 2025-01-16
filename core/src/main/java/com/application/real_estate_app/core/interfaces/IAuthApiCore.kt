@@ -4,5 +4,5 @@ interface IAuthApiCore {
     fun isUserAuthenticated(): Boolean
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
-    fun signOut()
+    fun signOut(onFailure: (Exception) -> Unit)
 }

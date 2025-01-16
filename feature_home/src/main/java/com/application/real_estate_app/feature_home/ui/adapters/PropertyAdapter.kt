@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
+import androidx.media3.common.util.Log
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -196,7 +197,9 @@ class PropertyAdapter (
             binding.likeButton.setOnClickListener {
                 val propertyId = property?.id ?: return@setOnClickListener
                 // Toggle like status
-                viewModel.toggleLikeProperty(propertyId)
+                viewModel.toggleLikeProperty(propertyId){ exception ->
+                    Log.e("PropertyViewHolder", "Error toggling like property", exception)
+                }
             }
 
             binding.commentButton.setOnClickListener {

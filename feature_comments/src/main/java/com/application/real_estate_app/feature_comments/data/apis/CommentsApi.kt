@@ -18,18 +18,21 @@ import javax.inject.Inject
 
 class CommentsApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
+    private val connectivityManager: ConnectivityManager // Injected via DI
 ) : ICommentsApi {
 
     override fun listenForComments(
         propertyId: String,
-        onFailure: (Exception) -> Unit,
-        connectivityManager: ConnectivityManager
+        onFailure: (Exception) -> Unit
     ): Flow<List<Comment?>> {
         return callbackFlow {
             // Using safeApiCallSuspend to check for internet connectivity
-            val networkStatus = NetworkHandler.safeApiCallSuspend(connectivityManager, {
+            val networkStatus = NetworkHandler.safeApiCallSuspend(connectivityManager =
+            connectivityManager,
+                action = {
                 true // No need for any action, just check the network status
-            }, { exception ->
+            },
+                onFailure = { exception ->
                 onFailure(exception) // Provide error callback if network check fails
                 close(exception) // Close flow on error
             })
@@ -43,7 +46,8 @@ class CommentsApi @Inject constructor(
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) {
                             val errorMessage = "Error fetching comments: ${error.localizedMessage}"
-                            onFailure(Exception(errorMessage)) // Provide more context to onFailure
+                            onFailure(error) // Provide more context to onFailure
+                            Log.e("CommentsApi", errorMessage)
                             close(error) // Close the flow in case of error
                         } else {
                             val comments = snapshot?.documents
@@ -68,10 +72,10 @@ class CommentsApi @Inject constructor(
     override suspend fun submitComment(
         propertyId: String,
         comment: Comment,
-        connectivityManager: ConnectivityManager,
         onFailure: (Exception) -> Unit
     ): Boolean? {
-        return NetworkHandler.safeApiCallSuspend(connectivityManager, {
+        return NetworkHandler.safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             try {
                 val commentsRef = db.collection(FirestoreCollections.PROPERTIES)
                     .document(propertyId)
@@ -83,12 +87,13 @@ class CommentsApi @Inject constructor(
                 true // Return true if the comment was successfully submitted
             } catch (e: Exception) {
                 val errorMessage = "Error submitting comment: ${e.message}"
-                onFailure(Exception(errorMessage)) // Pass detailed error context to the callback
+                onFailure(e) // Pass detailed error context to the callback
                 Log.e("CommentsApi", errorMessage)
                 false // Return false if an error occurred during submission
             }
-        }, { exception ->
-            onFailure(Exception(exception.message))
+        },
+            onFailure = { exception ->
+            onFailure(exception)
             exception.message?.let { Log.e("CommentsApi", "Network error:$it") }
         })
     }

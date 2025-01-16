@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_home.data.apis
 
+import android.net.ConnectivityManager
 import android.util.Log
 import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
@@ -7,38 +8,40 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
 
 class HomeApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
-    private val storageRef: FirebaseStorage // Injected via DI
+    private val connectivityManager: ConnectivityManager // Injected via DI
 ): IHomeApi {
 
-    override suspend fun getPropertyById(propertyId: String): Property? {
-        return try {
+    override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
-            // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
-        } catch (e: Exception) {
-            Log.e("HomeApi", "Error fetching property by ID: ${e.message}")
-            null
-        }
+        },
+            onFailure ={ exception ->
+            onFailure(exception)
+            Log.e("HomeApi", "Network error: ${exception.message}")
+        })
     }
 
     // Updated implementation of fetchPropertiesPaginated
     override suspend fun fetchPropertiesPaginated(
         lastVisible: String?,  // Use String instead of DocumentSnapshot
-        pageSize: Int
+        pageSize: Int,
+        onFailure: (Exception) -> Unit
     ): Pair<List<Property>, String?> {
-        return try {
-            // Build the FireStore query
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val query = if (lastVisible == null) {
                 db.collection(FirestoreCollections.PROPERTIES)
                     .orderBy("createdAt", Query.Direction.DESCENDING)
@@ -50,26 +53,23 @@ class HomeApi @Inject constructor(
                     .limit(pageSize.toLong())
             }
 
-            // Execute the query and fetch the results
             val snapshot = query.get().await()
 
-            // Convert the data models (PropertyEntity) to domain models (Property)
             val properties = snapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
 
-            // Get the last document ID to fetch the next set of properties
             val newLastVisible = snapshot.documents.lastOrNull()?.id
 
-            // Return the properties and the last document ID
             Pair(properties, newLastVisible)
-        } catch (e: Exception) {
-            Log.e("HomeApi", "Error fetching paginated properties: ${e.message}")
-            // Return an empty list and null for the last visible document in case of error
-            Pair(emptyList(), null)
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("HomeApi", "Network error: ${exception.message}")
+        }) ?: Pair(emptyList(), null)
     }
 
-    override suspend fun toggleLikeProperty(userId: String, propertyId: String): Boolean {
-        return try {
+    override suspend fun toggleLikeProperty(userId: String, propertyId: String, onFailure: (Exception) -> Unit): Boolean {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
                 .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
             val likedPropertiesRef = db.collection(FirestoreCollections.USERS).document(userId)
@@ -88,14 +88,16 @@ class HomeApi @Inject constructor(
                 }
             }.await()
             true
-        } catch (e: Exception) {
-            Log.e("HomeApi", "Error toggling like: ${e.message}")
-            false
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("HomeApi", "Network error: ${exception.message}")
+        }) ?: false
     }
 
-    override suspend fun fetchLikedProperties(userId: String): List<Property> {
-        return try {
+    override suspend fun fetchLikedProperties(userId: String, onFailure: (Exception) -> Unit): List<Property> {
+        return safeApiCallSuspend(connectivityManager = connectivityManager,
+            action = {
             val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
                 .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES)
@@ -113,9 +115,10 @@ class HomeApi @Inject constructor(
             } else {
                 emptyList()
             }
-        } catch (e: Exception) {
-            Log.e("HomeApi", "Error fetching liked properties: ${e.message}")
-            emptyList()
-        }
+        },
+            onFailure = { exception ->
+            onFailure(exception)
+            Log.e("HomeApi", "Network error: ${exception.message}")
+        }) ?: emptyList()
     }
 }

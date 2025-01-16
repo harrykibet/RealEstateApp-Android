@@ -8,14 +8,12 @@ interface ICommentsApi {
 
     fun listenForComments(
         propertyId: String,
-        onFailure: (Exception) -> Unit,
-        connectivityManager: ConnectivityManager
+        onFailure: (Exception) -> Unit
     ): Flow<List<Comment?>>
 
     suspend fun submitComment(
         propertyId: String,
         comment: Comment,
-        connectivityManager: ConnectivityManager,
         onFailure: (Exception) -> Unit
     ): Boolean?
 }
