@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class PropertyViewModel @Inject constructor(
 
     init {
         loadLikedProperties{ exception ->
-            Log.e("PropertyViewModel", "Error initializing loading of liked properties", exception)
+            log("Error initializing loading of liked properties: ${exception.message}")
         }
     }
 
@@ -50,7 +51,7 @@ class PropertyViewModel @Inject constructor(
                     val likedProperties = api.fetchLikedProperties(currentUserId, onFailure)
                     _likedProperties.postValue(likedProperties)
                 } catch (e: Exception) {
-                    Log.e("PropertyViewModel", "Error loading liked properties", e)
+                    log("Error loading liked properties: ${e.message}")
                 }
             }
         }
@@ -73,7 +74,7 @@ class PropertyViewModel @Inject constructor(
                     }
                 } catch (e: Exception) {
                     _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
-                    Log.e("PropertyViewModel", "Error toggling like property", e)
+                    log("Error toggling like property: ${e.message}")
                 }
             }
         }
@@ -87,11 +88,15 @@ class PropertyViewModel @Inject constructor(
                 if (property != null) {
                     _propertyLiveData.value = property
                 } else {
-                    Log.e("PropertyViewModel", "Property not found")
+                    log("Property not found")
                 }
             } catch (e: Exception) {
-                Log.e("PropertyViewModel", "Failed to fetch property", e)
+                log("Failed to fetch property: ${e.message}")
             }
         }
+    }
+
+    private fun log(message: String) {
+        Logger.error("PropertyViewModel: $message")
     }
 }

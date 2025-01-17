@@ -1,13 +1,13 @@
 package com.application.real_estate_app.feature_comments.ui.viewmodels
 
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Comment
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -37,11 +37,11 @@ class CommentsViewModel @Inject constructor(
             api.listenForComments(
                 propertyId,
                 onFailure = { exception ->
-                    Log.e("CommentsViewModel", "Error listening for comments", exception)
+                    log("Error listening for comments: ${exception.message}")
                     onFailure(exception)
                 }
             ).catch { exception ->
-                Log.e("CommentsViewModel", "Error in flow listening for comments", exception)
+                log("Error in flow listening for comments: ${exception.message}")
                 onFailure(exception as Exception)
             }.collect { commentsList ->
                 _comments.postValue(commentsList)
@@ -63,21 +63,25 @@ class CommentsViewModel @Inject constructor(
                     propertyId,
                     comment,
                     onFailure = { exception ->
-                        Log.e("CommentsViewModel", "Error submitting comment", exception)
+                        log("Error submitting comment: ${exception.message}")
                         onFailure(exception)
                     }
                 )
                 _commentSubmitStatus.value = success ?: false
                 if (success == true) {
-                    Log.d("CommentsViewModel", "Comment submitted successfully")
+                    Logger.debug("CommentsViewModel: Comment submitted successfully")
                 } else {
-                    Log.e("CommentsViewModel", "Failed to submit comment")
+                    log("Failed to submit comment")
                 }
             } catch (e: Exception) {
                 _commentSubmitStatus.value = false
-                Log.e("CommentsViewModel", "Error submitting comment", e)
+                log("Error submitting comment: ${e.message}")
                 onFailure(e)
             }
         }
+    }
+
+    private fun log(message: String?) {
+        Logger.error("CommentsViewModel: $message")
     }
 }

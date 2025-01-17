@@ -8,6 +8,8 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.errors.ErrorMessages
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import com.google.firebase.firestore.*
@@ -23,19 +25,19 @@ class FavoritesApi @Inject constructor(
 
     override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("FavoritesApi", "Network error: ${exception.message}")
+            log(exception.message)
         })
     }
 
     override suspend fun fetchLikedProperties(userId: String, onFailure: (Exception) -> Unit): List<Property>? {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
                 .collection(FirestoreCollections.SubCollections.LIKED_PROPERTIES)
@@ -56,13 +58,13 @@ class FavoritesApi @Inject constructor(
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("FavoritesApi", "Network error: ${exception.message}")
+            log(exception.message)
         })
     }
 
     override suspend fun toggleLikeProperty(userId: String, propertyId: String, onFailure: (Exception) -> Unit): Boolean {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
                 .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
             val likedPropertiesRef = db.collection(FirestoreCollections.USERS).document(userId)
@@ -84,7 +86,11 @@ class FavoritesApi @Inject constructor(
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("FavoritesApi", "Network error: ${exception.message}")
+            log(exception.message)
         }) ?: false
+    }
+
+    private fun log(message: String?) {
+        Logger.error("${ErrorMessages.FAVORITES_API} : $message")
     }
 }

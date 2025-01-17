@@ -22,7 +22,7 @@ object NetworkHandler {
      * @param connectivityManager The ConnectivityManager instance used to check network status and register callbacks.
      * @param maxRetries The maximum number of retry attempts.
      * @param retryDelayMs Delay between retries in milliseconds.
-     * @param action The suspending network call to execute.
+     * @param apiCall The suspending network call to execute.
      * @param onFailure Callback function to handle failure (exception).
      * @return The result of the network call or null if an error occurs or retries exhausted.
      */
@@ -30,7 +30,7 @@ object NetworkHandler {
         connectivityManager: ConnectivityManager,
         maxRetries: Int = 3,
         retryDelayMs: Long = 3000,
-        crossinline action: suspend () -> T,
+        crossinline apiCall: suspend () -> T,
         crossinline onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return withContext(Dispatchers.IO) {
@@ -59,7 +59,7 @@ object NetworkHandler {
                             while (attempt < maxRetries) {
                                 attempt++
                                 try {
-                                    result = action() // Execute the network action
+                                    result = apiCall() // Execute the network apiCall
                                     break // Success, exit the loop
                                 } catch (e: Exception) {
                                     Log.e("NetworkHandler", "Retry $attempt failed: ${e.message}")
@@ -103,18 +103,18 @@ object NetworkHandler {
      * handling exceptions, and invoking a failure callback on error.
      *
      * @param connectivityManager The connectivity manager used to check network status.
-     * @param action The network call to execute.
+     * @param apiCall The network call to execute.
      * @param onFailure Callback function to handle failure (exception).
      * @return The result of the network call or null if an error occurs.
      */
     inline fun <T> safeApiCall(
         connectivityManager: ConnectivityManager,
-        action: () -> T,
+        apiCall: () -> T,
         onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return try {
             when (val status = NetworkStatus.getNetworkStatus(connectivityManager)) {
-                is NetworkStatus.NetworkStatusResult.Connected -> action() // Proceed if connected
+                is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                 is NetworkStatus.NetworkStatusResult.PoorConnection -> {
                     Log.w("NetworkHandler", ErrorMessages.POOR_CONNECTION)
                     onFailure(Exception(ErrorMessages.POOR_CONNECTION))
@@ -137,19 +137,19 @@ object NetworkHandler {
      * A suspend version of safeApiCall for use with coroutines, with failure callback.
      *
      * @param connectivityManager The connectivity manager used to check network status.
-     * @param action The suspend network call to execute.
+     * @param apiCall The suspend network call to execute.
      * @param onFailure Callback function to handle failure (exception).
      * @return The result of the network call or null if an error occurs.
      */
     suspend inline fun <T> safeApiCallSuspend(
         connectivityManager: ConnectivityManager,
-        crossinline action: suspend () -> T,
+        crossinline apiCall: suspend () -> T,
         crossinline onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return withContext(Dispatchers.IO) {
             try {
                 when (val status = NetworkStatus.getNetworkStatus(connectivityManager)) {
-                    is NetworkStatus.NetworkStatusResult.Connected -> action() // Proceed if connected
+                    is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                     is NetworkStatus.NetworkStatusResult.PoorConnection -> {
                         Log.w("NetworkHandler", ErrorMessages.POOR_CONNECTION)
                         onFailure(Exception(ErrorMessages.POOR_CONNECTION))

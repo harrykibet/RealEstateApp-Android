@@ -18,6 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.application.real_estate_app.core.events.LoginEvent
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.feature_auth.databinding.FragmentLogInBinding
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
@@ -184,9 +185,9 @@ class LogInFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         })
-                        Log.d("PasswordReset", "Password reset email sent!")
+                        Logger.debug("PasswordReset: Password reset email sent!")
                     } catch (e: Exception) {
-                        Log.e("PasswordReset", "Error sending password reset email: ${e.message}")
+                        Logger.error("PasswordReset: Error sending password reset email: ${e.message}")
                     }
                 }
                 dialog.dismiss()
@@ -219,7 +220,7 @@ class LogInFragment : Fragment() {
         if (requestCode == authViewModel.requestCode) {
             authViewModel.handleGoogleSignInResult(data) { exception ->
                 // Handle the failure, e.g., log the error or show a message to the user
-                Log.e("AuthError", "Google Sign-In failed: ${exception.message}")
+                Logger.error("AuthError: Google Sign-In failed: ${exception.message}")
                 Toast.makeText(
                     requireContext(),
                     "Sign-In failed: ${exception.message}",

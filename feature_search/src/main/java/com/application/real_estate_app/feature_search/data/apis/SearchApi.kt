@@ -6,6 +6,8 @@ import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntit
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.errors.ErrorMessages
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_search.domain.interfaces.ISearchApi
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,7 +26,7 @@ class SearchApi @Inject constructor(
     ): List<Property> {
         return safeApiCallSuspend(
             connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
                 val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
                     .whereEqualTo("title", query)
                     .limit(limit.toLong())
@@ -34,9 +36,13 @@ class SearchApi @Inject constructor(
                 propertiesSnapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
             },
             onFailure = { e ->
-                Log.e("SearchApi", "Error searching properties: ${e.message}")
+                log(e.message)
                 onFailure(e)
             }
         ) ?: emptyList()
+    }
+
+    private fun log(message: String?) {
+        Logger.error("${ErrorMessages.SEARCH_API} : $message")
     }
 }

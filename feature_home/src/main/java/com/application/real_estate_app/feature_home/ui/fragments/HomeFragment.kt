@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.navigation.deep_links.DeepLinks
 import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
@@ -136,7 +137,7 @@ class HomeFragment : Fragment() {
                 LikeStatus.UNLIKE_SUCCESS -> Log.d("PropertyLike", "Property unliked successfully!")
                 LikeStatus.LIKE_ERROR -> Log.e("PropertyLike", "Error liking property.")
                 LikeStatus.UNLIKE_ERROR -> Log.e("PropertyLike", "Error unliking property.")
-                else -> Log.w("PropertyLike", "Unknown like status.")
+                else -> Logger.warn("PropertyLike: Unknown like status.")
             }
         }
     }

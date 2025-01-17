@@ -9,6 +9,8 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.mappers.toEntityModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.errors.ErrorMessages
+import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,7 +37,7 @@ class PropertyApi @Inject constructor(
         val propertyId = db.collection(FirestoreCollections.PROPERTIES).document().id // Always generate a new ID
 
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             uploadStatus.value = true // Uploading process started
 
             // 1. **Create the FireStore document first** with an initial state
@@ -66,7 +68,7 @@ class PropertyApi @Inject constructor(
             uploadStatus.value = false // Upload failed
             uploadError.value = exception.message
             onFailure(exception)
-            Log.e("PropertyApi", "Network error: ${exception.message}")
+                log(exception.message)
         })
     }
 
@@ -77,7 +79,7 @@ class PropertyApi @Inject constructor(
         onFailure: (Exception) -> Unit
     ): List<String> {
         return safeApiCallSuspend( connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             val urls = mutableListOf<String>()
             uris.forEachIndexed { index, uri ->
                 val filePath = "${FirestoreCollections.PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
@@ -89,44 +91,48 @@ class PropertyApi @Inject constructor(
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("PropertyApi", "Network error: ${exception.message}")
+                log(exception.message)
         }) ?: emptyList()
     }
 
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean {
         return safeApiCallSuspend( connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).update(updates).await()
             true
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("PropertyApi", "Network error: ${exception.message}")
+                log(exception.message)
         }) ?: false
     }
 
     override suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await()
             true
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("PropertyApi", "Network error: ${exception.message}")
+                log(exception.message)
         }) ?: false
     }
 
     override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
-            action = {
+            apiCall = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
         },
             onFailure = { exception ->
             onFailure(exception)
-            Log.e("PropertyApi", "Network error: ${exception.message}")
+                log(exception.message)
         })
+    }
+
+    private fun log(message: String?) {
+        Logger.error("${ErrorMessages.PROPERTY_API}: $message")
     }
 }

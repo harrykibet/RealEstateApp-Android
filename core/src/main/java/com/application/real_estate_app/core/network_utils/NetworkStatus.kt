@@ -46,7 +46,7 @@ object NetworkStatus {
         val linkUpstreamBandwidthKbps = networkCapabilities?.linkUpstreamBandwidthKbps ?: 0
 
         // Threshold for poor connection in Kbps (adjustable)
-        val poorConnectionThresholdKbps = 50
+        val poorConnectionThresholdKbps = 50 // 50 kilobits per second
         return linkDownstreamBandwidthKbps < poorConnectionThresholdKbps || linkUpstreamBandwidthKbps < poorConnectionThresholdKbps
     }
 

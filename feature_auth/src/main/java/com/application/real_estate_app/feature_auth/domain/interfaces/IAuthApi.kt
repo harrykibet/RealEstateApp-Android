@@ -14,10 +14,10 @@ interface IAuthApi {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    suspend fun sendPasswordResetEmail(
+    fun sendPasswordResetEmail(
         email: String,
         onFailure: (Exception) -> Unit
-    ): Void?
+    ): Task<Void>?
 
     fun firebaseAuthWithGoogle(
         idToken: String,
