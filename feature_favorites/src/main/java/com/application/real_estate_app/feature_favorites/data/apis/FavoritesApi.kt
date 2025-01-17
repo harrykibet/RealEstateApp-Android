@@ -1,7 +1,6 @@
 package com.application.real_estate_app.feature_favorites.data.apis
 
 import android.net.ConnectivityManager
-import android.util.Log
 import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel

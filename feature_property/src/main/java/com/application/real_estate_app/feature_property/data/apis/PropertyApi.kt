@@ -2,7 +2,6 @@ package com.application.real_estate_app.feature_property.data.apis
 
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel

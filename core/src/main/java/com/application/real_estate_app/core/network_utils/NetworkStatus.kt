@@ -10,6 +10,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
+@Suppress("UNUSED")
 object NetworkStatus {
 
     enum class ConnectionType {

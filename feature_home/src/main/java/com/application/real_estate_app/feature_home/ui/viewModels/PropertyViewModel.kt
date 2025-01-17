@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_home.ui.viewModels
 
-import android.util.Log
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@Suppress("UNUSED")
 object Logger {
 
     private const val TAG = "AppLogger"

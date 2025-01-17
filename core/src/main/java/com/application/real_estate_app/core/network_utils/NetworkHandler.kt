@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("UNUSED")
 object NetworkHandler {
 
     /**
@@ -113,7 +114,7 @@ object NetworkHandler {
         onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return try {
-            when (val status = NetworkStatus.getNetworkStatus(connectivityManager)) {
+            when (NetworkStatus.getNetworkStatus(connectivityManager)) {
                 is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                 is NetworkStatus.NetworkStatusResult.PoorConnection -> {
                     Log.w("NetworkHandler", ErrorMessages.POOR_CONNECTION)
@@ -148,7 +149,7 @@ object NetworkHandler {
     ): T? {
         return withContext(Dispatchers.IO) {
             try {
-                when (val status = NetworkStatus.getNetworkStatus(connectivityManager)) {
+                when (NetworkStatus.getNetworkStatus(connectivityManager)) {
                     is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                     is NetworkStatus.NetworkStatusResult.PoorConnection -> {
                         Log.w("NetworkHandler", ErrorMessages.POOR_CONNECTION)

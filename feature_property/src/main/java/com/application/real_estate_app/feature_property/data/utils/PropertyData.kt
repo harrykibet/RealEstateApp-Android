@@ -23,9 +23,4 @@ class PropertyData @Inject constructor() {
         "Taita-Taveta", "Tana River", "Tharaka-Nithi", "Trans-Nzoia", "Turkana", "Uasin Gishu",
         "Vihiga", "Wajir", "West Pokot"
     )
-
-    //Static data for amenities
-    val amenities: List<String> = listOf(
-        "Wifi", "Pool", "Gym", "Parking", "Air Conditioning", "Security", "Elevator"
-    )
 }

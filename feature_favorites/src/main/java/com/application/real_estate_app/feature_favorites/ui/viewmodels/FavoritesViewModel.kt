@@ -21,6 +21,7 @@ enum class LikeStatus {
 }
 
 @HiltViewModel
+@Suppress("UNUSED")
 class FavoritesViewModel @Inject constructor(
     private val api: IFavoritesApi,
     authApi: IAuthApiCore
