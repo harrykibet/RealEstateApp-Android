@@ -1,10 +1,7 @@
 package com.application.real_estate_app.feature_auth.ui.fragments
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
