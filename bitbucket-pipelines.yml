@@ -1,6 +1,6 @@
 # Bitbucket Pipeline for Android Project with Gradle 8
 
-image: gradle:8.0.0-jdk11  # Gradle 8 with JDK 11 (compatible with Android builds)
+image: gradle:8.0.0-jdk11  # Gradle 8 with JDK 11
 
 pipelines:
   default:
@@ -16,8 +16,9 @@ pipelines:
           - mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
           - rm commandlinetools.zip
           - echo "Downloading and installing Android SDK components..."
-          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
-          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --licenses
+          - $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
+          - echo "Accepting licenses..."
+          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --licenses || true
           - echo "Android SDK setup complete."
 
     - step:
