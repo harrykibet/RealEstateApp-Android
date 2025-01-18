@@ -21,7 +21,6 @@ class FavoritesApi @Inject constructor(
     private val connectivityManager: ConnectivityManager // Injected via DI
 ): IFavoritesApi {
 
-
     override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
         return safeApiCallSuspend(connectivityManager = connectivityManager,
             apiCall = {
