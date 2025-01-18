@@ -2,9 +2,6 @@
 
 image: gradle:8.0.0-jdk11  # Gradle 8 with JDK 11 (compatible with Android builds)
 
-options:
-  max-time: 30  # Maximum time in minutes for the build step
-
 pipelines:
   default:
     - step:
@@ -13,11 +10,14 @@ pipelines:
           - gradle
           - android-sdk
         script:
+          - echo "Installing Android SDK..."
+          - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
+          - unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
+          - mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
+          - rm commandlinetools.zip
           - echo "Downloading and installing Android SDK components..."
-          - sdkmanager --update
-          - sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
-          - echo "Accepting all licenses..."
-          - yes | sdkmanager --licenses
+          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
+          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --licenses
           - echo "Android SDK setup complete."
 
     - step:
