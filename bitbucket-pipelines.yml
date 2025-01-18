@@ -1,26 +1,53 @@
-#  Template Java Gradle build
+# Bitbucket Pipeline for Android Project with Gradle 8
 
-#  This template allows you to test and build your Java project with Gradle.
-#  The workflow allows running tests, code checkstyle and security scans on the default branch.
+image: gradle:8.0.0-jdk11  # Gradle 8 with JDK 11 (compatible with Android builds)
 
-# Prerequisites: appropriate project structure should exist in the repository.
-
-image: gradle:6.6.0
+options:
+  max-time: 30  # Maximum time in minutes for the build step
 
 pipelines:
   default:
-    - parallel:
-      - step:
-          name: Build and Test
-          caches:
-            - gradle
-          script:
-            - gradle build
-          after-script:
-            - pipe: atlassian/checkstyle-report:0.3.0
-      - step:
-          name: Security Scan
-          script:
-            # Run a security scan for sensitive data.
-            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
-            - pipe: atlassian/git-secrets-scan:0.5.1
+    - step:
+        name: Setup Android Environment
+        caches:
+          - gradle
+          - android-sdk
+        script:
+          - echo "Downloading and installing Android SDK components..."
+          - sdkmanager --update
+          - sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
+          - echo "Accepting all licenses..."
+          - yes | sdkmanager --licenses
+          - echo "Android SDK setup complete."
+
+    - step:
+        name: Build and Test
+        caches:
+          - gradle
+          - android-sdk
+        script:
+          - echo "Running Gradle build..."
+          - ./gradlew clean build --stacktrace
+        artifacts:
+          - app/build/outputs/**
+        after-script:
+          - pipe: atlassian/checkstyle-report:0.3.0
+
+    - step:
+        name: Security Scan
+        script:
+          - pipe: atlassian/git-secrets-scan:0.5.1
+
+    - step:
+        name: Deploy to Production
+        deployment: production
+        script:
+          - echo "Deploying to production..."
+          - ./gradlew assembleRelease
+          - echo "Uploading APK or AAB to production..."
+          # Replace with actual deployment commands (e.g., uploading to Play Store)
+          - echo "Deployment complete."
+
+definitions:
+  caches:
+    android-sdk: ~/.android
