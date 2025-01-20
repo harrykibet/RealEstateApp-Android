@@ -7,6 +7,7 @@ import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Likes
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
@@ -45,11 +46,11 @@ class HomeApi @Inject constructor(
             apiCall = {
             val query = if (lastVisible == null) {
                 db.collection(FirestoreCollections.PROPERTIES)
-                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .orderBy(FirestoreFields.CREATED_AT, Query.Direction.DESCENDING)
                     .limit(pageSize.toLong())
             } else {
                 db.collection(FirestoreCollections.PROPERTIES)
-                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .orderBy(FirestoreFields.CREATED_AT, Query.Direction.DESCENDING)
                     .startAfter(lastVisible)  // Start after the last document fetched
                     .limit(pageSize.toLong())
             }

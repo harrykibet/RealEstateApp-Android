@@ -4,6 +4,7 @@ import android.net.ConnectivityManager
 import com.application.real_estate_app.core.data_utils.db_entities.CommentEntity
 import com.application.real_estate_app.core.data_utils.data_models.Comment
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
@@ -32,7 +33,7 @@ class CommentsApi @Inject constructor(
                     val listenerRegistration = db.collection(FirestoreCollections.PROPERTIES)
                         .document(propertyId)
                         .collection(FirestoreCollections.SubCollections.COMMENTS)
-                        .orderBy("timeStamp", Query.Direction.DESCENDING)
+                        .orderBy(FirestoreFields.TIMESTAMP, Query.Direction.DESCENDING)
                         .addSnapshotListener { snapshot, error ->
                             if (error != null) {
                                 log(error.message)

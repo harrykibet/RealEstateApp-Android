@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Property
-import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.core.interfaces.AuthApiInterface
 import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,7 @@ enum class LikeStatus {
 @Suppress("UNUSED")
 class FavoritesViewModel @Inject constructor(
     private val api: IFavoritesApi,
-    authApi: IAuthApiCore
+    authApi: AuthApiInterface
 ) : ViewModel() {
 
     private  val currentUserId: String? = authApi.getCurrentUserId()

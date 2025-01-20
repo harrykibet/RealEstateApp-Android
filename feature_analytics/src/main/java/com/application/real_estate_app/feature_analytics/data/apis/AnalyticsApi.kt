@@ -1,0 +1,72 @@
+package com.application.real_estate_app.feature_analytics.data.apis
+
+import android.net.ConnectivityManager
+import com.application.real_estate_app.core.data_utils.data_models.AnalyticsEvent
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
+import com.application.real_estate_app.core.errors.ErrorMessages
+import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.feature_analytics.domain.interfaces.IAnalyticsApi
+import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+
+class AnalyticsApi @Inject constructor(
+    db: FirebaseFirestore,
+    private val connectivityManager: ConnectivityManager
+) : IAnalyticsApi {
+
+    private val analyticsCollection = db.collection(FirestoreCollections.ANALYTICS)
+
+    override suspend fun logEvent(event: AnalyticsEvent, onFailure: (Exception) -> Unit): Boolean {
+        return safeApiCallSuspend(
+            connectivityManager = connectivityManager,
+            apiCall = {
+                // Firebase set operation
+                analyticsCollection.document(event.eventId).set(event).await()
+                true // Return true after successful operation
+            },
+            onFailure = { exception ->
+                onFailure(exception)
+                log(exception.message)
+            }
+        ) ?: false // Default to false if result is null
+    }
+
+    override suspend fun getEventsForUser(userId: String, onFailure: (Exception) -> Unit): List<AnalyticsEvent> {
+        return safeApiCallSuspend(
+            connectivityManager = connectivityManager,
+            apiCall = {
+                // Query Firebase for analytics events by userId
+                val querySnapshot = analyticsCollection.whereEqualTo(FirestoreFields.USER_ID, userId).get().await()
+                querySnapshot.documents.mapNotNull { it.toObject<AnalyticsEvent>() } // Convert to AnalyticsEvent
+            },
+            onFailure = { exception ->
+                onFailure(exception)
+                log(exception.message)
+            }
+        ) ?: emptyList() // Return empty list if something goes wrong
+    }
+
+    override suspend fun getEventById(eventId: String, onFailure: (Exception) -> Unit): AnalyticsEvent? {
+        return safeApiCallSuspend(
+            connectivityManager = connectivityManager,
+            apiCall = {
+                // Retrieve the event by ID
+                val documentSnapshot = analyticsCollection.document(eventId).get().await()
+                documentSnapshot.toObject<AnalyticsEvent>() // Convert Firestore document to AnalyticsEvent
+            },
+            onFailure = { exception ->
+                onFailure(exception)
+                log(exception.message)
+            }
+        ) // Return null if not found or error occurs
+    }
+
+    private fun log(message: String?) {
+        // Implement logging mechanism or use an existing logger
+        Logger.error("${ErrorMessages.ANALYTICS_API}: $message")
+    }
+}

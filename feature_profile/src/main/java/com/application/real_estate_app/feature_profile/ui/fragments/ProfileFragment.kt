@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.application.real_estate_app.core.events.LogoutEvent
-import com.application.real_estate_app.core.interfaces.IAuthApiCore
+import com.application.real_estate_app.core.interfaces.AuthApiInterface
 import com.application.real_estate_app.feature_profile.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
     @Inject
-    lateinit var authApi: IAuthApiCore
+    lateinit var authApi: AuthApiInterface
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!

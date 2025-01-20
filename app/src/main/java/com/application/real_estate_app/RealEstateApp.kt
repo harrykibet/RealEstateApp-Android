@@ -1,6 +1,8 @@
 package com.application.real_estate_app
 
 import android.app.Application
+import com.application.real_estate_app.core.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.interfaces.AuthApiInterface
 import com.application.real_estate_app.core.logs_utils.Logger
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
@@ -10,15 +12,22 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class RealEstateApp : Application() {
 
+    @Inject
+    lateinit var analyticsApi: AnalyticsApiInterface
+
+    @Inject
+    lateinit var authApi: AuthApiInterface
+
     override fun onCreate() {
         super.onCreate()
         initializeFirebase()
-        Logger.initialize(this)
+        Logger.initialize(this, analyticsApi, authApi)
         configureGlobalExceptionHandler()
     }
 

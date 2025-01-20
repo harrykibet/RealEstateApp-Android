@@ -3,6 +3,7 @@ package com.application.real_estate_app.core.data_utils.db_names
 object FirestoreCollections {
     const val USERS = "users"
     const val PROPERTIES = "properties"
+    const val ANALYTICS = "analytics"
 
     object SubCollections {
         const val LIKES = "likes"

@@ -9,5 +9,6 @@ object ErrorMessages {
     const val HOME_API = "HomeApi Error"
     const val PROPERTY_API = "PropertyApi Error"
     const val SEARCH_API = "SearchApi Error"
+    const val ANALYTICS_API = "AnalyticsApi Error"
     // Add more global error messages as needed
 }

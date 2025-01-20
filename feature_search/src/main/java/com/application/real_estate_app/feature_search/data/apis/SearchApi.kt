@@ -5,6 +5,7 @@ import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntit
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.logs_utils.Logger
 import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
@@ -27,7 +28,7 @@ class SearchApi @Inject constructor(
             connectivityManager = connectivityManager,
             apiCall = {
                 val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
-                    .whereEqualTo("title", query)
+                    .whereEqualTo(FirestoreFields.TITLE, query)
                     .limit(limit.toLong())
                     .get()
                     .await()
