@@ -24,11 +24,8 @@ object Logger {
     private const val TAG = "AppLogger"
     private const val LOG_FILE_NAME = "app_logs.txt"
     private lateinit var logFile: File
-
-    @Inject
-    lateinit var analyticsApi: AnalyticsApiInterface
-    @Inject
-    lateinit var authApi: AuthApiInterface
+    private lateinit var analyticsApi: AnalyticsApiInterface
+    private lateinit var authApi: AuthApiInterface
 
     private lateinit var deviceInfo: DeviceInfo
     private lateinit var locationInfo: UserLocation
@@ -51,8 +48,7 @@ object Logger {
     fun debug(
         message: String,
         eventType: String? = null,
-        customMetadata: Map<String,
-        String>? = null)
+        customMetadata: Map<String, String>? = null)
     {
         log(Log.DEBUG, message, eventType, null, customMetadata)
     }
@@ -60,8 +56,7 @@ object Logger {
     fun info(
         message: String,
         eventType: String? = null,
-        customMetadata: Map<String,
-        String>? = null)
+        customMetadata: Map<String, String>? = null)
     {
         log(Log.INFO, message, eventType, null, customMetadata)
     }
@@ -70,8 +65,7 @@ object Logger {
         message: String,
         throwable: Throwable? = null,
         eventType: String? = null,
-        customMetadata: Map<String,
-        String>? = null)
+        customMetadata: Map<String, String>? = null)
     {
         log(Log.WARN, message, eventType, throwable, customMetadata)
     }
@@ -79,21 +73,13 @@ object Logger {
     fun error(
         message: String,
         throwable: Throwable? = null,
-        eventType: String? = null,
-        customMetadata: Map<String,
-        String>? = null)
-    {
+        eventType: String? = null, customMetadata: Map<String, String>? = null) {
         log(Log.ERROR, message, eventType, throwable, customMetadata)
     }
 
-    private fun log(
-        level: Int,
-        message: String,
-        eventType: String? = null,
-        throwable: Throwable? = null,
-        customMetadata: Map<String,
-        String>? = null)
-    {
+    private fun log(level: Int, message: String,
+                    eventType: String? = null, throwable: Throwable? = null,
+                    customMetadata: Map<String, String>? = null) {
         val formattedMessage = formatMessage(message)
         when (level) {
             Log.DEBUG -> Log.d(TAG, formattedMessage)
@@ -109,14 +95,11 @@ object Logger {
     }
 
     private fun formatMessage(message: String): String {
-        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",
-            Locale.getDefault()).format(Date())
+        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
         return "$timestamp $message"
     }
 
-    private fun saveLogToFile(
-        message: String,
-        throwable: Throwable? = null) {
+    private fun saveLogToFile(message: String, throwable: Throwable? = null) {
         try {
             FileWriter(logFile, true).use { writer ->
                 writer.append(message).append("\n")
