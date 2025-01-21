@@ -21,7 +21,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class Logger @Inject constructor(
-    @ApplicationContext context: Context,
+    context: Context,
     private val analyticsApi: AnalyticsApiInterface,
     private val authApi: AuthApiInterface
 ) : LoggerInterface {
