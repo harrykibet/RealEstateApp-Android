@@ -23,14 +23,15 @@ import javax.inject.Inject
 class Logger @Inject constructor(
     @ApplicationContext context: Context,
     private val analyticsApi: AnalyticsApiInterface,
-    private val authApi: AuthApiInterface
+    private val authApi: AuthApiInterface,
+    locationInfoUtil: LocationInfoUtil
 ) : LoggerInterface {
 
     private val tag = "AppLogger"
     private val logFileName = "app_logs.txt"
     private val logFile: File = File(context.filesDir, logFileName)
     private val deviceInfo: DeviceInfo = DeviceInfoUtil.getDeviceInfo(context)
-    private val locationInfo: UserLocation = LocationInfoUtil.getLocationInfo(context)
+    private val locationInfo: UserLocation = locationInfoUtil.getLocationInfo(context)
 
     override fun debug(
         message: String,
