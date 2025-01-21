@@ -16,12 +16,16 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class NetworkModule {
 
-    @Provides
-    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
-        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    }
-
     @Binds
     @Singleton
-    abstract fun bindNetworkHandler(networkHandler: NetworkHandler) : INetworkHandler
+    abstract fun bindNetworkHandler(networkHandler: NetworkHandler): INetworkHandler
+
+    companion object {
+
+        @Provides
+        @Singleton
+        fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+            return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        }
+    }
 }

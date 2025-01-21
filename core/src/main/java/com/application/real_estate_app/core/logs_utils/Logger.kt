@@ -32,12 +32,6 @@ class Logger @Inject constructor(
     private val deviceInfo: DeviceInfo = DeviceInfoUtil.getDeviceInfo(context)
     private val locationInfo: UserLocation = LocationInfoUtil.getLocationInfo(context)
 
-    init {
-        if (!logFile.exists()) {
-            logFile.createNewFile()
-        }
-    }
-
     override fun debug(
         message: String,
         eventType: String?,
@@ -99,6 +93,9 @@ class Logger @Inject constructor(
     }
 
     private fun saveLogToFile(message: String, throwable: Throwable? = null) {
+        if (!logFile.exists()) {
+            logFile.createNewFile()
+        }
         try {
             FileWriter(logFile, true).use { writer ->
                 writer.append(message).append("\n")
