@@ -9,19 +9,16 @@ import android.location.Geocoder
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.application.real_estate_app.core.data_utils.data_models.UserLocation
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.logs_utils.Logger
 import java.util.Locale
-import javax.inject.Inject
 
-class LocationInfoUtil @Inject constructor(
-    private val logger: LoggerInterface
-) {
+object LocationInfoUtil {
 
     fun getLocationInfo(context: Context): UserLocation {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!isLocationEnabled(locationManager)) {
-            logger.error("Location services are disabled")
+            //Logger.error("Location services are disabled")
             return UserLocation(
                 country = "Unknown",
                 city = "Unknown",
@@ -33,7 +30,7 @@ class LocationInfoUtil @Inject constructor(
         // Check for location permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            logger.error("Location permissions are not granted")
+            //Logger.error("Location permissions are not granted")
             return UserLocation(
                 country = "Unknown",
                 city = "Unknown",
@@ -59,7 +56,7 @@ class LocationInfoUtil @Inject constructor(
                 country = address?.countryName ?: country
                 city = address?.locality ?: city
             } catch (e: Exception) {
-                logger.error("Geocoding failed: ${e.message}")
+                //Logger.error("Geocoding failed: ${e.message}")
             }
         }
 
