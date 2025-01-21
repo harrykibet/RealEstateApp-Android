@@ -1,12 +1,9 @@
 package com.application.real_estate_app.feature_analytics.data.apis
 
-
 import com.application.real_estate_app.core.data_utils.data_models.AnalyticsEvent
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
-import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.interfaces.INetworkHandler
-import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_analytics.domain.interfaces.IAnalyticsApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -15,7 +12,6 @@ import javax.inject.Inject
 
 class AnalyticsApi @Inject constructor(
     db: FirebaseFirestore,
-    private val logger: LoggerInterface,
     private val network: INetworkHandler
 ) : IAnalyticsApi {
 
@@ -30,7 +26,6 @@ class AnalyticsApi @Inject constructor(
             },
             onFailure = { exception ->
                 onFailure(exception)
-                log(exception.message)
             }
         ) ?: false // Default to false if result is null
     }
@@ -44,7 +39,6 @@ class AnalyticsApi @Inject constructor(
             },
             onFailure = { exception ->
                 onFailure(exception)
-                log(exception.message)
             }
         ) ?: emptyList() // Return empty list if something goes wrong
     }
@@ -58,13 +52,7 @@ class AnalyticsApi @Inject constructor(
             },
             onFailure = { exception ->
                 onFailure(exception)
-                log(exception.message)
             }
         ) // Return null if not found or error occurs
-    }
-
-    private fun log(message: String?) {
-        // Implement logging mechanism or use an existing logger
-        logger.error("${ErrorMessages.ANALYTICS_API}: $message")
     }
 }
