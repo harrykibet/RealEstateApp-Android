@@ -1,13 +1,13 @@
 package com.application.real_estate_app.feature_comments.data.apis
 
-import android.net.ConnectivityManager
+
 import com.application.real_estate_app.core.data_utils.db_entities.CommentEntity
 import com.application.real_estate_app.core.data_utils.data_models.Comment
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.logs_utils.Logger
-import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 class CommentsApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
-    private val connectivityManager: ConnectivityManager // Injected via DI
+    private val logger: LoggerInterface, // Injected via DI
+    private val network: INetworkHandler // Injected via DI
 ) : ICommentsApi {
 
     override fun listenForComments(
@@ -27,8 +28,7 @@ class CommentsApi @Inject constructor(
         onFailure: (Exception) -> Unit
     ): Flow<List<Comment?>> {
         return callbackFlow {
-            safeApiCallSuspend(
-                connectivityManager = connectivityManager,
+            network.safeApiCallSuspend(
                 apiCall = {
                     val listenerRegistration = db.collection(FirestoreCollections.PROPERTIES)
                         .document(propertyId)
@@ -64,7 +64,7 @@ class CommentsApi @Inject constructor(
         comment: Comment,
         onFailure: (Exception) -> Unit
     ): Boolean? {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             try {
                 val commentsRef = db.collection(FirestoreCollections.PROPERTIES)
@@ -88,6 +88,6 @@ class CommentsApi @Inject constructor(
     }
 
     private fun log(message: String?) {
-        Logger.error("${ErrorMessages.COMMENTS_API} : $message")
+        logger.error("${ErrorMessages.COMMENTS_API} : $message")
     }
 }

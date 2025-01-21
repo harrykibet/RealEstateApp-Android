@@ -25,9 +25,11 @@ import com.application.real_estate_app.feature_property.ui.uploads.adapters.Medi
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyField
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyViewModel
 import com.application.real_estate_app.core.data_utils.compression.MediaCompressor
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.core.logs_utils.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
@@ -36,6 +38,9 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
 
     private val viewModel: AddPropertyViewModel by activityViewModels() //shared ViewModel
     private val selectedMedia: MutableList<Uri> = mutableListOf()
+
+    @Inject
+    lateinit var logger: LoggerInterface
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,7 +122,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
                 mediaAdapter.notifyDataSetChanged()
             }
         } else {
-            Logger.error("MediaLoader: Default pictures directory not found or is empty.")
+            logger.error("MediaLoader: Default pictures directory not found or is empty.")
         }
     }
 

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,7 +23,8 @@ enum class LikeStatus {
 @HiltViewModel
 class PropertyViewModel @Inject constructor(
     private val api: IHomeApi,
-    authApi: AuthApiInterface
+    authApi: AuthApiInterface,
+    private val logger: LoggerInterface
 ) : ViewModel() {
 
     private  val currentUserId: String? = authApi.getCurrentUserId()
@@ -97,6 +98,6 @@ class PropertyViewModel @Inject constructor(
     }
 
     private fun log(message: String) {
-        Logger.error("PropertyViewModel: $message")
+        logger.error("PropertyViewModel: $message")
     }
 }

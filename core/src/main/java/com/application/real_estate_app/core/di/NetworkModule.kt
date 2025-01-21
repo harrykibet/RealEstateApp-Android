@@ -2,18 +2,26 @@ package com.application.real_estate_app.core.di
 
 import android.content.Context
 import android.net.ConnectivityManager
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.network_utils.NetworkHandler
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+abstract class NetworkModule {
 
     @Provides
     fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
         return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
+
+    @Binds
+    @Singleton
+    abstract fun bindNetworkHandler(networkHandler: NetworkHandler) : INetworkHandler
 }

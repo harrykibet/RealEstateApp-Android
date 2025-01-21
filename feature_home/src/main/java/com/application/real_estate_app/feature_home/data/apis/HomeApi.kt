@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_home.data.apis
 
-import android.net.ConnectivityManager
+
 import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
@@ -9,8 +9,8 @@ import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.logs_utils.Logger
-import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,11 +21,12 @@ import javax.inject.Inject
 
 class HomeApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
-    private val connectivityManager: ConnectivityManager // Injected via DI
+    private val logger: LoggerInterface, // Injected via DI
+    private val network: INetworkHandler // Injected via DI
 ): IHomeApi {
 
     override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             doc.toObject(PropertyEntity::class.java)?.toDomainModel()
@@ -42,7 +43,7 @@ class HomeApi @Inject constructor(
         pageSize: Int,
         onFailure: (Exception) -> Unit
     ): Pair<List<Property>, String?> {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val query = if (lastVisible == null) {
                 db.collection(FirestoreCollections.PROPERTIES)
@@ -70,7 +71,7 @@ class HomeApi @Inject constructor(
     }
 
     override suspend fun toggleLikeProperty(userId: String, propertyId: String, onFailure: (Exception) -> Unit): Boolean {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val likesRef = db.collection(FirestoreCollections.PROPERTIES).document(propertyId)
                 .collection(FirestoreCollections.SubCollections.LIKES).document(userId)
@@ -98,7 +99,7 @@ class HomeApi @Inject constructor(
     }
 
     override suspend fun fetchLikedProperties(userId: String, onFailure: (Exception) -> Unit): List<Property> {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val likedPropertyIds = db.collection(FirestoreCollections.USERS)
                 .document(userId)
@@ -125,6 +126,6 @@ class HomeApi @Inject constructor(
     }
 
     private fun log(message: String?){
-        Logger.error("${ErrorMessages.HOME_API} : $message")
+        logger.error("${ErrorMessages.HOME_API} : $message")
     }
 }

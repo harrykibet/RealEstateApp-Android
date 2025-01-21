@@ -1,14 +1,14 @@
 package com.application.real_estate_app.feature_search.data.apis
 
-import android.net.ConnectivityManager
+
 import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
 import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
 import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.logs_utils.Logger
-import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_search.domain.interfaces.ISearchApi
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 class SearchApi @Inject constructor(
     private val db: FirebaseFirestore, // Injected via DI
-    private val connectivityManager: ConnectivityManager // Injected via DI
+    private val logger: LoggerInterface, // Injected via DI
+    private val network: INetworkHandler // Injected via DI
 ) : ISearchApi {
 
     override suspend fun searchProperties(
@@ -24,8 +25,7 @@ class SearchApi @Inject constructor(
         limit: Int,
         onFailure: (Exception) -> Unit
     ): List<Property> {
-        return safeApiCallSuspend(
-            connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
                 val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
                     .whereEqualTo(FirestoreFields.TITLE, query)
@@ -43,6 +43,6 @@ class SearchApi @Inject constructor(
     }
 
     private fun log(message: String?) {
-        Logger.error("${ErrorMessages.SEARCH_API} : $message")
+        logger.error("${ErrorMessages.SEARCH_API} : $message")
     }
 }

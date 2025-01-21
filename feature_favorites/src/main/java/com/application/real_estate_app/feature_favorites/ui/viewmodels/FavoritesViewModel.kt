@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,7 +24,8 @@ enum class LikeStatus {
 @Suppress("UNUSED")
 class FavoritesViewModel @Inject constructor(
     private val api: IFavoritesApi,
-    authApi: AuthApiInterface
+    authApi: AuthApiInterface,
+    private val logger: LoggerInterface
 ) : ViewModel() {
 
     private  val currentUserId: String? = authApi.getCurrentUserId()
@@ -92,6 +93,6 @@ class FavoritesViewModel @Inject constructor(
     }
 
     private fun log(message: String?){
-        Logger.error("PropertyViewModel: $message")
+        logger.error("PropertyViewModel: $message")
     }
 }

@@ -9,8 +9,8 @@ import com.application.real_estate_app.core.data_utils.mappers.toEntityModel
 import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.logs_utils.Logger
-import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCallSuspend
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -20,8 +20,9 @@ import javax.inject.Inject
 
 class PropertyApi @Inject constructor(
     private val db: FirebaseFirestore,   // Injected via DI
+    private val logger: LoggerInterface, // Injected via DI
     private val storageRef: FirebaseStorage, // Injected via DI
-    private val connectivityManager: ConnectivityManager // Injected via DI
+    private val network: INetworkHandler // Injected via DI
 ) : IPropertyApi {
 
     override val uploadStatus = MutableLiveData<Boolean>()
@@ -35,7 +36,7 @@ class PropertyApi @Inject constructor(
     ): Boolean? {
         val propertyId = db.collection(FirestoreCollections.PROPERTIES).document().id // Always generate a new ID
 
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             uploadStatus.value = true // Uploading process started
 
@@ -77,7 +78,7 @@ class PropertyApi @Inject constructor(
         mediaType: String,
         onFailure: (Exception) -> Unit
     ): List<String> {
-        return safeApiCallSuspend( connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val urls = mutableListOf<String>()
             uris.forEachIndexed { index, uri ->
@@ -95,7 +96,7 @@ class PropertyApi @Inject constructor(
     }
 
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean {
-        return safeApiCallSuspend( connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).update(updates).await()
             true
@@ -107,7 +108,7 @@ class PropertyApi @Inject constructor(
     }
 
     override suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             db.collection(FirestoreCollections.PROPERTIES).document(propertyId).delete().await()
             true
@@ -119,7 +120,7 @@ class PropertyApi @Inject constructor(
     }
 
     override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
-        return safeApiCallSuspend(connectivityManager = connectivityManager,
+        return network.safeApiCallSuspend(
             apiCall = {
             val doc = db.collection(FirestoreCollections.PROPERTIES).document(propertyId).get().await()
             // Convert the data model (PropertyEntity) to domain model (Property)
@@ -132,6 +133,6 @@ class PropertyApi @Inject constructor(
     }
 
     private fun log(message: String?) {
-        Logger.error("${ErrorMessages.PROPERTY_API}: $message")
+        logger.error("${ErrorMessages.PROPERTY_API}: $message")
     }
 }

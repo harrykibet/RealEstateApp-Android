@@ -1,9 +1,7 @@
 package com.application.real_estate_app
 
 import android.app.Application
-import com.application.real_estate_app.core.interfaces.AnalyticsApiInterface
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
@@ -16,18 +14,14 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
-class RealEstateApp : Application() {
+class RealEstateApp : Application()  {
 
     @Inject
-    lateinit var analyticsApi: AnalyticsApiInterface
-
-    @Inject
-    lateinit var authApi: AuthApiInterface
+    lateinit var logger: LoggerInterface
 
     override fun onCreate() {
         super.onCreate()
         initializeFirebase()
-        Logger.initialize(this, analyticsApi, authApi)
         configureGlobalExceptionHandler()
     }
 
@@ -38,12 +32,12 @@ class RealEstateApp : Application() {
         runCatching {
             FirebaseApp.initializeApp(this)
                 ?: throw IllegalStateException("Firebase initialization failed. Check your google-services.json configuration.")
-            Logger.info("Firebase initialized successfully.")
+            logger.info("Firebase initialized successfully.")
 
             // Configure Firebase App Check with Debug Provider
             FirebaseAppCheck.getInstance().apply {
                 installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
-                Logger.info("Firebase App Check Debug Provider installed.")
+                logger.info("Firebase App Check Debug Provider installed.")
             }
         }.onFailure { exception ->
             "Failed to initialize Firebase or App Check.".handleCriticalError(exception)
@@ -60,7 +54,7 @@ class RealEstateApp : Application() {
 
         CoroutineExceptionHandler { _, throwable ->
             handleUncaughtException(Thread.currentThread(), throwable)
-        }.also { Logger.info("Global exception handlers configured.") }
+        }.also { logger.info("Global exception handlers configured.") }
     }
 
     /**
@@ -68,7 +62,7 @@ class RealEstateApp : Application() {
      */
     private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         val errorMessage = "Uncaught exception in thread '${thread.name}': ${throwable.localizedMessage}"
-        Logger.error(errorMessage, throwable)
+        logger.error(errorMessage, throwable)
 
         // Log detailed error information to Crashlytics
         FirebaseCrashlytics.getInstance().apply {
@@ -84,16 +78,16 @@ class RealEstateApp : Application() {
      * Handles critical errors during initialization or runtime.
      */
     private fun String.handleCriticalError(throwable: Throwable) {
-        Logger.error(this, throwable)
+        logger.error(this, throwable)
         FirebaseCrashlytics.getInstance().recordException(throwable)
-        Logger.warn("Critical error handled gracefully. Application may behave unexpectedly.")
+        logger.warn("Critical error handled gracefully. Application may behave unexpectedly.")
     }
 
     /**
      * Gracefully exits the application to avoid undefined behavior after critical failures.
      */
     private fun exitApplication() {
-        Logger.warn("Application is exiting due to a critical failure.")
+        logger.warn("Application is exiting due to a critical failure.")
         runBlocking(Dispatchers.IO) {
             FirebaseCrashlytics.getInstance().sendUnsentReports() // Ensure all logs are uploaded
         }

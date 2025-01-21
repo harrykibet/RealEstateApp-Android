@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.data_utils.data_models.Comment
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val api: ICommentsApi
+    private val api: ICommentsApi,
+    private val logger: LoggerInterface
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<Comment?>>()
@@ -69,7 +70,7 @@ class CommentsViewModel @Inject constructor(
                 )
                 _commentSubmitStatus.value = success ?: false
                 if (success == true) {
-                    Logger.debug("CommentsViewModel: Comment submitted successfully")
+                    logger.debug("CommentsViewModel: Comment submitted successfully")
                 } else {
                     log("Failed to submit comment")
                 }
@@ -82,6 +83,6 @@ class CommentsViewModel @Inject constructor(
     }
 
     private fun log(message: String?) {
-        Logger.error("CommentsViewModel: $message")
+        logger.error("CommentsViewModel: $message")
     }
 }

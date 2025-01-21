@@ -2,7 +2,6 @@ package com.application.real_estate_app.feature_auth.ui.viewModels
 
 import android.app.Activity
 import android.content.Intent
-import android.net.ConnectivityManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -5,8 +5,10 @@ import android.util.Log
 import com.application.real_estate_app.core.data_utils.data_models.*
 import com.application.real_estate_app.core.interfaces.AnalyticsApiInterface
 import com.application.real_estate_app.core.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.core.system_utils.DeviceInfoUtil
 import com.application.real_estate_app.core.system_utils.LocationInfoUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,74 +20,71 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-@Suppress("UNUSED")
-object Logger {
+class Logger @Inject constructor(
+    @ApplicationContext context: Context,
+    private val analyticsApi: AnalyticsApiInterface,
+    private val authApi: AuthApiInterface
+) : LoggerInterface {
 
-    private const val TAG = "AppLogger"
-    private const val LOG_FILE_NAME = "app_logs.txt"
-    private lateinit var logFile: File
-    private lateinit var analyticsApi: AnalyticsApiInterface
-    private lateinit var authApi: AuthApiInterface
+    private val tag = "AppLogger"
+    private val logFileName = "app_logs.txt"
+    private val logFile: File = File(context.filesDir, logFileName)
+    private val deviceInfo: DeviceInfo = DeviceInfoUtil.getDeviceInfo(context)
+    private val locationInfo: UserLocation = LocationInfoUtil.getLocationInfo(context)
 
-    private lateinit var deviceInfo: DeviceInfo
-    private lateinit var locationInfo: UserLocation
-
-    fun initialize(
-        context: Context,
-        analyticsApi: AnalyticsApiInterface,
-        authApi: AuthApiInterface)
-    {
-        logFile = File(context.filesDir, LOG_FILE_NAME)
+    init {
         if (!logFile.exists()) {
             logFile.createNewFile()
         }
-        this.analyticsApi = analyticsApi
-        this.authApi = authApi
-        deviceInfo = DeviceInfoUtil.getDeviceInfo(context)
-        locationInfo = LocationInfoUtil.getLocationInfo(context)
     }
 
-    fun debug(
+    override fun debug(
         message: String,
-        eventType: String? = null,
-        customMetadata: Map<String, String>? = null)
-    {
+        eventType: String?,
+        customMetadata: Map<String, String>?
+    ) {
         log(Log.DEBUG, message, eventType, null, customMetadata)
     }
 
-    fun info(
+    override fun info(
         message: String,
-        eventType: String? = null,
-        customMetadata: Map<String, String>? = null)
-    {
+        eventType: String?,
+        customMetadata: Map<String, String>?
+    ) {
         log(Log.INFO, message, eventType, null, customMetadata)
     }
 
-    fun warn(
+    override fun warn(
         message: String,
-        throwable: Throwable? = null,
-        eventType: String? = null,
-        customMetadata: Map<String, String>? = null)
-    {
+        throwable: Throwable? ,
+        eventType: String?,
+        customMetadata: Map<String, String>?
+    ) {
         log(Log.WARN, message, eventType, throwable, customMetadata)
     }
 
-    fun error(
+    override fun error(
         message: String,
-        throwable: Throwable? = null,
-        eventType: String? = null, customMetadata: Map<String, String>? = null) {
+        throwable: Throwable?,
+        eventType: String?,
+        customMetadata: Map<String, String>?
+    ) {
         log(Log.ERROR, message, eventType, throwable, customMetadata)
     }
 
-    private fun log(level: Int, message: String,
-                    eventType: String? = null, throwable: Throwable? = null,
-                    customMetadata: Map<String, String>? = null) {
+    private fun log(
+        level: Int,
+        message: String,
+        eventType: String? = null,
+        throwable: Throwable? = null,
+        customMetadata: Map<String, String>? = null
+    ) {
         val formattedMessage = formatMessage(message)
         when (level) {
-            Log.DEBUG -> Log.d(TAG, formattedMessage)
-            Log.INFO -> Log.i(TAG, formattedMessage)
-            Log.WARN -> Log.w(TAG, formattedMessage, throwable)
-            Log.ERROR -> Log.e(TAG, formattedMessage, throwable)
+            Log.DEBUG -> Log.d(tag, formattedMessage)
+            Log.INFO -> Log.i(tag, formattedMessage)
+            Log.WARN -> Log.w(tag, formattedMessage, throwable)
+            Log.ERROR -> Log.e(tag, formattedMessage, throwable)
         }
         saveLogToFile(formattedMessage, throwable)
 
@@ -108,7 +107,7 @@ object Logger {
                 }
             }
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to write log to file: ${e.message}")
+            Log.e(tag, "Failed to write log to file: ${e.message}")
         }
     }
 
@@ -149,7 +148,7 @@ object Logger {
         }
     }
 
-    fun getLogs(): String {
+    override fun getLogs(): String {
         return try {
             logFile.readText()
         } catch (e: IOException) {
@@ -158,7 +157,7 @@ object Logger {
         }
     }
 
-    fun clearLogs() {
+    override fun clearLogs() {
         try {
             logFile.writeText("")
         } catch (e: IOException) {

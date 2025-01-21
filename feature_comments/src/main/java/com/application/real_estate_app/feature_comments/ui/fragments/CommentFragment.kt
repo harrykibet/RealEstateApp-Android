@@ -1,7 +1,6 @@
 package com.application.real_estate_app.feature_comments.ui.fragments
 
-import android.content.Context
-import android.net.ConnectivityManager
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

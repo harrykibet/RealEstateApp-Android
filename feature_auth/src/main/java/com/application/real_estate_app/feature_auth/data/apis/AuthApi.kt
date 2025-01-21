@@ -1,11 +1,11 @@
 package com.application.real_estate_app.feature_auth.data.apis
 
-import android.net.ConnectivityManager
+
 import com.application.real_estate_app.core.data_utils.data_models.User
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.logs_utils.Logger
-import com.application.real_estate_app.core.network_utils.NetworkHandler.safeApiCall
+import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_auth.domain.interfaces.IAuthApi
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -17,15 +17,16 @@ import javax.inject.Inject
 
 class AuthApi @Inject constructor(
     private val db: FirebaseFirestore, // Injected via DI
+    private val logger: LoggerInterface, // Injected via DI
     private val firebaseAuth: FirebaseAuth, // Injected via DI
-    private val connectivityManager: ConnectivityManager // Injected via DI
+    private val network: INetworkHandler  // Injected via DI
 ) : IAuthApi {
 
     override fun createUserIfNotExists(
         userId: String?,
         user: User,
         onFailure: (Exception) -> Unit, ) {
-        safeApiCall(connectivityManager = connectivityManager,
+        network.safeApiCall(
             apiCall = {
             val userRef = db.collection(FirestoreCollections.USERS).document(userId!!)
             userRef.get().addOnSuccessListener { document ->
@@ -52,7 +53,7 @@ class AuthApi @Inject constructor(
         email: String,
         password: String,
         onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return safeApiCall(connectivityManager = connectivityManager,
+        return network.safeApiCall(
             apiCall = {
             firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnFailureListener{ exception ->
@@ -69,7 +70,7 @@ class AuthApi @Inject constructor(
         email: String,
         password: String,
         onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return safeApiCall(connectivityManager = connectivityManager,
+        return network.safeApiCall(
             apiCall = {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnFailureListener{ exception ->
@@ -84,7 +85,7 @@ class AuthApi @Inject constructor(
 
     override fun signOut(
         onFailure: (Exception) -> Unit) {
-        safeApiCall(connectivityManager = connectivityManager,
+        network.safeApiCall(
             apiCall = {
             firebaseAuth.signOut()
         },
@@ -105,7 +106,7 @@ class AuthApi @Inject constructor(
     override fun firebaseAuthWithGoogle(
         idToken: String,
         onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return safeApiCall(connectivityManager = connectivityManager,
+        return network.safeApiCall(
             apiCall = {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             firebaseAuth.signInWithCredential(credential).addOnFailureListener{ exception ->
@@ -121,7 +122,7 @@ class AuthApi @Inject constructor(
     override fun sendPasswordResetEmail(
         email: String,
         onFailure: (Exception) -> Unit): Task<Void>? {
-        return safeApiCall(connectivityManager = connectivityManager,
+        return network.safeApiCall(
             apiCall = {
                 firebaseAuth.sendPasswordResetEmail(email)
                     .addOnFailureListener { exception ->
@@ -148,6 +149,6 @@ class AuthApi @Inject constructor(
     }
 
     private fun log(message: String?) {
-        Logger.error("${ErrorMessages.AUTH_API}: $message")
+        logger.error("${ErrorMessages.AUTH_API}: $message")
     }
 }

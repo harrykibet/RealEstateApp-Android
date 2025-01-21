@@ -15,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.application.real_estate_app.core.events.LoginEvent
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.feature_auth.databinding.FragmentLogInBinding
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LogInFragment : Fragment() {
@@ -31,6 +32,9 @@ class LogInFragment : Fragment() {
     private val authViewModel: AuthViewModel by viewModels()
     private var _binding: FragmentLogInBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var logger: LoggerInterface
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -182,9 +186,9 @@ class LogInFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         })
-                        Logger.debug("PasswordReset: Password reset email sent!")
+                        logger.debug("PasswordReset: Password reset email sent!")
                     } catch (e: Exception) {
-                        Logger.error("PasswordReset: Error sending password reset email: ${e.message}")
+                        logger.error("PasswordReset: Error sending password reset email: ${e.message}")
                     }
                 }
                 dialog.dismiss()
@@ -217,7 +221,7 @@ class LogInFragment : Fragment() {
         if (requestCode == authViewModel.requestCode) {
             authViewModel.handleGoogleSignInResult(data) { exception ->
                 // Handle the failure, e.g., log the error or show a message to the user
-                Logger.error("AuthError: Google Sign-In failed: ${exception.message}")
+                logger.error("AuthError: Google Sign-In failed: ${exception.message}")
                 Toast.makeText(
                     requireContext(),
                     "Sign-In failed: ${exception.message}",
