@@ -11,4 +11,5 @@ interface IAnalyticsApi {
     ): List<AnalyticsEvent>
 
     suspend fun getEventById(eventId: String, onFailure: (Exception) -> Unit): AnalyticsEvent?
+    suspend fun generateEventId(): String
 }

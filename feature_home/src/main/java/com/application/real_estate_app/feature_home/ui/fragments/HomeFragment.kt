@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.core.navigation.deep_links.DeepLinks
 import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding

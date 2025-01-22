@@ -8,7 +8,6 @@ import com.application.real_estate_app.core.data_utils.data_models.Property
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.interfaces.INetworkHandler
-import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await

@@ -29,6 +29,9 @@ object Versions {
     // Ffmpeg
     const val ffmpeg = "5.1.LTS"
 
+    // Test Core
+    const val testCore = "1.6.1"
+
     // Firebase
     const val firebaseBom = "33.5.1"
 
@@ -90,6 +93,7 @@ object Libs {
         const val fragmentKtx = "androidx.fragment:fragment-ktx:${Versions.fragmentKtx}"
         const val activityKtx = "androidx.activity:activity-ktx:${Versions.activityKtx}"
         const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
+        const val testCoreKtx = "androidx.test:core-ktx:${Versions.testCore}"
 
         // Lifecycle
         const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"

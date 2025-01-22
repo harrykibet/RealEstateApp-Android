@@ -25,7 +25,6 @@ import com.application.real_estate_app.feature_property.ui.uploads.adapters.Medi
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyField
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyViewModel
 import com.application.real_estate_app.core.data_utils.compression.MediaCompressor
-import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.core.logs_utils.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
