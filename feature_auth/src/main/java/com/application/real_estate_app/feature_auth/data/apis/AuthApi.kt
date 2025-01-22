@@ -5,6 +5,7 @@ import com.application.real_estate_app.core.data_utils.data_models.User
 import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
 import com.application.real_estate_app.core.errors.ErrorMessages
 import com.application.real_estate_app.core.interfaces.INetworkHandler
+import com.application.real_estate_app.core.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_auth.domain.interfaces.IAuthApi
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
