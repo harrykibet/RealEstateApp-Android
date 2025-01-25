@@ -1,7 +1,7 @@
 package com.application.real_estate_app.feature_search.data.sources.local
 
-import com.application.real_estate_app.feature_search.data.sources.local.dao.SearchHistoryDao
-import com.application.real_estate_app.feature_search.data.sources.local.entities.SearchHistoryEntity
+import com.application.real_estate_app.feature_search.data.dao.SearchHistoryDao
+import com.application.real_estate_app.feature_search.data.entities.SearchHistoryEntity
 import com.application.real_estate_app.feature_search.domain.interfaces.ILocalDataSource
 import javax.inject.Inject
 

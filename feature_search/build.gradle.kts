@@ -46,32 +46,32 @@ android {
 
 dependencies {
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
 
     // Google Play Services
-    implementation(Libs.playServicesMaps)
-    implementation(Libs.playServicesLocation)
-    implementation(Libs.places)
+    implementation(GooglePlayDeps.playServicesMaps)
+    implementation(GooglePlayDeps.playServicesLocation)
+    implementation(GooglePlayDeps.places)
 
     // Firebase Services
-    implementation(platform(Libs.firebaseBom)) // Version alignment for Firebase libraries
-    implementation(Libs.firebaseFirestore)
+    implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
+    implementation(FirebaseDeps.firebaseFirestore)
 
     // Navigation Components
-    implementation(Libs.navigationFragment)
-    implementation(Libs.navigationUI)
+    implementation(NavigationDeps.navigationFragment)
+    implementation(NavigationDeps.navigationUI)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     //Core module
     implementation(project(ProjectModules.core))
@@ -80,8 +80,8 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Dagger Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 }

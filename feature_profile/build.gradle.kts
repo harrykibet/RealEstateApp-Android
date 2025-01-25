@@ -46,39 +46,39 @@ android {
 
 dependencies {
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
 
     // Compose UI Components
-    implementation(Libs.composeMaterial3)
+    implementation(ComposeDeps.composeMaterial3)
 
     // Firebase Dependencies
-    implementation(platform(Libs.firebaseBom)) // Use BOM for Firebase version alignment
-    implementation(Libs.firebaseAuth)
+    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
+    implementation(FirebaseDeps.firebaseAuth)
 
     // Navigation Components
-    implementation(Libs.navigationFragment)
-    implementation(Libs.navigationUI)
+    implementation(NavigationDeps.navigationFragment)
+    implementation(NavigationDeps.navigationUI)
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 
     // Dagger Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 
     //Green Robot Event bus
-    implementation(Libs.eventBus)
+    implementation(EventBusDeps.eventBus)
 
     //Modules
     implementation(project(ProjectModules.core))

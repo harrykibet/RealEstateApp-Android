@@ -46,31 +46,32 @@ android {
 
 dependencies {
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
-    implementation(Libs.activityKtx)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
+    implementation(CoreDeps.activityKtx)
+    implementation(CoreDeps.fragmentKtx)
 
     // Navigation Components
-    implementation(Libs.navigationFragment)
+    implementation(NavigationDeps.navigationFragment)
 
     //GSON
-    implementation(Libs.gson)
+    implementation(JsonDeps.gson)
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     // Firebase Dependencies
-    implementation(platform(Libs.firebaseBom)) // Use BOM for version alignment
-    implementation(Libs.firebaseAuth)
-    implementation(Libs.firebaseFirestore)
-    implementation(Libs.firebaseStorage)
+    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
+    implementation(FirebaseDeps.firebaseAuth)
+    implementation(FirebaseDeps.firebaseFirestore)
+    implementation(FirebaseDeps.firebaseStorage)
 
     //Glide for image loading
-    implementation(Libs.glide)
-    kapt(Libs.glideCompiler)
+    implementation(MediaDeps.glide)
+    kapt(MediaDeps.glideCompiler)
 
     //Core module
     implementation(project(ProjectModules.core))
@@ -79,22 +80,21 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Google Play Services
-    implementation(Libs.playServicesLocation)
-    implementation(Libs.playServicesMaps)
+    implementation(GooglePlayDeps.playServicesLocation)
+    implementation(GooglePlayDeps.playServicesMaps)
 
     // Lifecycle Components
-    implementation(Libs.viewModelKtx)
-    implementation(Libs.liveDataKtx)
-    implementation(Libs.fragmentKtx)
+    implementation(LifecycleDeps.viewModelKtx)
+    implementation(LifecycleDeps.liveDataKtx)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 
     // Dagger Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 }

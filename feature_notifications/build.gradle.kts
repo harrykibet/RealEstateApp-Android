@@ -47,29 +47,29 @@ android {
 dependencies {
 
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 
     //Core module
     implementation(project(ProjectModules.core))
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
     // Dagger Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 }

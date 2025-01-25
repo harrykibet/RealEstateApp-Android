@@ -1,3 +1,5 @@
+import androidx.navigation.safe.args.generator.java.N
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -47,31 +49,33 @@ android {
 
 dependencies {
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.constraintLayout)
-    implementation(Libs.recyclerView)
-    implementation(Libs.viewPager2)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
-    implementation(Libs.swipeRefreshLayout)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.constraintLayout)
+    implementation(CoreDeps.recyclerView)
+    implementation(CoreDeps.viewPager2)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
+    implementation(CoreDeps.swipeRefreshLayout)
+    implementation(CoreDeps.fragmentKtx)
+    implementation(CoreDeps.activityKtx)
 
     // Compose UI Components
-    implementation(Libs.composeMaterial3)
+    implementation(ComposeDeps.composeMaterial3)
 
     // Media and UI Libraries
-    implementation(Libs.media3UI)
-    implementation(Libs.media3ExoPlayer)
-    implementation(Libs.media3Hls)
+    implementation(MediaDeps.media3UI)
+    implementation(MediaDeps.media3ExoPlayer)
+    implementation(MediaDeps.media3Hls)
 
     // Glide for Image Loading
-    implementation(Libs.glide)
-    kapt(Libs.glideCompiler)
+    implementation(MediaDeps.glide)
+    kapt(MediaDeps.glideCompiler)
 
     // Firebase Dependencies
-    implementation(platform(Libs.firebaseBom)) // Use BOM for Firebase version alignment
-    implementation(Libs.firebaseAuth)
-    implementation(Libs.firebaseFirestore)
-    implementation(Libs.firebaseStorage)
+    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
+    implementation(FirebaseDeps.firebaseAuth)
+    implementation(FirebaseDeps.firebaseFirestore)
+    implementation(FirebaseDeps.firebaseStorage)
 
     // Project Module Dependencies
     implementation(project(ProjectModules.core))
@@ -80,28 +84,26 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     // Navigation Components
-    implementation(Libs.navigationFragment)
-    implementation(Libs.navigationUI)
+    implementation(NavigationDeps.navigationFragment)
+    implementation(NavigationDeps.navigationUI)
 
     // Lifecycle Components
-    implementation(Libs.viewModelKtx)
-    implementation(Libs.liveDataKtx)
-    implementation(Libs.fragmentKtx)
-    implementation(Libs.activityKtx)
+    implementation(LifecycleDeps.viewModelKtx)
+    implementation(LifecycleDeps.liveDataKtx)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 
     // Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 }

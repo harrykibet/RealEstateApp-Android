@@ -48,35 +48,35 @@ android {
 dependencies {
 
     //Core libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.material)
-    implementation(Libs.appCompat)
-    implementation(Libs.activityKtx)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.material)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.activityKtx)
+    implementation(CoreDeps.fragmentKtx)
 
     // Lifecycle Components
-    implementation(Libs.viewModelKtx)
-    implementation(Libs.liveDataKtx)
-    implementation(Libs.fragmentKtx)
+    implementation(LifecycleDeps.viewModelKtx)
+    implementation(LifecycleDeps.liveDataKtx)
 
     //Core module
     implementation(project(ProjectModules.core))
 
     // Room
-    implementation(Libs.roomKtx)
-    implementation(Libs.roomRuntime)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomKtx)
+    implementation(RoomDeps.roomRuntime)
+    kapt(RoomDeps.roomCompiler)
 
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
     // Dagger Hilt
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 
     // Testing libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 }

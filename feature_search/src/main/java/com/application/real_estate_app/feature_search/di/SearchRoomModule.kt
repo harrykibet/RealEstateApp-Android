@@ -1,8 +1,8 @@
 package com.application.real_estate_app.feature_search.di
 
 import android.content.Context
-import com.application.real_estate_app.feature_search.data.sources.local.dao.SearchHistoryDao
-import com.application.real_estate_app.feature_search.data.sources.local.database.SearchDatabase
+import com.application.real_estate_app.feature_search.data.dao.SearchHistoryDao
+import com.application.real_estate_app.feature_search.data.database.SearchDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

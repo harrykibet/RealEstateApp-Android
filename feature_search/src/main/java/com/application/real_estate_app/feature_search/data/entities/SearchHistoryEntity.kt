@@ -1,4 +1,4 @@
-package com.application.real_estate_app.feature_search.data.sources.local.entities
+package com.application.real_estate_app.feature_search.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

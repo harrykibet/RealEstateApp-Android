@@ -74,81 +74,81 @@ android {
 
 dependencies {
         // Core Libraries
-        implementation(Libs.coreKtx)
-        implementation(Libs.appCompat)
-        implementation(Libs.material)
-        implementation(Libs.constraintLayout)
-        implementation(Libs.viewPager2)
-        implementation(Libs.recyclerView)
-        implementation(Libs.swipeRefreshLayout)
+        implementation(CoreDeps.coreKtx)
+        implementation(CoreDeps.appCompat)
+        implementation(CoreDeps.material)
+        implementation(CoreDeps.constraintLayout)
+        implementation(CoreDeps.viewPager2)
+        implementation(CoreDeps.recyclerView)
+        implementation(CoreDeps.swipeRefreshLayout)
+        implementation(CoreDeps.splashScreen)
 
         //Compose dependencies
-        implementation(platform(Libs.composeBom))
-        implementation(Libs.composeUi)
-        implementation(Libs.composeMaterial)
-        implementation(Libs.composeUiToolingPreview)
-        implementation(Libs.splashScreen)
-        debugImplementation(Libs.composeUiTooling)
-        implementation(Libs.composeRuntimeLiveData)
-        implementation(Libs.activityCompose)
-        implementation(Libs.composeMaterial3)
+        implementation(platform(ComposeDeps.composeBom))
+        implementation(ComposeDeps.composeUi)
+        implementation(ComposeDeps.composeMaterial)
+        implementation(ComposeDeps.composeUiToolingPreview)
+        debugImplementation(ComposeDeps.composeUiTooling)
+        implementation(ComposeDeps.composeRuntimeLiveData)
+        implementation(ComposeDeps.activityCompose)
+        implementation(ComposeDeps.composeMaterial3)
 
 
         // Lifecycle
-        implementation(Libs.lifecycleRuntime)
-        implementation(Libs.viewModelKtx)
-        implementation(Libs.liveDataKtx)
+        implementation(LifecycleDeps.lifecycleRuntime)
+        implementation(LifecycleDeps.viewModelKtx)
+        implementation(LifecycleDeps.liveDataKtx)
 
         // Firebase BoM and dependencies
-        implementation(platform(Libs.firebaseBom))
-        implementation(Libs.firebaseAnalytics)
-        implementation(Libs.firebaseCrashlytics)
-        implementation(Libs.firebaseAuth)
-        implementation(Libs.firebaseFirestore)
-        implementation(Libs.firebaseStorage)
-        implementation(Libs.appCheckDebug)
-        implementation(Libs.playIntergrity)
+        implementation(platform(FirebaseDeps.firebaseBom))
+        implementation(FirebaseDeps.firebaseAnalytics)
+        implementation(FirebaseDeps.firebaseCrashlytics)
+        implementation(FirebaseDeps.firebaseAuth)
+        implementation(FirebaseDeps.firebaseFirestore)
+        implementation(FirebaseDeps.firebaseStorage)
+        implementation(FirebaseDeps.appCheckDebug)
+        implementation(FirebaseDeps.playIntergrity)
 
         // Google Play Services
-        implementation(Libs.playServicesMaps)
-        implementation(Libs.playServicesLocation)
-        implementation(Libs.places)
+        implementation(GooglePlayDeps.playServicesMaps)
+        implementation(GooglePlayDeps.playServicesLocation)
+        implementation(GooglePlayDeps.places)
 
 
         // Glide
-        implementation(Libs.glide)
-        kapt(Libs.glideCompiler)
+        implementation(MediaDeps.glide)
+        kapt(MediaDeps.glideCompiler)
 
         // Green Robot Event Bus
-        implementation(Libs.eventBus)
+        implementation(EventBusDeps.eventBus)
 
         // Navigation Component
-        implementation(Libs.navigationFragment)
-        implementation(Libs.navigationUI)
+        implementation(NavigationDeps.navigationFragment)
+        implementation(NavigationDeps.navigationUI)
 
         // Dagger Hilt
-        implementation(Libs.hiltAndroid)
-        kapt(Libs.hiltAndroidCompiler)
-        implementation(Libs.hiltNavigationFragment)
-        kapt(Libs.hiltCompiler)
+        implementation(HiltDeps.hiltAndroid)
+        kapt(HiltDeps.hiltAndroidCompiler)
+        implementation(HiltDeps.hiltNavigationFragment)
+        kapt(HiltDeps.hiltCompiler)
 
         // Media3 ExoPlayer
-        implementation(Libs.media3ExoPlayer)
-        implementation(Libs.media3UI)
+        implementation(MediaDeps.media3ExoPlayer)
+        implementation(MediaDeps.media3UI)
 
         // Lottie
-        implementation(Libs.lottie)
+        implementation(MediaDeps.lottie)
 
         // Room
-        implementation(Libs.roomKtx)
-        implementation(Libs.roomRuntime)
-        kapt(Libs.roomCompiler)
+        implementation(RoomDeps.roomKtx)
+        implementation(RoomDeps.roomRuntime)
+        kapt(RoomDeps.roomCompiler)
 
 
        // Testing Libraries
-       testImplementation(Libs.junit)
-       androidTestImplementation(Libs.testExtJUnit)
-       androidTestImplementation(Libs.espressoCore)
+       testImplementation(TestingDeps.junit)
+       androidTestImplementation(TestingDeps.testExtJUnit)
+       androidTestImplementation(TestingDeps.espressoCore)
 
         // Project Modules
         implementation(project(ProjectModules.featureHome))
@@ -158,7 +158,7 @@ dependencies {
         implementation(project(ProjectModules.featureSearch))
         implementation(project(ProjectModules.featureProfile))
         implementation(project(ProjectModules.uiComponents))
-        implementation(project(ProjectModules.ai_ml))
+        implementation(project(ProjectModules.featureIntelligence))
         implementation(project(ProjectModules.featurePayments))
         implementation(project(ProjectModules.featureMarketPlace))
         implementation(project(ProjectModules.featureChats))

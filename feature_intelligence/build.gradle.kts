@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.application.real_estate_app.ai_ml"
+    namespace = "com.application.real_estate_app.feature_intelligence"
     compileSdk = 35
 
     kapt{
@@ -47,43 +47,44 @@ android {
 dependencies {
 
     //Core libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.material)
-    implementation(Libs.appCompat)
-    implementation(Libs.activityKtx)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.material)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.activityKtx)
+    implementation(CoreDeps.fragmentKtx)
 
     // Lifecycle Components
-    implementation(Libs.viewModelKtx)
-    implementation(Libs.liveDataKtx)
-    implementation(Libs.fragmentKtx)
+    implementation(LifecycleDeps.viewModelKtx)
+    implementation(LifecycleDeps.liveDataKtx)
+
 
     // GOOGLE ML Kit libraries
     // Device-based
-    implementation(Libs.mlKitBarcodeScanning)
-    implementation(Libs.mlKitTextRecognitionOnDevice)
-    implementation(Libs.mlKitFaceDetection)
-    implementation(Libs.mlKitImageLabelingOnDevice)
+    implementation(MLKitDeps.mlKitBarcodeScanning)
+    implementation(MLKitDeps.mlKitTextRecognitionOnDevice)
+    implementation(MLKitDeps.mlKitFaceDetection)
+    implementation(MLKitDeps.mlKitImageLabelingOnDevice)
     // Cloud-based
-    implementation(Libs.mlKitTextRecognitionCloud)
-    implementation(Libs.mlKitImageLabelingCloud)
+    implementation(MLKitDeps.mlKitTextRecognitionCloud)
+    implementation(MLKitDeps.mlKitImageLabelingCloud)
 
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
     // Room
-    implementation(Libs.roomRuntime)
-    implementation(Libs.roomKtx)
-    kapt(Libs.roomCompiler)
+    implementation(RoomDeps.roomRuntime)
+    implementation(RoomDeps.roomKtx)
+    kapt(RoomDeps.roomCompiler)
 
     // Dagger Hilt
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 
 
     // Testing libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
 }

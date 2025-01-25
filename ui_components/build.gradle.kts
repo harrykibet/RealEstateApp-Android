@@ -40,12 +40,12 @@ android {
 
 dependencies {
     // Core Android Libraries
-    implementation(Libs.coreKtx)               // Kotlin extensions for Android core components
-    implementation(Libs.appCompat)             // Backward-compatible Android UI components
-    implementation(Libs.material)              // Material Design UI components
+    implementation(CoreDeps.coreKtx)               // Kotlin extensions for Android core components
+    implementation(CoreDeps.appCompat)             // Backward-compatible Android UI components
+    implementation(CoreDeps.material)              // Material Design UI components
 
     // Testing Libraries
-    testImplementation(Libs.junit)             // JUnit for unit testing
-    androidTestImplementation(Libs.testExtJUnit)  // JUnit extensions for Android
-    androidTestImplementation(Libs.espressoCore)  // Espresso for UI testing
+    testImplementation(TestingDeps.junit)             // JUnit for unit testing
+    androidTestImplementation(TestingDeps.testExtJUnit)  // JUnit extensions for Android
+    androidTestImplementation(TestingDeps.espressoCore)  // Espresso for UI testing
 }

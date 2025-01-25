@@ -43,37 +43,38 @@ dependencies {
 
 
     // Core Android Libraries
-    implementation(Libs.coreKtx)
-    implementation(Libs.appCompat)
-    implementation(Libs.material)
+    implementation(CoreDeps.coreKtx)
+    implementation(CoreDeps.appCompat)
+    implementation(CoreDeps.material)
+    implementation(CoreDeps.testCoreKtx)
 
     // Glide for Image Loading
-    implementation(Libs.glide)
-    kapt(Libs.glideCompiler)
+    implementation(MediaDeps.glide)
+    kapt(MediaDeps.glideCompiler)
 
     // Ffmpeg
-    implementation(Libs.ffmpeg)
+    implementation(MediaDeps.ffmpeg)
 
     // Firebase
-    implementation(platform(Libs.firebaseBom)) // Firebase BOM for managing versions
-    implementation(Libs.firebaseAuth)
-    implementation(Libs.firebaseFirestore)
-    implementation(Libs.firebaseStorage)
+    implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
+    implementation(FirebaseDeps.firebaseAuth)
+    implementation(FirebaseDeps.firebaseFirestore)
+    implementation(FirebaseDeps.firebaseStorage)
 
     // Media and UI Libraries
-    implementation(Libs.media3UI)
-    implementation(Libs.media3ExoPlayer)
-    implementation(Libs.media3Hls)
+    implementation(MediaDeps.media3UI)
+    implementation(MediaDeps.media3ExoPlayer)
+    implementation(MediaDeps.media3Hls)
 
     // Testing Libraries
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.testExtJUnit)
-    androidTestImplementation(Libs.espressoCore)
-    implementation(Libs.testCoreKtx)
+    testImplementation(TestingDeps.junit)
+    androidTestImplementation(TestingDeps.testExtJUnit)
+    androidTestImplementation(TestingDeps.espressoCore)
+
 
     // Dagger Hilt for Dependency Injection
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltNavigationFragment)
-    kapt(Libs.hiltCompiler)
+    implementation(HiltDeps.hiltAndroid)
+    kapt(HiltDeps.hiltAndroidCompiler)
+    implementation(HiltDeps.hiltNavigationFragment)
+    kapt(HiltDeps.hiltCompiler)
 }

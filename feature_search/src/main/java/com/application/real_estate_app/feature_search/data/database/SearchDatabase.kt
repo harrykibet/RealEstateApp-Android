@@ -1,11 +1,11 @@
-package com.application.real_estate_app.feature_search.data.sources.local.database
+package com.application.real_estate_app.feature_search.data.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.application.real_estate_app.feature_search.data.sources.local.dao.SearchHistoryDao
-import com.application.real_estate_app.feature_search.data.sources.local.entities.SearchHistoryEntity
+import com.application.real_estate_app.feature_search.data.dao.SearchHistoryDao
+import com.application.real_estate_app.feature_search.data.entities.SearchHistoryEntity
 
 @Database(entities = [SearchHistoryEntity::class], version = 1, exportSchema = false)
 abstract class SearchDatabase : RoomDatabase() {

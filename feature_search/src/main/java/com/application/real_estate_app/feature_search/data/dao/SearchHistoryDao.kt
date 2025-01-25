@@ -1,7 +1,7 @@
-package com.application.real_estate_app.feature_search.data.sources.local.dao
+package com.application.real_estate_app.feature_search.data.dao
 
 import androidx.room.*
-import com.application.real_estate_app.feature_search.data.sources.local.entities.SearchHistoryEntity
+import com.application.real_estate_app.feature_search.data.entities.SearchHistoryEntity
 
 @Dao
 interface SearchHistoryDao {
