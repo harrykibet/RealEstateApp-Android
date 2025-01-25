@@ -1,16 +1,16 @@
 package com.application.real_estate_app.feature_home.data.apis
 
 
-import com.application.real_estate_app.core.data_utils.db_entities.LikesEntity
-import com.application.real_estate_app.core.data_utils.db_entities.PropertyEntity
-import com.application.real_estate_app.core.data_utils.mappers.toDomainModel
-import com.application.real_estate_app.core.data_utils.data_models.Likes
-import com.application.real_estate_app.core.data_utils.data_models.Property
-import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
-import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
-import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.interfaces.INetworkHandler
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.data.db_entities.LikesEntity
+import com.application.real_estate_app.core.data.db_entities.PropertyEntity
+import com.application.real_estate_app.core.data.mappers.toDomainModel
+import com.application.real_estate_app.core.domain.models.Likes
+import com.application.real_estate_app.core.domain.models.Property
+import com.application.real_estate_app.core.data.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data.db_names.FirestoreFields
+import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore

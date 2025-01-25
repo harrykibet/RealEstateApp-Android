@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core.data_utils.data_models.Comment
+import com.application.real_estate_app.core.domain.models.Comment
 import com.application.real_estate_app.feature_comments.R
 import com.application.real_estate_app.feature_comments.databinding.FragmentCommentBinding
 import com.application.real_estate_app.feature_comments.ui.adapters.CommentAdapter
@@ -54,7 +54,7 @@ class CommentFragment : BottomSheetDialogFragment() {
 
         // Start listening for comments
         commentsViewModel.startListeningForComments(propertyId) { exception ->
-            Toast.makeText(requireContext(), "Comments Listening Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.comments_listening_error, exception.message), Toast.LENGTH_SHORT).show()
         }
 
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
@@ -75,10 +75,10 @@ class CommentFragment : BottomSheetDialogFragment() {
         commentsViewModel.commentSubmitStatus.observe(viewLifecycleOwner) { isSuccess ->
             if (isAdded) {
                 if (isSuccess) {
-                    Toast.makeText(requireContext(), "Comment submitted!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.comment_submitted, Toast.LENGTH_SHORT).show()
                     binding.commentEditText.text?.clear()
                 } else {
-                    Toast.makeText(requireContext(), "Failed to submit comment", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.comment_submission_error, Toast.LENGTH_SHORT).show()
                 }
                 binding.sendCommentButton.isEnabled = true
             }
@@ -96,7 +96,7 @@ class CommentFragment : BottomSheetDialogFragment() {
                 )
 
                 commentsViewModel.submitComment(propertyId, comment) { exception ->
-                    Toast.makeText(requireContext(), "Send Comment Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.comment_submission_error, exception.message), Toast.LENGTH_SHORT).show()
                 }
             }
         }

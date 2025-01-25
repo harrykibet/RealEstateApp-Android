@@ -79,6 +79,10 @@ dependencies {
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Navigation Components
     implementation(Libs.navigationFragment)
     implementation(Libs.navigationUI)

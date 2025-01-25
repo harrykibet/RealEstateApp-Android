@@ -61,6 +61,10 @@ dependencies {
     implementation(Libs.glide)
     kapt(Libs.glideCompiler)
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 

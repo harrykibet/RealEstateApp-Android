@@ -18,8 +18,8 @@ import com.application.real_estate_app.feature_home.ui.viewModels.PropertyViewMo
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.data_utils.data_models.Property
+import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.domain.models.Property
 
 // Refactor the adapter for performance and reduce the functions it handle
 

@@ -1,11 +1,11 @@
 package com.application.real_estate_app.feature_analytics.data.apis
 
-import com.application.real_estate_app.core.data_utils.data_models.AnalyticsEvent
-import com.application.real_estate_app.core.data_utils.db_names.FirestoreCollections
-import com.application.real_estate_app.core.data_utils.db_names.FirestoreFields
-import com.application.real_estate_app.core.errors.ErrorMessages
-import com.application.real_estate_app.core.interfaces.INetworkHandler
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.domain.models.AnalyticsEvent
+import com.application.real_estate_app.core.data.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data.db_names.FirestoreFields
+import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_analytics.domain.interfaces.IAnalyticsApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject

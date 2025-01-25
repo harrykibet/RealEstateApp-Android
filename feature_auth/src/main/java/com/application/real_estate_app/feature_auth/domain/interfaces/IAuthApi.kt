@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_auth.domain.interfaces
 
-import com.application.real_estate_app.core.data_utils.data_models.User
+import com.application.real_estate_app.core.domain.models.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth

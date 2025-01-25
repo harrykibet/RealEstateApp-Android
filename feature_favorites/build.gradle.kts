@@ -59,6 +59,10 @@ dependencies {
     // SwipeRefreshLayout
     implementation(Libs.swipeRefreshLayout)
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Glide for Image Loading
     implementation(Libs.glide)
     kapt(Libs.glideCompiler)

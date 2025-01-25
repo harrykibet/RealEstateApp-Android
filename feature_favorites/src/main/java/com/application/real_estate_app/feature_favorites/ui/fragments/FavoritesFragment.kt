@@ -10,10 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.data_utils.data_models.Property
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.navigation.deep_links.DeepLinks
+import com.application.real_estate_app.core.common.misc.Consts
+import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.domain.models.Property
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.ui.navigation.DeepLinks
+import com.application.real_estate_app.feature_favorites.R
 import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
 import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
 import com.application.real_estate_app.feature_favorites.ui.viewmodels.FavoritesViewModel
@@ -54,7 +56,9 @@ class FavoritesFragment : Fragment() {
 
         if (savedInstanceState == null) {
             favoritesViewModel.loadLikedProperties { exception ->
-                Toast.makeText(requireContext(), "Error loading liked properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.error_loading_liked_properties, exception.message),
+                    Toast.LENGTH_SHORT).show()
             } // Initial load of liked properties
         }
     }
@@ -65,7 +69,9 @@ class FavoritesFragment : Fragment() {
             viewModel = favoritesViewModel,
             onClick = { propertyId -> favoritesViewModel.fetchPropertyById(propertyId)
             { exception ->
-                Toast.makeText(requireContext(), "Error fetching property: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.error_fetching_property, exception.message),
+                    Toast.LENGTH_SHORT).show()
             } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             context = requireContext(),
@@ -82,7 +88,9 @@ class FavoritesFragment : Fragment() {
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             favoritesViewModel.loadLikedProperties{ exception ->
-                Toast.makeText(requireContext(), "Error loading liked properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.error_loading_liked_properties, exception.message),
+                    Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -108,8 +116,8 @@ class FavoritesFragment : Fragment() {
         // Construct the deep link URI using the constant
         val uri = Uri.parse(
             DeepLinks.COMMENT_FRAGMENT
-            .replace("{propertyId}", propertyId)
-            .replace("{userId}", currentUserId ?: "")
+            .replace(DeepLinks.PROPERTY_ID_PLACEHOLDER, propertyId)
+            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING)
         )
 
         // Use NavController to navigate with the deep link

@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.application.real_estate_app.core.common.misc.Consts
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +40,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
     private fun redirectToMainActivity(isAuthenticated: Boolean) {
         val mainIntent = Intent(this, MainActivity::class.java).apply {
-            putExtra("USER_AUTHENTICATED", isAuthenticated)
+            putExtra(Consts.USER_AUTHENTICATED, isAuthenticated)
         }
         startActivity(mainIntent)
         finish() // Close SplashScreenActivity

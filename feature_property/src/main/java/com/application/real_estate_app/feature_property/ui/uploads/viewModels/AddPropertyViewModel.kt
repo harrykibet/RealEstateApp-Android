@@ -3,11 +3,12 @@ package com.application.real_estate_app.feature_property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.core.data_utils.data_models.Property
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.feature_property.data.utils.PropertyData
-import com.application.real_estate_app.feature_property.data.utils.AddPropertyUiState
-import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyApi
+import com.application.real_estate_app.core.domain.models.Property
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyRepository
+import com.application.real_estate_app.feature_property.utils.PropertyData
+import com.application.real_estate_app.feature_property.utils.AddPropertyUiState
+import com.application.real_estate_app.feature_property.utils.PropertyStrings
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
-    private val api: IPropertyApi,
+    private val repository: IPropertyRepository,
     propertyData: PropertyData,
     authApi: AuthApiInterface
 ) : ViewModel() {
@@ -25,10 +26,10 @@ class AddPropertyViewModel @Inject constructor(
     private val userId = authApi.getCurrentUserId()
 
     // MutableStateFlow for individual fields
-    private val _isUpLoading = MutableStateFlow(api.uploadStatus.value)
+    private val _isUpLoading = MutableStateFlow(repository.uploadStatus.value)
     val isUpLoading: StateFlow<Boolean?> = _isUpLoading.asStateFlow()
 
-    private val _uploadingError = MutableStateFlow(api.uploadError.value)
+    private val _uploadingError = MutableStateFlow(repository.uploadError.value)
     val uploadingError: StateFlow<String?> = _uploadingError.asStateFlow()
 
     private val _title = MutableStateFlow<String?>(null)
@@ -324,12 +325,12 @@ class AddPropertyViewModel @Inject constructor(
     private fun updateAmenitiesList() {
         val currentState = _uiState.value
         val amenitiesList = mutableListOf<String>()
-        if (currentState.wifiChecked) amenitiesList.add("Wi-Fi")
-        if (currentState.poolChecked) amenitiesList.add("Pool")
-        if (currentState.gymChecked) amenitiesList.add("Gym")
-        if (currentState.parkingChecked) amenitiesList.add("Parking")
-        if (currentState.airConditioningChecked) amenitiesList.add("Air Conditioning")
-        if (currentState.securityChecked) amenitiesList.add("Security")
+        if (currentState.wifiChecked) amenitiesList.add(PropertyStrings.Amenities.WIFI)
+        if (currentState.poolChecked) amenitiesList.add(PropertyStrings.Amenities.POOL)
+        if (currentState.gymChecked) amenitiesList.add(PropertyStrings.Amenities.GYM)
+        if (currentState.parkingChecked) amenitiesList.add(PropertyStrings.Amenities.PARKING)
+        if (currentState.airConditioningChecked) amenitiesList.add(PropertyStrings.Amenities.AIR_CONDITIONING)
+        if (currentState.securityChecked) amenitiesList.add(PropertyStrings.Amenities.SECURITY)
         updateField(AddPropertyField.Amenities, amenitiesList)
     }
 
@@ -370,7 +371,7 @@ class AddPropertyViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            api.uploadProperty(
+            repository.uploadProperty(
                 property,
                 state.selectedImageUris,
                 state.selectedVideoUris,

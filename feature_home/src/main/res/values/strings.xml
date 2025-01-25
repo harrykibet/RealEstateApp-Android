@@ -23,4 +23,5 @@
     <string name="pending_timestamp">pending</string>
     <string name="unknown_user">Unknown User</string>
     <string name="profile_picture">profile_picture</string>
+    <string name="error_fetching_properties">Error fetching properties %1$s</string>
 </resources>

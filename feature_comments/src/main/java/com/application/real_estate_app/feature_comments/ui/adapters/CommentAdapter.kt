@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.application.real_estate_app.core.data_utils.data_models.Comment
-import com.application.real_estate_app.core.data_utils.data_models.User
+import com.application.real_estate_app.core.common.misc.Consts
+import com.application.real_estate_app.core.data.db_names.FirestoreCollections
+import com.application.real_estate_app.core.domain.models.Comment
+import com.application.real_estate_app.core.domain.models.User
 import com.application.real_estate_app.feature_comments.R
 import com.application.real_estate_app.feature_comments.databinding.ItemCommentBinding
 import com.bumptech.glide.Glide
@@ -34,7 +36,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
             holder.bind(comment!!, userCache[comment.userId])
         } else {
             // Fetch user data from FireStore if not cached
-            firestore.collection("users")
+            firestore.collection(FirestoreCollections.USERS)
                 .document(comment!!.userId!!)
                 .get()
                 .addOnSuccessListener { document ->
@@ -89,7 +91,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
     }
 
     private fun formatTimestamp(timestamp: Date): String {
-        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(Consts.DATE_FORMAT, Locale.getDefault())
         return dateFormat.format(timestamp) // Format the date and return as String
     }
 }

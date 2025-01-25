@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.application.real_estate_app.core.events.LoginEvent
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.common.events.LoginEvent
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.feature_auth.databinding.FragmentLogInBinding
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
@@ -52,12 +52,12 @@ class LogInFragment : Fragment() {
             override fun handleOnBackPressed() {
                 // Show a confirmation dialog or directly exit the app
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Exit App")
-                    .setMessage("Are you sure you want to exit?")
-                    .setNegativeButton("Cancel") { dialog, _ ->
+                    .setTitle(R.string.exit_app_title)
+                    .setMessage(R.string.exit_app_message)
+                    .setNegativeButton(R.string.cancel) { dialog, _ ->
                         dialog.dismiss() // Close the dialog and do nothing
                     }
-                    .setPositiveButton("Exit") { _, _ ->
+                    .setPositiveButton(R.string.exit) { _, _ ->
                         requireActivity().finish() // Exit the app
                     }
                     .show()
@@ -98,14 +98,14 @@ class LogInFragment : Fragment() {
                 loginUser(email, password, onFailure = {
                     Toast.makeText(
                         requireContext(),
-                        "Login failed: ${it.message}",
+                        "${R.string.login_failed}: ${it.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 })
             }
             else {
                 // Show a SnackBar for the user to fill all the fields
-                Snackbar.make(requireView(), "Please fill out the required fields", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), R.string.fill_required_fields, Snackbar.LENGTH_SHORT).show()
             }
         }
 
@@ -125,7 +125,7 @@ class LogInFragment : Fragment() {
             }.onFailure {
                 Toast.makeText(
                     requireContext(),
-                    "Sign-In Failed: ${it.message}",
+                    "${R.string.sign_in_failed}: ${it.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -137,11 +137,11 @@ class LogInFragment : Fragment() {
                     result.onSuccess {
                         Toast.makeText(
                             requireContext(),
-                            "Password reset email sent!",
+                            R.string.password_reset_success,
                             Toast.LENGTH_SHORT
                         ).show()
                     }.onFailure {
-                        Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "${R.string.error_occurred}: ${it.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -152,12 +152,12 @@ class LogInFragment : Fragment() {
     private fun loginUser(email: String, password: String, onFailure: (Exception) -> Unit) {
         authViewModel.loginUser(email, password, onFailure)?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
                 EventBus.getDefault().post(LoginEvent()) // Trigger the login event
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Login failed: ${task.exception?.message}",
+                    "${R.string.login_failed}: ${task.exception?.message}",
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -182,7 +182,7 @@ class LogInFragment : Fragment() {
                         sendPasswordResetEmail(email, onFailure = {
                             Toast.makeText(
                                 requireContext(),
-                                "Error sending password reset email: ${it.message}",
+                                "${R.string.error_password_reset}: ${it.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         })
@@ -193,7 +193,7 @@ class LogInFragment : Fragment() {
                 }
                 dialog.dismiss()
             } else {
-                Toast.makeText(requireContext(), "Please enter a valid email", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), R.string.enter_valid_email, Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -207,7 +207,7 @@ class LogInFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                "Please enter a valid email address",
+                R.string.enter_valid_email,
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -224,7 +224,7 @@ class LogInFragment : Fragment() {
                 logger.error("AuthError: Google Sign-In failed: ${exception.message}")
                 Toast.makeText(
                     requireContext(),
-                    "Sign-In failed: ${exception.message}",
+                    "${R.string.sign_in_failed}: ${exception.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

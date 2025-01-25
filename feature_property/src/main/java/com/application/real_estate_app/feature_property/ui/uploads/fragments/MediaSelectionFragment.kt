@@ -24,9 +24,9 @@ import com.application.real_estate_app.feature_property.databinding.FragmentMedi
 import com.application.real_estate_app.feature_property.ui.uploads.adapters.MediaAdapter
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyField
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyViewModel
-import com.application.real_estate_app.core.data_utils.compression.MediaCompressor
-import com.application.real_estate_app.core.interfaces.LoggerInterface
-import com.application.real_estate_app.core.logs_utils.Logger
+import com.application.real_estate_app.core.utils.compression.MediaCompressor
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.feature_property.utils.MediaStrings
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import javax.inject.Inject
@@ -64,7 +64,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
             if (selectedMedia.isNotEmpty()) {
                 compressAndUploadMedia()
             } else {
-                Toast.makeText(requireContext(), "Please select at least one media file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), MediaStrings.MEDIA_SELECTION_PROMPT, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -90,7 +90,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
             MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
         )
 
-        val queryUri = MediaStore.Files.getContentUri("external")
+        val queryUri = MediaStore.Files.getContentUri(MediaStrings.EXTERNAL_FILES_URI)
         val cursor = context.contentResolver.query(queryUri, projection, selection, selectionArgs, null)
 
         cursor?.use {
@@ -111,10 +111,10 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
 
         if (defaultPicturesDir != null && defaultPicturesDir.exists()) {
             val files = defaultPicturesDir.listFiles { file ->
-                file.isFile && (file.extension.equals("jpg", true) ||
-                        file.extension.equals("jpeg", true) ||
-                        file.extension.equals("png", true) ||
-                        file.extension.equals("mp4", true))
+                file.isFile && (file.extension.equals(MediaStrings.FileExtensions.JPG, true) ||
+                        file.extension.equals(MediaStrings.FileExtensions.JPEG, true) ||
+                        file.extension.equals(MediaStrings.FileExtensions.PNG, true) ||
+                        file.extension.equals(MediaStrings.FileExtensions.MP4, true))
             }
 
             if (!files.isNullOrEmpty()) {
@@ -122,7 +122,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
                 mediaAdapter.notifyDataSetChanged()
             }
         } else {
-            logger.error("MediaLoader: Default pictures directory not found or is empty.")
+            logger.error(MediaStrings.ERROR_PICTURES_DIR)
         }
     }
 
@@ -146,11 +146,11 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
 
     private fun openMediaPicker() {
         val intent = Intent(Intent.ACTION_PICK).apply {
-            type = "*/*"
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
+            type = MediaStrings.ALL_FILES_TYPE
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(MediaStrings.IMAGE_MIME_TYPE, MediaStrings.VIDEO_MIME_TYPE))
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
-        mediaPickerLauncher.launch(Intent.createChooser(intent, "Select Media"))
+        mediaPickerLauncher.launch(Intent.createChooser(intent, MediaStrings.MEDIA_PICKER_TITLE))
     }
 
     private fun updateConfirmButtonVisibility() {
@@ -172,7 +172,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
             if (fileSize != null) {
                 if (MediaCompressor.isFileSizeExceedingLimit(fileSize)) {
                     // Reject files larger than 50MB
-                    Toast.makeText(requireContext(), "File size exceeds 50MB, cannot upload.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), MediaStrings.FILE_SIZE_LIMIT_EXCEEDED_MESSAGE, Toast.LENGTH_SHORT).show()
                 } else if (MediaCompressor.shouldCompress(fileSize)) {
                     if (isVideo(mediaUri)) {
                         MediaCompressor.compressVideo(requireContext(), mediaUri, outputDir) { compressedFile ->
@@ -198,7 +198,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
     }
 
     private fun getFileSize(context: Context, uri: Uri): Long? {
-        val descriptor = context.contentResolver.openFileDescriptor(uri, "r")
+        val descriptor = context.contentResolver.openFileDescriptor(uri, MediaStrings.FILE_READ_MODE)
         return descriptor?.use {
             it.statSize
         }
@@ -217,12 +217,12 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
 
     private fun isImage(uri: Uri): Boolean {
         val type = requireContext().contentResolver.getType(uri)
-        return type?.startsWith("image/") == true
+        return type?.startsWith(MediaStrings.MEDIA_TYPE_IMAGE) == true
     }
 
     private fun isVideo(uri: Uri): Boolean {
         val type = requireContext().contentResolver.getType(uri)
-        return type?.startsWith("video/") == true
+        return type?.startsWith(MediaStrings.MEDIA_TYPE_VIDEO) == true
     }
 
     override fun onDestroyView() {

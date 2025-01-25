@@ -1,11 +1,11 @@
 package com.application.real_estate_app.feature_analytics.data.services
 
-import com.application.real_estate_app.core.data_utils.data_models.AnalyticsEvent
-import com.application.real_estate_app.core.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.domain.models.AnalyticsEvent
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsApiInterface
 import android.content.Context
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.system_utils.DeviceInfoUtil
-import com.application.real_estate_app.core.system_utils.LocationInfoUtil
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.utils.system.DeviceInfoUtil
+import com.application.real_estate_app.core.utils.system.LocationInfoUtil
 import com.application.real_estate_app.feature_analytics.data.apis.AnalyticsApi
 import javax.inject.Inject
 

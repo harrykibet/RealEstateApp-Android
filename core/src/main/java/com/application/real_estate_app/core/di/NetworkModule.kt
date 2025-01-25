@@ -2,8 +2,8 @@ package com.application.real_estate_app.core.di
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.application.real_estate_app.core.interfaces.INetworkHandler
-import com.application.real_estate_app.core.network_utils.NetworkHandler
+import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
+import com.application.real_estate_app.core.network.NetworkHandler
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

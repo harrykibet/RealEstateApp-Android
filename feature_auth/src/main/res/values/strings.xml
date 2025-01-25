@@ -37,6 +37,25 @@
     <string name="enter_your_email_to_reset_your_password">Enter your email to reset your password</string>
     <string name="email_or_phone_number">email or phone number</string>
     <string name="create_new_account">Create New Account</string>
+    <string name="exit_app_title">Exit App</string>
+    <string name="exit_app_message">Are you sure you want to exit?</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Exit</string>
+    <string name="fill_in_all_fields">Please fill in all fields</string>
+    <string name="invalid_user_type_selected">Invalid user type selected</string>
+    <string name="login_successful">Login successful!</string>
+    <string name="login_failed">Login failed: %1$s</string>
+    <string name="sign_in_failed">Sign-In failed: %1$s</string>
+    <string name="password_reset_success">Password reset email sent!</string>
+    <string name="error_occurred">Error: %1$s</string>
+    <string name="select_user_type">Select User Type</string>
+    <string name="fill_required_fields">Please fill out the required fields</string>
+    <string name="enter_valid_email">Please enter a valid email</string>
+    <string name="code_sent_to">Code sent to: %1$s</string>
+    <string name="error_password_reset">Error sending password reset email: %1$s</string>
+    <string name="password_reset_success_log">Password reset email sent!</string>
+    <string name="password_reset_error_log">Error sending password reset email: %1$s</string>
+    <string name="registration_failed">Registration failed: %1$s</string>
     <string-array name="user_types">
         <item>Property Owner</item>
         <item>Tenant</item>

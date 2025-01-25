@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.application.real_estate_app.feature_property.R
+import com.application.real_estate_app.feature_property.utils.MapStrings
 import com.application.real_estate_app.feature_property.databinding.FragmentMapSelectionBinding
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyField
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyViewModel
@@ -73,7 +74,7 @@ class MapSelectionFragment : Fragment(R.layout.fragment_map_selection), OnMapRea
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15f))
 
         // Add draggable marker
-        map.addMarker(MarkerOptions().position(defaultLocation).title("Select Location").draggable(true))
+        map.addMarker(MarkerOptions().position(defaultLocation).title(MapStrings.DEFAULT_LOCATION_TITLE).draggable(true))
 
         // Handle marker drag
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
@@ -94,9 +95,9 @@ class MapSelectionFragment : Fragment(R.layout.fragment_map_selection), OnMapRea
                     selectedLocation = latLng
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
                     map.clear()
-                    map.addMarker(MarkerOptions().position(latLng).title("Current Location").draggable(true))
+                    map.addMarker(MarkerOptions().position(latLng).title(MapStrings.CURRENT_LOCATION_TITLE).draggable(true))
                 } else {
-                    Toast.makeText(requireContext(), "Unable to get location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.error_getting_location, Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
@@ -110,7 +111,7 @@ class MapSelectionFragment : Fragment(R.layout.fragment_map_selection), OnMapRea
             // Navigate back to AddPropertyFragment
             findNavController().navigateUp()
         } else {
-            Toast.makeText(requireContext(), "Please select a location", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), R.string.select_location_prompt, Toast.LENGTH_SHORT).show()
         }
     }
 

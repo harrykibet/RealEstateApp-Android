@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.application.real_estate_app.core.common.misc.Consts
+import com.application.real_estate_app.core.data.db_names.FirestoreCollections
+import com.application.real_estate_app.core.data.db_names.FirestoreFields
 import com.application.real_estate_app.feature_search.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -120,18 +123,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                         .addOnFailureListener { exception ->
                             Toast.makeText(
                                 requireContext(),
-                                "Failed to fetch location details: ${exception.localizedMessage}",
+                                getString(R.string.fetch_location_error, exception.localizedMessage),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                 } else {
-                    Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.location_not_found, Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(
                     requireContext(),
-                    "Error in searching location: ${exception.localizedMessage}",
+                    getString(R.string.search_location_error, exception.localizedMessage),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -160,8 +163,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-                                                                                                           ) != PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
@@ -191,16 +193,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         var propertiesFound = false
         //TODO("Create a property repository method for the below logic")
 
-        db.collection("properties")
+        db.collection(FirestoreCollections.PROPERTIES)
             .get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val result = task.result
                     result?.let {
                         for (document in it.documents) {
-                            val propertyLat = document.getDouble("latitude") ?: 0.0
-                            val propertyLng = document.getDouble("longitude") ?: 0.0
-                            val propertyName = document.getString("title") ?: "Property"
+                            val propertyLat = document.getDouble(FirestoreFields.LATITUDE) ?: 0.0
+                            val propertyLng = document.getDouble(FirestoreFields.LONGITUDE) ?: 0.0
+                            val propertyName = document.getString(FirestoreFields.TITLE) ?: Consts.PROPERTY
 
                             val distanceToProperty =
                                 calculateDistance(userLat, userLng, propertyLat, propertyLng)
@@ -226,7 +228,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             zoomOutCount++
             Toast.makeText(
                 requireContext(),
-                "No nearby properties found. Zooming out to show more properties",
+                R.string.no_nearby_properties,
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -240,7 +242,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         } else {
             Toast.makeText(
                 requireContext(),
-                "No nearby properties found after $maxZoomOutAttempts zoom-outs",Toast.LENGTH_SHORT).show()
+                getString(R.string.no_properties_after_zoom_out, maxZoomOutAttempts),Toast.LENGTH_SHORT).show()
         }
     }
 

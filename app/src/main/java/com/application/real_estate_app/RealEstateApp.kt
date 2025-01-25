@@ -1,7 +1,7 @@
 package com.application.real_estate_app
 
 import android.app.Application
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory

@@ -70,6 +70,10 @@ dependencies {
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Dagger Hilt
     implementation(Libs.hiltAndroid)
     kapt(Libs.hiltAndroidCompiler)

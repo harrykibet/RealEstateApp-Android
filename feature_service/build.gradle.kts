@@ -56,8 +56,18 @@ dependencies {
     androidTestImplementation(Libs.testExtJUnit)
     androidTestImplementation(Libs.espressoCore)
 
+    // Firebase
+    implementation(platform(Libs.firebaseBom)) // Firebase BOM for managing versions
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
+
     //Core module
     implementation(project(ProjectModules.core))
+
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
 
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))

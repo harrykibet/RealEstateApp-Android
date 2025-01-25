@@ -68,6 +68,10 @@ dependencies {
     androidTestImplementation(Libs.testExtJUnit)
     androidTestImplementation(Libs.espressoCore)
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     //Core module
     implementation(project(ProjectModules.core))
 

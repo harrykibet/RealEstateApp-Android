@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.core.data_utils.data_models.Property
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.interfaces.LoggerInterface
+import com.application.real_estate_app.core.domain.models.Property
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

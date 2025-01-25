@@ -54,6 +54,10 @@ dependencies {
     // Navigation Components
     implementation(Libs.navigationFragment)
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Firebase Dependencies
     implementation(platform(Libs.firebaseBom)) // Use BOM for version alignment
     implementation(Libs.firebaseAuth)

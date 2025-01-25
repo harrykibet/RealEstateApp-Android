@@ -49,7 +49,6 @@ dependencies {
 
     // Glide for Image Loading
     implementation(Libs.glide)
-    implementation("androidx.test:core-ktx:1.6.1")
     kapt(Libs.glideCompiler)
 
     // Ffmpeg
@@ -70,7 +69,7 @@ dependencies {
     testImplementation(Libs.junit)
     androidTestImplementation(Libs.testExtJUnit)
     androidTestImplementation(Libs.espressoCore)
-    androidTestImplementation(Libs.testCoreKtx)
+    implementation(Libs.testCoreKtx)
 
     // Dagger Hilt for Dependency Injection
     implementation(Libs.hiltAndroid)

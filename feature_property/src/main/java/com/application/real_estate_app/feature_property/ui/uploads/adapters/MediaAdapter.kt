@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
+import com.application.real_estate_app.core.common.misc.Consts
 import com.bumptech.glide.Glide
 import com.application.real_estate_app.feature_property.R
+import com.application.real_estate_app.feature_property.utils.MediaStrings
 
 // Initialize the layout with media items from the gallery
 // Add select and delete logic for media items displayed
@@ -57,13 +59,21 @@ class MediaAdapter(private val mediaList: List<Uri>,
 
     private fun isVideo(uri: Uri): Boolean {
         val mimeType = this.context.contentResolver.getType(uri)
-        if (mimeType?.startsWith("video/") == true) {
+        if (mimeType?.startsWith(MediaStrings.MEDIA_TYPE_VIDEO) == true) {
             return true
         }
 
         // Fallback: check file extension
-        val fileExtension = uri.toString().substringAfterLast('.', "").lowercase()
-        return fileExtension in listOf("mp4", "avi", "mkv", "mov", "flv", "webm") // Extend as needed
+        val fileExtension = uri.toString().substringAfterLast(
+            MediaStrings.URI_FILE_EXTENSION_DELIMITER, Consts.EMPTY_STRING).lowercase()
+
+        return fileExtension in listOf(
+            MediaStrings.FileExtensions.MP4,
+            MediaStrings.FileExtensions.MKV,
+            MediaStrings.FileExtensions.AVI,
+            MediaStrings.FileExtensions.MOV,
+            MediaStrings.FileExtensions.WEBM,
+            MediaStrings.FileExtensions.FLV) // Extend as needed
     }
 
 }

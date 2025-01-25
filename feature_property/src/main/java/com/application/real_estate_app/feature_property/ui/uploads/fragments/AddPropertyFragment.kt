@@ -16,7 +16,8 @@ import androidx.navigation.fragment.findNavController
 import com.application.real_estate_app.feature_property.databinding.FragmentAddPropertyBinding
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyViewModel
 import com.application.real_estate_app.feature_property.R
-import com.application.real_estate_app.feature_property.data.utils.PropertyData
+import com.application.real_estate_app.feature_property.utils.PropertyData
+import com.application.real_estate_app.feature_property.utils.PropertyStrings
 import com.application.real_estate_app.feature_property.ui.uploads.viewModels.AddPropertyField
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -208,7 +209,7 @@ class AddPropertyFragment : Fragment() {
                 launch {
                     viewModel.uploadingError.collect{ error ->
                         if (error != null) {
-                                Toast.makeText(requireContext(), "Error uploading: $error", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "${PropertyStrings.ERROR_UPLOADING_PROPERTY}: $error", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -428,7 +429,9 @@ class AddPropertyFragment : Fragment() {
                 showProgressBar()
                 // Proceed with saving the property if all fields are valid
                 viewModel.saveProperty { exception ->
-                    Toast.makeText(requireContext(), "Error saving property: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        getString(R.string.error_uploading_property, exception.message),
+                        Toast.LENGTH_SHORT).show()
                 }
             } else {
                 // If the form is invalid, show appropriate error messages
@@ -487,28 +490,28 @@ class AddPropertyFragment : Fragment() {
         var isValid = true
 
         if (viewModel.title.value!!.isEmpty()) {
-            binding.titleField.error = "Title is required"
+            binding.titleField.error = PropertyStrings.TITLE_EMPTY
             isValid = false
         } else {
             binding.titleField.error = null
         }
 
         if (viewModel.description.value!!.isEmpty()) {
-            binding.descriptionField.error = "Description is required"
+            binding.descriptionField.error = PropertyStrings.DESCRIPTION_EMPTY
             isValid = false
         } else {
             binding.descriptionField.error = null
         }
 
         if (!isPriceValid(viewModel.price.value!!)) {
-            binding.priceField.error = "Price must be greater than 0"
+            binding.priceField.error = PropertyStrings.PRICE_EMPTY
             isValid = false
         } else {
             binding.priceField.error = null
         }
 
         if (!isValid) {
-            Snackbar.make(requireView(), "Please fill out the required fields", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), R.string.fill_all_required_fields, Snackbar.LENGTH_SHORT).show()
         }
     }
 }

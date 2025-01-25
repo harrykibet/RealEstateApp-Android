@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.application.real_estate_app.core.events.LogoutEvent
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.common.events.LogoutEvent
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.feature_profile.R
 import com.application.real_estate_app.feature_profile.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -32,7 +33,7 @@ class ProfileFragment : Fragment() {
 
         binding.logoutButton.setOnClickListener {
             authApi.signOut{ exception ->
-                Toast.makeText(requireContext(), "Logout failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.log_out_failed, exception.message), Toast.LENGTH_SHORT).show()
             }
             EventBus.getDefault().post(LogoutEvent()) // Trigger the logout event
         }

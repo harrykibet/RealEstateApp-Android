@@ -147,5 +147,9 @@
     <string name="clear_form">Clear Form</string>
     <string name="clear_the_input_fields">Clear the input fields</string>
     <string name="select_media">select media</string>
+    <string name="select_location_prompt">Please select a location</string>
+    <string name="error_getting_location">Unable to get location</string>
+    <string name="error_uploading_property">Error uploading property %1$s</string>
+    <string name="fill_all_required_fields">Fill in all required fields</string>
     <string name="clear_all_the_input_fields">Clear all the input fields</string>
 </resources>

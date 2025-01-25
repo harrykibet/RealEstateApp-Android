@@ -14,8 +14,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.application.real_estate_app.R
-import com.application.real_estate_app.core.events.LoginEvent
-import com.application.real_estate_app.core.events.LogoutEvent
+import com.application.real_estate_app.core.common.events.LoginEvent
+import com.application.real_estate_app.core.common.events.LogoutEvent
+import com.application.real_estate_app.core.common.misc.Consts
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
 import com.application.real_estate_app.utils.FireStoreConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check if authentication status is passed in the intent for Android 11 and below
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            val isAuthenticated = intent.getBooleanExtra("USER_AUTHENTICATED", false)
+            val isAuthenticated = intent.getBooleanExtra(Consts.USER_AUTHENTICATED, false)
             navigateBasedOnAuthentication(isAuthenticated)
         }
         // Android 12 +
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                         content.viewTreeObserver.removeOnPreDrawListener(this)
                         // Authentication status
                         authViewModel.isUserLoggedIn.value?.let { isAuthenticated ->
-                            Toast.makeText(this@MainActivity, "Authentication Status: $isAuthenticated", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MainActivity, getString(R.string.authentication_status, isAuthenticated.toString()), Toast.LENGTH_SHORT).show()
                             navigateBasedOnAuthentication(isAuthenticated)
                         }
                         true // Proceed with normal rendering

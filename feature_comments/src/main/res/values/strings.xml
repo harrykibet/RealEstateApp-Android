@@ -9,4 +9,7 @@
     <string name="no_comments_tip">Be the first to comment</string>
     <string name="send_comment">send_comment</string>
     <string name="profile_picture">profile_picture</string>
+    <string name="comments_listening_error">Comments Listening Error %1$s</string>
+    <string name="comment_submitted">comment_submitted</string>
+    <string name="comment_submission_error">Failed to submit comment: %1$s</string>
 </resources>

@@ -61,6 +61,10 @@ dependencies {
     implementation(Libs.navigationFragment)
     implementation(Libs.navigationUI)
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Testing Libraries
     testImplementation(Libs.junit)
     androidTestImplementation(Libs.testExtJUnit)

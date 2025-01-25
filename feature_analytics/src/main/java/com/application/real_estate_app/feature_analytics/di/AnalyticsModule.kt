@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_analytics.di
 
-import com.application.real_estate_app.core.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsApiInterface
 import com.application.real_estate_app.feature_analytics.data.apis.AnalyticsApi
 import com.application.real_estate_app.feature_analytics.domain.interfaces.IAnalyticsApi
 import dagger.Binds

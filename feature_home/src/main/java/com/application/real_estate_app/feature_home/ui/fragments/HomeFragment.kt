@@ -7,17 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.application.real_estate_app.core.data_utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.interfaces.AuthApiInterface
-import com.application.real_estate_app.core.interfaces.LoggerInterface
-import com.application.real_estate_app.core.navigation.deep_links.DeepLinks
+import com.application.real_estate_app.core.common.misc.Consts
+import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.core.ui.navigation.DeepLinks
+import com.application.real_estate_app.feature_home.R
 import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
 import com.application.real_estate_app.feature_home.ui.viewModels.HomeViewModel
@@ -66,7 +67,7 @@ class HomeFragment : Fragment() {
             viewModel = propertyViewModel,
             onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId)  // fetch detailed property data
             { exception ->
-                Toast.makeText(requireContext(), "Error fetching property: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.error_fetching_properties, exception.message), Toast.LENGTH_SHORT).show()
             } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             exoPlayer = exoPlayerManager,
@@ -88,7 +89,7 @@ class HomeFragment : Fragment() {
             if (!binding.swipeRefreshLayout.isRefreshing) {
                 binding.swipeRefreshLayout.isRefreshing = true
                 homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize) { exception ->
-                    Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.error_fetching_properties, exception.message), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -119,7 +120,7 @@ class HomeFragment : Fragment() {
         // Load properties (initial load)
         if (savedInstanceState == null) {
             homeViewModel.fetchProperties(isFirstLoad = true, pageSize = pageSize) { exception ->
-                Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.error_fetching_properties, exception.message), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -135,10 +136,10 @@ class HomeFragment : Fragment() {
         // Observe liked status from PropertyViewModel
         propertyViewModel.likedStatus.observe(viewLifecycleOwner) { likedStatus ->
             when (likedStatus) {
-                LikeStatus.LIKE_SUCCESS -> Log.d("PropertyLike", "Property liked successfully!")
-                LikeStatus.UNLIKE_SUCCESS -> Log.d("PropertyLike", "Property unliked successfully!")
-                LikeStatus.LIKE_ERROR -> Log.e("PropertyLike", "Error liking property.")
-                LikeStatus.UNLIKE_ERROR -> Log.e("PropertyLike", "Error unliking property.")
+                LikeStatus.LIKE_SUCCESS -> logger.debug("PropertyLike: Property liked successfully!")
+                LikeStatus.UNLIKE_SUCCESS -> logger.debug("PropertyLike: Property unliked successfully!")
+                LikeStatus.LIKE_ERROR -> logger.debug("PropertyLike: Error liking property.")
+                LikeStatus.UNLIKE_ERROR -> logger.debug("PropertyLike: Error unliking property.")
                 else -> logger.warn("PropertyLike: Unknown like status.")
             }
         }
@@ -153,7 +154,7 @@ class HomeFragment : Fragment() {
                 if (shouldLoadMore()) {
                     homeViewModel.fetchProperties(isFirstLoad = false, pageSize = pageSize)
                     { exception ->
-                        Toast.makeText(requireContext(), "Error fetching properties: ${exception.message}", Toast.LENGTH_SHORT).show()}
+                        Toast.makeText(requireContext(), getString(R.string.error_fetching_properties, exception.message), Toast.LENGTH_SHORT).show()}
                 }
             }
         })
@@ -165,8 +166,8 @@ class HomeFragment : Fragment() {
         // Construct the deep link URI using the constant
         val uri = Uri.parse(
             DeepLinks.COMMENT_FRAGMENT
-            .replace("{propertyId}", propertyId)
-            .replace("{userId}", currentUserId ?: "")
+            .replace(DeepLinks.PROPERTY_ID_PLACEHOLDER, propertyId)
+            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING)
         )
 
         // Use NavController to navigate with the deep link

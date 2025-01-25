@@ -49,6 +49,10 @@ dependencies {
     //Core module
     implementation(project(ProjectModules.core))
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Firebase Services
     implementation(platform(Libs.firebaseBom)) // Version alignment for Firebase libraries
     implementation(Libs.firebaseFirestore)

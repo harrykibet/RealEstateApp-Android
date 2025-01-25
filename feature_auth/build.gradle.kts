@@ -61,6 +61,10 @@ dependencies {
     // Project Module Dependencies
     implementation(project(ProjectModules.core))
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     // Navigation Components
     implementation(Libs.navigationFragment)
     implementation(Libs.navigationUI)

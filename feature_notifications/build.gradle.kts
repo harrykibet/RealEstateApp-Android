@@ -59,6 +59,10 @@ dependencies {
     //Core module
     implementation(project(ProjectModules.core))
 
+    // Room
+    implementation(Libs.roomRuntime)
+    kapt(Libs.roomCompiler)
+
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 

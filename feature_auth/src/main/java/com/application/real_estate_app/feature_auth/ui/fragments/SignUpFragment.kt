@@ -15,8 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.application.real_estate_app.core.data_utils.data_models.UserType
-import com.application.real_estate_app.core.events.LoginEvent
+import com.application.real_estate_app.core.domain.models.UserType
+import com.application.real_estate_app.core.common.events.LoginEvent
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.feature_auth.databinding.FragmentSignUpBinding
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
@@ -60,7 +60,7 @@ class SignUpFragment : Fragment() {
                 startPhoneVerification(phoneNumber) {
                     authViewModel.registerUser(email, password,
                         userName, phoneNumber, selectedUserType!!) { exception ->
-                        showToast("Registration failed: ${exception.message}")
+                        showToast( getString(R.string.registration_failed, exception.message))
                     }
                 }
             }
@@ -87,7 +87,7 @@ class SignUpFragment : Fragment() {
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            listOf("Select User Type") + userTypes // Add a default option
+            listOf(R.string.select_user_type) + userTypes // Add a default option
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
@@ -115,11 +115,11 @@ class SignUpFragment : Fragment() {
     ): Boolean {
         return when {
             email.isBlank() || password.isBlank() || phoneNumber.isBlank() || userName.isBlank() -> {
-                showToast("Please fill in all fields")
+                showToast(getString(R.string.fill_in_all_fields))
                 false
             }
             selectedUserType == null -> {
-                showToast("Invalid user type selected")
+                showToast(getString(R.string.invalid_user_type_selected))
                 false
             }
             else -> true
@@ -134,11 +134,11 @@ class SignUpFragment : Fragment() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                showToast("Verification failed: ${e.message}")
+                showToast(getString(R.string.verification_failed, e.message))
             }
 
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                showToast("Code sent to $phoneNumber")
+                showToast(getString(R.string.code_sent_to, phoneNumber))
                 // Show the verification code dialog
                 VerificationCodeDialog(
                     context = requireContext(),
