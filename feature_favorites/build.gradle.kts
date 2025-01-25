@@ -60,6 +60,7 @@ dependencies {
     implementation(Libs.swipeRefreshLayout)
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

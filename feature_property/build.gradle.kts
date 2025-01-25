@@ -54,7 +54,11 @@ dependencies {
     // Navigation Components
     implementation(Libs.navigationFragment)
 
+    //GSON
+    implementation(Libs.gson)
+
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

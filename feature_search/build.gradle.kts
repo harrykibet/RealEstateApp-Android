@@ -69,6 +69,7 @@ dependencies {
     androidTestImplementation(Libs.espressoCore)
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

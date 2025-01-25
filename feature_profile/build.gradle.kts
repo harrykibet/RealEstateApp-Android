@@ -62,6 +62,7 @@ dependencies {
     implementation(Libs.navigationUI)
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

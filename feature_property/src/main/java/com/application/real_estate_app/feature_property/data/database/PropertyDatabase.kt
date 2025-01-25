@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.application.real_estate_app.feature_property.data.dao.PropertyDraftDao
 import com.application.real_estate_app.feature_property.data.entities.PropertyDraftEntity
+import com.application.real_estate_app.feature_property.data.mappers.RoomTypeConverters
 
 @Database(entities = [PropertyDraftEntity::class], version = 1, exportSchema = false)
+@TypeConverters(RoomTypeConverters::class)
 abstract class PropertyDatabase : RoomDatabase() {
 
     // Abstract function to get the PropertyDraftDao

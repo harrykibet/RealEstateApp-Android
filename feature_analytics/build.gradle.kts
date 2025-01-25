@@ -50,6 +50,7 @@ dependencies {
     implementation(project(ProjectModules.core))
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

@@ -72,6 +72,7 @@ dependencies {
 
     // Room
     implementation(Libs.roomRuntime)
+    implementation(Libs.roomKtx)
     kapt(Libs.roomCompiler)
 
     // Dagger Hilt

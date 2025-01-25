@@ -80,6 +80,7 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

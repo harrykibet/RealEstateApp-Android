@@ -57,6 +57,9 @@ object Versions {
     // Lottie
     const val lottie = "6.0.0"
 
+    // GSON
+    const val gson = "2.10.1"
+
     // Event Bus
     const val eventBus = "3.3.1"
 
@@ -152,7 +155,11 @@ object Libs {
        // Ffmpeg
        const val ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.ffmpeg}"
 
+       // GSON
+       const val gson = "com.google.code.gson:gson:${Versions.gson}"
+
         // Room
+        const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
         const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
         const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
 

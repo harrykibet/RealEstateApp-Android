@@ -62,6 +62,7 @@ dependencies {
     kapt(Libs.glideCompiler)
 
     // Room
+    implementation(Libs.roomKtx)
     implementation(Libs.roomRuntime)
     kapt(Libs.roomCompiler)
 

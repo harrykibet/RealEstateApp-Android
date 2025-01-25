@@ -140,6 +140,7 @@ dependencies {
         implementation(Libs.lottie)
 
         // Room
+        implementation(Libs.roomKtx)
         implementation(Libs.roomRuntime)
         kapt(Libs.roomCompiler)
 
