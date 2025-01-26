@@ -1,6 +1,5 @@
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
@@ -12,32 +11,38 @@ import com.google.common.util.concurrent.ListenableFuture
 @UnstableApi
 class MediaSessionManager(
     private val context: Context,
-    private val player: MediaPlayer
+    private val mediaPlayer: MediaPlayer
 ) {
-    private val mediaSession: MediaSession
+    private val mediaSession: MediaSession by lazy { createMediaSession() }
 
-    init {
-        mediaSession = MediaSession.Builder(context, player.exoPlayer)
-            .setSessionActivity(getPendingIntent())
-            .setId("RealEstateAppMediaSession")
-            .setCallback(MediaSessionCallback()) // Add callback directly here
-            .build()
+    fun release() {
+        mediaSession.run {
+            player.release()
+            release()
+        }
     }
 
-    private fun getPendingIntent(): PendingIntent {
-        val intent = Intent(context, Class.forName("${context.packageName}.MainActivity"))
+    // region Media Session Configuration
+    private fun createMediaSession(): MediaSession = MediaSession.Builder(context, mediaPlayer.exoPlayer)
+        .setSessionActivity(createSessionActivityIntent())
+        .setId(SESSION_ID)
+        .setCallback(MediaSessionCallback())
+        .build()
+
+    private fun createSessionActivityIntent(): PendingIntent {
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?: throw IllegalStateException("No launch activity found")
+
         return PendingIntent.getActivity(
             context,
-            0,
+            REQUEST_CODE_SESSION_ACTIVITY,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
+    // endregion
 
-    fun release() {
-        mediaSession.release()
-    }
-
+    // region Session Callback
     private inner class MediaSessionCallback : Callback {
         override fun onConnect(
             session: MediaSession,
@@ -45,18 +50,31 @@ class MediaSessionManager(
         ): ListenableFuture<MediaSession.ConnectionResult> {
             return Futures.immediateFuture(
                 MediaSession.ConnectionResult.accept(
-                    sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
-                        .addAllStandardCommands()
-                        .build(),
-                    playerCommands = Player.Commands.Builder()
-                        .addAll(
-                            Player.COMMAND_PLAY_PAUSE,
-                            Player.COMMAND_SEEK_TO_MEDIA_ITEM,
-                            Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM
-                        )
-                        .build()
+                    sessionCommands = buildSessionCommands(),
+                    playerCommands = buildPlayerCommands()
                 )
             )
         }
+
+        private fun buildSessionCommands() =
+            MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+                .addAllStandardCommands()
+                .build()
+
+        private fun buildPlayerCommands() =
+            Player.Commands.Builder()
+                .addAll(
+                    Player.COMMAND_PLAY_PAUSE,
+                    Player.COMMAND_SEEK_TO_MEDIA_ITEM,
+                    Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM,
+                    Player.COMMAND_SET_SPEED_AND_PITCH
+                )
+                .build()
+    }
+    // endregion
+
+    companion object {
+        private const val SESSION_ID = "RealEstateAppMediaSession"
+        private const val REQUEST_CODE_SESSION_ACTIVITY = 1001
     }
 }

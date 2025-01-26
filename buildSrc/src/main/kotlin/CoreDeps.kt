@@ -16,7 +16,7 @@ object CoreDeps {
     const val guava = "com.google.guava:guava:32.1.3-android"
     const val workRuntimeKtx = "androidx.work:work-runtime-ktx:2.9.0"
     // Performance Monitoring
-    const val metrics = "androidx.metrics:metrics-performance:1.0.0"
+    const val metrics = "androidx.metrics:metrics-performance:1.0.0-beta01"
     const val appSet = "com.google.android.gms:play-services-appset:16.0.2"
 
     val commonCoreDependencies = listOf(

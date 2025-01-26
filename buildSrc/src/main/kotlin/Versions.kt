@@ -52,7 +52,7 @@ object Versions {
     const val hiltNavigation = "1.2.0"
 
     // Media3 ExoPlayer
-    const val media3ExoPlayer = "1.4.1"
+    const val media3ExoPlayer = "1.5.1"
 
     // Lottie
     const val lottie = "6.0.0"
