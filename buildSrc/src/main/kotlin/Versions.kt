@@ -57,6 +57,9 @@ object Versions {
     // Lottie
     const val lottie = "6.0.0"
 
+    // Okhttp
+    const val okhttp = "4.12.0"
+
     // GSON
     const val gson = "2.10.1"
 

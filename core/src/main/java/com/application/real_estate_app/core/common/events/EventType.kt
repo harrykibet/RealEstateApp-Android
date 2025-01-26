@@ -12,6 +12,25 @@ object EventType {
     const val EVENT_API_ERROR = "API error encountered"
     const val EVENT_USER_REGISTRATION = "New user registered"
 
+    //Media Player Events
+    const val EVENT_MEDIA_PLAYER_INITIALIZED = "Media player initialized"
+    const val EVENT_MEDIA_PLAYER_ERROR = "Media player error"
+    const val EVENT_MEDIA_PLAYER_BUFFERING_START = "Media player buffering started"
+    const val EVENT_MEDIA_PLAYER_BUFFERING_END = "Media player buffering ended"
+    const val EVENT_MEDIA_PLAYER_SEEK_START = "Media player seek started"
+    const val EVENT_MEDIA_PLAYER_SEEK_END = "Media player seek ended"
+    const val EVENT_MEDIA_PLAYER_PLAYBACK_START = "Media player playback started"
+    const val EVENT_MEDIA_PLAYER_PLAYBACK_END = "Media player playback ended"
+    const val EVENT_MEDIA_PLAYER_PAUSE = "Media player paused"
+    const val EVENT_MEDIA_PLAYER_RESUME = "Media player resumed"
+    const val EVENT_MEDIA_PLAYER_STOP = "Media player stopped"
+    const val EVENT_MEDIA_PLAYER_RELEASE = "Media player released"
+    const val EVENT_MEDIA_PLAYER_VOLUME_CHANGED = "Media player volume changed"
+    const val EVENT_MEDIA_PLAYER_POSITION_CHANGED = "Media player position changed"
+    const val EVENT_MEDIA_PLAYER_DURATION_CHANGED = "Media player duration changed"
+    const val EVENT_MEDIA_PLAYER_STATE_CHANGED = "Media player state changed"
+    const val EVENT_MEDIA_PLAYER_QUALITY_MONITORING = "Media player quality monitoring"
+
     // Property Listing Events
     const val EVENT_PROPERTY_VIEWED = "Property viewed by user"
     const val EVENT_PROPERTY_LIKED = "User liked a property"

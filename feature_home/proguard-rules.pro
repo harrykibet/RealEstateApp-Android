@@ -22,3 +22,20 @@
 
 # Keep Safe Args generated classes
 -keep class com.application.real_estate_app.feature_home.navigation.** { *; }
+
+# Media3/ExoPlayer
+-keep class androidx.media3.** { *; }
+-keep class com.google.android.exoplayer2.** { *; }
+-dontwarn androidx.media3.**
+
+# OkHttp
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+# Cronet
+-keep class org.chromium.** { *; }
+-dontwarn org.chromium.**
+
+# Coroutines
+-keep class kotlinx.coroutines.** { *; }

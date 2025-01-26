@@ -12,4 +12,24 @@ object CoreDeps {
     const val activityKtx = "androidx.activity:activity-ktx:${Versions.activityKtx}"
     const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
     const val testCoreKtx = "androidx.test:core-ktx:${Versions.testCore}"
+    // Utilities
+    const val guava = "com.google.guava:guava:32.1.3-android"
+    const val workRuntimeKtx = "androidx.work:work-runtime-ktx:2.9.0"
+    // Performance Monitoring
+    const val metrics = "androidx.metrics:metrics-performance:1.0.0"
+    const val appSet = "com.google.android.gms:play-services-appset:16.0.2"
+
+    val commonCoreDependencies = listOf(
+        coreKtx,
+        appCompat,
+        fragmentKtx,
+        activityKtx
+    )
+    val coreUiDependencies = listOf(
+        material,
+        constraintLayout,
+        recyclerView,
+        viewPager2,
+        swipeRefreshLayout
+    )
 }

@@ -6,4 +6,15 @@ object HiltDeps {
     const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hilt}"
     const val hiltCompiler ="androidx.hilt:hilt-compiler:${Versions.hiltNavigation}"
     const val hiltNavigationFragment = "androidx.hilt:hilt-navigation-fragment:${Versions.hiltNavigation}"
+
+    // Grouped Hilt Dependencies
+    val allHiltDependencies = listOf(
+        hiltAndroid,
+        hiltNavigationFragment
+    )
+
+    val allHiltKaptDependencies = listOf(
+        hiltCompiler,
+        hiltAndroidCompiler
+    )
 }

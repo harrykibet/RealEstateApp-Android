@@ -9,4 +9,14 @@ object ComposeDeps {
     const val composeRuntimeLiveData = "androidx.compose.runtime:runtime-livedata:${Versions.composeRuntime}"
     const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
     const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.composeMaterial3}"
+
+    val allComposeDependencies = listOf(
+        composeUi,
+        composeMaterial,
+        composeUiToolingPreview,
+        composeRuntimeLiveData,
+        activityCompose,
+        composeMaterial3
+    )
+    val composeDebugDependencies = listOf ( composeUiTooling )
 }

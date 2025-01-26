@@ -50,9 +50,8 @@ dependencies {
     implementation(project(ProjectModules.core))
 
     // Room
-    implementation(RoomDeps.roomKtx)
-    implementation(RoomDeps.roomRuntime)
-    kapt(RoomDeps.roomCompiler)
+    RoomDeps.allRoomDependencies.forEach { implementation(it) }
+    RoomDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
     // Firebase Services
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries

@@ -41,40 +41,31 @@ android {
 
 dependencies {
 
-
     // Core Android Libraries
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
     implementation(CoreDeps.testCoreKtx)
+    implementation(CoreDeps.metrics)
+    implementation(CoreDeps.appSet)
+    implementation(CoreDeps.guava)
+    implementation(CoreDeps.workRuntimeKtx)
 
-    // Glide for Image Loading
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    // Ffmpeg
     implementation(MediaDeps.ffmpeg)
 
-    // Firebase
     implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
-    implementation(FirebaseDeps.firebaseAuth)
-    implementation(FirebaseDeps.firebaseFirestore)
-    implementation(FirebaseDeps.firebaseStorage)
+    FirebaseDeps.allFirebaseDependencies.forEach { implementation(it) }
 
-    // Media and UI Libraries
-    implementation(MediaDeps.media3UI)
-    implementation(MediaDeps.media3ExoPlayer)
-    implementation(MediaDeps.media3Hls)
+    MediaDeps.allMedia3Dependencies.forEach {implementation(it) }
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    NetworkDeps.allNetworkDependencies.forEach {implementation(it) }
 
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    // Dagger Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

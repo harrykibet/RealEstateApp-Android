@@ -73,47 +73,22 @@ android {
 }
 
 dependencies {
-        // Core Libraries
-        implementation(CoreDeps.coreKtx)
-        implementation(CoreDeps.appCompat)
-        implementation(CoreDeps.material)
-        implementation(CoreDeps.constraintLayout)
-        implementation(CoreDeps.viewPager2)
-        implementation(CoreDeps.recyclerView)
-        implementation(CoreDeps.swipeRefreshLayout)
+
+        CoreDeps.commonCoreDependencies.forEach { implementation(it) }
+        CoreDeps.coreUiDependencies.forEach { implementation(it) }
+
         implementation(CoreDeps.splashScreen)
 
-        //Compose dependencies
         implementation(platform(ComposeDeps.composeBom))
-        implementation(ComposeDeps.composeUi)
-        implementation(ComposeDeps.composeMaterial)
-        implementation(ComposeDeps.composeUiToolingPreview)
-        debugImplementation(ComposeDeps.composeUiTooling)
-        implementation(ComposeDeps.composeRuntimeLiveData)
-        implementation(ComposeDeps.activityCompose)
-        implementation(ComposeDeps.composeMaterial3)
+        ComposeDeps.allComposeDependencies.forEach { implementation(it) }
+        ComposeDeps.composeDebugDependencies.forEach { debugImplementation(it) }
 
+        LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
 
-        // Lifecycle
-        implementation(LifecycleDeps.lifecycleRuntime)
-        implementation(LifecycleDeps.viewModelKtx)
-        implementation(LifecycleDeps.liveDataKtx)
-
-        // Firebase BoM and dependencies
         implementation(platform(FirebaseDeps.firebaseBom))
-        implementation(FirebaseDeps.firebaseAnalytics)
-        implementation(FirebaseDeps.firebaseCrashlytics)
-        implementation(FirebaseDeps.firebaseAuth)
-        implementation(FirebaseDeps.firebaseFirestore)
-        implementation(FirebaseDeps.firebaseStorage)
-        implementation(FirebaseDeps.appCheckDebug)
-        implementation(FirebaseDeps.playIntergrity)
+        FirebaseDeps.allFirebaseDependencies.forEach { implementation(it) }
 
-        // Google Play Services
-        implementation(GooglePlayDeps.playServicesMaps)
-        implementation(GooglePlayDeps.playServicesLocation)
-        implementation(GooglePlayDeps.places)
-
+        GooglePlayDeps.allPlayServicesDependencies.forEach { implementation(it) }
 
         // Glide
         implementation(MediaDeps.glide)
@@ -122,15 +97,10 @@ dependencies {
         // Green Robot Event Bus
         implementation(EventBusDeps.eventBus)
 
-        // Navigation Component
-        implementation(NavigationDeps.navigationFragment)
-        implementation(NavigationDeps.navigationUI)
+        NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
 
-        // Dagger Hilt
-        implementation(HiltDeps.hiltAndroid)
-        kapt(HiltDeps.hiltAndroidCompiler)
-        implementation(HiltDeps.hiltNavigationFragment)
-        kapt(HiltDeps.hiltCompiler)
+        HiltDeps.allHiltDependencies.forEach { implementation(it) }
+        HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 
         // Media3 ExoPlayer
         implementation(MediaDeps.media3ExoPlayer)
@@ -139,36 +109,13 @@ dependencies {
         // Lottie
         implementation(MediaDeps.lottie)
 
-        // Room
-        implementation(RoomDeps.roomKtx)
-        implementation(RoomDeps.roomRuntime)
-        kapt(RoomDeps.roomCompiler)
+        RoomDeps.allRoomDependencies.forEach { implementation(it) }
+        RoomDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
+        TestingDeps.TestDependencies.forEach { testImplementation(it) }
+        TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-       // Testing Libraries
-       testImplementation(TestingDeps.junit)
-       androidTestImplementation(TestingDeps.testExtJUnit)
-       androidTestImplementation(TestingDeps.espressoCore)
-
-        // Project Modules
-        implementation(project(ProjectModules.featureHome))
-        implementation(project(ProjectModules.core))
-        implementation(project(ProjectModules.featureProperty))
-        implementation(project(ProjectModules.featureAuth))
-        implementation(project(ProjectModules.featureSearch))
-        implementation(project(ProjectModules.featureProfile))
-        implementation(project(ProjectModules.uiComponents))
-        implementation(project(ProjectModules.featureIntelligence))
-        implementation(project(ProjectModules.featurePayments))
-        implementation(project(ProjectModules.featureMarketPlace))
-        implementation(project(ProjectModules.featureChats))
-        implementation(project(ProjectModules.security))
-        implementation(project(ProjectModules.featureNotifications))
-        implementation(project(ProjectModules.localization))
-        implementation(project(ProjectModules.featureFavorites))
-        implementation(project(ProjectModules.featureComments))
-        implementation(project(ProjectModules.featureSettings))
-        implementation(project(ProjectModules.featureService))
+        ProjectModules.allProjectModules.forEach { implementation(project(it)) }
 }
 
 

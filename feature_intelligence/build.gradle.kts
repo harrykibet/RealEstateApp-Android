@@ -59,14 +59,9 @@ dependencies {
 
 
     // GOOGLE ML Kit libraries
-    // Device-based
-    implementation(MLKitDeps.mlKitBarcodeScanning)
-    implementation(MLKitDeps.mlKitTextRecognitionOnDevice)
-    implementation(MLKitDeps.mlKitFaceDetection)
-    implementation(MLKitDeps.mlKitImageLabelingOnDevice)
-    // Cloud-based
-    implementation(MLKitDeps.mlKitTextRecognitionCloud)
-    implementation(MLKitDeps.mlKitImageLabelingCloud)
+    MLKitDeps.allMlKitDependencies.forEach {
+        implementation(it)
+    }
 
     //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))

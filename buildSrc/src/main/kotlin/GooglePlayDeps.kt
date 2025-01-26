@@ -5,4 +5,11 @@ object GooglePlayDeps {
     const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.playServicesLocation}"
     const val places = "com.google.android.libraries.places:places:${Versions.places}"
     const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.playServicesAuth}"
+
+    val allPlayServicesDependencies = listOf(
+        playServicesMaps,
+        playServicesLocation,
+        places,
+        playServicesAuth
+    )
 }

@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Media3/ExoPlayer
+-keep class androidx.media3.** { *; }
+-keep class com.google.android.exoplayer2.** { *; }
+-dontwarn androidx.media3.**
+
+# OkHttp
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+# Cronet
+-keep class org.chromium.** { *; }
+-dontwarn org.chromium.**
+
+# Coroutines
+-keep class kotlinx.coroutines.** { *; }

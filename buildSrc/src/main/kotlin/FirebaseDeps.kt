@@ -9,4 +9,14 @@ object FirebaseDeps {
     const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
     const val playIntergrity = "com.google.firebase:firebase-appcheck-playintegrity"
     const val appCheckDebug = "com.google.firebase:firebase-appcheck-debug"
+
+    val allFirebaseDependencies = listOf(
+        firebaseAnalytics,
+        firebaseCrashlytics,
+        firebaseAuth,
+        firebaseFirestore,
+        firebaseStorage,
+        playIntergrity,
+        appCheckDebug
+    )
 }

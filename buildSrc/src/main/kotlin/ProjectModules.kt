@@ -8,7 +8,7 @@ object ProjectModules {
     const val featureSearch = ":feature_search"
     const val featureProfile = ":feature_profile"
     const val uiComponents = ":ui_components"
-    const val network = ":network"
+    const val featureAnalytics = ":feature_analytics"
     const val app = ":app"
     const val localization = ":localization"
     const val security = ":security"
@@ -21,4 +21,27 @@ object ProjectModules {
     const val featureComments = ":feature_comments"
     const val featureSettings = ":feature_settings"
     const val featureService = ":feature_service"
+
+    val allProjectModules = listOf(
+        app,
+        core,
+        featureAnalytics,
+        featureChats,
+        featureComments,
+        featureFavorites,
+        featureHome,
+        featureIntelligence,
+        featureMarketPlace,
+        featurePayments,
+        featureNotifications,
+        featureProperty,
+        featureAuth,
+        featureSearch,
+        featureProfile,
+        uiComponents,
+        localization,
+        security,
+        featureService,
+        featureSettings
+    )
 }

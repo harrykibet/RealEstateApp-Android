@@ -1,7 +1,10 @@
 package com.application.real_estate_app
 
 import android.app.Application
+import androidx.media3.common.C
+import androidx.media3.common.util.UnstableApi
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.core.utils.media_players.exoplayer.MediaPlayer
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
@@ -13,14 +16,26 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
+@UnstableApi
 @HiltAndroidApp
 class RealEstateApp : Application()  {
 
     @Inject
     lateinit var logger: LoggerInterface
 
+    private lateinit var mediaPlayer: MediaPlayer
+
     override fun onCreate() {
         super.onCreate()
+        mediaPlayer = MediaPlayer.create(
+            context = this,
+            config = MediaPlayer.PlayerConfig(
+                drmConfig = MediaPlayer.DrmConfig(
+                    uuid = C.WIDEVINE_UUID,
+                    multiSession = true
+                )
+            )
+        )
         initializeFirebase()
         configureGlobalExceptionHandler()
     }
