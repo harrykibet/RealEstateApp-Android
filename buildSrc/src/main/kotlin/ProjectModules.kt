@@ -23,7 +23,6 @@ object ProjectModules {
     const val featureService = ":feature_service"
 
     val allProjectModules = listOf(
-        app,
         core,
         featureAnalytics,
         featureChats,
