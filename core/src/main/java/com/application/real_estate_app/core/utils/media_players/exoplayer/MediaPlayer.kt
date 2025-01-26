@@ -7,9 +7,15 @@ import android.view.Surface
 import androidx.media3.common.*
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.analytics.AnalyticsCollector
 import androidx.media3.exoplayer.drm.DefaultDrmSessionManager
@@ -19,10 +25,12 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import androidx.media3.extractor.DefaultExtractorsFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import java.io.File
@@ -154,7 +162,7 @@ class MediaPlayer private constructor(
     // region Cache Management
     private fun createCache(): Cache = SimpleCache(
         File(context.cacheDir, "exo_cache"),
-        androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor(config.cacheSize),
+        LeastRecentlyUsedCacheEvictor(config.cacheSize),
         null
     )
     // endregion
@@ -195,8 +203,30 @@ data class DrmConfig(
     val multiSession: Boolean = false,
     val offlineLicenseKeySetId: ByteArray? = null
 ) {
-    override fun equals(other: Any?): Boolean = /* Existing implementation */
-        override fun hashCode(): Int = /* Existing implementation */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DrmConfig
+
+        if (uuid != other.uuid) return false
+        if (licenseUrl != other.licenseUrl) return false
+        if (multiSession != other.multiSession) return false
+        if (offlineLicenseKeySetId != null) {
+            if (other.offlineLicenseKeySetId == null) return false
+            if (!offlineLicenseKeySetId.contentEquals(other.offlineLicenseKeySetId)) return false
+        } else if (other.offlineLicenseKeySetId != null) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = uuid.hashCode()
+        result = 31 * result + licenseUrl.hashCode()
+        result = 31 * result + multiSession.hashCode()
+        result = 31 * result + (offlineLicenseKeySetId?.contentHashCode() ?: 0)
+        return result
+    }
 }
 
 enum class NetworkType { TYPE_4G, TYPE_5G, UNKNOWN }
