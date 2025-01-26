@@ -10,10 +10,8 @@ object MediaDeps {
     const val media3Session = "androidx.media3:media3-session:${Versions.media3ExoPlayer}"
     const val media3Common = "androidx.media3:media3-common:${Versions.media3ExoPlayer}"
     const val media3DataSource = "androidx.media3:media3-datasource:${Versions.media3ExoPlayer}"
-    const val media3Cache = "androidx.media3:media3-datasource-cache:${Versions.media3ExoPlayer}"
     const val media3Okhttp = "androidx.media3:media3-datasource-okhttp:${Versions.media3ExoPlayer}"
     const val media3Cronet = "androidx.media3:media3-datasource-cronet:${Versions.media3ExoPlayer}"
-    const val media3Ffmpeg = "androidx.media3:media3-decoder-ffmpeg:${Versions.media3ExoPlayer}"
     const val media3Dash = "androidx.media3:media3-exoplayer-dash:${Versions.media3ExoPlayer}"
     const val media3Rtsp = "androidx.media3:media3-exoplayer-rtsp:${Versions.media3ExoPlayer}"
     const val media3Effect = "androidx.media3:media3-effect:${Versions.media3ExoPlayer}"
@@ -36,10 +34,8 @@ object MediaDeps {
         media3Session,
         media3Common,
         media3DataSource,
-        media3Cache,
         media3Okhttp,
         media3Cronet,
-        media3Ffmpeg,
         media3Dash,
         media3Rtsp,
         media3Effect,
