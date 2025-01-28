@@ -1,4 +1,5 @@
- pluginManagement {
+include(":feature_player")
+pluginManagement {
     repositories {
         google()
         mavenCentral()
@@ -38,3 +39,4 @@ include(":feature_comments")
 include(":feature_settings")
 include(":feature_service")
 include(":feature_analytics")
+include(":feature_mediaplayer")
