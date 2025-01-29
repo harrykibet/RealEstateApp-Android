@@ -9,6 +9,7 @@ object ProjectModules {
     const val featureProfile = ":feature_profile"
     const val uiComponents = ":ui_components"
     const val featureAnalytics = ":feature_analytics"
+    const val featureMediaPlayer = ":feature_mediaplayer"
     const val app = ":app"
     const val localization = ":localization"
     const val security = ":security"
@@ -32,6 +33,7 @@ object ProjectModules {
         featureIntelligence,
         featureMarketPlace,
         featurePayments,
+        featureMediaPlayer,
         featureNotifications,
         featureProperty,
         featureAuth,

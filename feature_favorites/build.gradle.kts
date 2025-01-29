@@ -59,9 +59,9 @@ dependencies {
 
 
     // Room
-    implementation(RoomDeps.roomKtx)
-    implementation(RoomDeps.roomRuntime)
-    kapt(RoomDeps.roomCompiler)
+    implementation(DatabaseDeps.roomKtx)
+    implementation(DatabaseDeps.roomRuntime)
+    kapt(DatabaseDeps.roomCompiler)
 
     // Glide for Image Loading
     implementation(MediaDeps.glide)

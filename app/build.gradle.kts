@@ -109,8 +109,8 @@ dependencies {
         // Lottie
         implementation(MediaDeps.lottie)
 
-        RoomDeps.allRoomDependencies.forEach { implementation(it) }
-        RoomDeps.allRoomKaptDependencies.forEach { kapt(it) }
+        DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+        DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
         TestingDeps.TestDependencies.forEach { testImplementation(it) }
         TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }

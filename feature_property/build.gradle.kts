@@ -56,12 +56,12 @@ dependencies {
     implementation(NavigationDeps.navigationFragment)
 
     //GSON
-    implementation(JsonDeps.gson)
+    implementation(NetworkDeps.gson)
 
     // Room
-    implementation(RoomDeps.roomKtx)
-    implementation(RoomDeps.roomRuntime)
-    kapt(RoomDeps.roomCompiler)
+    implementation(DatabaseDeps.roomKtx)
+    implementation(DatabaseDeps.roomRuntime)
+    kapt(DatabaseDeps.roomCompiler)
 
     // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment

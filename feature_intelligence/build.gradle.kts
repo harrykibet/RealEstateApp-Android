@@ -67,9 +67,9 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Room
-    implementation(RoomDeps.roomRuntime)
-    implementation(RoomDeps.roomKtx)
-    kapt(RoomDeps.roomCompiler)
+    implementation(DatabaseDeps.roomRuntime)
+    implementation(DatabaseDeps.roomKtx)
+    kapt(DatabaseDeps.roomCompiler)
 
     // Dagger Hilt
     implementation(HiltDeps.hiltAndroid)

@@ -1,5 +1,3 @@
-import androidx.navigation.safe.args.generator.java.N
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -84,9 +82,9 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     // Room
-    implementation(RoomDeps.roomKtx)
-    implementation(RoomDeps.roomRuntime)
-    kapt(RoomDeps.roomCompiler)
+    implementation(DatabaseDeps.roomKtx)
+    implementation(DatabaseDeps.roomRuntime)
+    kapt(DatabaseDeps.roomCompiler)
 
     // Navigation Components
     implementation(NavigationDeps.navigationFragment)

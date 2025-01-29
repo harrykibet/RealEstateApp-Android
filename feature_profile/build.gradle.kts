@@ -62,9 +62,9 @@ dependencies {
     implementation(NavigationDeps.navigationUI)
 
     // Room
-    implementation(RoomDeps.roomKtx)
-    implementation(RoomDeps.roomRuntime)
-    kapt(RoomDeps.roomCompiler)
+    implementation(DatabaseDeps.roomKtx)
+    implementation(DatabaseDeps.roomRuntime)
+    kapt(DatabaseDeps.roomCompiler)
 
     // Testing Libraries
     testImplementation(TestingDeps.junit)

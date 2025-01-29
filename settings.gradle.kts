@@ -1,4 +1,4 @@
-include(":feature_player")
+
 pluginManagement {
     repositories {
         google()
