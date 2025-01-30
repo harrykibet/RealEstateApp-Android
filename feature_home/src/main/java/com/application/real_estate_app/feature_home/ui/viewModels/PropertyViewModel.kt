@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.domain.models.Property
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
-import com.application.real_estate_app.feature_home.domain.interfaces.IHomeApi
+import com.application.real_estate_app.feature_home.domain.interfaces.IHomeRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,8 +22,8 @@ enum class LikeStatus {
 
 @HiltViewModel
 class PropertyViewModel @Inject constructor(
-    private val api: IHomeApi,
-    authApi: AuthApiInterface,
+    private val api: IHomeRepo,
+    authApi: AuthRepoInterface,
     private val logger: LoggerInterface
 ) : ViewModel() {
 

@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.domain.models.Property
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyRepository
 import com.application.real_estate_app.feature_property.utils.PropertyData
 import com.application.real_estate_app.feature_property.utils.AddPropertyUiState
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class AddPropertyViewModel @Inject constructor(
     private val repository: IPropertyRepository,
     propertyData: PropertyData,
-    authApi: AuthApiInterface
+    authApi: AuthRepoInterface
 ) : ViewModel() {
 
     private val userId = authApi.getCurrentUserId()

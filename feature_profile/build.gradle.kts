@@ -45,44 +45,30 @@ android {
 }
 
 dependencies {
-    // Core Android Libraries
+
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    // Compose UI Components
+    implementation(platform(ComposeDeps.composeBom))
     implementation(ComposeDeps.composeMaterial3)
 
-    // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
     implementation(FirebaseDeps.firebaseAuth)
 
-    // Navigation Components
-    implementation(NavigationDeps.navigationFragment)
-    implementation(NavigationDeps.navigationUI)
+    NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
 
-    // Room
-    implementation(DatabaseDeps.roomKtx)
-    implementation(DatabaseDeps.roomRuntime)
-    kapt(DatabaseDeps.roomCompiler)
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    // Dagger Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 
-    //Green Robot Event bus
     implementation(EventBusDeps.eventBus)
 
-    //Modules
     implementation(project(ProjectModules.core))
-
-    //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 }

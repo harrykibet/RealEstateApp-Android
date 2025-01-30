@@ -6,7 +6,7 @@ import android.os.Binder
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.application.real_estate_app.core.common.events.EventType
-import com.application.real_estate_app.core.domain.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsRepoInterface
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackQualityService : Service() {
     @Inject
-    lateinit var analytics: AnalyticsApiInterface
+    lateinit var analytics: AnalyticsRepoInterface
     @Inject
     lateinit var logger: LoggerInterface
 

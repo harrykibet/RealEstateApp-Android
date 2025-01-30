@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_analytics.di
 
-import com.application.real_estate_app.core.domain.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsRepoInterface
 import com.application.real_estate_app.feature_analytics.data.services.ImplAnalyticsCore
 import dagger.Binds
 import dagger.Module
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class AnalyticsCoreModule {
     @Binds
     @Singleton
-    abstract fun bindAnalyticsCore(analyticsCoreImpl: ImplAnalyticsCore): AnalyticsApiInterface
+    abstract fun bindAnalyticsCore(analyticsCoreImpl: ImplAnalyticsCore): AnalyticsRepoInterface
 }

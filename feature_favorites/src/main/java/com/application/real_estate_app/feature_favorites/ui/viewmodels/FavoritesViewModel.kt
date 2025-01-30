@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.domain.models.Property
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
-import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesApi
+import com.application.real_estate_app.feature_favorites.domain.interfaces.IFavoritesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +23,8 @@ enum class LikeStatus {
 @HiltViewModel
 @Suppress("UNUSED")
 class FavoritesViewModel @Inject constructor(
-    private val api: IFavoritesApi,
-    authApi: AuthApiInterface,
+    private val api: IFavoritesRepo,
+    authApi: AuthRepoInterface,
     private val logger: LoggerInterface
 ) : ViewModel() {
 

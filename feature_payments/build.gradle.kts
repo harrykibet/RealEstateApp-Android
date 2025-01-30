@@ -47,36 +47,20 @@ android {
 
 dependencies {
 
-    //Core libraries
-    implementation(CoreDeps.coreKtx)
+    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
     implementation(CoreDeps.material)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.activityKtx)
-    implementation(CoreDeps.fragmentKtx)
 
-    // Lifecycle Components
-    implementation(LifecycleDeps.viewModelKtx)
-    implementation(LifecycleDeps.liveDataKtx)
+    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
 
-    //Core module
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+
+    implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
-    // Room
-    implementation(DatabaseDeps.roomKtx)
-    implementation(DatabaseDeps.roomRuntime)
-    kapt(DatabaseDeps.roomCompiler)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    //Shared UI-Components
-    implementation(project(ProjectModules.uiComponents))
-
-    // Dagger Hilt
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
-
-    // Testing libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

@@ -36,33 +36,22 @@ android {
 
 dependencies {
 
-    // Core Android Libraries
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
-
-    //Core module
-    implementation(project(ProjectModules.core))
-
-    // Room
     DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
-    // Firebase Services
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)
 
-    //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
+    implementation(project(ProjectModules.core))
 
-    // Dagger Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

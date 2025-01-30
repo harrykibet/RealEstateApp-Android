@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController import androidx.recyclervi
 import com.application.real_estate_app.core.common.misc.Consts
 import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.domain.models.Property
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.core.ui.navigation.DeepLinks
 import com.application.real_estate_app.feature_favorites.R
 import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
@@ -32,7 +32,7 @@ class FavoritesFragment : Fragment() {
     private lateinit var favoritesAdapter: FavoritesAdapter
 
     @Inject
-    lateinit var authChecker: AuthApiInterface // Inject Authentication API
+    lateinit var authChecker: AuthRepoInterface // Inject Authentication API
 
     @Inject
     lateinit var exoPlayerManager: ExoPlayerManager  // Inject ExoPlayer Media Player

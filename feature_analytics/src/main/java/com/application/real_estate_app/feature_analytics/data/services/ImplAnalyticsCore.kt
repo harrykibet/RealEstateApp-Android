@@ -1,19 +1,19 @@
 package com.application.real_estate_app.feature_analytics.data.services
 
 import com.application.real_estate_app.core.domain.models.AnalyticsEvent
-import com.application.real_estate_app.core.domain.interfaces.AnalyticsApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsRepoInterface
 import android.content.Context
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.core.utils.system.DeviceInfoUtil
 import com.application.real_estate_app.core.utils.system.LocationInfoUtil
-import com.application.real_estate_app.feature_analytics.data.apis.AnalyticsApi
+import com.application.real_estate_app.feature_analytics.data.repositories.AnalyticsRepository
 import javax.inject.Inject
 
 class ImplAnalyticsCore @Inject constructor(
-    private val analyticsApi: AnalyticsApi,
+    private val analyticsApi: AnalyticsRepository,
     private val context: Context,
-    private val authApi: AuthApiInterface
-) : AnalyticsApiInterface {
+    private val authApi: AuthRepoInterface
+) : AnalyticsRepoInterface {
 
     override suspend fun logEvent(
     message: String,

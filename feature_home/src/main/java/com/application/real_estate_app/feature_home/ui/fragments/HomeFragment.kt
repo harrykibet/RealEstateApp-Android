@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core.common.misc.Consts
 import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
-import com.application.real_estate_app.core.domain.interfaces.AuthApiInterface
+import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.core.ui.navigation.DeepLinks
 import com.application.real_estate_app.feature_home.R
@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
     private lateinit var propertyAdapter: PropertyAdapter
 
     @Inject
-    lateinit var authApi: AuthApiInterface
+    lateinit var authApi: AuthRepoInterface
     @Inject
     lateinit var exoPlayerManager: ExoPlayerManager
     @Inject

@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_service.domain.models
 
-import com.application.real_estate_app.feature_service.data.utils.ServiceType
+import com.application.real_estate_app.feature_service.utils.ServiceType
 import com.application.real_estate_app.core.domain.models.Location
 import java.util.Date
 

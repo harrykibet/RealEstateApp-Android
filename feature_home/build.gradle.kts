@@ -46,62 +46,37 @@ android {
 }
 
 dependencies {
-    // Core Android Libraries
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.constraintLayout)
-    implementation(CoreDeps.recyclerView)
-    implementation(CoreDeps.viewPager2)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
-    implementation(CoreDeps.swipeRefreshLayout)
-    implementation(CoreDeps.fragmentKtx)
-    implementation(CoreDeps.activityKtx)
 
-    // Compose UI Components
+    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
+    CoreDeps.coreUiDependencies.forEach { implementation(it) }
+
+    implementation(ComposeDeps.composeBom)
     implementation(ComposeDeps.composeMaterial3)
 
-    // Media and UI Libraries
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3Hls)
-
-    // Glide for Image Loading
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
 
-    // Project Module Dependencies
     implementation(project(ProjectModules.core))
-
-    //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
-    // Room
-    implementation(DatabaseDeps.roomKtx)
-    implementation(DatabaseDeps.roomRuntime)
-    kapt(DatabaseDeps.roomCompiler)
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
-    // Navigation Components
-    implementation(NavigationDeps.navigationFragment)
-    implementation(NavigationDeps.navigationUI)
+    NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
 
-    // Lifecycle Components
-    implementation(LifecycleDeps.viewModelKtx)
-    implementation(LifecycleDeps.liveDataKtx)
+    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    // Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

@@ -46,40 +46,21 @@ android {
 
 dependencies {
 
-    //Core libraries
-    implementation(CoreDeps.coreKtx)
+    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
     implementation(CoreDeps.material)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.activityKtx)
-    implementation(CoreDeps.fragmentKtx)
 
-    // Lifecycle Components
-    implementation(LifecycleDeps.viewModelKtx)
-    implementation(LifecycleDeps.liveDataKtx)
+    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
 
+    MLKitDeps.allMlKitDependencies.forEach { implementation(it) }
 
-    // GOOGLE ML Kit libraries
-    MLKitDeps.allMlKitDependencies.forEach {
-        implementation(it)
-    }
-
-    //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
-    // Room
-    implementation(DatabaseDeps.roomRuntime)
-    implementation(DatabaseDeps.roomKtx)
-    kapt(DatabaseDeps.roomCompiler)
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
-    // Dagger Hilt
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-
-    // Testing libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

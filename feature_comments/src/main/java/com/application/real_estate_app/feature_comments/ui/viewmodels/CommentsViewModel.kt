@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core.domain.models.Comment
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
-import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsApi
+import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val api: ICommentsApi,
+    private val api: ICommentsRepo,
     private val logger: LoggerInterface
 ) : ViewModel() {
 

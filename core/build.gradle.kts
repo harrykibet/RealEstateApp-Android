@@ -41,7 +41,6 @@ android {
 
 dependencies {
 
-    // Core Android Libraries
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
@@ -51,15 +50,13 @@ dependencies {
     implementation(CoreDeps.guava)
     implementation(CoreDeps.workRuntimeKtx)
 
-    implementation(MediaDeps.glide)
-    kapt(MediaDeps.glideCompiler)
-
-    implementation(MediaDeps.ffmpeg)
-
     implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
     FirebaseDeps.allFirebaseDependencies.forEach { implementation(it) }
 
     MediaDeps.allMedia3Dependencies.forEach {implementation(it) }
+    implementation(MediaDeps.ffmpeg)
+    implementation(MediaDeps.glide)
+    kapt(MediaDeps.glideCompiler)
 
     NetworkDeps.allNetworkDependencies.forEach {implementation(it) }
 

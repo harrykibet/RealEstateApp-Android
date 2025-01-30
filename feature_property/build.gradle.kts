@@ -45,56 +45,36 @@ android {
 }
 
 dependencies {
-    // Core Android Libraries
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
-    implementation(CoreDeps.activityKtx)
-    implementation(CoreDeps.fragmentKtx)
 
-    // Navigation Components
+    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
+    implementation(CoreDeps.material)
+
     implementation(NavigationDeps.navigationFragment)
 
-    //GSON
     implementation(NetworkDeps.gson)
 
-    // Room
-    implementation(DatabaseDeps.roomKtx)
-    implementation(DatabaseDeps.roomRuntime)
-    kapt(DatabaseDeps.roomCompiler)
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 
-    // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
 
-    //Glide for image loading
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    //Core module
     implementation(project(ProjectModules.core))
-
-    //Shared UI-Components
     implementation(project(ProjectModules.uiComponents))
 
-    // Google Play Services
     implementation(GooglePlayDeps.playServicesLocation)
     implementation(GooglePlayDeps.playServicesMaps)
 
-    // Lifecycle Components
-    implementation(LifecycleDeps.viewModelKtx)
-    implementation(LifecycleDeps.liveDataKtx)
+    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    // Dagger Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }

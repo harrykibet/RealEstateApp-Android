@@ -76,7 +76,6 @@ dependencies {
 
         CoreDeps.commonCoreDependencies.forEach { implementation(it) }
         CoreDeps.coreUiDependencies.forEach { implementation(it) }
-
         implementation(CoreDeps.splashScreen)
 
         implementation(platform(ComposeDeps.composeBom))
@@ -90,11 +89,6 @@ dependencies {
 
         GooglePlayDeps.allPlayServicesDependencies.forEach { implementation(it) }
 
-        // Glide
-        implementation(MediaDeps.glide)
-        kapt(MediaDeps.glideCompiler)
-
-        // Green Robot Event Bus
         implementation(EventBusDeps.eventBus)
 
         NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
@@ -102,12 +96,11 @@ dependencies {
         HiltDeps.allHiltDependencies.forEach { implementation(it) }
         HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 
-        // Media3 ExoPlayer
         implementation(MediaDeps.media3ExoPlayer)
         implementation(MediaDeps.media3UI)
-
-        // Lottie
         implementation(MediaDeps.lottie)
+        implementation(MediaDeps.glide)
+        kapt(MediaDeps.glideCompiler)
 
         DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
         DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }

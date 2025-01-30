@@ -45,45 +45,30 @@ android {
 }
 
 dependencies {
-    // Core Android Libraries
+
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom)) // Using Firebase BOM for consistent versioning
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
 
-    //Google Play Services
     implementation(GooglePlayDeps.playServicesAuth)
 
-    // Project Module Dependencies
+    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+
+    NavigationDeps.allNavigationDependencies.forEach{ implementation(it) }
+
+    implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
-    // Room
-    implementation(DatabaseDeps.roomKtx)
-    implementation(DatabaseDeps.roomRuntime)
-    kapt(DatabaseDeps.roomCompiler)
-
-    // Navigation Components
-    implementation(NavigationDeps.navigationFragment)
-    implementation(NavigationDeps.navigationUI)
-
-    //Shared UI-Components
-    implementation(project(ProjectModules.uiComponents))
-
-    // Event Bus
     implementation(EventBusDeps.eventBus)
 
-    // Testing Libraries
-    testImplementation(TestingDeps.junit)
-    androidTestImplementation(TestingDeps.testExtJUnit)
-    androidTestImplementation(TestingDeps.espressoCore)
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
 
-    // Dagger Hilt for Dependency Injection
-    implementation(HiltDeps.hiltAndroid)
-    kapt(HiltDeps.hiltAndroidCompiler)
-    implementation(HiltDeps.hiltNavigationFragment)
-    kapt(HiltDeps.hiltCompiler)
+    HiltDeps.allHiltDependencies.forEach { implementation(it) }
+    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
 }
