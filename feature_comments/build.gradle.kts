@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.application.real_estate_app.feature_comments"
-    compileSdk = 34
+    compileSdk = 35
 
     kapt{
         correctErrorTypes = true

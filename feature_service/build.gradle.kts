@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.application.real_estate_app.feature_service"
-    compileSdk = 34
+    compileSdk = 35
 
     kapt{
         correctErrorTypes = true

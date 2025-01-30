@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.application.real_estate_app.localization"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
