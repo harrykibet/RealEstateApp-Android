@@ -23,6 +23,7 @@ object ProjectModules {
     const val featureSettings = ":feature_settings"
     const val featureService = ":feature_service"
 
+    // app module not included
     val allProjectModules = listOf(
         core,
         featureAnalytics,
