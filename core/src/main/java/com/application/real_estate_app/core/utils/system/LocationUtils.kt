@@ -11,7 +11,7 @@ import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.application.real_estate_app.core.domain.models.UserLocation
 import java.util.Locale
 
-object LocationInfoUtil {
+object LocationUtils {
 
     fun getLocationInfo(context: Context): UserLocation {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager

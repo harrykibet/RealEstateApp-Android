@@ -53,7 +53,7 @@ class NetworkHandler @Inject constructor(
                     logger.debug("NetworkHandler: Network available, checking internet connection...")
 
                     // Check if the available network has internet access
-                    if (NetworkStatus.hasInternetAccess()) {
+                    if (NetworkUtils.hasInternetAccess()) {
                         logger.debug("NetworkHandler: Internet is available, proceeding with retries...")
 
                         retryJob?.cancel() // Cancel any ongoing retry job
@@ -115,14 +115,14 @@ class NetworkHandler @Inject constructor(
         onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return try {
-            when (NetworkStatus.getNetworkStatus(connectivityManager)) {
-                is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
-                is NetworkStatus.NetworkStatusResult.PoorConnection -> {
+            when (NetworkUtils.getNetworkStatus(connectivityManager)) {
+                is NetworkUtils.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
+                is NetworkUtils.NetworkStatusResult.PoorConnection -> {
                     logger.warn("NetworkHandler: ${ErrorMessages.POOR_CONNECTION}")
                     onFailure(Exception(ErrorMessages.POOR_CONNECTION))
                     null // Notify poor connection
                 }
-                is NetworkStatus.NetworkStatusResult.NoInternet -> {
+                is NetworkUtils.NetworkStatusResult.NoInternet -> {
                     logger.warn("NetworkHandler: ${ErrorMessages.NO_INTERNET_CONNECTION}")
                     onFailure(Exception(ErrorMessages.NO_INTERNET_CONNECTION))
                     null // Notify no internet
@@ -148,14 +148,14 @@ class NetworkHandler @Inject constructor(
     ): T? {
         return withContext(Dispatchers.IO) {
             try {
-                when (NetworkStatus.getNetworkStatus(connectivityManager)) {
-                    is NetworkStatus.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
-                    is NetworkStatus.NetworkStatusResult.PoorConnection -> {
+                when (NetworkUtils.getNetworkStatus(connectivityManager)) {
+                    is NetworkUtils.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
+                    is NetworkUtils.NetworkStatusResult.PoorConnection -> {
                         logger.warn("NetworkHandler: ${ErrorMessages.POOR_CONNECTION}")
                         onFailure(Exception(ErrorMessages.POOR_CONNECTION))
                         null // Notify poor connection
                     }
-                    is NetworkStatus.NetworkStatusResult.NoInternet -> {
+                    is NetworkUtils.NetworkStatusResult.NoInternet -> {
                         logger.warn("NetworkHandler: ${ErrorMessages.NO_INTERNET_CONNECTION}")
                         onFailure(Exception(ErrorMessages.NO_INTERNET_CONNECTION))
                         null // Notify no internet

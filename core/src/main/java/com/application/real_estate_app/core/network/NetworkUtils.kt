@@ -11,7 +11,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 @Suppress("UNUSED")
-object NetworkStatus {
+object NetworkUtils {
 
     // Threshold for poor connection in Kbps (adjustable)
     private const val THRESHOLD_KBPS = 50 // 50 kilobits per second

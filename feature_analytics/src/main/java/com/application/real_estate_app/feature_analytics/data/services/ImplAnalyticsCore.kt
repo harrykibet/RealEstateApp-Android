@@ -4,8 +4,8 @@ import com.application.real_estate_app.core.domain.models.AnalyticsEvent
 import com.application.real_estate_app.core.domain.interfaces.AnalyticsRepoInterface
 import android.content.Context
 import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
-import com.application.real_estate_app.core.utils.system.DeviceInfoUtil
-import com.application.real_estate_app.core.utils.system.LocationInfoUtil
+import com.application.real_estate_app.core.utils.system.DeviceUtils
+import com.application.real_estate_app.core.utils.system.LocationUtils
 import com.application.real_estate_app.feature_analytics.data.repositories.AnalyticsRepository
 import javax.inject.Inject
 
@@ -24,8 +24,8 @@ class ImplAnalyticsCore @Inject constructor(
     {
         val metadata = customMetadata?.toMutableMap() ?: mutableMapOf()
         metadata["message"] = message  // Add default message if not already present
-        val deviceInfo = DeviceInfoUtil.getDeviceInfo(context)
-        val locationInfo = LocationInfoUtil.getLocationInfo(context)
+        val deviceInfo = DeviceUtils.getDeviceInfo(context)
+        val locationInfo = LocationUtils.getLocationInfo(context)
 
         val analyticsEvent = authApi.getCurrentUserId()?.let {
             AnalyticsEvent(

@@ -7,12 +7,16 @@ object FirebaseDeps {
     const val firebaseAuth = "com.google.firebase:firebase-auth-ktx"
     const val firebaseFirestore = "com.google.firebase:firebase-firestore-ktx"
     const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
+    const val firebasePerformance = "com.google.firebase:firebase-perf-ktx"
+    const val firebaseConfig = "com.google.firebase:firebase-config-ktx"
     const val playIntergrity = "com.google.firebase:firebase-appcheck-playintegrity"
     const val appCheckDebug = "com.google.firebase:firebase-appcheck-debug"
 
     // FirebaseBom not included, add it manually in the dependencies block
     val allFirebaseDependencies = listOf(
         firebaseAnalytics,
+        firebasePerformance,
+        firebaseConfig,
         firebaseCrashlytics,
         firebaseAuth,
         firebaseFirestore,
