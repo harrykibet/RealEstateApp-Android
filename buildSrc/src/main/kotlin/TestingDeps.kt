@@ -1,8 +1,8 @@
 
 @Suppress("ConstPropertyName")
 object TestingDeps {
-    const val testExtJUnit = "androidx.test.ext:junit:${Versions.androidx_test_ExtJUnit}"
-    const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.androidx_test_espressoCore}"
+    const val testExtJUnit = "androidx.test.ext:junit:${Versions.androidx_test_ext_junit}"
+    const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.androidx_test_espresso_core}"
     const val junit = "junit:junit:${Versions.junit}"
 
     //Grouped TestingDeps( AndroidTestImplementation(...) )

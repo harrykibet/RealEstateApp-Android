@@ -66,19 +66,19 @@ object Versions {
     const val androidx_room = "2.6.1"
 
     // GOOGLE  ML Kit On-Device
-    const val google_mlKit_Barcode_Scanning = "17.1.0"
-    const val google_mlKit_Text_Recognition = "16.0.1"
-    const val google_mlKit_Face_Detection = "16.1.7"
-    const val google_mlKit_Image_Labeling = "17.0.9"
+    const val google_mlkit_barcode_scanning = "17.1.0"
+    const val google_mlkit_text_recognition = "16.0.1"
+    const val google_mlkit_face_detection = "16.1.7"
+    const val google_mlkit_image_labeling = "17.0.9"
 
     // GOOGLE ML Kit Cloud-Based
-    const val play_services_mlKit_Text_Recognition = "19.0.1"
-    const val play_services_mlKit_Image_Labeling = "16.0.8"
+    const val play_services_mlkit_text_recognition = "19.0.1"
+    const val play_services_mlkit_image_labeling = "16.0.8"
 
     // JUnit
     const val junit = "4.13.2"
 
     // Testing
-    const val androidx_test_ExtJUnit = "1.2.1"
-    const val androidx_test_espressoCore = "3.6.1"
+    const val androidx_test_ext_junit = "1.2.1"
+    const val androidx_test_espresso_core = "3.6.1"
 }
