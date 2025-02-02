@@ -13,6 +13,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.application.real_estate_app.core.domain.interfaces.IBatteryManager
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +23,7 @@ class BatteryOptimizationManager @Inject constructor(
     private val context: Context,
     private val powerManager: PowerManager,
     private val thermalService: ThermalService?
-) {
+) : IBatteryManager {
     companion object {
         private const val LOW_BATTERY_THRESHOLD = 20
         private const val CRITICAL_THERMAL_THRESHOLD = 3 // ThermalStatus.SEVERE
@@ -46,7 +47,7 @@ class BatteryOptimizationManager @Inject constructor(
         )
     }
 
-    fun shouldThrottlePerformance(): Boolean {
+    override fun shouldThrottlePerformance(): Boolean {
         return when {
             isInBatterySaverMode() -> true
             currentBatteryLevel < LOW_BATTERY_THRESHOLD && !isCharging -> true
@@ -55,7 +56,7 @@ class BatteryOptimizationManager @Inject constructor(
         }
     }
 
-    fun getRecommendedQualityLevel(maxQuality: Int): Int {
+    override fun getRecommendedQualityLevel(maxQuality: Int): Int {
         return if (shouldThrottlePerformance()) {
             when {
                 thermalStatus >= CRITICAL_THERMAL_THRESHOLD -> maxQuality / 4
@@ -67,7 +68,7 @@ class BatteryOptimizationManager @Inject constructor(
         }
     }
 
-    fun scheduleBackgroundTask(task: Runnable, delay: Long) {
+    override fun scheduleBackgroundTask(task: Runnable, delay: Long) {
         if (shouldDeferBackgroundTasks()) {
             WorkManager.getInstance(context)
                 .enqueue(
@@ -104,7 +105,7 @@ class BatteryOptimizationManager @Inject constructor(
         return currentBatteryLevel < 30 && !isCharging
     }
 
-    fun cleanup() {
+    override fun cleanup() {
         context.unregisterReceiver(batteryStatusReceiver)
     }
 

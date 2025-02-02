@@ -1,32 +1,117 @@
 package com.application.real_estate_app.feature_mediaplayer.ui
 
+
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
+import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.SurfaceView
+import android.view.View
+import android.widget.FrameLayout
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.PlayerView
+import com.application.real_estate_app.core.utils.system.DeviceUtils
+import com.application.real_estate_app.feature_mediaplayer.streaming.HdrConfiguration
+import javax.inject.Inject
 
-// HDR/Dolby Vision rendering
+@UnstableApi
 class VideoRendererView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : StyledPlayerView(context, attrs) {
+) : PlayerView(context, attrs) {
+
+    @Inject
+    private lateinit var deviceUtils: DeviceUtils
+    @Inject
+    private lateinit var hdrConfiguration: HdrConfiguration
+
+    private val overlayContainer: FrameLayout by lazy {
+        FrameLayout(context).apply {
+            layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+            )
+        }
+    }
 
     init {
         useController = false
         setShutterBackgroundColor(Color.TRANSPARENT)
+        addView(overlayContainer) // Add overlay container to player view
     }
 
-    fun enableHDR(hdrMode: HDRMode = HDRMode.HDR10) {
-        player?.setVideoSurfaceView(
-            SurfaceView(context).apply {
-                holder.setFormat(PixelFormat.RGBA_1010102)
+
+    fun enableHDR() {
+        //Check if the device supports HDR
+        if (deviceUtils.supports10BitHdr()) {
+            val surfaceView = SurfaceView(context).apply {
+                setFormatCompat()
             }
+
+            player?.setVideoSurfaceView(surfaceView)
+            overlayContainer.bringToFront()
+        }
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    private fun SurfaceView.setFormatCompat() {
+        holder.let { holder ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Use official constant for API 26+
+                holder.setFormat(PixelFormat.RGBA_1010102)
+            } else {
+                // Use raw format value with fallback
+                try {
+                    holder.setFormat(8) // RGBA_1010102 = 0x8
+                } catch (e: Exception) {
+                    Log.e("VideoRendererView",
+                        "HDR format not supported", e)
+                    holder.setFormat(PixelFormat.RGB_565)
+                }
+            }
+        }
+    }
+
+    private fun createFallbackSurface() {
+        player?.setVideoSurfaceView(SurfaceView(context).apply {
+            holder.setFormat(PixelFormat.RGB_565)
+        })
+    }
+
+    override fun addView(child: View?) {
+        if (child != null) {
+            overlayContainer.addView(child)
+        }
+    }
+
+    fun addView(view: View, params: LayoutParams) {
+        overlayContainer.addView(view, params)
+    }
+
+    override fun removeView(view: View) {
+        overlayContainer.removeView(view)
+    }
+
+    fun clearOverlays() {
+        overlayContainer.removeAllViews()
+    }
+
+    fun setOverlayTouchEnabled(enabled: Boolean) {
+        overlayContainer.isClickable = enabled
+        overlayContainer.isFocusable = enabled
+    }
+
+    fun bringOverlayToFront(view: View) {
+        overlayContainer.bringChildToFront(view)
+    }
+
+    fun setOverlayRenderingMode(hardwareAccelerated: Boolean) {
+        overlayContainer.setLayerType(
+            if (hardwareAccelerated) LAYER_TYPE_HARDWARE else LAYER_TYPE_SOFTWARE,
+            null
         )
     }
-
-    fun addView(view: SurfaceView) {
-    }
-
-    enum class HDRMode { HDR10, DOLBY_VISION }
 }

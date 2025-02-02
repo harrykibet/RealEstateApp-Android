@@ -6,28 +6,30 @@ import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.application.real_estate_app.core.utils.system.BatteryOptimizationManager
 import com.application.real_estate_app.core.utils.system.DeviceUtils
+import com.google.common.collect.ImmutableList
 import java.lang.Long.min
 import javax.inject.Inject
 
 // Adaptive bitrate logic
 @UnstableApi
 class ABRStrategy @Inject constructor(
-    private val networkMonitor: NetworkMonitor,
-    private val deviceCapabilityChecker: DeviceCapabilityChecker,
+    private val networkUtils: Networkutils,
     private val batteryManager: BatteryOptimizationManager,
     private val deviceUtils: DeviceUtils
 ) : AdaptiveTrackSelection.Factory() {
 
     override fun createAdaptiveTrackSelection(
         trackGroup: TrackGroup,
+        tracks: IntArray,
+        type: Int,
         bandwidthMeter: BandwidthMeter,
-        adaptiveSettings: AdaptiveTrackSelection.AdaptiveSettings
+        adaptationCheckpoints: ImmutableList<AdaptiveTrackSelection.AdaptationCheckpoint>
     ): AdaptiveTrackSelection {
-        return object : AdaptiveTrackSelection(trackGroup, bandwidthMeter, adaptiveSettings) {
+        return object : AdaptiveTrackSelection(trackGroup, tracks, bandwidthMeter) {
             override fun selectTracks(): Pair<Int, Int> {
                 // Custom logic combining network + device capabilities
-                val maxBitrate = deviceCapabilityChecker.getMaxSupportedBitrate()
-                val adjustedBitrate = min(maxBitrate, networkMonitor.estimatedThroughputbps)
+                val maxBitrate = deviceUtils.getMaxSupportedBitrate()
+                val adjustedBitrate = min(maxBitrate, networkUtils.estimatedThroughputbps)
 
                 return super.selectTracks().copy(adjustedBitrate)
             }
@@ -46,7 +48,7 @@ class ABRStrategy @Inject constructor(
         val baseBitrate = deviceUtils.getMaxSupportedBitrate()
         return when {
             deviceUtils.isLowRamDevice() -> (baseBitrate * 0.6).toLong()
-            networkMonitor.isUnmeteredConnection() -> baseBitrate
+            networkUtils.isUnmeteredConnection() -> baseBitrate
             else -> (baseBitrate * 0.8).toLong()
         }
     }

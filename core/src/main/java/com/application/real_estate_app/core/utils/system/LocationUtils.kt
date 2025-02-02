@@ -8,12 +8,16 @@ import android.location.Location
 import android.location.Geocoder
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
+import com.application.real_estate_app.core.domain.interfaces.ILocationUtils
 import com.application.real_estate_app.core.domain.models.UserLocation
 import java.util.Locale
+import javax.inject.Inject
 
-object LocationUtils {
+class LocationUtils @Inject constructor(
+    private val context: Context
+) : ILocationUtils {
 
-    fun getLocationInfo(context: Context): UserLocation {
+    override fun getLocationInfo(): UserLocation {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!isLocationEnabled(locationManager)) {

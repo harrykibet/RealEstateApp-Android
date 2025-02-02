@@ -2,7 +2,6 @@ package com.application.real_estate_app.feature_mediaplayer.streaming
 
 import android.provider.CallLog.Calls.PRIORITY_NORMAL
 import com.application.real_estate_app.core.utils.system.BatteryOptimizationManager
-import dagger.hilt.android.UnstableApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

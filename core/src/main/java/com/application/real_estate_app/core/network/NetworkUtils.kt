@@ -3,22 +3,26 @@ package com.application.real_estate_app.core.network
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
+import javax.inject.Inject
 
 @Suppress("UNUSED")
-object NetworkUtils {
+class NetworkUtils @Inject  constructor(
+    private val connectivityManager: ConnectivityManager
+) : INetworkUtils {
 
     // Threshold for poor connection in Kbps (adjustable)
-    private const val THRESHOLD_KBPS = 50 // 50 kilobits per second
+    private val THRESHOLD_KBPS = 50 // 50 kilobits per second
 
-    private const val GOOGLE_DNS_ADDRESS = "8.8.8.8"
-    private const val GOOGLE_DNS_PORT = 53
-    private const val HTTP_PORT = 80
+    private val GOOGLE_DNS_ADDRESS = "8.8.8.8"
+    private val GOOGLE_DNS_PORT = 53
+    private val HTTP_PORT = 80
 
     enum class ConnectionType {
         WIFI, CELLULAR, NONE
@@ -30,7 +34,7 @@ object NetworkUtils {
         data object NoInternet : NetworkStatusResult()
     }
 
-    private fun getConnectionType(connectivityManager: ConnectivityManager): ConnectionType {
+    private fun getConnectionType(): ConnectionType {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
 
@@ -42,11 +46,11 @@ object NetworkUtils {
         }
     }
 
-    private fun isConnected(connectivityManager: ConnectivityManager): Boolean {
-        return getConnectionType(connectivityManager) != ConnectionType.NONE
+    private fun isConnected(): Boolean {
+        return getConnectionType() != ConnectionType.NONE
     }
 
-    private fun isPoorConnection(connectivityManager: ConnectivityManager): Boolean {
+    private fun isPoorConnection(): Boolean {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
 
@@ -59,7 +63,7 @@ object NetworkUtils {
     /**
      * Checks actual internet access by attempting a socket connection to an external server.
      */
-    fun hasInternetAccess(): Boolean {
+    override fun hasInternetAccess(): Boolean {
         return try {
             Socket().use { socket ->
                 socket.connect(InetSocketAddress(GOOGLE_DNS_ADDRESS, GOOGLE_DNS_PORT), 1500)
@@ -74,7 +78,7 @@ object NetworkUtils {
      * Checks internet access by pinging a Google DNS server
      *may not be as reliable in some cases where ICMP is blocked
      * */
-    fun checkInternetWithPing(): Boolean {
+    override fun checkInternetWithPing(): Boolean {
         return try {
             val address = InetAddress.getByName(GOOGLE_DNS_ADDRESS)
             address.isReachable(3000) // Timeout in ms
@@ -83,13 +87,13 @@ object NetworkUtils {
         }
     }
 
-    fun isVpnConnected(connectivityManager: ConnectivityManager): Boolean {
+    override fun isVpnConnected(): Boolean {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
         return networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
     }
 
-    fun getNetworkBandwidth(connectivityManager: ConnectivityManager): Pair<Long, Long> {
+    override fun getNetworkBandwidth(): Pair<Long, Long> {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
 
@@ -99,7 +103,7 @@ object NetworkUtils {
         return Pair(downSpeed, upSpeed)
     }
 
-    suspend fun getNetworkLatency(host: String): Long {
+    override suspend fun getNetworkLatency(host: String): Long {
         return try {
             val start = System.currentTimeMillis()
             val socket = Socket()
@@ -115,18 +119,18 @@ object NetworkUtils {
         }
     }
 
-    fun isNetworkMetered(connectivityManager: ConnectivityManager): Boolean {
+    override fun isNetworkMetered(): Boolean {
         return connectivityManager.isActiveNetworkMetered
     }
 
-    fun registerNetworkCallback(connectivityManager: ConnectivityManager, callback: ConnectivityManager.NetworkCallback) {
+    override fun registerNetworkCallback(callback: ConnectivityManager.NetworkCallback) {
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
         connectivityManager.registerNetworkCallback(request, callback)
     }
 
-    fun unregisterNetworkCallback(connectivityManager: ConnectivityManager, callback: ConnectivityManager.NetworkCallback) {
+    override fun unregisterNetworkCallback(callback: ConnectivityManager.NetworkCallback) {
         connectivityManager.unregisterNetworkCallback(callback)
     }
 
@@ -134,11 +138,11 @@ object NetworkUtils {
     /**
      * Returns a result indicating the network status (Connected, Poor Connection, No Internet).
      */
-    fun getNetworkStatus(connectivityManager: ConnectivityManager): NetworkStatusResult {
+    override fun getNetworkStatus(): NetworkStatusResult {
         return when {
-            !isConnected(connectivityManager) -> NetworkStatusResult.NoInternet
+            !isConnected() -> NetworkStatusResult.NoInternet
             !hasInternetAccess() -> NetworkStatusResult.NoInternet
-            isPoorConnection(connectivityManager) -> NetworkStatusResult.PoorConnection
+            isPoorConnection() -> NetworkStatusResult.PoorConnection
             else -> NetworkStatusResult.Connected
         }
     }

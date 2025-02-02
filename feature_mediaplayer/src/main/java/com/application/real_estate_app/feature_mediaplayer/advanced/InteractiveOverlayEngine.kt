@@ -3,10 +3,12 @@ package com.application.real_estate_app.feature_mediaplayer.advanced
 import android.content.Context
 import android.graphics.Canvas
 import android.view.SurfaceView
+import androidx.media3.common.util.UnstableApi
 import com.application.real_estate_app.feature_mediaplayer.ui.VideoRendererView
 import javax.inject.Inject
 
 // Live polls/shoppable tags
+@UnstableApi
 class InteractiveOverlayEngine @Inject constructor(
     private val context: Context,
     private val videoRendererView: VideoRendererView

@@ -8,15 +8,19 @@ import android.media.MediaCodecList
 import android.os.Build
 import android.view.Display
 import androidx.core.app.ActivityManagerCompat
+import androidx.core.content.getSystemService
+import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
+import com.application.real_estate_app.core.domain.interfaces.IDeviceUtils
 import com.application.real_estate_app.core.domain.models.DeviceInfo
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class DeviceUtils @Inject constructor(
     private val context: Context,
     private val displayManager: DisplayManager
-) {
+) : IDeviceUtils {
 
-    fun getDeviceInfo(): DeviceInfo {
+    override fun getDeviceInfo(): DeviceInfo {
         val displayMetrics = context.resources.displayMetrics
         val screenResolution = "${displayMetrics.widthPixels}x${displayMetrics.heightPixels}"
         val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName
@@ -36,20 +40,29 @@ class DeviceUtils @Inject constructor(
     }
 
     // region Media Capabilities
-    fun supportsAV1(): Boolean {
+    override fun supportsAV1(): Boolean {
         return MediaCodecList(MediaCodecList.ALL_CODECS).findEncoderForMimeType("video/av01") != null
     }
 
-    fun supportsHDR(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-            display.hdrCapabilities?.supportedHdrTypes?.isNotEmpty() ?: false
-        } else {
-            false
+    override fun supports10BitHdr(): Boolean {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                MediaCodecList(MediaCodecList.ALL_CODECS)
+                    .codecInfos.any { codec ->
+                        codec.capabilitiesForType.toTypedArray()
+                            .any { it.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010) }
+                    }
+            }
+            else -> false
         }
     }
 
-    fun getMaxSupportedBitrate(): Long {
+    override fun supportsDolbyVision(): Boolean {
+        return context.packageManager.hasSystemFeature("android.hardware.dolbyvision")
+    }
+
+
+    override fun getMaxSupportedBitrate(): Long {
         return when {
             isHighEndDevice() -> 20_000_000 // 20 Mbps
             isMidRangeDevice() -> 8_000_000
@@ -57,7 +70,7 @@ class DeviceUtils @Inject constructor(
         }
     }
 
-    fun getOptimalVideoResolution(): Pair<Int, Int> {
+    override fun getOptimalVideoResolution(): Pair<Int, Int> {
         return when {
             supports4K() -> 3840 to 2160
             supports1440p() -> 2560 to 1440
@@ -67,18 +80,18 @@ class DeviceUtils @Inject constructor(
     // endregion
 
     // region General Device Info
-    fun isHighEndDevice(): Boolean {
+    override fun isHighEndDevice(): Boolean {
         return Runtime.getRuntime().availableProcessors() >= 8 &&
                 context.getSystemService<ActivityManager>()!!.memoryClass >= 512
     }
 
-    fun isLowRamDevice(): Boolean {
+    override fun isLowRamDevice(): Boolean {
         return ActivityManagerCompat.isLowRamDevice(
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         )
     }
 
-    fun getRefreshRate(): Float {
+    override fun getRefreshRate(): Float {
         return displayManager.getDisplay(Display.DEFAULT_DISPLAY).refreshRate
     }
     // endregion
@@ -95,7 +108,7 @@ class DeviceUtils @Inject constructor(
     // endregion
 
     // Memory constraints
-    fun getAvailableMemoryMB(): Long {
+    override fun getAvailableMemoryMB(): Long {
         val memInfo = ActivityManager.MemoryInfo()
         (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
             .getMemoryInfo(memInfo)

@@ -45,6 +45,7 @@ dependencies {
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)
+    implementation(FirebaseDeps.firebaseAnalytics)
 
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))

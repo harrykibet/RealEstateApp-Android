@@ -40,6 +40,9 @@ dependencies {
 
     implementation(project(ProjectModules.core))
 
+    implementation(platform(FirebaseDeps.firebaseBom))
+    implementation(FirebaseDeps.firebaseAnalytics)
+
     DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
 

@@ -1,6 +1,7 @@
 package com.application.real_estate_app.feature_mediaplayer.services
 
 import android.os.SystemClock
+import com.application.real_estate_app.core.network.NetworkUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,7 +15,7 @@ class MultiCDNSelector @Inject constructor(
         "https://cdn2.example.com"
     )
 
-    fun selectOptimalCDN(): String {
+    suspend fun selectOptimalCDN(): String {
         return if (networkUtils.isLowLatencyNetwork()) {
             cdnEndpoints.minBy { pingCDN(it) }
         } else {
@@ -22,8 +23,7 @@ class MultiCDNSelector @Inject constructor(
         }
     }
 
-    private fun pingCDN(url: String): Long {
-        // Implement actual network measurement
-        return SystemClock.elapsedRealtimeNanos()
+    private suspend fun pingCDN(url: String): Long {
+       return networkUtils.getNetworkLatency(url)
     }
 }

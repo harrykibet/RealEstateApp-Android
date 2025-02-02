@@ -5,6 +5,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import com.application.real_estate_app.core.domain.interfaces.AnalyticsRepoInterface
 import com.application.real_estate_app.core.utils.system.BatteryOptimizationManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,7 @@ import javax.inject.Singleton
 @Singleton
 @UnstableApi
 class PlaybackQualityService @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
+    private val analyticsClient: AnalyticsRepoInterface,
     private val batteryManager: BatteryOptimizationManager
 ) : AnalyticsListener {
 
