@@ -11,9 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core.common.misc.Consts
-import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.domain.models.Property
 import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
+import com.application.real_estate_app.core.domain.interfaces.IExoplayer
 import com.application.real_estate_app.core.ui.navigation.DeepLinks
 import com.application.real_estate_app.feature_favorites.R
 import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
@@ -35,7 +35,7 @@ class FavoritesFragment : Fragment() {
     lateinit var authChecker: AuthRepoInterface // Inject Authentication API
 
     @Inject
-    lateinit var exoPlayerManager: ExoPlayerManager  // Inject ExoPlayer Media Player
+    lateinit var exoPlayer: IExoplayer  // Inject ExoPlayer Media Player
 
     private val favoritesViewModel: FavoritesViewModel by viewModels()
 
@@ -75,7 +75,7 @@ class FavoritesFragment : Fragment() {
             } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
             context = requireContext(),
-            exoPlayer = exoPlayerManager
+            exoPlayer = exoPlayer
         )
 
         binding.favoritesRecyclerView.apply {
@@ -127,17 +127,17 @@ class FavoritesFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        exoPlayerManager.pause()
+        exoPlayer.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        exoPlayerManager.resume()
+        exoPlayer.resume()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        exoPlayerManager.releasePlayer()
+        exoPlayer.detachPlayer()
         _binding = null
     }
 }

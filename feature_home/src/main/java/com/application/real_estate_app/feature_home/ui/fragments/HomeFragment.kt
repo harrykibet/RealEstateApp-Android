@@ -14,8 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core.common.misc.Consts
-import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
 import com.application.real_estate_app.core.domain.interfaces.AuthRepoInterface
+import com.application.real_estate_app.core.domain.interfaces.IExoplayer
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.core.ui.navigation.DeepLinks
 import com.application.real_estate_app.feature_home.R
@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var authApi: AuthRepoInterface
     @Inject
-    lateinit var exoPlayerManager: ExoPlayerManager
+    lateinit var exoPlayer: IExoplayer
     @Inject
     lateinit var logger: LoggerInterface
 
@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), getString(R.string.error_fetching_properties, exception.message), Toast.LENGTH_SHORT).show()
             } },
             onCommentClick = { propertyId -> navigateToComments(propertyId, currentUserId) },
-            exoPlayer = exoPlayerManager,
+            exoPlayer = exoPlayer,
             context = requireContext())
 
 
@@ -182,17 +182,17 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        exoPlayerManager.releasePlayer()
+        exoPlayer.detachPlayer()
         _binding = null
     }
 
     override fun onPause() {
         super.onPause()
-        exoPlayerManager.pause()
+        exoPlayer.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        exoPlayerManager.resume()
+        exoPlayer.resume()
     }
 }

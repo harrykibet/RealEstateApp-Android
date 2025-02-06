@@ -10,4 +10,5 @@ interface IExoplayer {
     fun attachPlayerToView(playerView: PlayerView, mediaId: String)
     fun detachPlayer()
     fun resume()
+    fun pause()
 }
