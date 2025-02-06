@@ -1,7 +1,5 @@
 @file:Suppress("ConstPropertyName")
 object MediaDeps {
-    // Ffmpeg
-    const val ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.arthenica_ffmpeg_kit_min}"
 
     // Media3 ExoPlayer
     const val media3ExoPlayer = "androidx.media3:media3-exoplayer:${Versions.androidx_media3}"

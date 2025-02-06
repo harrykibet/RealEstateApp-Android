@@ -38,23 +38,9 @@ object MediaCompressor {
         }
     }
 
-    // Video compression function using FFmpeg
+    // Video compression function
     fun compressVideo(context: Context, videoUri: Uri, outputDir: File, callback: (File?) -> Unit) {
-        val inputPath = File(videoUri.path ?: "").absolutePath
-        val outputPath = File(outputDir, "compressed_video_${System.currentTimeMillis()}.mp4").absolutePath
-
-        val cmd = "-i $inputPath -vcodec libx264 -crf 28 -preset fast $outputPath"
-
-        FFmpegKit.executeAsync(cmd) { session ->
-            val returnCode = session.returnCode
-            if (ReturnCode.isSuccess(returnCode)) {
-                // Compression successful
-                callback(File(outputPath))
-            } else {
-                // Compression failed
-                callback(null)
-            }
-        }
+        TODO("Video compression not implemented yet")
     }
 
 

@@ -53,7 +53,6 @@ dependencies {
     implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
     FirebaseDeps.allFirebaseDependencies.forEach { implementation(it) }
 
-    implementation(MediaDeps.ffmpeg)
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.glide)
