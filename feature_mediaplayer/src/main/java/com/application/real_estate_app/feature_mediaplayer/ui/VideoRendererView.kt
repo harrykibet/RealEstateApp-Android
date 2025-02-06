@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import com.application.real_estate_app.core.utils.system.DeviceUtils
@@ -24,9 +25,9 @@ class VideoRendererView @JvmOverloads constructor(
 ) : PlayerView(context, attrs) {
 
     @Inject
-    private lateinit var deviceUtils: DeviceUtils
+    lateinit var deviceUtils: DeviceUtils
     @Inject
-    private lateinit var hdrConfiguration: HdrConfiguration
+    lateinit var hdrConfiguration: HdrConfiguration
 
     private val overlayContainer: FrameLayout by lazy {
         FrameLayout(context).apply {
@@ -44,6 +45,7 @@ class VideoRendererView @JvmOverloads constructor(
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun enableHDR() {
         //Check if the device supports HDR
         if (deviceUtils.supports10BitHdr()) {
