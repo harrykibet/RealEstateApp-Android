@@ -21,8 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class BatteryOptimizationManager @Inject constructor(
     private val context: Context,
-    private val powerManager: PowerManager,
-    private val thermalService: ThermalService?
+    private val powerManager: PowerManager
 ) : IBatteryManager {
     companion object {
         private const val LOW_BATTERY_THRESHOLD = 20
@@ -89,12 +88,6 @@ class BatteryOptimizationManager @Inject constructor(
         val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
         isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                 status == BatteryManager.BATTERY_STATUS_FULL
-
-        thermalStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            thermalService?.currentThermalStatus ?: 0
-        } else {
-            0
-        }
     }
 
     private fun isInBatterySaverMode(): Boolean {
