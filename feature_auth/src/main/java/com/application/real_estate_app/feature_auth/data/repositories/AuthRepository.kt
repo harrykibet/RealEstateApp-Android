@@ -3,7 +3,7 @@ package com.application.real_estate_app.feature_auth.data.repositories
 
 import com.application.real_estate_app.core.domain.models.User
 import com.application.real_estate_app.core.data.db_names.FirestoreCollections
-import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_auth.domain.interfaces.IAuthRepo
@@ -149,6 +149,6 @@ class AuthRepository @Inject constructor(
     }
 
     private fun log(message: String?) {
-        logger.error("${ErrorMessages.AUTH_API}: $message")
+        logger.e("${Errors.AUTH_REPO}: $message")
     }
 }

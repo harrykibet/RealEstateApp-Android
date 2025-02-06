@@ -70,7 +70,7 @@ class CommentsViewModel @Inject constructor(
                 )
                 _commentSubmitStatus.value = success ?: false
                 if (success == true) {
-                    logger.debug("CommentsViewModel: Comment submitted successfully")
+                    logger.d("CommentsViewModel: Comment submitted successfully")
                 } else {
                     log("Failed to submit comment")
                 }
@@ -83,6 +83,6 @@ class CommentsViewModel @Inject constructor(
     }
 
     private fun log(message: String?) {
-        logger.error("CommentsViewModel: $message")
+        logger.e("CommentsViewModel: $message")
     }
 }

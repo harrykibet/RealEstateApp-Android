@@ -9,26 +9,24 @@ import android.widget.LinearLayout
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.application.real_estate_app.feature_home.R
 import com.application.real_estate_app.feature_home.databinding.PropertyItemBinding
 import com.application.real_estate_app.feature_home.ui.viewModels.PropertyViewModel
-import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.domain.interfaces.IExoplayer
 import com.application.real_estate_app.core.domain.models.Property
 
 // Refactor the adapter for performance and reduce the functions it handle
-
-@OptIn(UnstableApi::class) //ExoplayerManager is marked as unstable
 class PropertyAdapter (
     private val viewModel: PropertyViewModel,
     private val onClick: (String) -> Unit,
     private val onCommentClick: (String) -> Unit,
-    private val exoPlayer: ExoPlayerManager,
+    private val exoPlayer: IExoplayer,
     private val context: Context
 ) : ListAdapter<Property, PropertyAdapter.PropertyViewHolder>(PropertyDiffCallback()) {
 
@@ -144,7 +142,7 @@ class PropertyAdapter (
         private val binding: PropertyItemBinding,
         private val viewModel: PropertyViewModel,
         private val onClick: (String) -> Unit,
-        private val exoPlayer: ExoPlayerManager,
+        private val exoPlayer: IExoplayer,
         private val onCommentClick: (String) -> Unit,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -193,7 +191,8 @@ class PropertyAdapter (
             updateDotIndicator(0) // Set default to the first image indicator
         }
 
-            private fun setupListeners() {
+        @OptIn(UnstableApi::class)
+        private fun setupListeners() {
             binding.likeButton.setOnClickListener {
                 val propertyId = property?.id ?: return@setOnClickListener
                 // Toggle like status
@@ -230,7 +229,7 @@ class PropertyAdapter (
         }
 
         fun releaseExoPlayer() {
-            exoPlayer.releasePlayer() // Let ExoPlayerManager handle the release
+            exoPlayer.detachPlayer() // Let ExoPlayerManager handle the release
             isVideoPlaying = false
         }
 

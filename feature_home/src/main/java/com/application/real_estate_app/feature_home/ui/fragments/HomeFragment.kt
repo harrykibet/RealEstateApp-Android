@@ -136,11 +136,11 @@ class HomeFragment : Fragment() {
         // Observe liked status from PropertyViewModel
         propertyViewModel.likedStatus.observe(viewLifecycleOwner) { likedStatus ->
             when (likedStatus) {
-                LikeStatus.LIKE_SUCCESS -> logger.debug("PropertyLike: Property liked successfully!")
-                LikeStatus.UNLIKE_SUCCESS -> logger.debug("PropertyLike: Property unliked successfully!")
-                LikeStatus.LIKE_ERROR -> logger.debug("PropertyLike: Error liking property.")
-                LikeStatus.UNLIKE_ERROR -> logger.debug("PropertyLike: Error unliking property.")
-                else -> logger.warn("PropertyLike: Unknown like status.")
+                LikeStatus.LIKE_SUCCESS -> logger.d("PropertyLike: Property liked successfully!")
+                LikeStatus.UNLIKE_SUCCESS -> logger.d("PropertyLike: Property unliked successfully!")
+                LikeStatus.LIKE_ERROR -> logger.d("PropertyLike: Error liking property.")
+                LikeStatus.UNLIKE_ERROR -> logger.d("PropertyLike: Error unliking property.")
+                else -> logger.w("PropertyLike: Unknown like status.")
             }
         }
     }

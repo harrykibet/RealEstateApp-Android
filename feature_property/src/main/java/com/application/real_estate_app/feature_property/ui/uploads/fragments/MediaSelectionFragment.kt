@@ -122,7 +122,7 @@ class MediaSelectionFragment : Fragment(R.layout.fragment_media_selection) {
                 mediaAdapter.notifyDataSetChanged()
             }
         } else {
-            logger.error(MediaStrings.ERROR_PICTURES_DIR)
+            logger.e(MediaStrings.ERROR_PICTURES_DIR)
         }
     }
 

@@ -186,9 +186,9 @@ class LogInFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         })
-                        logger.debug("PasswordReset: Password reset email sent!")
+                        logger.d("PasswordReset: Password reset email sent!")
                     } catch (e: Exception) {
-                        logger.error("PasswordReset: Error sending password reset email: ${e.message}")
+                        logger.e("PasswordReset: Error sending password reset email: ${e.message}")
                     }
                 }
                 dialog.dismiss()
@@ -221,7 +221,7 @@ class LogInFragment : Fragment() {
         if (requestCode == authViewModel.requestCode) {
             authViewModel.handleGoogleSignInResult(data) { exception ->
                 // Handle the failure, e.g., log the error or show a message to the user
-                logger.error("AuthError: Google Sign-In failed: ${exception.message}")
+                logger.e("AuthError: Google Sign-In failed: ${exception.message}")
                 Toast.makeText(
                     requireContext(),
                     "${R.string.sign_in_failed}: ${exception.message}",

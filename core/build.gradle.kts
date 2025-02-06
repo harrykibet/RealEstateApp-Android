@@ -55,6 +55,7 @@ dependencies {
 
     implementation(MediaDeps.ffmpeg)
     implementation(MediaDeps.media3ExoPlayer)
+    implementation(MediaDeps.media3UI)
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 

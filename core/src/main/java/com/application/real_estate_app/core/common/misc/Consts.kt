@@ -6,4 +6,5 @@ object Consts {
     const val PROPERTY = "property"
     const val USER_AUTHENTICATED = "USER_AUTHENTICATED"
     const val DATE_FORMAT = "dd MMM yyyy, hh:mm a"
+    const val PRIORITY_NORMAL = 0
 }

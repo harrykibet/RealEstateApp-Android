@@ -8,7 +8,7 @@ import com.application.real_estate_app.core.data.mappers.toDomainModel
 import com.application.real_estate_app.core.data.mappers.toEntityModel
 import com.application.real_estate_app.core.domain.models.Property
 import com.application.real_estate_app.core.data.db_names.FirestoreCollections
-import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_property.utils.MediaStrings
@@ -134,6 +134,6 @@ class RemoteDataSource @Inject constructor(
     }
 
     private fun log(message: String?) {
-        logger.error("${ErrorMessages.PROPERTY_API}: $message")
+        logger.e("${Errors.PROPERTY_REPO}: $message")
     }
 }

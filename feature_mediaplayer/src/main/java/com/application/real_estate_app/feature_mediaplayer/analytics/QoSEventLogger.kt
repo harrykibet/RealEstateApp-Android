@@ -1,6 +1,7 @@
 package com.application.real_estate_app.feature_mediaplayer.analytics
 
 import androidx.core.os.bundleOf
+import com.google.firebase.analytics.FirebaseAnalytics
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton

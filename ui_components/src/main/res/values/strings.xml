@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">RealEstateApp</string>
     <string name="select_image">select image</string>
     <string name="add_property">add property</string>
     <string name="location">Location</string>

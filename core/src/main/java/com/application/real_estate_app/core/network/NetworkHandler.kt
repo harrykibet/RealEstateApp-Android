@@ -4,7 +4,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +18,7 @@ import javax.inject.Inject
 @Suppress("UNUSED")
 class NetworkHandler @Inject constructor(
     private val connectivityManager: ConnectivityManager,
+    private val networkUtils: NetworkUtils,
     private val logger: LoggerInterface
 ): INetworkHandler {
 
@@ -50,11 +51,11 @@ class NetworkHandler @Inject constructor(
             val networkCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
-                    logger.debug("NetworkHandler: Network available, checking internet connection...")
+                    logger.d("NetworkHandler: Network available, checking internet connection...")
 
                     // Check if the available network has internet access
-                    if (NetworkUtils.hasInternetAccess()) {
-                        logger.debug("NetworkHandler: Internet is available, proceeding with retries...")
+                    if (networkUtils.hasInternetAccess()) {
+                        logger.d("NetworkHandler: Internet is available, proceeding with retries...")
 
                         retryJob?.cancel() // Cancel any ongoing retry job
 
@@ -66,9 +67,9 @@ class NetworkHandler @Inject constructor(
                                     result = apiCall() // Execute the network apiCall
                                     break // Success, exit the loop
                                 } catch (e: Exception) {
-                                    logger.error("NetworkHandler: Retry $attempt failed: ${e.message}")
+                                    logger.e("NetworkHandler: Retry $attempt failed: ${e.message}")
                                     if (attempt >= maxRetries) {
-                                        logger.error("NetworkHandler: Max retries reached, giving up.")
+                                        logger.e("NetworkHandler: Max retries reached, giving up.")
                                         onFailure(e) // Call onFailure callback on max retries
                                     } else {
                                         delay(retryDelayMs) // Delay before retrying
@@ -77,14 +78,14 @@ class NetworkHandler @Inject constructor(
                             }
                         }
                     } else {
-                        logger.warn("NetworkHandler: Network is available but no internet access.")
-                        onFailure(Exception(ErrorMessages.NO_INTERNET_CONNECTION))
+                        logger.w("NetworkHandler: Network is available but no internet access.")
+                        onFailure(Exception(Errors.NO_INTERNET_CONNECTION))
                     }
                 }
 
                 override fun onLost(network: Network) {
                     super.onLost(network)
-                    logger.warn("NetworkHandler: Network lost, retrying not possible.")
+                    logger.w("NetworkHandler: Network lost, retrying not possible.")
                     retryJob?.cancel() // Cancel retry job if network is lost
                     onFailure(Exception("Network lost"))
                 }
@@ -115,21 +116,21 @@ class NetworkHandler @Inject constructor(
         onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
     ): T? {
         return try {
-            when (NetworkUtils.getNetworkStatus(connectivityManager)) {
+            when (networkUtils.getNetworkStatus()) {
                 is NetworkUtils.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                 is NetworkUtils.NetworkStatusResult.PoorConnection -> {
-                    logger.warn("NetworkHandler: ${ErrorMessages.POOR_CONNECTION}")
-                    onFailure(Exception(ErrorMessages.POOR_CONNECTION))
+                    logger.w("NetworkHandler: ${Errors.POOR_CONNECTION}")
+                    onFailure(Exception(Errors.POOR_CONNECTION))
                     null // Notify poor connection
                 }
                 is NetworkUtils.NetworkStatusResult.NoInternet -> {
-                    logger.warn("NetworkHandler: ${ErrorMessages.NO_INTERNET_CONNECTION}")
-                    onFailure(Exception(ErrorMessages.NO_INTERNET_CONNECTION))
+                    logger.w("NetworkHandler: ${Errors.NO_INTERNET_CONNECTION}")
+                    onFailure(Exception(Errors.NO_INTERNET_CONNECTION))
                     null // Notify no internet
                 }
             }
         } catch (e: Exception) {
-            logger.error("NetworkHandler: API call failed: ${e.message}")
+            logger.e("NetworkHandler: API call failed: ${e.message}")
             onFailure(e) // Call onFailure callback on failure
             null
         }
@@ -148,21 +149,21 @@ class NetworkHandler @Inject constructor(
     ): T? {
         return withContext(Dispatchers.IO) {
             try {
-                when (NetworkUtils.getNetworkStatus(connectivityManager)) {
+                when (networkUtils.getNetworkStatus()) {
                     is NetworkUtils.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                     is NetworkUtils.NetworkStatusResult.PoorConnection -> {
-                        logger.warn("NetworkHandler: ${ErrorMessages.POOR_CONNECTION}")
-                        onFailure(Exception(ErrorMessages.POOR_CONNECTION))
+                        logger.w("NetworkHandler: ${Errors.POOR_CONNECTION}")
+                        onFailure(Exception(Errors.POOR_CONNECTION))
                         null // Notify poor connection
                     }
                     is NetworkUtils.NetworkStatusResult.NoInternet -> {
-                        logger.warn("NetworkHandler: ${ErrorMessages.NO_INTERNET_CONNECTION}")
-                        onFailure(Exception(ErrorMessages.NO_INTERNET_CONNECTION))
+                        logger.w("NetworkHandler: ${Errors.NO_INTERNET_CONNECTION}")
+                        onFailure(Exception(Errors.NO_INTERNET_CONNECTION))
                         null // Notify no internet
                     }
                 }
             } catch (e: Exception) {
-                logger.error("NetworkHandler: API call failed: ${e.message}")
+                logger.e("NetworkHandler: API call failed: ${e.message}")
                 onFailure(e) // Call onFailure callback on failure
                 null
             }

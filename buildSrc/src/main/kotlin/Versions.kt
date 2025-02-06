@@ -23,7 +23,7 @@ object Versions {
     const val androidx_lifecycle = "2.8.7"
 
     // Ffmpeg
-    const val arthenica_ffmpeg = "5.1.LTS"
+    const val arthenica_ffmpeg_kit_min = "5.1.LTS"
 
     // Test Core
     const val androidx_test_core_ktx = "1.6.1"
@@ -40,6 +40,12 @@ object Versions {
     // Glide
     const val github_bumptech_glide = "4.16.0"
 
+    // Media Router
+    const val androidx_mediarouter = "1.7.0"
+
+    // Media Router 2
+    const val androidx_mediarouter2 = "1.0.0-beta01"
+
     // Navigation
     const val androidx_navigation = "2.8.3"
 
@@ -55,6 +61,9 @@ object Versions {
 
     // Okhttp
     const val squareup_okhttp3 = "4.12.0"
+
+    // Retrofit
+    const val squareup_retrofit2 = "2.9.0"
 
     // GSON
     const val google_code_gson = "2.10.1"

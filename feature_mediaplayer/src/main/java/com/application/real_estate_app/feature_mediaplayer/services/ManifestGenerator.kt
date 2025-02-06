@@ -1,11 +1,11 @@
 package com.application.real_estate_app.feature_mediaplayer.services
 
-import com.application.real_estate_app.core.utils.system.DeviceUtils
+import com.application.real_estate_app.core.domain.interfaces.IDeviceUtils
 import javax.inject.Inject
 
 // Dynamic manifest adjustments
 class ManifestGenerator @Inject constructor(
-    private val deviceUtils: DeviceUtils
+    private val deviceUtils: IDeviceUtils
 ) {
     fun filterManifest(originalManifest: String): String {
         return if (deviceUtils.supportsAV1()) {

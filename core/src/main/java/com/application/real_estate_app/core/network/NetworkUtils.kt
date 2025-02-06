@@ -1,8 +1,14 @@
 package com.application.real_estate_app.core.network
 
+import android.app.usage.NetworkStats
+import android.app.usage.NetworkStatsManager
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
+import android.telephony.TelephonyManager
+import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,7 +20,10 @@ import javax.inject.Inject
 
 @Suppress("UNUSED")
 class NetworkUtils @Inject  constructor(
-    private val connectivityManager: ConnectivityManager
+    private val connectivityManager: ConnectivityManager,
+    private val networkStatsManager: NetworkStatsManager,
+    private val telephonyManager: TelephonyManager,
+    private val context: Context
 ) : INetworkUtils {
 
     // Threshold for poor connection in Kbps (adjustable)
@@ -119,9 +128,58 @@ class NetworkUtils @Inject  constructor(
         }
     }
 
+    private fun getEstimatedThroughput(): Long {
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        if (capabilities != null) {
+            val downSpeedKbps = capabilities.linkDownstreamBandwidthKbps.toLong()
+            val upSpeedKbps = capabilities.linkUpstreamBandwidthKbps.toLong()
+
+            // Convert Kbps to bps and return total throughput
+            return (downSpeedKbps + upSpeedKbps) * 1000
+        }
+
+        return 0L // No network available
+    }
+
+
+    override  fun estimatedThroughputbps(): Long {
+        val trafficStatsThroughput = getEstimatedThroughput()
+        val (downSpeedKbps, upSpeedKbps) = getNetworkBandwidth()
+
+        val networkCapabilitiesThroughput = (downSpeedKbps + upSpeedKbps) * 1000 // Convert Kbps to bps
+
+        return if (trafficStatsThroughput > 0) trafficStatsThroughput else networkCapabilitiesThroughput
+    }
+
+
+    /**
+     * Checks if the network is low latency (fast response time).
+     */
+    override fun isLowLatencyNetwork(): Boolean {
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        val isFastNetworkType = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+                (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) &&
+                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) ||
+                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+
+        // Check if the network is low latency by analyzing additional properties or capabilities
+        val isLowLatency =
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) ||
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+
+        return isFastNetworkType && isLowLatency
+    }
+
+
     override fun isNetworkMetered(): Boolean {
         return connectivityManager.isActiveNetworkMetered
     }
+
 
     override fun registerNetworkCallback(callback: ConnectivityManager.NetworkCallback) {
         val request = NetworkRequest.Builder()

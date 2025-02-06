@@ -1,11 +1,12 @@
 package com.application.real_estate_app.feature_mediaplayer.streaming
 
-import android.telecom.TelecomManager.PRIORITY_NORMAL
 import androidx.media3.common.util.UnstableApi
+import com.application.real_estate_app.core.common.misc.Consts.PRIORITY_NORMAL
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.concurrent.PriorityBlockingQueue
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,5 +34,11 @@ class ChunkDownloader @Inject constructor(
     data class ChunkRequest(
         val url: String,
         val priority: Int = PRIORITY_NORMAL
-    )
+    ) {
+        fun toRequest(): Request {
+            return Request.Builder()
+                .url(url)
+                .build()
+        }
+    }
 }

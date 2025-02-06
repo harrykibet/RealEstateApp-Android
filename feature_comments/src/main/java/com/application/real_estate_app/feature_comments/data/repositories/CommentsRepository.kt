@@ -5,7 +5,7 @@ import com.application.real_estate_app.core.data.db_entities.CommentEntity
 import com.application.real_estate_app.core.domain.models.Comment
 import com.application.real_estate_app.core.data.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data.db_names.FirestoreFields
-import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_comments.domain.interfaces.ICommentsRepo
@@ -88,6 +88,6 @@ class CommentsRepository @Inject constructor(
     }
 
     private fun log(message: String?) {
-        logger.error("${ErrorMessages.COMMENTS_API} : $message")
+        logger.e("${Errors.COMMENTS_REPO} : $message")
     }
 }

@@ -93,6 +93,6 @@ class FavoritesViewModel @Inject constructor(
     }
 
     private fun log(message: String?){
-        logger.error("PropertyViewModel: $message")
+        logger.e("PropertyViewModel: $message")
     }
 }

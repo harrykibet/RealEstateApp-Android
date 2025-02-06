@@ -47,12 +47,12 @@ class RealEstateApp : Application()  {
         runCatching {
             FirebaseApp.initializeApp(this)
                 ?: throw IllegalStateException("Firebase initialization failed. Check your google-services.json configuration.")
-            logger.info("Firebase initialized successfully.")
+            logger.i("Firebase initialized successfully.")
 
             // Configure Firebase App Check with Debug Provider
             FirebaseAppCheck.getInstance().apply {
                 installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
-                logger.info("Firebase App Check Debug Provider installed.")
+                logger.i("Firebase App Check Debug Provider installed.")
             }
         }.onFailure { exception ->
             "Failed to initialize Firebase or App Check.".handleCriticalError(exception)
@@ -69,7 +69,7 @@ class RealEstateApp : Application()  {
 
         CoroutineExceptionHandler { _, throwable ->
             handleUncaughtException(Thread.currentThread(), throwable)
-        }.also { logger.info("Global exception handlers configured.") }
+        }.also { logger.i("Global exception handlers configured.") }
     }
 
     /**
@@ -77,7 +77,7 @@ class RealEstateApp : Application()  {
      */
     private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         val errorMessage = "Uncaught exception in thread '${thread.name}': ${throwable.localizedMessage}"
-        logger.error(errorMessage, throwable)
+        logger.e(errorMessage, throwable)
 
         // Log detailed error information to Crashlytics
         FirebaseCrashlytics.getInstance().apply {
@@ -93,16 +93,16 @@ class RealEstateApp : Application()  {
      * Handles critical errors during initialization or runtime.
      */
     private fun String.handleCriticalError(throwable: Throwable) {
-        logger.error(this, throwable)
+        logger.e(this, throwable)
         FirebaseCrashlytics.getInstance().recordException(throwable)
-        logger.warn("Critical error handled gracefully. Application may behave unexpectedly.")
+        logger.w("Critical error handled gracefully. Application may behave unexpectedly.")
     }
 
     /**
      * Gracefully exits the application to avoid undefined behavior after critical failures.
      */
     private fun exitApplication() {
-        logger.warn("Application is exiting due to a critical failure.")
+        logger.w("Application is exiting due to a critical failure.")
         runBlocking(Dispatchers.IO) {
             FirebaseCrashlytics.getInstance().sendUnsentReports() // Ensure all logs are uploaded
         }

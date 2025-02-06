@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_logo">App Logo</string>
+    <string name="app_name">Estatia</string>
     <string name="authentication_status">Authentication Status: %1$s</string>
 </resources>

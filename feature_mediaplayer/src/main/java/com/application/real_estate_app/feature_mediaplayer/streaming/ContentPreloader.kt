@@ -1,7 +1,8 @@
 package com.application.real_estate_app.feature_mediaplayer.streaming
 
-import android.provider.CallLog.Calls.PRIORITY_NORMAL
-import com.application.real_estate_app.core.utils.system.BatteryOptimizationManager
+import com.application.real_estate_app.core.common.misc.Consts.PRIORITY_NORMAL
+import com.application.real_estate_app.core.domain.interfaces.IBatteryManager
+import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,13 +15,13 @@ import javax.inject.Singleton
 @androidx.media3.common.util.UnstableApi
 class ContentPreloader @Inject constructor(
     private val cacheManager: CacheManager,
-    private val networkUtils: NetworkUtils,
-    private val batteryManager: BatteryOptimizationManager
+    private val networkUtils: INetworkUtils,
+    private val batteryManager: IBatteryManager
 ) {
     private val preloadQueue = LinkedBlockingQueue<String>()
 
     fun schedulePreload(mediaUri: String, priority: Int = PRIORITY_NORMAL) {
-        if (networkUtils.isConnectedToUnmeteredNetwork()) {
+        if (!networkUtils.isNetworkMetered()) {
             preloadQueue.add(mediaUri)
             startPreloadWorker()
         }

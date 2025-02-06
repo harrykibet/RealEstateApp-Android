@@ -9,7 +9,9 @@ interface INetworkUtils {
     fun isVpnConnected(): Boolean
     fun getNetworkBandwidth(): Pair<Long, Long>
     suspend fun getNetworkLatency(host: String): Long
+    fun isLowLatencyNetwork(): Boolean
     fun isNetworkMetered(): Boolean
+    fun estimatedThroughputbps(): Long
     fun registerNetworkCallback(callback: ConnectivityManager.NetworkCallback)
     fun unregisterNetworkCallback(callback: ConnectivityManager.NetworkCallback)
     fun getNetworkStatus(): NetworkStatusResult

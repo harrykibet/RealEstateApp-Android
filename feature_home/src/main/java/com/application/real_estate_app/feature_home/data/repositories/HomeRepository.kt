@@ -8,7 +8,7 @@ import com.application.real_estate_app.core.domain.models.Likes
 import com.application.real_estate_app.core.domain.models.Property
 import com.application.real_estate_app.core.data.db_names.FirestoreCollections
 import com.application.real_estate_app.core.data.db_names.FirestoreFields
-import com.application.real_estate_app.core.common.errors.ErrorMessages
+import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_home.domain.interfaces.IHomeRepo
@@ -126,6 +126,6 @@ class HomeRepository @Inject constructor(
     }
 
     private fun log(message: String?){
-        logger.error("${ErrorMessages.HOME_API} : $message")
+        logger.e("${Errors.HOME_REPO} : $message")
     }
 }

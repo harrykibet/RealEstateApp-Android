@@ -5,6 +5,9 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.BandwidthMeter
+import androidx.media3.ui.PlayerView
+import com.application.real_estate_app.core.domain.interfaces.IExoplayer
+import com.application.real_estate_app.feature_mediaplayer.streaming.ContentPreloader
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,12 +17,13 @@ import javax.inject.Singleton
 class ExoPlayerInstanceManager
 @Inject constructor(
     private val context: Context,
-    private val bandwidthMeter: BandwidthMeter
-) {
+    private val bandwidthMeter: BandwidthMeter,
+    private val contentPreloader: ContentPreloader
+): IExoplayer {
     private val playerPool = mutableListOf<ExoPlayer>()
     private val activePlayers = mutableMapOf<String, ExoPlayer>()
 
-    fun acquirePlayer(mediaId: String): ExoPlayer {
+    override fun acquirePlayer(mediaId: String): ExoPlayer {
         return playerPool.find { !it.isPlaying }?.also {
             activePlayers[mediaId] = it
         } ?: createNewPlayer().also {
@@ -34,8 +38,24 @@ class ExoPlayerInstanceManager
             .also { playerPool.add(it) }
     }
 
-    fun releasePlayer(mediaId: String) {
+    override fun releasePlayer(mediaId: String) {
         activePlayers[mediaId]?.stop()
         activePlayers.remove(mediaId)
+    }
+
+    override fun preloadMedia(mediaId: String) {
+        contentPreloader.schedulePreload(mediaId)
+    }
+
+    override fun attachPlayerToView(playerView: PlayerView, mediaId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun detachPlayer() {
+        TODO("Not yet implemented")
+    }
+
+    override fun resume() {
+        TODO("Not yet implemented")
     }
 }

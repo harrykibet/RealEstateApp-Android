@@ -20,26 +20,26 @@ class Logger @Inject constructor(
     private val logFileName = "app_logs.txt"
     private val logFile: File = File(context.filesDir, logFileName)
 
-    override fun debug(
+    override fun d(
         message: String
     ) {
         log(Log.DEBUG, message, null)
     }
 
-    override fun info(
+    override fun i(
         message: String
     ) {
         log(Log.INFO, message, null)
     }
 
-    override fun warn(
+    override fun w(
         message: String,
         throwable: Throwable?
     ) {
         log(Log.WARN, message, throwable)
     }
 
-    override fun error(
+    override fun e(
         message: String,
         throwable: Throwable?
     ) {
@@ -66,7 +66,7 @@ class Logger @Inject constructor(
         return "$timestamp $message"
     }
 
-    private fun saveLogToFile(message: String, throwable: Throwable? = null) {
+    override fun saveLogToFile(message: String, throwable: Throwable?) {
         if (!logFile.exists()) {
             logFile.createNewFile()
         }
@@ -78,7 +78,7 @@ class Logger @Inject constructor(
                 }
             }
         } catch (e: IOException) {
-            error("Failed to write log to file: ${e.message}")
+            e("Failed to write log to file: ${e.message}")
         }
     }
 
@@ -86,7 +86,7 @@ class Logger @Inject constructor(
         return try {
             logFile.readText()
         } catch (e: IOException) {
-            error("Failed to read log file: ${e.message}")
+            e("Failed to read log file: ${e.message}")
         }.toString()
     }
 
@@ -94,7 +94,7 @@ class Logger @Inject constructor(
         try {
             logFile.writeText("")
         } catch (e: IOException) {
-            error("Failed to clear log file: ${e.message}")
+            e("Failed to clear log file: ${e.message}")
         }
     }
 }

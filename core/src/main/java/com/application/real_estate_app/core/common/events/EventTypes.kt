@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core.common.events
 
 @Suppress("UNUSED")
-object EventType {
+object EventTypes {
     // General App Events
     const val EVENT_APP_LAUNCH = "App launched"
     const val EVENT_APP_CRASH = "App crashed"

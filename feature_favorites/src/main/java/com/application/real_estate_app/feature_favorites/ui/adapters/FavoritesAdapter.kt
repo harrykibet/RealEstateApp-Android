@@ -16,7 +16,7 @@ import com.application.real_estate_app.feature_favorites.databinding.PropertyIte
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core.utils.media_players.ExoPlayerManager
+import com.application.real_estate_app.core.domain.interfaces.IExoplayer
 import com.application.real_estate_app.core.domain.models.Property
 import com.application.real_estate_app.ui_components.R
 import com.application.real_estate_app.feature_favorites.ui.viewmodels.FavoritesViewModel
@@ -28,7 +28,7 @@ class FavoritesAdapter (
     private val viewModel: FavoritesViewModel,
     private val onClick: (String) -> Unit,
     private val onCommentClick: (String) -> Unit,
-    private val exoPlayer: ExoPlayerManager,
+    private val exoPlayer: IExoplayer,
     private val context: Context
 ) : ListAdapter<Property, FavoritesAdapter.PropertyViewHolder>(PropertyDiffCallback()) {
 
@@ -144,7 +144,7 @@ class FavoritesAdapter (
         private val binding: PropertyItemBinding,
         private val viewModel: FavoritesViewModel,
         private val onClick: (String) -> Unit,
-        private val exoPlayer: ExoPlayerManager,
+        private val exoPlayer: IExoplayer,
         private val onCommentClick: (String) -> Unit,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -230,7 +230,7 @@ class FavoritesAdapter (
         }
 
         fun releaseExoPlayer() {
-            exoPlayer.releasePlayer() // Let ExoPlayerManager handle the release
+            exoPlayer.detachPlayer() // Let ExoPlayerManager handle the release
             isVideoPlaying = false
         }
 

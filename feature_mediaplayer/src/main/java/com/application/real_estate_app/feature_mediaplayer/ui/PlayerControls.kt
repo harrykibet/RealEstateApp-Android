@@ -18,7 +18,7 @@ class PlayerControls @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.player_controls, this)
-        playButton = findViewById(R.id.playButton)
+        playButton = findViewById(R.id.btnPlayPause)
         seekBar = findViewById(R.id.seekBar)
     }
 
