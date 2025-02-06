@@ -48,7 +48,7 @@ class PlaybackQualityService @Inject constructor(
     fun optimizePlayerConfiguration(builder: ExoPlayer.Builder): ExoPlayer.Builder {
         return if (batteryManager.shouldThrottlePerformance()) {
             builder
-                .setLoadControl(DefaultLoadControl()) // Updated from AdaptiveLoadControl.DEFAULT
+                .setLoadControl(DefaultLoadControl())
                 .setPriorityTaskManager(null)
                 .setVideoChangeFrameRateStrategy(C.VIDEO_CHANGE_FRAME_RATE_STRATEGY_OFF)
         } else {

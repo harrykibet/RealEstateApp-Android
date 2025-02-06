@@ -6,7 +6,6 @@ object MediaDeps {
     const val media3Database = "androidx.media3:media3-database:${Versions.androidx_media3}"
     const val media3ExoplayerWorkManager ="androidx.media3:media3-exoplayer-workmanager:${Versions.androidx_media3}"
     const val media3UI = "androidx.media3:media3-ui:${Versions.androidx_media3}"
-    const val media3Drm = "androidx.media3:media3-exoplayer-drm:${Versions.androidx_media3}"
     const val media3Decoder = "androidx.media3:media3-decoder:${Versions.androidx_media3}"
     const val media3Hls = "androidx.media3:media3-exoplayer-hls:${Versions.androidx_media3}"
     const val media3Session = "androidx.media3:media3-session:${Versions.androidx_media3}"
