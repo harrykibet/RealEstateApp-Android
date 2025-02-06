@@ -9,11 +9,11 @@ import android.os.Build
 import android.view.Display
 import androidx.core.app.ActivityManagerCompat
 import androidx.core.content.getSystemService
-import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
+import android.media.MediaCodecInfo
+import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.IDeviceUtils
 import com.application.real_estate_app.core.domain.models.DeviceInfo
 import javax.inject.Inject
-import kotlin.reflect.KClass
 
 class DeviceUtils @Inject constructor(
     private val context: Context,
@@ -41,21 +41,24 @@ class DeviceUtils @Inject constructor(
 
     // region Media Capabilities
     override fun supportsAV1(): Boolean {
-        return MediaCodecList(MediaCodecList.ALL_CODECS).findEncoderForMimeType("video/av01") != null
-    }
-
-    override fun supports10BitHdr(): Boolean {
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
-                MediaCodecList(MediaCodecList.ALL_CODECS)
-                    .codecInfos.any { codec ->
-                        codec.capabilitiesForType.toTypedArray()
-                            .any { it.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010) }
-                    }
-            }
-            else -> false
+        return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
+            codec.supportedTypes.contains("video/av01")
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun supports10BitHdr(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
+                codec.supportedTypes.any { mimeType ->
+                    codec.getCapabilitiesForType(mimeType).colorFormats.contains(
+                        MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
+                    )
+                }
+            }
+        } else false
+    }
+
 
     override fun supportsDolbyVision(): Boolean {
         return context.packageManager.hasSystemFeature("android.hardware.dolbyvision")
@@ -83,6 +86,13 @@ class DeviceUtils @Inject constructor(
     override fun isHighEndDevice(): Boolean {
         return Runtime.getRuntime().availableProcessors() >= 8 &&
                 context.getSystemService<ActivityManager>()!!.memoryClass >= 512
+    }
+
+    override fun isMidRangeDevice(): Boolean {
+        val processorCores = Runtime.getRuntime().availableProcessors()
+        val memoryClass = context.getSystemService<ActivityManager>()?.memoryClass ?: 0
+
+        return processorCores in 4..7 && memoryClass in 256..511
     }
 
     override fun isLowRamDevice(): Boolean {

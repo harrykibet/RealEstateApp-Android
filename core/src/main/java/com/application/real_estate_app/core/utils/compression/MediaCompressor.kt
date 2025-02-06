@@ -3,8 +3,6 @@ package com.application.real_estate_app.core.utils.compression
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.ReturnCode
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions

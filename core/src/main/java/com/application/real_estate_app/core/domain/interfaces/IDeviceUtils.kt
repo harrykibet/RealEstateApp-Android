@@ -10,6 +10,7 @@ interface IDeviceUtils {
     fun getMaxSupportedBitrate(): Long
     fun getOptimalVideoResolution(): Pair<Int, Int>
     fun isHighEndDevice(): Boolean
+    fun isMidRangeDevice(): Boolean
     fun isLowRamDevice(): Boolean
     fun getRefreshRate(): Float
     fun getAvailableMemoryMB(): Long
