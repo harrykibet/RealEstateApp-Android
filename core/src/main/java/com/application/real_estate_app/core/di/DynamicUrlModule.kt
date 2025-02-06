@@ -1,4 +1,4 @@
-package com.application.real_estate_app.di
+package com.application.real_estate_app.core.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 // Create a URL holder class
 class BaseUrlHolder {
-    var url: String = "https://default.example.com/"
+    var url: String = "https://default.example.com/" //Default URL
         private set
 
     fun updateBaseUrl(newUrl: String) {
