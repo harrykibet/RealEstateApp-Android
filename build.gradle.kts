@@ -35,6 +35,27 @@ subprojects {
             property("sonar.organization", "harrykibet")
             property("sonar.host.url", "https://sonarcloud.io")
             property("sonar.sourceEncoding", "UTF-8")
+
+            // For multi-module projects
+            property("sonar.sources", "src/main")
+            property("sonar.androidVariant", "release")
+            property("sonar.exclusions", "**/build/**, **/generated/**")
+
+
+            property("sonar.tests", "src/test")
+            property(
+                "sonar.java.binaries",
+                layout.buildDirectory.dir("intermediates/javac/debug/classes").get().asFile
+            )
+            property(
+                "sonar.junit.reportPaths",
+                layout.buildDirectory.dir("test-results/testDebugUnitTest").get().asFile
+            )
+            property(
+                "sonar.coverage.jacoco.xmlReportPaths",
+                layout.buildDirectory.file("reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml")
+                    .get().asFile
+            )
         }
     }
 }
