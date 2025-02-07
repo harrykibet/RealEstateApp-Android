@@ -1,5 +1,3 @@
-
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
@@ -8,22 +6,35 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.6.1")
-        classpath("com.google.gms:google-services:4.4.2") // for firebase
-        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.2")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.5") // Safe Args plugin
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.52") // Dagger hilt for dependency injection
+        classpath("com.google.gms:google-services:4.4.2") // Firebase
+        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.3")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.6")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.52")
         classpath("androidx.room:room-gradle-plugin:2.6.1")
     }
 }
 
-plugins {  id("org.jetbrains.kotlin.android") version "1.9.24" apply false
-    // the dependency for google services gradle plugin
+plugins {
+    kotlin("android") version "1.9.24" apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
-    // Add the dependency for the Crashlytics Gradle plugin
-    id("com.google.firebase.crashlytics") version "3.0.2" apply false
+    id("com.google.firebase.crashlytics") version "3.0.3" apply false
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
     id("com.android.library") version "8.6.1" apply false
-    id("org.jetbrains.kotlin.jvm") version "1.9.10" apply false
-    id("org.jetbrains.kotlin.kapt") version "1.9.24" apply false
-    id("org.sonarqube") version "6.0.1.5171" apply false // SonarQube plugin
+    kotlin("jvm") version "1.9.10" apply false
+    kotlin("kapt") version "1.9.24" apply false
+    id("org.sonarqube") version "6.0.1.5171" apply false // SonarQube
+}
+
+// ✅ Apply SonarQube to all subprojects
+subprojects {
+    apply(plugin = "org.sonarqube")
+
+    configure<org.sonarqube.gradle.SonarExtension> {
+        properties {
+            property("sonar.projectKey", "harrykibet_RealEstateApp2")
+            property("sonar.organization", "harrykibet")
+            property("sonar.host.url", "https://sonarcloud.io")
+            property("sonar.sourceEncoding", "UTF-8")
+        }
+    }
 }

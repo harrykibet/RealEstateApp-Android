@@ -13,6 +13,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     //Dagger Hilt for Dependencies Injection
     id("com.google.dagger.hilt.android")
+    id("org.sonarqube")
   }
 
 
