@@ -8,9 +8,23 @@ on:
     types: [ opened, synchronize, reopened ]
 
 jobs:
-  sonar:
-    name: Build and Analyze with SonarQube
+  setup:
+    name: Setup & Define Modules
     runs-on: ubuntu-latest
+    outputs:
+      modules: "core feature_home feature_property feature_auth feature_search feature_profile ui_components feature_analytics feature_mediaplayer app localization security feature_intelligence feature_payments feature_marketplace feature_favorites feature_chats feature_notifications feature_comments feature_settings feature_service"
+      
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+  sonar:
+    name: SonarQube Analysis (${{ matrix.module }})
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        module: [core, feature_home, feature_property, feature_auth, feature_search, feature_profile, ui_components, feature_analytics, feature_mediaplayer, app, localization, security, feature_intelligence, feature_payments, feature_marketplace, feature_favorites, feature_chats, feature_notifications, feature_comments, feature_settings, feature_service]
 
     steps:
       - name: Checkout Code
@@ -46,10 +60,10 @@ jobs:
       - name: Generate Local Properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      - name: Build and Analyze with SonarQube
+      - name: Build and Analyze ${{ matrix.module }} with SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --no-configuration-cache --info
+        run: ./gradlew ${{ matrix.module }}:sonar --no-configuration-cache --info
 
   build:
     name: Build & Sign APK
