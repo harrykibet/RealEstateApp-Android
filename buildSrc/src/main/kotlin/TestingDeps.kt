@@ -6,7 +6,7 @@ object TestingDeps {
     const val junit = "junit:junit:${Versions.junit}"
 
     //Grouped TestingDeps( AndroidTestImplementation(...) )
-    val androidTestDependencies = listOf(
+    val AndroidTestDependencies = listOf(
         testExtJUnit,
         espressoCore
     )

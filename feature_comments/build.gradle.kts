@@ -54,8 +54,8 @@ dependencies {
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
     implementation(FirebaseDeps.firebaseFirestore)
@@ -64,8 +64,8 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 }

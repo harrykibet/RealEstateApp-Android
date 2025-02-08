@@ -57,17 +57,17 @@ dependencies {
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)
 
-    NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
+    NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 }

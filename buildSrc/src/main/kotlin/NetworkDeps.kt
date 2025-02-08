@@ -9,7 +9,7 @@ object NetworkDeps {
     const val retrofit_converter_gson = "com.squareup.retrofit2:converter-gson:${Versions.squareup_retrofit2}"
 
     // Grouped Networking Dependencies
-    val allNetworkDependencies = listOf(
+    val AllNetworkDependencies = listOf(
         okhttp,
         okhttp_interceptor,
         gson,

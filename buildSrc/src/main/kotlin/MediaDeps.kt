@@ -31,7 +31,7 @@ object MediaDeps {
     const val lottie = "com.airbnb.android:lottie:${Versions.airbnb_lottie}"
 
     // Grouped Media3 Dependencies
-    val allMedia3Dependencies = listOf(
+    val AllMedia3Dependencies = listOf(
         media3ExoPlayer,
         media3UI,
         media3Hls,

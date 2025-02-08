@@ -75,27 +75,27 @@ android {
 
 dependencies {
 
-        CoreDeps.commonCoreDependencies.forEach { implementation(it) }
-        CoreDeps.coreUiDependencies.forEach { implementation(it) }
+        CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
+        CoreDeps.CoreUiDependencies.forEach { implementation(it) }
         implementation(CoreDeps.splashScreen)
 
         implementation(platform(ComposeDeps.composeBom))
-        ComposeDeps.allComposeDependencies.forEach { implementation(it) }
-        ComposeDeps.composeDebugDependencies.forEach { debugImplementation(it) }
+        ComposeDeps.AllComposeDependencies.forEach { implementation(it) }
+        ComposeDeps.ComposeDebugDependencies.forEach { debugImplementation(it) }
 
-        LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
+        LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
         implementation(platform(FirebaseDeps.firebaseBom))
-        FirebaseDeps.allFirebaseDependencies.forEach { implementation(it) }
+        FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
 
-        GooglePlayDeps.allPlayServicesDependencies.forEach { implementation(it) }
+        GooglePlayDeps.AllPlayServicesDependencies.forEach { implementation(it) }
 
         implementation(EventBusDeps.eventBus)
 
-        NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
+        NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 
-        HiltDeps.allHiltDependencies.forEach { implementation(it) }
-        HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+        HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+        HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
         implementation(MediaDeps.media3ExoPlayer)
         implementation(MediaDeps.media3UI)
@@ -103,13 +103,13 @@ dependencies {
         implementation(MediaDeps.glide)
         kapt(MediaDeps.glideCompiler)
 
-        DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-        DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+        DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+        DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
         TestingDeps.TestDependencies.forEach { testImplementation(it) }
-        TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+        TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-        ProjectModules.allProjectModules.forEach { implementation(project(it)) }
+        ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
 }
 
 

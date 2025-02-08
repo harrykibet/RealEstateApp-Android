@@ -36,19 +36,19 @@ android {
 
 dependencies {
 
-    MediaDeps.allMedia3Dependencies.forEach { implementation(it) }
+    MediaDeps.AllMedia3Dependencies.forEach { implementation(it) }
 
     implementation(project(ProjectModules.core))
 
     implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAnalytics)
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 }

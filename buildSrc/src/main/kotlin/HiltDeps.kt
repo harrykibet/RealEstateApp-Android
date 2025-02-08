@@ -8,12 +8,12 @@ object HiltDeps {
     const val hiltNavigationFragment = "androidx.hilt:hilt-navigation-fragment:${Versions.androidx_hilt}"
 
     // Grouped Hilt Dependencies
-    val allHiltDependencies = listOf(
+    val AllHiltDependencies = listOf(
         hiltAndroid,
         hiltNavigationFragment
     )
 
-    val allHiltKaptDependencies = listOf(
+    val AllHiltKaptDependencies = listOf(
         hiltCompiler,
         hiltAndroidCompiler
     )

@@ -19,13 +19,13 @@ object CoreDeps {
     const val metrics = "androidx.metrics:metrics-performance:1.0.0-beta01"
     const val appSet = "com.google.android.gms:play-services-appset:16.0.2"
 
-    val commonCoreDependencies = listOf(
+    val CommonCoreDependencies = listOf(
         coreKtx,
         appCompat,
         fragmentKtx,
         activityKtx
     )
-    val coreUiDependencies = listOf(
+    val CoreUiDependencies = listOf(
         material,
         constraintLayout,
         recyclerView,
