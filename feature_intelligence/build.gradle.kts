@@ -46,21 +46,21 @@ android {
 
 dependencies {
 
-    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
+    CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
     implementation(CoreDeps.material)
 
-    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
+    LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
-    MLKitDeps.allMlKitDependencies.forEach { implementation(it) }
+    MLKitDeps.AllMlKitDependencies.forEach { implementation(it) }
 
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 }

@@ -46,15 +46,15 @@ android {
 
 dependencies {
 
-    CoreDeps.commonCoreDependencies.forEach { implementation(it) }
+    CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
     implementation(CoreDeps.material)
 
     implementation(NavigationDeps.navigationFragment)
 
     implementation(NetworkDeps.gson)
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
     implementation(FirebaseDeps.firebaseAuth)
@@ -70,11 +70,11 @@ dependencies {
     implementation(GooglePlayDeps.playServicesLocation)
     implementation(GooglePlayDeps.playServicesMaps)
 
-    LifecycleDeps.allLifecycleDependencies.forEach { implementation(it) }
+    LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 }

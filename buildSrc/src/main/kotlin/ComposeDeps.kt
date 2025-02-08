@@ -11,7 +11,7 @@ object ComposeDeps {
     const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.androidx_compose_material3}"
 
     // ComposeBom not included, add it manually in the dependencies block
-    val allComposeDependencies = listOf(
+    val AllComposeDependencies = listOf(
         composeUi,
         composeMaterial,
         composeUiToolingPreview,
@@ -19,5 +19,5 @@ object ComposeDeps {
         activityCompose,
         composeMaterial3
     )
-    val composeDebugDependencies = listOf ( composeUiTooling )
+    val ComposeDebugDependencies = listOf ( composeUiTooling )
 }

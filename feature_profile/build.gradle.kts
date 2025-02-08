@@ -56,16 +56,16 @@ dependencies {
     implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
     implementation(FirebaseDeps.firebaseAuth)
 
-    NavigationDeps.allNavigationDependencies.forEach { implementation(it) }
+    NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 
-    DatabaseDeps.allRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.allRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.androidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-    HiltDeps.allHiltDependencies.forEach { implementation(it) }
-    HiltDeps.allHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
     implementation(EventBusDeps.eventBus)
 
