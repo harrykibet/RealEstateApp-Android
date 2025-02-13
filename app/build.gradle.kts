@@ -75,41 +75,41 @@ android {
 
 dependencies {
 
-        CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
-        CoreDeps.CoreUiDependencies.forEach { implementation(it) }
-        implementation(CoreDeps.splashScreen)
+    CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
+    CoreDeps.CoreUiDependencies.forEach { implementation(it) }
+    implementation(CoreDeps.splashScreen)
 
-        implementation(platform(ComposeDeps.composeBom))
-        ComposeDeps.AllComposeDependencies.forEach { implementation(it) }
-        ComposeDeps.ComposeDebugDependencies.forEach { debugImplementation(it) }
+    implementation(platform(ComposeDeps.composeBom))
+    ComposeDeps.AllComposeDependencies.forEach { implementation(it) }
+    ComposeDeps.ComposeDebugDependencies.forEach { debugImplementation(it) }
 
-        LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
+    LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
-        implementation(platform(FirebaseDeps.firebaseBom))
-        FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
+    implementation(platform(FirebaseDeps.firebaseBom))
+    FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
 
-        GooglePlayDeps.AllPlayServicesDependencies.forEach { implementation(it) }
+    GoogleDeps.AllPlayServicesDependencies.forEach { implementation(it) }
 
-        implementation(EventBusDeps.eventBus)
+    implementation(EventBusDeps.eventBus)
 
-        NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
+    NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 
-        HiltDeps.AllHiltDependencies.forEach { implementation(it) }
-        HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
-        implementation(MediaDeps.media3ExoPlayer)
-        implementation(MediaDeps.media3UI)
-        implementation(MediaDeps.lottie)
-        implementation(MediaDeps.glide)
-        kapt(MediaDeps.glideCompiler)
+    implementation(MediaDeps.media3ExoPlayer)
+    implementation(MediaDeps.media3UI)
+    implementation(MediaDeps.lottie)
+    implementation(MediaDeps.glide)
+    kapt(MediaDeps.glideCompiler)
 
-        DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
-        DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
-        TestingDeps.TestDependencies.forEach { testImplementation(it) }
-        TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.TestDependencies.forEach { testImplementation(it) }
+    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
-        ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
+    ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
 }
 
 

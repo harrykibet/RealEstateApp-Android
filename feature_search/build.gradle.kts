@@ -50,9 +50,9 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(GooglePlayDeps.playServicesMaps)
-    implementation(GooglePlayDeps.playServicesLocation)
-    implementation(GooglePlayDeps.places)
+    implementation(GoogleDeps.playServicesMaps)
+    implementation(GoogleDeps.playServicesLocation)
+    implementation(GoogleDeps.places)
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)

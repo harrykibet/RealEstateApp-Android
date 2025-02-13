@@ -2,6 +2,17 @@
 .gradle
 /local.properties
 /gradle.properties
+/google-services.json
+/G-Play_Intergrity_Api.json
+/firebase.json
+/firestore.indexes.json
+/MapsApiKey.json
+/AI_ML_ApiKey.json
+/AppKeyStore
+/firestore.rules
+/.firebaserc
+/app/google-services.json
+/my-firebase-admin-app
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml

@@ -45,10 +45,11 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
     implementation(CoreDeps.testCoreKtx)
-    implementation(CoreDeps.metrics)
-    implementation(CoreDeps.appSet)
-    implementation(CoreDeps.guava)
     implementation(CoreDeps.workRuntimeKtx)
+
+    implementation(AnalyticsDeps.androidMetrics)
+    implementation(AnalyticsDeps.appSet)
+    implementation(AnalyticsDeps.guava)
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
     FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
@@ -57,6 +58,9 @@ dependencies {
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
+
+    implementation(GoogleDeps.googleAuthCloud)
+    implementation(GoogleDeps.googleSecretsManager)
 
     NetworkDeps.AllNetworkDependencies.forEach {implementation(it) }
 
