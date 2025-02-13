@@ -1,4 +1,0 @@
-glpat-1u3xb5_JZs5xpduRKhVh
-docker container run -it -v /tmp:/tmp -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/containers:/var/lib/docker/containers:ro -e ACCOUNT_UUID={834f4fcf-2bd9-4f97-b76d-817ba7904ffc} -e REPOSITORY_UUID={d469ecc9-975d-43ad-ab9e-fe296541e9d0} -e RUNNER_UUID={ad647209-736f-5c94-b322-4e471e70f20b} -e RUNTIME_PREREQUISITES_ENABLED=true -e OAUTH_CLIENT_ID=0wQYfWg96A2oAWITQVY5E4XH3ROGkXZE -e OAUTH_CLIENT_SECRET=ATOAzoT3X7jIFqh3RqF9ngNZ3GiW9LdNswDl-5hM9HNsw-j_4_iRzCIJiPk1XdU34Sen99FCDF26 -e WORKING_DIRECTORY=/tmp --name runner-ad647209-736f-5c94-b322-4e471e70f20b docker-public.packages.atlassian.com/sox/atlassian/bitbucket-pipelines-runner
-- self.hosted
-- linux

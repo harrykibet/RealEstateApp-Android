@@ -27,9 +27,7 @@ class RealEstateApp : Application()  {
         configureGlobalExceptionHandler()
     }
 
-    /**
-     * Initializes Firebase and sets up App Check with Debug Provider.
-     */
+
     private fun initializeFirebase() {
         runCatching {
             FirebaseApp.initializeApp(this)
@@ -46,9 +44,7 @@ class RealEstateApp : Application()  {
         }
     }
 
-    /**
-     * Configures a global uncaught exception handler to ensure all crashes are logged to Crashlytics.
-     */
+
     private fun configureGlobalExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             handleUncaughtException(thread, throwable)
@@ -59,9 +55,7 @@ class RealEstateApp : Application()  {
         }.also { logger.i("Global exception handlers configured.") }
     }
 
-    /**
-     * Handles uncaught exceptions and logs them to Crashlytics.
-     */
+
     private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         val errorMessage = "Uncaught exception in thread '${thread.name}': ${throwable.localizedMessage}"
         logger.e(errorMessage, throwable)
@@ -76,18 +70,14 @@ class RealEstateApp : Application()  {
         exitApplication()
     }
 
-    /**
-     * Handles critical errors during initialization or runtime.
-     */
+
     private fun String.handleCriticalError(throwable: Throwable) {
         logger.e(this, throwable)
         FirebaseCrashlytics.getInstance().recordException(throwable)
         logger.w("Critical error handled gracefully. Application may behave unexpectedly.")
     }
 
-    /**
-     * Gracefully exits the application to avoid undefined behavior after critical failures.
-     */
+
     private fun exitApplication() {
         logger.w("Application is exiting due to a critical failure.")
         runBlocking(Dispatchers.IO) {

@@ -1,14 +1,11 @@
 package com.application.real_estate_app.core.network
 
-import android.app.usage.NetworkStats
 import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
 import android.telephony.TelephonyManager
-import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,6 +15,12 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import javax.inject.Inject
 
+
+private const val THRESHOLD_KBPS = 50 // 50 kilobits per second
+private const val GOOGLE_DNS_ADDRESS = "8.8.8.8"
+private const val GOOGLE_DNS_PORT = 53
+private const val HTTP_PORT = 80
+
 @Suppress("UNUSED")
 class NetworkUtils @Inject  constructor(
     private val connectivityManager: ConnectivityManager,
@@ -25,13 +28,6 @@ class NetworkUtils @Inject  constructor(
     private val telephonyManager: TelephonyManager,
     private val context: Context
 ) : INetworkUtils {
-
-    // Threshold for poor connection in Kbps (adjustable)
-    private val THRESHOLD_KBPS = 50 // 50 kilobits per second
-
-    private val GOOGLE_DNS_ADDRESS = "8.8.8.8"
-    private val GOOGLE_DNS_PORT = 53
-    private val HTTP_PORT = 80
 
     enum class ConnectionType {
         WIFI, CELLULAR, NONE
@@ -69,9 +65,7 @@ class NetworkUtils @Inject  constructor(
         return linkDownstreamBandwidthKbps < THRESHOLD_KBPS || linkUpstreamBandwidthKbps < THRESHOLD_KBPS
     }
 
-    /**
-     * Checks actual internet access by attempting a socket connection to an external server.
-     */
+
     override fun hasInternetAccess(): Boolean {
         return try {
             Socket().use { socket ->
@@ -83,10 +77,7 @@ class NetworkUtils @Inject  constructor(
         }
     }
 
-    /**
-     * Checks internet access by pinging a Google DNS server
-     *may not be as reliable in some cases where ICMP is blocked
-     * */
+
     override fun checkInternetWithPing(): Boolean {
         return try {
             val address = InetAddress.getByName(GOOGLE_DNS_ADDRESS)
@@ -154,9 +145,6 @@ class NetworkUtils @Inject  constructor(
     }
 
 
-    /**
-     * Checks if the network is low latency (fast response time).
-     */
     override fun isLowLatencyNetwork(): Boolean {
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
@@ -193,9 +181,6 @@ class NetworkUtils @Inject  constructor(
     }
 
 
-    /**
-     * Returns a result indicating the network status (Connected, Poor Connection, No Internet).
-     */
     override fun getNetworkStatus(): NetworkStatusResult {
         return when {
             !isConnected() -> NetworkStatusResult.NoInternet

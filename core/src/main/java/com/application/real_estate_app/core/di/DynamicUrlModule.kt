@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 // Create a URL holder class
 class BaseUrlHolder {
-    var url: String = "https://default.example.com/" //Default URL
+    var url: String = "https://firestore-72e4c.firebaseapp.com/" //Default URL
         private set
 
     fun updateBaseUrl(newUrl: String) {

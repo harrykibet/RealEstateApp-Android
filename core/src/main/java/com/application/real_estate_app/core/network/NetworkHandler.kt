@@ -128,6 +128,10 @@ class NetworkHandler @Inject constructor(
                     onFailure(Exception(Errors.NO_INTERNET_CONNECTION))
                     null // Notify no internet
                 }
+
+                NetworkUtils.NetworkStatusResult.Connected -> TODO()
+                NetworkUtils.NetworkStatusResult.NoInternet -> TODO()
+                NetworkUtils.NetworkStatusResult.PoorConnection -> TODO()
             }
         } catch (e: Exception) {
             logger.e("NetworkHandler: API call failed: ${e.message}")

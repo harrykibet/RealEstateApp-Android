@@ -40,8 +40,26 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
+    implementation(SecurityDeps.securityCrypto)
+    implementation(GoogleDeps.googleSecretsManager)
+
+    implementation(project(ProjectModules.core))
+
     DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+
+
+    implementation(CachingDeps.caffeine)
+
+    implementation(NetworkDeps.circuit_breaker)
+    implementation(NetworkDeps.retry)
+    implementation(NetworkDeps.resilience_kotlin)
+
+    implementation(AnalyticsDeps.openTelemetryApi)
+    implementation(AnalyticsDeps.openTelemetryExporter)
+    implementation(AnalyticsDeps.micrometer)
+    implementation(AnalyticsDeps.micrometerPrometheus)
+    implementation(AnalyticsDeps.conscrypt)
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
     TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
