@@ -6,7 +6,7 @@ class SensitiveString private constructor(
     private val data: ByteArray
 ) {
     companion object {
-        fun fromSecureString(value: String): {
+        fun fromSecureString(value: String): SensitiveString {
             return SensitiveString(value.toByteArray(Charsets.UTF_8))
         }
     }
