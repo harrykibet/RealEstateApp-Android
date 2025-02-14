@@ -1,28 +1,37 @@
+# Ignore all .iml files (IntelliJ/Android Studio module files)
 *.iml
-.gradle
-/local.properties
-/gradle.properties
-/google-services.json
-/G-Play_Intergrity_Api.json
-/firebase.json
-/firestore.indexes.json
-/MapsApiKey.json
-/AI_ML_ApiKey.json
-/AppKeyStore
-/firestore.rules
-/.firebaserc
-/app/google-services.json
-/my-firebase-admin-app
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Gradle-related files
+.gradle/
 local.properties
 gradle.properties
+
+# Firebase and API keys (sensitive information)
+google-services.json
+G-Play_Intergrity_Api.json
+firebase.json
+firestore.indexes.json
+MapsApiKey.json
+AI_ML_ApiKey.json
+AppKeyStore/
+firestore.rules
+.firebaserc
+app/google-services.json
+my-firebase-admin-app/
+
+# Android Studio/IDE specific files
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# macOS specific
+.DS_Store
+
+# Build outputs (do not commit compiled files)
+build/
+captures/
+.externalNativeBuild/
+.cxx/
