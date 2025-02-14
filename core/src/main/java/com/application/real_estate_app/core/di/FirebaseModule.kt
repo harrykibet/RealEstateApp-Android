@@ -85,4 +85,12 @@ object FirebaseModule {
         initializeFirebaseIfNeeded(context)
         return FirebasePerformance.getInstance()
     }
+
+    @Provides
+    @Singleton
+    fun provideProjectId(@ApplicationContext context: Context): String {
+        initializeFirebaseIfNeeded(context)
+        return FirebaseApp.getInstance().options.projectId
+            ?: throw IllegalStateException("Firebase Project ID is missing.")
+    }
 }

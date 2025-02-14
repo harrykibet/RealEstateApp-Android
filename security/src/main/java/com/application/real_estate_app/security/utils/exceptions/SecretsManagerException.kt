@@ -1,8 +1,5 @@
 package com.application.real_estate_app.security.utils.exceptions
 
-import android.net.http.NetworkException
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import org.apache.http.auth.AuthenticationException
 
 open class SecretsManagerException(
