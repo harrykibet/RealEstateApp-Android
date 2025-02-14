@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.security.domain.interfaces.IGoogleSecretsManager
 import com.application.real_estate_app.security.domain.models.CacheKey
+import com.application.real_estate_app.security.domain.models.SecretId
 import com.application.real_estate_app.security.utils.exceptions.SecretsManagerException
 import com.application.real_estate_app.security.utils.extensions.SemanticVersion
 import com.application.real_estate_app.security.utils.extensions.SensitiveString
@@ -29,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import java.time.Duration
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -193,11 +193,3 @@ class GoogleSecretsManager @Inject constructor(
     }
 }
 
-@JvmInline
-value class SecretId(val value: String) {
-    init {
-        require(value.matches(Regex("^[a-z0-9-]{5,50}$"))) {
-            "Invalid Secret ID format"
-        }
-    }
-}
