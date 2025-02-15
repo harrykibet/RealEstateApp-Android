@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.6.1")
+        classpath("com.android.tools.build:gradle:8.7.0")
         classpath("com.google.gms:google-services:4.4.2") // Firebase
         classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.3")
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.6")
@@ -19,7 +19,7 @@ plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.firebase.crashlytics") version "3.0.3" apply false
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
-    id("com.android.library") version "8.6.1" apply false
+    id("com.android.library") version "8.7.0" apply false
     kotlin("jvm") version "1.9.10" apply false
     kotlin("kapt") version "1.9.24" apply false
     id("org.sonarqube") version "6.0.1.5171" apply false // SonarQube

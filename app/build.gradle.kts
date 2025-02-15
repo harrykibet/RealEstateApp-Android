@@ -88,9 +88,11 @@ dependencies {
     implementation(platform(FirebaseDeps.firebaseBom))
     FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
 
-    GoogleDeps.AllPlayServicesDependencies.forEach { implementation(it) }
+    GoogleAndroidDeps.AllPlayServicesDependencies.forEach { implementation(it) }
 
     implementation(EventBusDeps.eventBus)
+
+    implementation(SecurityDeps.bouncyCastle)
 
     NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 

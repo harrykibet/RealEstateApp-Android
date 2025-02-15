@@ -1,5 +1,6 @@
 package com.application.real_estate_app.core.di
 
+import com.google.cloud.kms.v1.KeyManagementServiceClient
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
 import dagger.Module
 import dagger.Provides
@@ -14,5 +15,11 @@ object GoogleCloudModule {
     @Singleton
     fun provideSecretManagerClient(): SecretManagerServiceClient {
         return SecretManagerServiceClient.create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKmsClient(): KeyManagementServiceClient {
+        return KeyManagementServiceClient.create()
     }
 }

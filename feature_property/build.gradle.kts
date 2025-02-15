@@ -67,8 +67,8 @@ dependencies {
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    implementation(GoogleDeps.playServicesLocation)
-    implementation(GoogleDeps.playServicesMaps)
+    implementation(GoogleAndroidDeps.playServicesLocation)
+    implementation(GoogleAndroidDeps.playServicesMaps)
 
     LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
