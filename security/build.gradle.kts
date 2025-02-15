@@ -41,12 +41,17 @@ dependencies {
     implementation(CoreDeps.material)
 
     implementation(SecurityDeps.securityCrypto)
-    implementation(GoogleDeps.googleSecretsManager)
+
+    implementation(GoogleCloudDeps.googleSecretsManager)
+    implementation(GoogleCloudDeps.googleCloudKms)
 
     implementation(project(ProjectModules.core))
 
     DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+
+    implementation(SecurityDeps.bouncyCastle)
+    implementation(SecurityDeps.bouncyCastlePkix)
 
 
     implementation(CachingDeps.caffeine)

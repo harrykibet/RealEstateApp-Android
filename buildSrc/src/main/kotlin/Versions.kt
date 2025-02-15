@@ -37,6 +37,9 @@ object Versions {
     // Google Auth Cloud
     const val google_auth_cloud = "1.22.0"
 
+    // Google Cloud KMS
+    const val google_cloud_kms = "2.60.0"
+
     // Firebase
     const val google_firebase_bom = "33.5.1"
 
@@ -57,6 +60,9 @@ object Versions {
 
     // Google Truth
     const val google_truth = "1.1.5"
+
+    // Bouncy Castle
+    const val bouncy_castle = "1.80"
 
     // Kotest
     const val kotest = "5.8.0"

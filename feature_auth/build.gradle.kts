@@ -54,7 +54,7 @@ dependencies {
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
 
-    implementation(GoogleDeps.playServicesAuth)
+    implementation(GoogleAndroidDeps.playServicesAuth)
 
     DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }

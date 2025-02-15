@@ -11,6 +11,8 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import java.security.Security
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -24,6 +26,7 @@ class RealEstateApp : Application()  {
     override fun onCreate() {
         super.onCreate()
         initializeFirebase()
+        initializeBouncyCastle()
         configureGlobalExceptionHandler()
     }
 
@@ -41,6 +44,12 @@ class RealEstateApp : Application()  {
             }
         }.onFailure { exception ->
             "Failed to initialize Firebase or App Check.".handleCriticalError(exception)
+        }
+    }
+
+    private fun initializeBouncyCastle() {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(BouncyCastleProvider())
         }
     }
 

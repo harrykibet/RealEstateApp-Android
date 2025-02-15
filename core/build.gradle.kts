@@ -59,8 +59,9 @@ dependencies {
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    implementation(GoogleDeps.googleAuthCloud)
-    implementation(GoogleDeps.googleSecretsManager)
+    implementation(GoogleCloudDeps.googleAuthCloud)
+    implementation(GoogleCloudDeps.googleSecretsManager)
+    implementation(GoogleCloudDeps.googleCloudKms)
 
     NetworkDeps.AllNetworkDependencies.forEach {implementation(it) }
 

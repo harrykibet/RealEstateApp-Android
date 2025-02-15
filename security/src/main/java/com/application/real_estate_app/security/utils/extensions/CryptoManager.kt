@@ -15,7 +15,6 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
-private const val TAG = "CryptoManager"
 private const val AES_KEY_ALIAS = "secure_app_key"
 private const val RSA_ENCRYPTION_KEY_ALIAS = "secure_rsa_encryption_key"
 private const val RSA_SIGNING_KEY_ALIAS = "secure_rsa_signing_key"

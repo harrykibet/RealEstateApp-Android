@@ -1,31 +1,31 @@
 package com.application.real_estate_app.security.utils.extensions
 
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.security.domain.interfaces.IApiKeyValidator
 import com.application.real_estate_app.security.utils.exceptions.InvalidApiKeyException
-import javax.inject.Singleton
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class ApiKeyValidator @Inject constructor(
-    private val logger: LoggerInterface
+    private val logger: LoggerInterface,
+    private val remoteConfigManager: IRemoteConfigManager
 ) : IApiKeyValidator {
 
-    companion object {
-        // Google API key pattern
-        private val GOOGLE_KEY_PATTERN = Regex("^AIza[0-9A-Za-z-_]{35}\$")
+    private val googleKeyPattern: Regex
+        get() = Regex(remoteConfigManager.getGoogleKeyPattern())
 
-        // Standard API key pattern (most services)
-        private val GENERIC_KEY_PATTERN = Regex("^[A-Za-z0-9-_]{32,64}\$")
+    private val genericKeyPattern: Regex
+        get() = Regex(remoteConfigManager.getGenericKeyPattern())
 
-        // Service-specific patterns
-        private val SERVICE_PATTERNS = mapOf(
-            ServiceNames.MAPS to GOOGLE_KEY_PATTERN,
-            ServiceNames.PLACES to GOOGLE_KEY_PATTERN,
-            ServiceNames.PAYMENTS to Regex("^(pk|sk)_(test|live)_[0-9a-zA-Z]{24}\$"),
-            ServiceNames.AUTH to GOOGLE_KEY_PATTERN
+    private val servicePatterns: Map<ServiceNames, Regex>
+        get() = mapOf(
+            ServiceNames.MAPS to googleKeyPattern,
+            ServiceNames.PLACES to googleKeyPattern,
+            ServiceNames.PAYMENTS to Regex(remoteConfigManager.getPaymentsKeyPattern()),
+            ServiceNames.AUTH to googleKeyPattern
         )
-    }
 
     override fun validate(apiKey: String, service: ServiceNames?) {
         val sanitizedKey = sanitizeForLogging(apiKey)
@@ -40,7 +40,7 @@ class ApiKeyValidator @Inject constructor(
     }
 
     private fun validateForService(apiKey: String, service: ServiceNames, sanitizedKey: String) {
-        val pattern = SERVICE_PATTERNS[service]
+        val pattern = servicePatterns[service]
             ?: throw IllegalArgumentException("No validation pattern defined for ${service.name}")
 
         if (!pattern.matches(apiKey)) {
@@ -51,7 +51,7 @@ class ApiKeyValidator @Inject constructor(
     }
 
     private fun performGenericValidation(apiKey: String, sanitizedKey: String) {
-        if (!GENERIC_KEY_PATTERN.matches(apiKey)) {
+        if (!genericKeyPattern.matches(apiKey)) {
             val error = "Invalid generic API key format. Sanitized key: $sanitizedKey"
             logger.e(error)
             throw InvalidApiKeyException(error)
