@@ -6,6 +6,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import javax.inject.Inject
 
 // LL-HLS/LL-DASH implementation
+@Suppress("Unused")
 @UnstableApi
 class LowLatencyStreamer @Inject constructor(
     private val exoPlayer: ExoPlayer

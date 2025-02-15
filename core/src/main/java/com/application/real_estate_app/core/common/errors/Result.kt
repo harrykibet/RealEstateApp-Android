@@ -5,7 +5,6 @@ sealed class Result<out T> {
     data class Error(val exception: Exception) : Result<Nothing>()
 }
 
-// Move the `map` function outside the `Result` class
 fun <T, R> Result<T>.map(transform: (T) -> R): Result<R> {
     return when (this) {
         is Result.Success -> Result.Success(transform(this.data))

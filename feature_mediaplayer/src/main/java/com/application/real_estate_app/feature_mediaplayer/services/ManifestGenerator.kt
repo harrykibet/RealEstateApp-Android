@@ -4,6 +4,7 @@ import com.application.real_estate_app.core.domain.interfaces.IDeviceUtils
 import javax.inject.Inject
 
 // Dynamic manifest adjustments
+@Suppress("Unused")
 class ManifestGenerator @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {
