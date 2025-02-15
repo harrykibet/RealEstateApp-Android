@@ -6,12 +6,16 @@ import android.media.Spatializer
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioSink
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import java.lang.Exception
 import javax.inject.Inject
 
+// 3D Audio Support
+@Suppress("Unused")
 @UnstableApi
 class SpatialAudioRenderer @Inject constructor(
-    private val context: Context
+    context: Context,
+    private val logger: LoggerInterface
 ) : AudioSink.Listener {
 
     private var spatializer: Spatializer? = null
@@ -38,9 +42,11 @@ class SpatialAudioRenderer @Inject constructor(
                     if (enable) {
                         // Inform that spatial audio is enabled if available
                         // You can add additional logic based on your needs here
+                        logger.i("3D Audio supported by device")
                     } else {
                         // Inform that spatial audio is disabled
                         // Add any additional cleanup logic here
+                        logger.i("3D Audio not supported by device")
                     }
                 }
             }

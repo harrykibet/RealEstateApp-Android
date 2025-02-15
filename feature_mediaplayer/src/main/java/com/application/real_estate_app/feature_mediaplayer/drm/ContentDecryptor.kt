@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Suppress("Unused")
 @Singleton
 @UnstableApi
 class ContentDecryptor @Inject constructor(
@@ -19,7 +20,7 @@ class ContentDecryptor @Inject constructor(
 ) {
     fun prepareDrmSession(player: ExoPlayer, context: Context, licenseUrl: String, mediaItem: MediaItem) {
         // 1. Create DRM session manager
-        val drmSessionManager = createDrmSessionManager(context, licenseUrl)
+        val drmSessionManager = createDrmSessionManager(licenseUrl)
 
         // 2. Configure media source with DRM
         val mediaSource: MediaSource = ProgressiveMediaSource.Factory(
@@ -33,7 +34,7 @@ class ContentDecryptor @Inject constructor(
         player.prepare()
     }
 
-    private fun createDrmSessionManager(context: Context, licenseUrl: String): DefaultDrmSessionManager {
+    private fun createDrmSessionManager(licenseUrl: String): DefaultDrmSessionManager {
         return DefaultDrmSessionManager.Builder()
             .setUuidAndExoMediaDrmProvider(
                 widevineManager.drmSchemeUuid,

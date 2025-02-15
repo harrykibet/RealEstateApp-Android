@@ -8,6 +8,7 @@ import android.widget.SeekBar
 import com.application.real_estate_app.feature_mediaplayer.R
 
 // Play/pause, seekbar
+@Suppress("Unused")
 class PlayerControls @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null

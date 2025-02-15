@@ -18,6 +18,7 @@ import com.application.real_estate_app.core.utils.system.DeviceUtils
 import com.application.real_estate_app.feature_mediaplayer.streaming.HdrConfiguration
 import javax.inject.Inject
 
+@Suppress("Unused")
 @UnstableApi
 class VideoRendererView @JvmOverloads constructor(
     context: Context,

@@ -1,6 +1,5 @@
 package com.application.real_estate_app.feature_mediaplayer.drm
 
-import android.content.Context
 import java.util.UUID
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
@@ -15,10 +14,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // DRM license handling
+@Suppress("Unused")
 @Singleton
 @UnstableApi
 class WidevineManager @Inject constructor(
-    private val context: Context,
     private val okHttpClient: OkHttpClient
 ) {
     val drmSchemeUuid: UUID get() = C.WIDEVINE_UUID

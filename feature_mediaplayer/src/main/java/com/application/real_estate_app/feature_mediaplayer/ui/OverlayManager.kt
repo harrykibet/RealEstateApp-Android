@@ -6,6 +6,7 @@ import androidx.media3.common.util.UnstableApi
 import javax.inject.Inject
 
 // Captions, stickers
+@Suppress("Unused")
 @UnstableApi
 class OverlayManager @Inject constructor(
     private val videoRendererView: VideoRendererView

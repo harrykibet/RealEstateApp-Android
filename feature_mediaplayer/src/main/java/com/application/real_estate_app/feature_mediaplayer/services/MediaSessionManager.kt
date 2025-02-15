@@ -5,15 +5,15 @@ import android.media.MediaRouter
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSession.Callback
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Suppress("Unused")
 @Singleton
 @UnstableApi
 class MediaSessionManager @Inject constructor(
     private val context: Context,
-    private val player: ExoPlayer
+    player: ExoPlayer
 ) {
     private val mediaSession: MediaSession = MediaSession.Builder(context, player)
         .setCallback(object : MediaSession.Callback {})

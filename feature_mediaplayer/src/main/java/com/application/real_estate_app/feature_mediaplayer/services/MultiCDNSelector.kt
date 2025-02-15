@@ -8,6 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // Client-side CDN routing logic
+@Suppress("Unused")
 @Singleton
 class MultiCDNSelector @Inject constructor(
     private val networkUtils: INetworkUtils

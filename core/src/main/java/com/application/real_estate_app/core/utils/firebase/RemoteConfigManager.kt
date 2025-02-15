@@ -1,13 +1,15 @@
 package com.application.real_estate_app.core.utils.firebase
 
 import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteConfigManager @Inject constructor(
-    private val firebaseRemoteConfig: FirebaseRemoteConfig
+    private val firebaseRemoteConfig: FirebaseRemoteConfig,
+    private val logger: LoggerInterface
 ) : IRemoteConfigManager {
     companion object {
         // Default values for Firebase Remote Config
@@ -45,6 +47,7 @@ class RemoteConfigManager @Inject constructor(
         firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 // Handle failure but do not crash the app
+                logger.e("Firebase Remote Config fetch error")
             }
         }
     }
