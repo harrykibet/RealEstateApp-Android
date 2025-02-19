@@ -91,7 +91,11 @@ dependencies {
     LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
     implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
+    FirebaseDeps.AllFirebaseDependencies.forEach {
+        implementation(it) {
+            exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+        }
+    }
 
     GoogleAndroidDeps.AllPlayServicesDependencies.forEach { implementation(it) }
 
