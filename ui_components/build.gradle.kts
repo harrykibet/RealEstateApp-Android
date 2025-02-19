@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -12,6 +13,11 @@ android {
         viewBinding = true
         dataBinding = true
     }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
+    }
+
 
     defaultConfig {
         minSdk = 24

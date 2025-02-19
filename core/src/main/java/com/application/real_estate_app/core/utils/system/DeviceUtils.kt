@@ -95,6 +95,7 @@ class DeviceUtils @Inject constructor(
         return processorCores in 4..7 && memoryClass in 256..511
     }
 
+
     override fun isLowRamDevice(): Boolean {
         return ActivityManagerCompat.isLowRamDevice(
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager

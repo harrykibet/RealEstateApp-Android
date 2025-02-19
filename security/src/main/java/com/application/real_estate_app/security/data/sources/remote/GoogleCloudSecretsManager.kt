@@ -35,6 +35,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
+/**
+ * [GoogleCloudSecretsManager] is a class responsible for retrieving secrets from Google Cloud Secret Manager.
+ *
+ * It leverages caching, circuit breaking, and retry mechanisms to provide a resilient and efficient way to access secrets.
+ * It also integrates with OpenTelemetry for tracing and metrics.
+ *
+ * @property secretManagerClient The Google Cloud Secret Manager client.
+ * @property projectId The Google Cloud project ID.
+ * @property logger The logger instance for logging messages.
+ * @property circuitBreaker The circuit breaker instance for handling service failures.
+ * @property retry The retry instance for handling transient errors.
+ * @property cache The cache */
 @Singleton
 class GoogleCloudSecretsManager @Inject constructor(
     private val secretManagerClient: SecretManagerServiceClient,

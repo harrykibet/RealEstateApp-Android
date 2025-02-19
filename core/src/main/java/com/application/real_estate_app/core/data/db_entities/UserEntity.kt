@@ -3,7 +3,6 @@ package com.application.real_estate_app.core.data.db_entities
 import com.application.real_estate_app.core.domain.models.User
 import com.application.real_estate_app.core.domain.models.UserType
 
-@Suppress("unused")
 data class UserEntity(
     val userId: String? = null,
     val name: String? = null,

@@ -1,6 +1,7 @@
 package com.application.real_estate_app.feature_mediaplayer.services
 
 import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
+import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,11 +12,12 @@ import javax.inject.Singleton
 @Suppress("Unused")
 @Singleton
 class MultiCDNSelector @Inject constructor(
-    private val networkUtils: INetworkUtils
+    private val networkUtils: INetworkUtils,
+    private val remoteConfigManager: IRemoteConfigManager
 ) {
     private val cdnEndpoints = listOf(
-        "https://cdn1.example.com",
-        "https://cdn2.example.com"
+        remoteConfigManager.getCDNEndPoint1(),
+        remoteConfigManager.getCDNEndPoint2()
     )
 
      fun selectOptimalCDN(): String {

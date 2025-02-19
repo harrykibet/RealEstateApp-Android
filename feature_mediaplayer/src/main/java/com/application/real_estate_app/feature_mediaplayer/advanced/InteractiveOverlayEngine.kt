@@ -8,11 +8,10 @@ import com.application.real_estate_app.feature_mediaplayer.ui.VideoRendererView
 import javax.inject.Inject
 
 // Live polls/shoppable tags
-@Suppress("Unused")
 @UnstableApi
 class InteractiveOverlayEngine @Inject constructor(
-    private val context: Context,
-    private val videoRendererView: VideoRendererView
+    context: Context,
+    videoRendererView: VideoRendererView
 ) {
     private val overlaySurfaceView = SurfaceView(context)
 

@@ -9,4 +9,7 @@ interface IRemoteConfigManager {
     fun getSymmetricKeyId(): String
     fun getAsymmetricKeyId(): String
     fun getAsymmetricSigningKeyId(): String
+    fun getCDNEndPoint1(): String
+    fun getCDNEndPoint2(): String
+    fun getBaseUrl() : String
 }

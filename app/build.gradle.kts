@@ -13,6 +13,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     //Dagger Hilt for Dependencies Injection
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.dokka")
     id("org.sonarqube")
   }
 
@@ -24,6 +25,10 @@ android {
     kapt{
         correctErrorTypes = true
         useBuildCache = true
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildFeatures{

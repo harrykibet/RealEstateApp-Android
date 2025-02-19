@@ -19,6 +19,7 @@ class LocationUtils @Inject constructor(
     private val logger: LoggerInterface
 ) : ILocationUtils {
 
+
     override fun getLocationInfo(): UserLocation {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 

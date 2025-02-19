@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id ("com.google.dagger.hilt.android")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -14,6 +15,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildTypes {

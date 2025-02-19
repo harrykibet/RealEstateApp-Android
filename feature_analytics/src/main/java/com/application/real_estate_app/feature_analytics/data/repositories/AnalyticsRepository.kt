@@ -7,6 +7,7 @@ import com.application.real_estate_app.core.common.errors.Errors
 import com.application.real_estate_app.core.domain.interfaces.INetworkHandler
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.feature_analytics.domain.interfaces.IAnalyticsRepo
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class AnalyticsRepository @Inject constructor(
     db: FirebaseFirestore,
     private val network: INetworkHandler,
-    private val logger: LoggerInterface
+    private val logger: LoggerInterface,
+    private val firebaseAnalytics: FirebaseAnalytics
 ) : IAnalyticsRepo {
 
     private val analyticsCollection = db.collection(FirestoreCollections.ANALYTICS)

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-@Suppress("UNUSED")
+
 class NetworkHandler @Inject constructor(
     private val connectivityManager: ConnectivityManager,
     private val networkUtils: NetworkUtils,

@@ -3,13 +3,23 @@ package com.application.real_estate_app.security.domain.interfaces
 import com.application.real_estate_app.core.common.errors.Result
 
 interface ISecurityDataSource {
-    suspend fun encrypt(data: String): Result<String>
-    suspend fun decrypt(encryptedData: String): Result<String>
-    suspend fun hashWithSalt(data: String): Result<String>
-    suspend fun verifyHash(data: String, combinedHash: String): Result<Boolean>
-    suspend fun rsaSignData(data: String): Result<String>
-    suspend fun rsaDecrypt(encryptedData: String): Result<String>
-    suspend fun rsaEncrypt(data: String): Result<String>
-    suspend fun verifySignature(data: String, signature: String): Result<Boolean>
-    suspend fun signData(data: String): Result<String>
+
+    // Local operations
+    suspend fun localSymmetricEncryption(plainText: String): Result<String>
+    suspend fun localSymmetricDecryption(encryptedText: String): Result<String>
+    suspend fun localAsymmetricDecryption(encryptedText: String): Result<String>
+    suspend fun localAsymmetricEncryption(plainText: String): Result<String>
+    suspend fun localDataSigning(plainText: String): Result<String>
+    suspend fun localSignatureVerification(plainText: String, signature: String): Result<Boolean>
+    suspend fun localHashingWithSalt(plainText: String): Result<String>
+    suspend fun localHashVerification(plainText: String, hashedText: String): Result<Boolean>
+
+    //Remote operations
+    suspend fun remoteSymmetricEncryption(plainText: String): Result<String>
+    suspend fun remoteSymmetricDecryption(encryptedText: String): Result<String>
+    suspend fun remoteAsymmetricEncryption(plainText: String): Result<String>
+    suspend fun remoteAsymmetricDecryption(encryptedText: String): Result<String>
+    suspend fun remoteDataSigning(plainText: String): Result<String>
+    suspend fun remoteSignatureVerification(plainText: String, signature: String): Result<Boolean>
+    suspend fun listRemoteCryptoKeys(): Result<List<String>>
 }
