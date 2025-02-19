@@ -90,6 +90,7 @@ dependencies {
 
     LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
+    // Firebase Dependencies (Fixing Duplicate Classes)
     implementation(platform(FirebaseDeps.firebaseBom))
     FirebaseDeps.AllFirebaseDependencies.forEach {
         implementation(it) {
