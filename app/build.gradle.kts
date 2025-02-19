@@ -119,4 +119,12 @@ dependencies {
     ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
 }
 
+//Duplicate class conflict between:
+//proto-google-common-protos-2.51.0
+//protolite-well-known-types-18.0.0
+configurations.all {
+    resolutionStrategy.force("com.google.api.grpc:proto-google-common-protos:2.51.0")
+}
+
+
 
