@@ -1,11 +1,9 @@
 package com.application.real_estate_app.core.network
 
-import android.app.usage.NetworkStatsManager
-import android.content.Context
+
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.telephony.TelephonyManager
 import com.application.real_estate_app.core.domain.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,17 +14,14 @@ import java.net.Socket
 import javax.inject.Inject
 
 
-private const val THRESHOLD_KBPS = 50 // 50 kilobits per second
+private const val BANDWIDTH_THRESHOLD_KBPS = 50 // 50 kilobits per second
 private const val GOOGLE_DNS_ADDRESS = "8.8.8.8"
 private const val GOOGLE_DNS_PORT = 53
 private const val HTTP_PORT = 80
 
-@Suppress("UNUSED")
+
 class NetworkUtils @Inject  constructor(
-    private val connectivityManager: ConnectivityManager,
-    private val networkStatsManager: NetworkStatsManager,
-    private val telephonyManager: TelephonyManager,
-    private val context: Context
+    private val connectivityManager: ConnectivityManager
 ) : INetworkUtils {
 
     enum class ConnectionType {
@@ -62,7 +57,7 @@ class NetworkUtils @Inject  constructor(
         val linkDownstreamBandwidthKbps = networkCapabilities?.linkDownstreamBandwidthKbps ?: 0
         val linkUpstreamBandwidthKbps = networkCapabilities?.linkUpstreamBandwidthKbps ?: 0
 
-        return linkDownstreamBandwidthKbps < THRESHOLD_KBPS || linkUpstreamBandwidthKbps < THRESHOLD_KBPS
+        return linkDownstreamBandwidthKbps < BANDWIDTH_THRESHOLD_KBPS || linkUpstreamBandwidthKbps < BANDWIDTH_THRESHOLD_KBPS
     }
 
 

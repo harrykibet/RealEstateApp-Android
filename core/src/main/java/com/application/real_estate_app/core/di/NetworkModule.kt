@@ -4,6 +4,7 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
+import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +15,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -55,10 +55,10 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        @Named("DynamicBaseUrl") baseUrl: String // Injected from BaseUrlHolder
+        remoteConfigManager: IRemoteConfigManager
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(baseUrl) // Use the dynamically provided base URL
+            .baseUrl(remoteConfigManager.getBaseUrl()) // Use the dynamically provided base URL
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

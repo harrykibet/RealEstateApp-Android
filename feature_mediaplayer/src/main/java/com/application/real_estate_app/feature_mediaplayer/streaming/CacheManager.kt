@@ -96,8 +96,8 @@ class CacheManager @Inject constructor(
     }
 
     sealed class CacheStatus {
-        object NOT_CACHED : CacheStatus()
-        object FULLY_CACHED : CacheStatus()
+        data object NOT_CACHED : CacheStatus()
+        data object FULLY_CACHED : CacheStatus()
         data class PARTIALLY_CACHED(val totalBytes: Long, val cachedBytes: Long) : CacheStatus()
     }
 

@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id ("com.google.dagger.hilt.android")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -12,6 +13,10 @@ android {
     kapt{
         correctErrorTypes = true
         useBuildCache = true
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
    buildFeatures{

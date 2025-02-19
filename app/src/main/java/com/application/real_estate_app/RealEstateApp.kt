@@ -1,7 +1,6 @@
 package com.application.real_estate_app
 
 import android.app.Application
-import androidx.media3.common.util.UnstableApi
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
@@ -16,7 +15,6 @@ import java.security.Security
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
-@UnstableApi
 @HiltAndroidApp
 class RealEstateApp : Application()  {
 

@@ -1,6 +1,5 @@
 package com.application.real_estate_app.core.data.db_names
 
-@Suppress("UNUSED")
 object FirestoreFields {
         const val ACTIVE = "active"
         const val ADDRESS = "address"

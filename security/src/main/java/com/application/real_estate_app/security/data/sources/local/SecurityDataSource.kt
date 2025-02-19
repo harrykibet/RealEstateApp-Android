@@ -5,58 +5,131 @@ import com.application.real_estate_app.security.domain.interfaces.ICryptoManager
 import com.application.real_estate_app.security.domain.interfaces.ISecurityDataSource
 import com.application.real_estate_app.core.common.errors.Result
 import com.application.real_estate_app.core.common.errors.map
+import com.application.real_estate_app.security.domain.interfaces.IGoogleCloudKmsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * [SecurityDataSource] is an implementation of [ISecurityDataSource] that provides methods for
+ * various security operations, including encryption, decryption, signing, signature verification
+ * and hashing.
+ *
+ * It delegates cryptographic operations to [ICryptoManager] for local security
+ * and [IGoogleCloudKmsManager] for cloud-based security.
+ *
+ * @property localCryptoManager An instance of [ICryptoManager] responsible for local cryptographic operations.
+ * @property remoteCryptoManager An instance of [IGoogleCloudKmsManager] responsible for remote cryptographic operations.
+ */
 class SecurityDataSource(
-    private val cryptoManager: ICryptoManager
+    private val localCryptoManager: ICryptoManager,
+    private val remoteCryptoManager: IGoogleCloudKmsManager
 ) : ISecurityDataSource {
 
-    override suspend fun encrypt(data: String): Result<String> {
-        return cryptoManager.encrypt(data.toByteArray()).map { encryptedBytes ->
+    // Local encryption using ICryptoManager
+    override suspend fun localSymmetricEncryption(plainText: String): Result<String> {
+        return localCryptoManager.encrypt(plainText.toByteArray()).map { encryptedBytes ->
             Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
         }
     }
 
-    override suspend fun decrypt(encryptedData: String): Result<String> {
-        return cryptoManager.decrypt(Base64.decode(encryptedData, Base64.DEFAULT)).map { decryptedBytes ->
+    override suspend fun localSymmetricDecryption(encryptedText: String): Result<String> {
+        return localCryptoManager.decrypt(Base64.decode(encryptedText, Base64.DEFAULT)).map { decryptedBytes ->
             String(decryptedBytes)
         }
     }
 
-    override suspend fun signData(data: String): Result<String> {
-        return cryptoManager.signData(data.toByteArray()).map { signatureBytes ->
-            Base64.encodeToString(signatureBytes, Base64.DEFAULT)
+    // Cloud-based encryption using Google Cloud KMS
+    override suspend fun remoteSymmetricEncryption(plainText: String): Result<String> {
+        return try {
+            Result.Success(remoteCryptoManager.encryptDataSymmetric(plainText))
+        } catch (error: Exception) {
+            Result.Error(error)
         }
     }
 
-    override suspend fun verifySignature(data: String, signature: String): Result<Boolean> {
-        return cryptoManager.verifySignature(data.toByteArray(), Base64.decode(signature, Base64.DEFAULT))
+    override suspend fun remoteSymmetricDecryption(encryptedText: String): Result<String> {
+        return try {
+            Result.Success(remoteCryptoManager.decryptDataSymmetric(encryptedText))
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
     }
 
-    override suspend fun rsaEncrypt(data: String): Result<String> {
-        return cryptoManager.rsaEncrypt(data.toByteArray()).map { encryptedBytes ->
+    // Cloud-based asymmetric encryption
+    override suspend fun remoteAsymmetricEncryption(plainText: String): Result<String> {
+        return try {
+            Result.Success(remoteCryptoManager.encryptDataAsymmetric(plainText))
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
+    }
+
+    override suspend fun remoteAsymmetricDecryption(encryptedText: String): Result<String> {
+        return try {
+            Result.Success(remoteCryptoManager.decryptDataAsymmetric(encryptedText))
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
+    }
+
+
+    // Local  asymmetric encryption
+    override suspend fun localAsymmetricEncryption(plainText: String): Result<String> {
+        return localCryptoManager.rsaEncrypt(plainText.toByteArray()).map { encryptedBytes ->
             Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
         }
     }
 
-    override suspend fun rsaDecrypt(encryptedData: String): Result<String> {
-        return cryptoManager.rsaDecrypt(Base64.decode(encryptedData, Base64.DEFAULT)).map { decryptedBytes ->
+    override suspend fun localAsymmetricDecryption(encryptedText: String): Result<String> {
+        return localCryptoManager.rsaDecrypt(Base64.decode(encryptedText, Base64.DEFAULT)).map { decryptedBytes ->
             String(decryptedBytes)
         }
     }
 
-    override suspend fun rsaSignData(data: String): Result<String> {
-        return cryptoManager.signData(data.toByteArray()).map { signatureBytes ->
+
+    // Local signature using ICryptoManager
+    override suspend fun localDataSigning(plainText: String): Result<String> {
+        return localCryptoManager.signData(plainText.toByteArray()).map { signatureBytes ->
             Base64.encodeToString(signatureBytes, Base64.DEFAULT)
         }
     }
 
-    override suspend fun hashWithSalt(data: String): Result<String> {
-        return withContext(Dispatchers.IO) { cryptoManager.hashWithSalt(data) }
+    override suspend fun localSignatureVerification(plainText: String, signature: String): Result<Boolean> {
+        return localCryptoManager.verifySignature(plainText.toByteArray(), Base64.decode(signature, Base64.DEFAULT))
     }
 
-    override suspend fun verifyHash(data: String, combinedHash: String): Result<Boolean> {
-        return withContext(Dispatchers.IO) { cryptoManager.verifyHash(data, combinedHash) }
+    // Cloud-based signing using Google Cloud KMS
+    override suspend fun remoteDataSigning(plainText: String): Result<String> {
+        return try {
+            Result.Success(remoteCryptoManager.signData(plainText))
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
+    }
+
+    override suspend fun remoteSignatureVerification(plainText: String, signature: String): Result<Boolean> {
+        return try {
+            Result.Success(remoteCryptoManager.verifySignature(plainText, signature))
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
+    }
+
+    // Local Data Hashing
+    override suspend fun localHashingWithSalt(plainText: String): Result<String> {
+        return withContext(Dispatchers.IO) { localCryptoManager.hashWithSalt(plainText) }
+    }
+
+    override suspend fun localHashVerification(plainText: String, hashedText: String): Result<Boolean> {
+        return withContext(Dispatchers.IO) { localCryptoManager.verifyHash(plainText, hashedText) }
+    }
+
+    // Retrieve available encryption keys from Google Cloud KMS
+    override suspend fun listRemoteCryptoKeys(): Result<List<String>> {
+        return try {
+            Result.Success(remoteCryptoManager.listKeys())
+        } catch (error: Exception) {
+            Result.Error(error)
+        }
     }
 }

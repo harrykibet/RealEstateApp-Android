@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -13,6 +14,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class Logger @Inject constructor(
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ): LoggerInterface {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -82,6 +84,7 @@ class Logger @Inject constructor(
         }
     }
 
+    @Suppress("UNUSED")
     fun getLogs(): String {
         return try {
             logFile.readText()
@@ -90,6 +93,7 @@ class Logger @Inject constructor(
         }.toString()
     }
 
+    @Suppress("UNUSED")
     fun clearLogs() {
         try {
             logFile.writeText("")

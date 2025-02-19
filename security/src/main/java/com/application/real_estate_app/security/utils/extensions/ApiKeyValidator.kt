@@ -7,6 +7,17 @@ import com.application.real_estate_app.security.utils.exceptions.InvalidApiKeyEx
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * [ApiKeyValidator] is responsible for validating API keys against predefined patterns
+ * retrieved from a remote configuration. It supports validation for specific services
+ * as well as a generic validation for non-service-specific keys.
+ *
+ * This class utilizes regular expressions to match the expected format of API keys
+ * and provides sanitization for logging purposes to prevent exposing sensitive information.
+ *
+ * @property logger An instance of [LoggerInterface] for logging validation results and errors.
+ * @property remoteConfigManager An instance of [IRemoteConfigManager] for retrieving API key patterns from remote config.
+ */
 @Singleton
 class ApiKeyValidator @Inject constructor(
     private val logger: LoggerInterface,
