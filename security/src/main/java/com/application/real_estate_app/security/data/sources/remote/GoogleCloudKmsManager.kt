@@ -78,6 +78,7 @@ class GoogleCloudKmsManager @Inject constructor(
         keyType = KeyType.SYMMETRIC,
         preLog = mapOf("dataLength" to plaintext.length)
     ) {
+        require(plaintext.isNotEmpty()) { "Plaintext cannot be empty" }
         val ciphertext = kmsClient.encrypt(getKeyName(KeyType.SYMMETRIC), ByteString.copyFromUtf8(plaintext))
         Base64.encodeToString(ciphertext.ciphertext.toByteArray(), Base64.NO_WRAP)
     }
@@ -95,6 +96,7 @@ class GoogleCloudKmsManager @Inject constructor(
         keyType = KeyType.ASYMMETRIC,
         preLog = mapOf("dataLength" to plaintext.length)
     ) {
+        require(plaintext.isNotEmpty()) { "Plaintext cannot be empty" }
         val publicKey = getPublicKey(KeyType.ASYMMETRIC)
         Cipher.getInstance(Algorithm.RSA_TRANSFORMATION).run {
             init(Cipher.ENCRYPT_MODE, publicKey)
@@ -116,6 +118,7 @@ class GoogleCloudKmsManager @Inject constructor(
         operation = "data signing",
         keyType = KeyType.ASYMMETRIC_SIGNING
     ) {
+        require(data.isNotEmpty()) { "Plaintext cannot be empty" }
         val signResponse = kmsClient.asymmetricSign(
             getLatestKeyVersionName(KeyType.ASYMMETRIC_SIGNING),
             Digest.newBuilder().setSha256(ByteString.copyFromUtf8(data)).build()
@@ -158,7 +161,7 @@ class GoogleCloudKmsManager @Inject constructor(
         try {
             logger.d(buildLogMessage("Starting $operation", preLog, keyType))
             val result = block()
-            logger.d(buildLogMessage("Completed $operation", mapOf("result" to result!!::class.simpleName!!), keyType))
+            logger.d(buildLogMessage("Completed $operation", mapOf("result" to (result?.let { it::class.simpleName } ?: "null")), keyType))
             result
         } catch (e: ApiException) {
             logger.e("KMS operation failed: $operation - ${e.message}")

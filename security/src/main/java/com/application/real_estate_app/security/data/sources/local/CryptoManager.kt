@@ -76,7 +76,7 @@ class CryptoManager @Inject constructor(
     // endregion
 
     // region Symmetric Encryption
-    override suspend fun encrypt(bytes: ByteArray): Result<ByteArray> =
+    override suspend fun aesEncrypt(bytes: ByteArray): Result<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 val cipher = Cipher.getInstance(AES_TRANSFORMATION).apply {
@@ -89,7 +89,7 @@ class CryptoManager @Inject constructor(
             }
         }
 
-    override suspend fun decrypt(bytes: ByteArray): Result<ByteArray> =
+    override suspend fun aesDecrypt(bytes: ByteArray): Result<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 require(bytes.size >= 12) { "Invalid encrypted payload" }

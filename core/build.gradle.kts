@@ -64,7 +64,6 @@ dependencies {
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    implementation(GoogleCloudDeps.googleAuthCloud)
     implementation(GoogleCloudDeps.googleSecretsManager)
     implementation(GoogleCloudDeps.googleCloudKms)
 

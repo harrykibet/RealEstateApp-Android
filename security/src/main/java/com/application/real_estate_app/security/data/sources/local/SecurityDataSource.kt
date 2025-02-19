@@ -27,13 +27,13 @@ class SecurityDataSource(
 
     // Local encryption using ICryptoManager
     override suspend fun localSymmetricEncryption(plainText: String): Result<String> {
-        return localCryptoManager.encrypt(plainText.toByteArray()).map { encryptedBytes ->
+        return localCryptoManager.aesEncrypt(plainText.toByteArray()).map { encryptedBytes ->
             Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
         }
     }
 
     override suspend fun localSymmetricDecryption(encryptedText: String): Result<String> {
-        return localCryptoManager.decrypt(Base64.decode(encryptedText, Base64.DEFAULT)).map { decryptedBytes ->
+        return localCryptoManager.aesDecrypt(Base64.decode(encryptedText, Base64.DEFAULT)).map { decryptedBytes ->
             String(decryptedBytes)
         }
     }
