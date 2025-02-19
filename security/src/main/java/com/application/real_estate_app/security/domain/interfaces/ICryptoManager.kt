@@ -3,8 +3,8 @@ package com.application.real_estate_app.security.domain.interfaces
 import com.application.real_estate_app.core.common.errors.Result
 
 interface ICryptoManager {
-    suspend fun encrypt(bytes: ByteArray): Result<ByteArray>
-    suspend fun decrypt(bytes: ByteArray): Result<ByteArray>
+    suspend fun aesEncrypt(bytes: ByteArray): Result<ByteArray>
+    suspend fun aesDecrypt(bytes: ByteArray): Result<ByteArray>
     suspend fun hashWithSalt(data: String): Result<String>
     suspend fun verifyHash(data: String, hash: String): Result<Boolean>
     suspend fun rsaDecrypt(data: ByteArray): Result<ByteArray>
