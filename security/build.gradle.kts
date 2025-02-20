@@ -47,21 +47,8 @@ dependencies {
 
     implementation(SecurityDeps.securityCrypto)
 
-    implementation(GoogleCloudDeps.googleSecretsManager) {
-        exclude(group = "com.google.protobuf", module = "protobuf-java")
-        exclude(
-            group = "com.google.protobuf",
-            module = "protobuf-javalite"
-        ) // Ensure only one is used
-    }
-
-    implementation(GoogleCloudDeps.googleCloudKms) {
-        exclude(group = "com.google.protobuf", module = "protobuf-java")
-        exclude(
-            group = "com.google.protobuf",
-            module = "protobuf-javalite"
-        ) // Ensure only one is used
-    }
+    implementation(GoogleCloudDeps.googleSecretsManager)
+    implementation(GoogleCloudDeps.googleCloudKms)
 
     implementation(project(ProjectModules.core))
 
@@ -89,7 +76,4 @@ dependencies {
 
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
-
-    // Use only Protobuf Java Lite
-    implementation("com.google.protobuf:protobuf-javalite:3.25.5")
 }
