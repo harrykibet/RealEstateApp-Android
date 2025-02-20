@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core.di
+package com.application.real_estate_app.security.di
 
 import com.google.cloud.kms.v1.KeyManagementServiceClient
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object GoogleCloudModule {
+object RemoteDataSourceModule {
     @Provides
     @Singleton
     fun provideSecretManagerClient(): SecretManagerServiceClient {
