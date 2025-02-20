@@ -96,15 +96,8 @@ dependencies {
     FirebaseDeps.AllFirebaseDependencies.forEach {
         implementation(it) {
             exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+            exclude(group = "com.google.protobuf", module = "protobuf-java")
         }
-    }
-
-    // Exclude protobuf-java from conflicting dependencies
-    implementation("com.google.api.grpc:proto-google-common-protos:2.51.0") {
-        exclude(group = "com.google.protobuf", module = "protobuf-java")
-    }
-    implementation("com.google.firebase:protolite-well-known-types:18.0.0") {
-        exclude (group = "com.google.protobuf", module = "protobuf-java")
     }
 
     // Use Protobuf Java Lite
