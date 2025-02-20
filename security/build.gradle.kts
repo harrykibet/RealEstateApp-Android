@@ -89,7 +89,4 @@ dependencies {
 
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
-
-    // Use only Protobuf Java Lite
-    implementation("com.google.protobuf:protobuf-javalite:3.25.5")
 }
