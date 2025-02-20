@@ -9,7 +9,7 @@ buildscript {
         classpath("com.google.gms:google-services:4.4.2") // Firebase
         classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.3")
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.6")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.52")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.55")
         classpath("androidx.room:room-gradle-plugin:2.6.1")
     }
 }

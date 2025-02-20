@@ -35,3 +35,7 @@ build/
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Scripts
+.update_repos.sh
+.updategitremotes.sh
