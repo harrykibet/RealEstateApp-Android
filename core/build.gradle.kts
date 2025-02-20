@@ -64,18 +64,6 @@ dependencies {
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    implementation(GoogleCloudDeps.googleSecretsManager) {
-        exclude(group = "com.google.protobuf", module = "protobuf-java")
-        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-        // Ensure only one is used
-    }
-
-    implementation(GoogleCloudDeps.googleCloudKms) {
-        exclude(group = "com.google.protobuf", module = "protobuf-java")
-        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-        // Ensure only one is used
-    }
-
     NetworkDeps.AllNetworkDependencies.forEach {implementation(it) }
 
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
