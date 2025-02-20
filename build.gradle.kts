@@ -48,7 +48,6 @@ plugins {
     id("com.google.firebase.crashlytics") version "3.0.3" apply false
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
     id("com.android.library") version "8.8.1" apply false
-    id("androidx.compose.compiler") version "1.5.4" apply false
     id("org.sonarqube") version "6.0.1.5171" apply false // SonarQube
 }
 

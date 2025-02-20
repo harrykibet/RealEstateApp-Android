@@ -14,6 +14,7 @@ object ComposeDeps {
     // ComposeBom not included, add it manually in the dependencies block
     val AllComposeDependencies = listOf(
         composeUi,
+        composeCompiler,
         composeMaterial,
         composeUiToolingPreview,
         composeRuntimeLiveData,
