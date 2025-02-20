@@ -26,7 +26,7 @@ object Versions {
     const val arthenica_ffmpeg_kit_min = "5.1.LTS"
 
     // Google Secrets Manager
-    const val google_secrets_manager = "2.57.0"
+    const val google_secrets_manager = "2.58.0"
 
     // Test Core
     const val androidx_test_core_ktx = "1.6.1"
@@ -35,13 +35,13 @@ object Versions {
     const val androidx_security_ktx = "1.1.0-alpha06"
 
     // Google Auth Cloud
-    const val google_auth_cloud = "1.22.0"
+    const val google_auth_cloud = "1.32.1"
 
     // Google Cloud KMS
-    const val google_cloud_kms = "2.60.0"
+    const val google_cloud_kms = "2.61.0"
 
     // Firebase
-    const val google_firebase_bom = "33.5.1"
+    const val google_firebase_bom = "33.9.0"
 
     // Google Play Services
     const val play_services_maps = "19.0.0"
@@ -59,7 +59,7 @@ object Versions {
     const val resilience4j = "2.3.0"
 
     // Google Truth
-    const val google_truth = "1.1.5"
+    const val google_truth = "1.4.4"
 
     // Bouncy Castle
     const val bouncy_castle = "1.80"
@@ -68,7 +68,7 @@ object Versions {
     const val kotest = "5.8.0"
 
     // Guava
-    const val guava = "32.1.3-android"
+    const val guava = "33.4.0-android"
 
     //Android Metrics
     const val android_metrics = "1.0.0-beta01"
@@ -107,20 +107,20 @@ object Versions {
     const val androidx_navigation = "2.8.3"
 
     // Hilt
-    const val google_dagger_hilt = "2.52"
+    const val google_dagger_hilt = "2.55"
     const val androidx_hilt = "1.2.0"
 
     // Media3
     const val androidx_media3 = "1.5.1"
 
     // Lottie
-    const val airbnb_lottie = "6.0.0"
+    const val airbnb_lottie = "6.6.2"
 
     // Okhttp
     const val squareup_okhttp3 = "4.12.0"
 
     // Retrofit
-    const val squareup_retrofit2 = "2.9.0"
+    const val squareup_retrofit2 = "2.11.0"
 
     // GSON
     const val google_code_gson = "2.10.1"
