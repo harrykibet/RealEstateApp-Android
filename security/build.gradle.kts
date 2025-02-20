@@ -47,13 +47,8 @@ dependencies {
 
     implementation(SecurityDeps.securityCrypto)
 
-    implementation(GoogleCloudDeps.googleSecretsManager) {
-        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-    }
-
-    implementation(GoogleCloudDeps.googleCloudKms) {
-        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-    }
+    implementation(GoogleCloudDeps.googleSecretsManager)
+    implementation(GoogleCloudDeps.googleCloudKms)
 
     implementation(project(ProjectModules.core))
 
