@@ -18,6 +18,7 @@ object Versions {
     const val androidx_activity_compose = "1.9.3"
     const val androidx_compose_material3 = "1.3.1"
     const val androidx_compose_runtime = "1.5."
+    const val androidx_compose_compiler = "1.5.10"
 
     // Lifecycle
     const val androidx_lifecycle = "2.8.7"
