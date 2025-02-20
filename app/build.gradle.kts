@@ -93,15 +93,7 @@ dependencies {
 
     // Firebase Dependencies (Fixing Duplicate Classes)
     implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.AllFirebaseDependencies.forEach {
-        implementation(it) {
-            exclude(group = "com.google.firebase", module = "protolite-well-known-types")
-            exclude(group = "com.google.protobuf", module = "protobuf-java")
-        }
-    }
-
-    // Use Protobuf Java Lite
-    implementation ("com.google.protobuf:protobuf-javalite:3.25.5")
+    FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
 
     // Google Play Services
     GoogleAndroidDeps.AllPlayServicesDependencies.forEach { implementation(it) }
@@ -136,9 +128,4 @@ dependencies {
 
     // Project Modules
     ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
-}
-
-// Duplicate class conflict resolution
-configurations.all {
-    resolutionStrategy.force("com.google.api.grpc:proto-google-common-protos:2.51.0")
 }
