@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
-    id ("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
     id("org.jetbrains.dokka")
 }
 
@@ -47,8 +47,21 @@ dependencies {
 
     implementation(SecurityDeps.securityCrypto)
 
-    implementation(GoogleCloudDeps.googleSecretsManager)
-    implementation(GoogleCloudDeps.googleCloudKms)
+    implementation(GoogleCloudDeps.googleSecretsManager) {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+        exclude(
+            group = "com.google.protobuf",
+            module = "protobuf-javalite"
+        ) // Ensure only one is used
+    }
+
+    implementation(GoogleCloudDeps.googleCloudKms) {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+        exclude(
+            group = "com.google.protobuf",
+            module = "protobuf-javalite"
+        ) // Ensure only one is used
+    }
 
     implementation(project(ProjectModules.core))
 
@@ -76,4 +89,7 @@ dependencies {
 
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+
+    // Use only Protobuf Java Lite
+    implementation("com.google.protobuf:protobuf-javalite:3.25.5")
 }
