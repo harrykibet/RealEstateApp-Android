@@ -1,28 +1,26 @@
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-      // Add the Google services Gradle plugin
+    // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
-      // Add the Crashlytics gradle plugin
+    // Add the Crashlytics Gradle plugin
     id("com.google.firebase.crashlytics")
     // Add the Secrets Gradle plugin
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     // Add the Safe Args Gradle plugin
     id("androidx.navigation.safeargs.kotlin")
     id("org.jetbrains.kotlin.kapt")
-    //Dagger Hilt for Dependencies Injection
+    // Dagger Hilt for Dependency Injection
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.dokka")
     id("org.sonarqube")
-  }
-
+}
 
 android {
     namespace = "com.application.real_estate_app"
     compileSdk = 35
 
-    kapt{
+    kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
@@ -31,9 +29,14 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         dataBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     defaultConfig {
@@ -58,19 +61,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -79,15 +79,16 @@ android {
 }
 
 dependencies {
-
     CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
     CoreDeps.CoreUiDependencies.forEach { implementation(it) }
     implementation(CoreDeps.splashScreen)
 
+    // Compose Dependencies
     implementation(platform(ComposeDeps.composeBom))
     ComposeDeps.AllComposeDependencies.forEach { implementation(it) }
     ComposeDeps.ComposeDebugDependencies.forEach { debugImplementation(it) }
 
+    // Lifecycle Dependencies
     LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
 
     // Firebase Dependencies (Fixing Duplicate Classes)
@@ -98,38 +99,53 @@ dependencies {
         }
     }
 
+    // Exclude protobuf-java from conflicting dependencies
+    implementation("com.google.api.grpc:proto-google-common-protos:2.51.0") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
+    implementation("com.google.firebase:protolite-well-known-types:18.0.0") {
+        exclude (group = "com.google.protobuf", module = "protobuf-java")
+    }
+
+    // Use Protobuf Java Lite
+    implementation ("com.google.protobuf:protobuf-javalite:3.25.5")
+
+    // Google Play Services
     GoogleAndroidDeps.AllPlayServicesDependencies.forEach { implementation(it) }
 
+    // EventBus
     implementation(EventBusDeps.eventBus)
 
+    // Security Dependencies
     implementation(SecurityDeps.bouncyCastle)
 
+    // Navigation Dependencies
     NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
 
+    // Hilt Dependencies
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
+    // Media Libraries
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.lottie)
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
+    // Database Dependencies
     DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
+    // Testing Dependencies
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
     TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
 
+    // Project Modules
     ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
 }
 
-//Duplicate class conflict between:
-//proto-google-common-protos-2.51.0
-//protolite-well-known-types-18.0.0
+// Duplicate class conflict resolution
 configurations.all {
     resolutionStrategy.force("com.google.api.grpc:proto-google-common-protos:2.51.0")
 }
-
-
-
