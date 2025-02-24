@@ -1,15 +1,18 @@
 plugins {
-    `kotlin-dsl` // Enables Kotlin for buildSrc
-    kotlin("jvm") version "2.0.0" // Match this with your project Kotlin version
-    id("org.sonarqube") version "6.0.1.5171" // Use the latest version of SonarQube plugin
+    `kotlin-dsl` // Enables Kotlin for buildSrc (relies on embedded Kotlin)
+    kotlin("jvm") version "2.0.0" // Use the same version as your project
 }
 
 repositories {
-    mavenCentral()
     google()
-    maven { url = uri("https://jitpack.io") } // If you need JitPack
+    mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+}
+
+kotlinDslPluginOptions {
+    jvmTarget.set("11") // Ensure compatibility with Java 11+
 }
