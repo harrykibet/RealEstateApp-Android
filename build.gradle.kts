@@ -16,12 +16,6 @@ plugins {
 }
 
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-
     subprojects {
         apply(plugin = "org.sonarqube")
 
