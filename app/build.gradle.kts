@@ -32,7 +32,6 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
-        compose = false
     }
 
     composeOptions {
@@ -88,11 +87,6 @@ dependencies {
     CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
     CoreDeps.CoreUiDependencies.forEach { implementation(it) }
     implementation(CoreDeps.splashScreen)
-
-    // Compose Dependencies
-    implementation(platform(ComposeDeps.composeBom))
-    ComposeDeps.AllComposeDependencies.forEach { implementation(it) }
-    ComposeDeps.ComposeDebugDependencies.forEach { debugImplementation(it) }
 
     // Lifecycle Dependencies
     LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
