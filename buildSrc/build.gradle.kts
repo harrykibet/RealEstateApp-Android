@@ -10,9 +10,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 
-kotlinDslPluginOptions {
-    jvmTarget.set("11") // Ensure compatibility with Java 11+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17)) // Set to Java 17 (or your required version)
+    }
 }
