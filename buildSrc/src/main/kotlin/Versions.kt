@@ -24,7 +24,7 @@ object Versions {
     const val androidx_lifecycle = "2.9.0-alpha10"
 
     // Ffmpeg
-    const val ffmpeg = "5.1.LTS"
+    const val ffmpeg = "4.4.LTS"
 
     // Google Secrets Manager
     const val google_secrets_manager = "2.58.0"
