@@ -12,7 +12,7 @@ object CoreDeps {
     const val activityKtx = "androidx.activity:activity-ktx:${Versions.androidx_activity_ktx}"
     const val splashScreen = "androidx.core:core-splashscreen:${Versions.androidx_core_splash_screen}"
     const val testCoreKtx = "androidx.test:core-ktx:${Versions.androidx_test_core_ktx}"
-    const val workRuntimeKtx = "androidx.work:work-runtime-ktx:2.9.0"
+    const val workRuntimeKtx = "androidx.work:work-runtime-ktx:${Versions.androidx_work_manager}"
 
     val CommonCoreDependencies = listOf(
         coreKtx,
