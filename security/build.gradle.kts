@@ -64,7 +64,7 @@ dependencies {
         exclude(group = "com.google.protobuf", module = "protobuf-javalite") // Ensure only one is used
     }
 
-    // Use only Protobuf Java Lite
+    // Use only Protobuf Java
     implementation("com.google.protobuf:protobuf-java:4.30.0-RC1")
 
     implementation(project(ProjectModules.core))
