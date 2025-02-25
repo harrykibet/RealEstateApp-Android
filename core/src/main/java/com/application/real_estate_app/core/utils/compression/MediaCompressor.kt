@@ -3,6 +3,8 @@ package com.application.real_estate_app.core.utils.compression
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
+import com.application.real_estate_app.core.utils.system.FileUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -38,7 +40,46 @@ object MediaCompressor {
 
     // Video compression function
     fun compressVideo(context: Context, videoUri: Uri, outputDir: File, callback: (File?) -> Unit) {
-        TODO("Video compression not implemented yet")
+        try {
+            // Convert Uri to a real file path
+            val inputPath = FileUtils.getPath(context, videoUri) ?: run {
+                Log.e("FFmpeg", "Invalid video URI")
+                callback(null)
+                return
+            }
+
+            // Ensure output directory exists
+            if (!outputDir.exists()) outputDir.mkdirs()
+
+            // Define output file path
+            val outputFile = File(outputDir, "compressed_video.mp4")
+
+            // FFmpeg command for compression
+            val ffmpegCommand = arrayOf(
+                "-i", inputPath,         // Input file
+                "-preset", "ultrafast",  // Encoding speed preset (slower = better compression)
+                "-c:v", "libx264",       // H.264 video codec
+                "-crf", "28",            // Constant Rate Factor (lower = better quality)
+                "-c:a", "aac",           // Audio codec
+                "-b:a", "128k",          // Audio bitrate
+                "-strict", "experimental",
+                outputFile.absolutePath  // Output file
+            )
+
+            // Execute FFmpeg command asynchronously
+            FFmpeg.executeAsync(ffmpegCommand) { _, returnCode ->
+                if (returnCode == Config.RETURN_CODE_SUCCESS) {
+                    Log.d("FFmpeg", "Video compression completed successfully!")
+                    callback(outputFile)
+                } else {
+                    Log.e("FFmpeg", "Video compression failed with return code: $returnCode")
+                    callback(null)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("FFmpeg", "Error during compression: ${e.message}")
+            callback(null)
+        }
     }
 
 
