@@ -55,17 +55,17 @@ dependencies {
     implementation(SecurityDeps.securityCrypto)
 
     // Google Cloud Dependencies (KMS & Secret Manager)
-    implementation("com.google.cloud:google-cloud-kms:2.36.0") {
+    implementation(GoogleCloudDeps.googleCloudKms) {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
         exclude(group = "com.google.protobuf", module = "protobuf-javalite") // Ensure only one is used
     }
-    implementation("com.google.cloud:google-cloud-secretmanager:2.26.0") {
+    implementation(GoogleCloudDeps.googleSecretsManager) {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
         exclude(group = "com.google.protobuf", module = "protobuf-javalite") // Ensure only one is used
     }
 
-// Use only Protobuf Java Lite
-    implementation("com.google.protobuf:protobuf-javalite:3.25.5")
+    // Use only Protobuf Java Lite
+    implementation("com.google.protobuf:protobuf-java:4.30.0-RC1")
 
     implementation(project(ProjectModules.core))
 
