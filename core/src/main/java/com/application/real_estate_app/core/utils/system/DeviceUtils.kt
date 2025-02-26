@@ -46,21 +46,21 @@ class DeviceUtils @Inject constructor(
         }
     }
 
-
     override fun supports10BitHdr(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
-                codec.supportedTypes.any { mimeType ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        codec.getCapabilitiesForType(mimeType).colorFormats.contains(
-                            MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
-                        )
-                    } else {
-                        TODO("VERSION.SDK_INT < TIRAMISU")
-                    }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+
+        val codecList = MediaCodecList(MediaCodecList.ALL_CODECS)
+        return codecList.codecInfos.any { codec ->
+            codec.supportedTypes.any { mimeType ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    codec.getCapabilitiesForType(mimeType).colorFormats.contains(
+                        MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
+                    )
+                } else {
+                    false // Safely return false for versions below TIRAMISU
                 }
             }
-        } else false
+        }
     }
 
 

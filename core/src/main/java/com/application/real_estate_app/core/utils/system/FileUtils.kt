@@ -7,7 +7,6 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import com.application.real_estate_app.core.utils.media.MediaFileUtils
 import com.application.real_estate_app.core.utils.media.MediaFileUtils.getMediaFilePathFromContentUri
 import java.io.File
 import java.io.FileOutputStream

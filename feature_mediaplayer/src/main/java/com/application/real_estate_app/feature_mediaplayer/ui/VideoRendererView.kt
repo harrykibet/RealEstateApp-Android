@@ -1,7 +1,6 @@
 package com.application.real_estate_app.feature_mediaplayer.ui
 
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -11,7 +10,6 @@ import android.util.Log
 import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import com.application.real_estate_app.core.utils.system.DeviceUtils
@@ -46,7 +44,6 @@ class VideoRendererView @JvmOverloads constructor(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun enableHDR() {
         //Check if the device supports HDR
         if (deviceUtils.supports10BitHdr()) {
@@ -59,7 +56,7 @@ class VideoRendererView @JvmOverloads constructor(
         }
     }
 
-    @SuppressLint("ObsoleteSdkInt")
+
     private fun SurfaceView.setFormatCompat() {
         holder.let { holder ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
