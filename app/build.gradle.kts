@@ -93,16 +93,7 @@ dependencies {
 
     // Firebase Dependencies
     implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.AllFirebaseDependencies.forEach {
-        implementation(it)
-        {
-            exclude(group = "com.google.protobuf", module = "protobuf-java")
-            exclude(group = "com.google.protobuf", module = "protobuf-javalite") // Ensure only one is used
-        }
-    }
-
-    // Use only Protobuf Java
-    implementation("com.google.protobuf:protobuf-java:4.30.0-RC1")
+    FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
 
     // Google Play Services
     GoogleAndroidDeps.AllPlayServicesDependencies.forEach { implementation(it) }
@@ -120,19 +111,11 @@ dependencies {
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
-
     implementation("com.google.protobuf:protobuf-javalite:4.26.1")
 
     // Media Libraries
-    implementation(MediaDeps.media3ExoPlayer)
-    implementation(MediaDeps.media3UI)
-    implementation(MediaDeps.lottie)
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
-
-    // Database Dependencies
-    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
 
     // Testing Dependencies
     TestingDeps.TestDependencies.forEach { testImplementation(it) }
