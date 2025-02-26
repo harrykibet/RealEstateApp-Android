@@ -120,6 +120,9 @@ dependencies {
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
 
+
+    implementation("com.google.protobuf:protobuf-javalite:4.26.1")
+
     // Media Libraries
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
