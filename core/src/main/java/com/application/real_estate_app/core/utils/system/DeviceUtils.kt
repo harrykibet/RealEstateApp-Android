@@ -46,14 +46,18 @@ class DeviceUtils @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
     override fun supports10BitHdr(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
                 codec.supportedTypes.any { mimeType ->
-                    codec.getCapabilitiesForType(mimeType).colorFormats.contains(
-                        MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        codec.getCapabilitiesForType(mimeType).colorFormats.contains(
+                            MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
+                        )
+                    } else {
+                        TODO("VERSION.SDK_INT < TIRAMISU")
+                    }
                 }
             }
         } else false
