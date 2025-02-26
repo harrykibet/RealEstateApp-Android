@@ -23,7 +23,7 @@ object MediaDeps {
     // Media Router
     const val mediaRouter = "androidx.mediarouter:mediarouter:${Versions.androidx_mediarouter}"
 
-    const val  ffmpeg = "com.arthenica:mobile-ffmpeg-min-gpl:${Versions.ffmpeg}"
+    const val  ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.ffmpeg}"
 
     // Glide
     const val glide = "com.github.bumptech.glide:glide:${Versions.github_bumptech_glide}"
