@@ -26,9 +26,6 @@ object Versions {
     // Ffmpeg
     const val ffmpeg = "6.0-2.LTS"
 
-    // Google Secrets Manager
-    const val google_secrets_manager = "2.58.0"
-
     // Test Core
     const val androidx_test_core_ktx = "1.6.1"
 
@@ -38,14 +35,11 @@ object Versions {
     // Security
     const val androidx_security_ktx = "1.1.0-alpha06"
 
-    // Google Auth Cloud
-    const val google_auth_cloud = "1.32.1"
-
-    // Google Cloud KMS
-    const val google_cloud_kms = "2.61.0"
-
     // Firebase
     const val google_firebase_bom = "33.9.0"
+
+    // Google Cloud
+    const val google_cloud_bom = "26.55.0"
 
     // Google Play Services
     const val play_services_maps = "19.1.0"
