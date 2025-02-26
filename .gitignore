@@ -39,3 +39,7 @@ captures/
 # Scripts
 .update_repos.sh
 .updategitremotes.sh
+
+# Misc
+dependencies_tree.txt
+dependency_trees.txt
