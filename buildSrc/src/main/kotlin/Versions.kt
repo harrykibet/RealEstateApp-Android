@@ -92,9 +92,6 @@ object Versions {
     // Media Router
     const val androidx_mediarouter = "1.7.0"
 
-    // Media Router 2
-    const val androidx_mediarouter2 = "1.0.0-beta01"
-
     // Navigation
     const val androidx_navigation = "2.9.0-alpha06"
 
