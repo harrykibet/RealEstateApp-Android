@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.net.toFile
+import com.application.real_estate_app.core.common.logs.Logger
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
