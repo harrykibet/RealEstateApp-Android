@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core.network
+package com.application.real_estate_app.core.utils.network
 
 
 import android.net.ConnectivityManager

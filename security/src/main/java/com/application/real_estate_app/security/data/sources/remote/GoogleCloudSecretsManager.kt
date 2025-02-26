@@ -159,48 +159,51 @@ class GoogleCloudSecretsManager @Inject constructor(
     }
 
     companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
         fun create(
             secretManagerClient: SecretManagerServiceClient,
             projectId: String,
             logger: LoggerInterface
         ): GoogleCloudSecretsManager {
-            return GoogleCloudSecretsManager(
-                secretManagerClient = secretManagerClient,
-                projectId = projectId,
-                logger = logger,
-                circuitBreaker = CircuitBreaker.of(
-                    "secrets-cb",
-                    CircuitBreakerConfig.custom()
-                        .failureRateThreshold(40.0f)
-                        .waitDurationInOpenState(Duration.ofSeconds(45))
-                        .slidingWindow(10, 10,
-                            CircuitBreakerConfig.SlidingWindowType.COUNT_BASED,
-                            CircuitBreakerConfig.SlidingWindowSynchronizationStrategy.SYNCHRONIZED)
-                        .build()
-                ),
-                retry = Retry.of("secrets-retry", RetryConfig.custom<Any>()
-                    .maxAttempts(3)
-                    .waitDuration(Duration.ofMillis(200))
-                    .retryOnException { e -> e is SecretsManagerException.Retryable }
-                    .build()),
-                cache = Caffeine.newBuilder()
-                    .maximumSize(1000)
-                    .expireAfterWrite(15, TimeUnit.MINUTES)
-                    .evictionListener { _: CacheKey?, value: SensitiveString?, _: RemovalCause ->
-                        value?.clear()
-                    }
-                    .buildAsync { key ->
-                        secretManagerClient.accessSecretVersion(
-                            SecretVersionName.of(
-                                projectId,
-                                key.secretId.value,
-                                key.version.toString()
-                            )
-                        ).payload.data.toStringUtf8()
-                            .let { SensitiveString.fromSecureString(it) }
-                    }
-            )
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                GoogleCloudSecretsManager(
+                    secretManagerClient = secretManagerClient,
+                    projectId = projectId,
+                    logger = logger,
+                    circuitBreaker = CircuitBreaker.of(
+                        "secrets-cb",
+                        CircuitBreakerConfig.custom()
+                            .failureRateThreshold(40.0F)
+                            .waitDurationInOpenState(Duration.ofSeconds(45))
+                            .slidingWindow(10, 10,
+                                CircuitBreakerConfig.SlidingWindowType.COUNT_BASED,
+                                CircuitBreakerConfig.SlidingWindowSynchronizationStrategy.SYNCHRONIZED)
+                            .build()
+                    ),
+                    retry = Retry.of("secrets-retry", RetryConfig.custom<Any>()
+                        .maxAttempts(3)
+                        .waitDuration(Duration.ofMillis(200))
+                        .retryOnException { e -> e is SecretsManagerException.Retryable }
+                        .build()),
+                    cache = Caffeine.newBuilder()
+                        .maximumSize(1000)
+                        .expireAfterWrite(15, TimeUnit.MINUTES)
+                        .evictionListener { _: CacheKey?, value: SensitiveString?, _: RemovalCause ->
+                            value?.clear()
+                        }
+                        .buildAsync { key ->
+                            secretManagerClient.accessSecretVersion(
+                                SecretVersionName.of(
+                                    projectId,
+                                    key.secretId.value,
+                                    key.version.toString()
+                                )
+                            ).payload.data.toStringUtf8()
+                                .let { SensitiveString.fromSecureString(it) }
+                        }
+                )
+            } else {
+                throw UnsupportedOperationException("GoogleCloudSecretsManager requires Android O (API 26) or later.")
+            }
         }
     }
 }

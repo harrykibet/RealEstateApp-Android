@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core.network
+package com.application.real_estate_app.core.utils.network
 
 import android.net.ConnectivityManager
 import android.net.Network
@@ -113,32 +113,29 @@ class NetworkHandler @Inject constructor(
      */
     override fun <T> safeApiCall(
         apiCall: () -> T,
-        onFailure: (Exception) -> Unit // Add onFailure callback to handle errors
+        onFailure: (Exception) -> Unit
     ): T? {
         return try {
-            when (networkUtils.getNetworkStatus()) {
+            when (val status = networkUtils.getNetworkStatus()) {
                 is NetworkUtils.NetworkStatusResult.Connected -> apiCall() // Proceed if connected
                 is NetworkUtils.NetworkStatusResult.PoorConnection -> {
-                    logger.w("NetworkHandler: ${Errors.POOR_CONNECTION}")
+                    logger.w("NetworkHandler: ${Errors.POOR_CONNECTION} (Status: $status)")
                     onFailure(Exception(Errors.POOR_CONNECTION))
-                    null // Notify poor connection
+                    null
                 }
                 is NetworkUtils.NetworkStatusResult.NoInternet -> {
-                    logger.w("NetworkHandler: ${Errors.NO_INTERNET_CONNECTION}")
+                    logger.w("NetworkHandler: ${Errors.NO_INTERNET_CONNECTION} (Status: $status)")
                     onFailure(Exception(Errors.NO_INTERNET_CONNECTION))
-                    null // Notify no internet
+                    null
                 }
-
-                NetworkUtils.NetworkStatusResult.Connected -> TODO()
-                NetworkUtils.NetworkStatusResult.NoInternet -> TODO()
-                NetworkUtils.NetworkStatusResult.PoorConnection -> TODO()
             }
         } catch (e: Exception) {
-            logger.e("NetworkHandler: API call failed: ${e.message}")
-            onFailure(e) // Call onFailure callback on failure
+            logger.e("NetworkHandler: API call failed", e)
+            onFailure(e)
             null
         }
     }
+
 
     /**
      * A suspend version of safeApiCall for use with coroutines, with failure callback.
