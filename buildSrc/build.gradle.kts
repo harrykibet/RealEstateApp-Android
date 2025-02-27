@@ -18,3 +18,16 @@ java {
         languageVersion.set(JavaLanguageVersion.of(17)) // Set to Java 17 (or your required version)
     }
 }
+
+subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "com.google.protobuf") {
+                useVersion("4.29.0") // Force latest Protobuf
+            }
+        }
+
+        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
+        exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+    }
+}
