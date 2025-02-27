@@ -4,10 +4,10 @@ plugins {
     kotlin("android") version "2.0.0" apply false
     kotlin("jvm") version "2.0.0" apply false
     kotlin("kapt") version "2.0.0" apply false
-    id("com.android.library") version "8.8.1" apply false
+    id("com.android.library") version "8.8.2" apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.firebase.crashlytics") version "3.0.3" apply false
-    id("androidx.navigation.safeargs") version "2.8.7" apply false
+    id("androidx.navigation.safeargs") version "2.8.8" apply false
     id("com.google.dagger.hilt.android") version "2.55" apply false
     id("androidx.room") version "2.6.1" apply false
     id("org.jetbrains.dokka") version "1.9.0" apply false
@@ -17,6 +17,17 @@ plugins {
 
 allprojects {
     subprojects {
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "com.google.protobuf") {
+                    useVersion("4.29.0") // Force latest Protobuf
+                }
+            }
+
+            exclude(group = "com.google.protobuf", module = "protobuf-javalite")
+            exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+        }
+
         apply(plugin = "org.sonarqube")
 
         configure<org.sonarqube.gradle.SonarExtension> {
