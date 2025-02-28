@@ -17,6 +17,21 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    packaging {
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/COPYRIGHT.txt",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE.txt",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.*",
+                "META-INF/NOTICE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.*"
+            )
+        )
+    }
+
     tasks.dokkaHtml.configure {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
