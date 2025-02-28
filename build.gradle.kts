@@ -28,6 +28,14 @@ allprojects {
             exclude(group = "com.google.firebase", module = "protolite-well-known-types")
         }
 
+        afterEvaluate {
+            if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+                extensions.findByType<com.android.build.gradle.internal.dsl.BaseAppModuleExtension>()?.apply {
+                    packaging.resources.excludes.add("META-INF/DEPENDENCIES")
+                }
+            }
+        }
+
         apply(plugin = "org.sonarqube")
 
         configure<org.sonarqube.gradle.SonarExtension> {
