@@ -1,7 +1,6 @@
 package com.application.real_estate_app.security.data.sources.remote
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.application.real_estate_app.security.domain.interfaces.IGoogleCloudSecretsManager
 import com.application.real_estate_app.security.domain.models.CacheKey
@@ -175,8 +174,7 @@ class GoogleCloudSecretsManager @Inject constructor(
                             .failureRateThreshold(40.0F)
                             .waitDurationInOpenState(Duration.ofSeconds(45))
                             .slidingWindow(10, 10,
-                                CircuitBreakerConfig.SlidingWindowType.COUNT_BASED,
-                                CircuitBreakerConfig.SlidingWindowSynchronizationStrategy.SYNCHRONIZED)
+                                CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                             .build()
                     ),
                     retry = Retry.of("secrets-retry", RetryConfig.custom<Any>()
