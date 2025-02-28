@@ -54,7 +54,7 @@ object Versions {
     const val caffeine = "3.2.0"
 
     // Resilience4j
-    const val resilience4j = "2.2.0"
+    const val resilience4j = "2.3.0"
 
     // Google Truth
     const val google_truth = "1.4.4"

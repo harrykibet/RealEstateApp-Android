@@ -15,12 +15,6 @@ import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
 import com.google.cloud.secretmanager.v1.SecretName
 import com.google.cloud.secretmanager.v1.SecretVersion
 import com.google.cloud.secretmanager.v1.SecretVersionName
-import io.github.resilience4j.circuitbreaker.CircuitBreaker
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
-import io.github.resilience4j.kotlin.circuitbreaker.executeSuspendFunction
-import io.github.resilience4j.kotlin.retry.executeSuspendFunction
-import io.github.resilience4j.retry.Retry
-import io.github.resilience4j.retry.RetryConfig
 import io.micrometer.core.instrument.Metrics
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
@@ -28,31 +22,15 @@ import io.opentelemetry.api.trace.Tracer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-/**
- * [GoogleCloudSecretsManager] is a class responsible for retrieving secrets from Google Cloud Secret Manager.
- *
- * It leverages caching, circuit breaking, and retry mechanisms to provide a resilient and efficient way to access secrets.
- * It also integrates with OpenTelemetry for tracing and metrics.
- *
- * @property secretManagerClient The Google Cloud Secret Manager client.
- * @property projectId The Google Cloud project ID.
- * @property logger The logger instance for logging messages.
- * @property circuitBreaker The circuit breaker instance for handling service failures.
- * @property retry The retry instance for handling transient errors.
- * @property cache The cache */
 @Singleton
 class GoogleCloudSecretsManager @Inject constructor(
     private val secretManagerClient: SecretManagerServiceClient,
     private val projectId: String,
     private val logger: LoggerInterface,
-    private val circuitBreaker: CircuitBreaker,
-    private val retry: Retry,
     private val cache: AsyncLoadingCache<CacheKey, SensitiveString>
 ) : IGoogleCloudSecretsManager {
 
@@ -69,16 +47,14 @@ class GoogleCloudSecretsManager @Inject constructor(
         context: Map<String, String>
     ): Result<SensitiveString> = withContext(Dispatchers.IO) {
         val span = buildSpan("getSecret", secretId, version)
-        try {
-            span.let {
-                val key = createCacheKey(secretId, version, context)
-                val secret = executeWithResilience(key)
-                logSuccess(secretId)
-                Result.success(secret)
-            }
+        return@withContext try {
+            val key = createCacheKey(secretId, version, context)
+            val secret = executeWithRetries { cache.get(key).await().also { validateSecret(it) } }
+            logSuccess(secretId)
+            Result.success(secret)
         } catch (e: Exception) {
             handleError(span, e, secretId)
-            Result.failure(SecretsManagerException(e.message!!))
+            Result.failure(SecretsManagerException(e.message ?: "Unknown error"))
         }
     }
 
@@ -91,26 +67,17 @@ class GoogleCloudSecretsManager @Inject constructor(
     }
 
     override suspend fun evictSecretFromCache(secretId: SecretId) {
-        val keysToRemove = cache.synchronous().asMap().keys
-            .filter { it.secretId == secretId }
-
-        keysToRemove.forEach { key ->
-            cache.synchronous().invalidate(key)
-        }
+        cache.synchronous().asMap().keys.filter { it.secretId == secretId }.forEach { cache.synchronous().invalidate(it) }
     }
 
     override suspend fun getLatestStableVersion(secretId: SecretId): String {
         val secretName = SecretName.of(projectId, secretId.value)
-
         return secretManagerClient.listSecretVersions(secretName)
             .iterateAll()
             .filter { it.state == SecretVersion.State.ENABLED }
-            .maxByOrNull {
-                it.createTime.seconds * 1000 + it.createTime.nanos / 1_000_000
-            }
-            ?.let { version ->
-                version.name.split("/").lastOrNull() ?: throw SecretsManagerException("Invalid version format")
-            } ?: throw SecretsManagerException("No stable version for $secretId")
+            .maxByOrNull { it.createTime.seconds * 1000 + it.createTime.nanos / 1_000_000 }
+            ?.name?.split("/")?.lastOrNull()
+            ?: throw SecretsManagerException("No stable version for $secretId")
     }
 
     private fun buildSpan(operation: String, secretId: String, version: String): Span {
@@ -121,20 +88,19 @@ class GoogleCloudSecretsManager @Inject constructor(
             .startSpan()
     }
 
-    private fun createCacheKey(
-        secretId: String,
-        version: String,
-        context: Map<String, String>
-    ) = CacheKey(
+    private fun createCacheKey(secretId: String, version: String, context: Map<String, String>) = CacheKey(
         secretId = SecretId(secretId),
         version = SemanticVersion.parse(version),
         environment = context["environment"] ?: "production"
     )
 
-    private suspend fun executeWithResilience(key: CacheKey): SensitiveString {
-        return circuitBreaker.executeSuspendFunction {
-            retry.executeSuspendFunction {
-                cache.get(key).await().also { validateSecret(it) }
+    private suspend fun executeWithRetries(block: suspend () -> SensitiveString): SensitiveString {
+        var attempts = 0
+        while (true) {
+            try {
+                return block()
+            } catch (e: SecretsManagerException.Retryable) {
+                if (++attempts >= 3) throw e
             }
         }
     }
@@ -168,35 +134,14 @@ class GoogleCloudSecretsManager @Inject constructor(
                     secretManagerClient = secretManagerClient,
                     projectId = projectId,
                     logger = logger,
-                    circuitBreaker = CircuitBreaker.of(
-                        "secrets-cb",
-                        CircuitBreakerConfig.custom()
-                            .failureRateThreshold(40.0F)
-                            .waitDurationInOpenState(Duration.ofSeconds(45))
-                            .slidingWindow(10, 10,
-                                CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
-                            .build()
-                    ),
-                    retry = Retry.of("secrets-retry", RetryConfig.custom<Any>()
-                        .maxAttempts(3)
-                        .waitDuration(Duration.ofMillis(200))
-                        .retryOnException { e -> e is SecretsManagerException.Retryable }
-                        .build()),
                     cache = Caffeine.newBuilder()
                         .maximumSize(1000)
                         .expireAfterWrite(15, TimeUnit.MINUTES)
-                        .evictionListener { _: CacheKey?, value: SensitiveString?, _: RemovalCause ->
-                            value?.clear()
-                        }
+                        .evictionListener { _: CacheKey?, value: SensitiveString?, _: RemovalCause -> value?.clear() }
                         .buildAsync { key ->
                             secretManagerClient.accessSecretVersion(
-                                SecretVersionName.of(
-                                    projectId,
-                                    key.secretId.value,
-                                    key.version.toString()
-                                )
-                            ).payload.data.toStringUtf8()
-                                .let { SensitiveString.fromSecureString(it) }
+                                SecretVersionName.of(projectId, key.secretId.value, key.version.toString())
+                            ).payload.data.toStringUtf8().let { SensitiveString.fromSecureString(it) }
                         }
                 )
             } else {
@@ -205,4 +150,3 @@ class GoogleCloudSecretsManager @Inject constructor(
         }
     }
 }
-
