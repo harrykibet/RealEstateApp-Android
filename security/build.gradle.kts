@@ -78,9 +78,9 @@ dependencies {
 
     implementation(CachingDeps.caffeine)
 
-    implementation(NetworkDeps.circuit_breaker)
-    implementation(NetworkDeps.retry)
-    implementation(NetworkDeps.resilience_kotlin)
+    //implementation(NetworkDeps.circuit_breaker)
+    //implementation(NetworkDeps.retry)
+    //implementation(NetworkDeps.resilience_kotlin)
 
     implementation(AnalyticsDeps.openTelemetryApi)
     implementation(AnalyticsDeps.openTelemetryExporter)
