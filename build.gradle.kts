@@ -31,7 +31,14 @@ allprojects {
         afterEvaluate {
             if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
                 extensions.findByType<com.android.build.gradle.internal.dsl.BaseAppModuleExtension>()?.apply {
-                    packaging.resources.excludes.add("META-INF/DEPENDENCIES")
+                    packaging.resources.excludes.addAll(
+                        listOf(
+                            "META-INF/DEPENDENCIES",
+                            "META-INF/LICENSE*",
+                            "META-INF/NOTICE*",
+                            "META-INF/COPYRIGHT*"
+                        )
+                    )
                 }
             }
         }
