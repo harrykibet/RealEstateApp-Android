@@ -6,6 +6,9 @@ workflows:
     environment:
       vars:
         PACKAGE_NAME: "io.codemagic.androidquicksample"
+      groups:
+        - google_play      # Stores Google Play API credentials
+        - android_signing  # Stores Keystore file & passwords
     scripts:
       - name: Set Android SDK location
         script: |
@@ -13,9 +16,17 @@ workflows:
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
+      - name: Restore Gradle Build Cache
+        script: |
+          ./gradlew --build-cache
       - name: Build Android release (APK)
         script: |
           ./gradlew assembleRelease -PversionCode=1.0 -PversionName=1.0.2
+      - name: Sign the APK
+        script: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
+          -keypass $CM_KEY_PASSWORD app/build/outputs/apk/release/app-release-unsigned.apk $CM_KEY_ALIAS
       - name: Verify APK Directory
         script: |
           echo "APK directory contents:"
@@ -28,4 +39,4 @@ workflows:
           - trmnjames@gmail.com
         notify:
           success: true
-          failure: false
+          failure: true
