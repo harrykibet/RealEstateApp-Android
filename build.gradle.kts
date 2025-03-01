@@ -34,7 +34,8 @@ allprojects {
                     packaging.resources.excludes.addAll(
                         listOf(
                             "META-INF/DEPENDENCIES",
-                            "META-INF/COPYRIGHT.txt"
+                            "META-INF/COPYRIGHT.txt",
+                            "META-INF/INDEX.LIST"
                         )
                     )
                 }
