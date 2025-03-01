@@ -11,7 +11,6 @@ workflows:
         - android_signing  # Stores Keystore file & passwords
     cache:
       cache_paths:
-        - ~/.gradle/caches
         - ~/.gradle/wrapper
         - $CM_BUILD_DIR/app/build
     scripts:
@@ -27,11 +26,25 @@ workflows:
       - name: Build Android release (APK)
         script: |
           ./gradlew assembleRelease -PversionCode=1.0 -PversionName=1.0.2 --build-cache
+      - name: Check APK Existence
+        script: |
+          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ -f "$APK_PATH" ]; then
+            echo "✅ APK found: $APK_PATH"
+          else
+            echo "❌ ERROR: APK not found at $APK_PATH"
+            exit 1
+          fi
       - name: Sign the APK
         script: |
+          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
+          SIGNED_APK="app/build/outputs/apk/release/app-release.apk"
+          
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
-          -keypass $CM_KEY_PASSWORD app/build/outputs/apk/release/app-release-unsigned.apk $CM_KEY_ALIAS
+            -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
+            -keypass $CM_KEY_PASSWORD "$APK_PATH" $CM_KEY_ALIAS
+
+          mv "$APK_PATH" "$SIGNED_APK"
       - name: Verify APK Directory
         script: |
           echo "APK directory contents:"
