@@ -1,12 +1,11 @@
 stages:
   - build
 
-image: openjdk:17  # ✅ Use OpenJDK 17
+image: ghcr.io/cirruslabs/android-sdk:30  # ✅ Pre-installed Android SDK & Java 17
 
 before_script:
-  - export JAVA_HOME="/usr/local/openjdk-17"  # ✅ Correct JAVA_HOME path
-  - export PATH="$JAVA_HOME/bin:$PATH"
-  - java -version  # ✅ Verify Java installation
+  - java -version  # ✅ Verify Java is installed
+  - sdkmanager --list  # ✅ Check available Android SDKs
   - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
 
 build-apk:
