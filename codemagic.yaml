@@ -9,10 +9,6 @@ workflows:
       groups:
         - google_play      # Stores Google Play API credentials
         - android_signing  # Stores Keystore file & passwords
-    cache:
-      cache_paths:
-        - ~/.gradle/wrapper
-        - $CM_BUILD_DIR/app/build
     scripts:
       - name: Set Android SDK location
         script: |
@@ -20,9 +16,6 @@ workflows:
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
-      - name: Enable Gradle Build Cache
-        script: |
-          ./gradlew --build-cache
       - name: Build Android release (APK)
         script: |
           ./gradlew assembleRelease -PversionCode=1.0 -PversionName=1.0.2 --build-cache
