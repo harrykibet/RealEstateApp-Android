@@ -13,9 +13,9 @@ workflows:
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
-      - name: Build Android release
+      - name: Build Android release (APK)
         script: |
-          ./gradlew bundleRelease -PversionCode=1.0 -PversionName=1.0.2
+          ./gradlew assembleRelease -PversionCode=1.0 -PversionName=1.0.2
       - name: Verify APK Directory
         script: |
           echo "APK directory contents:"
