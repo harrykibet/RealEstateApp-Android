@@ -9,6 +9,11 @@ workflows:
       groups:
         - google_play      # Stores Google Play API credentials
         - android_signing  # Stores Keystore file & passwords
+      cache:
+        cache_paths:
+          - ~/.gradle/caches
+          - ~/.gradle/wrapper
+          - $CM_BUILD_DIR/app/build
     scripts:
       - name: Set Android SDK location
         script: |
