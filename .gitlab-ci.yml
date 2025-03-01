@@ -1,17 +1,19 @@
 stages:
   - build
 
-image: cirrusci/android-sdk:30  # ✅ Correct Android SDK image from Docker Hub
+image: cirrusci/android-sdk:30  # ✅ Android SDK Docker image
 
 before_script:
+  - apt-get update && apt-get install -y openjdk-17-jdk  # ✅ Install Java 17
+  - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"  # ✅ Set JAVA_HOME correctly
+  - export PATH="$JAVA_HOME/bin:$PATH"
   - java -version  # ✅ Verify Java installation
-  - sdkmanager --list  # ✅ Check available Android SDKs
   - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
 
 build-apk:
   stage: build
   script:
-    - ./gradlew assembleRelease
+    - ./gradlew assembleRelease --stacktrace
   artifacts:
     paths:
       - app/build/outputs/apk/release/
