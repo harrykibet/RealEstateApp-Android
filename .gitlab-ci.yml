@@ -1,8 +1,12 @@
 stages:
   - build
 
+image: openjdk:17  # ✅ Use OpenJDK 17, which includes Java
+
 before_script:
-  - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
+  - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk"  # ✅ Set JAVA_HOME
+  - export PATH="$JAVA_HOME/bin:$PATH"
+  - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
 
 build-apk:
   stage: build
