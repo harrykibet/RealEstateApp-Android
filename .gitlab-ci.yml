@@ -1,11 +1,12 @@
 stages:
   - build
 
-image: openjdk:17  # ✅ Use OpenJDK 17, which includes Java
+image: openjdk:17  # ✅ Use OpenJDK 17
 
 before_script:
-  - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk"  # ✅ Set JAVA_HOME
+  - export JAVA_HOME="/usr/local/openjdk-17"  # ✅ Correct JAVA_HOME path
   - export PATH="$JAVA_HOME/bin:$PATH"
+  - java -version  # ✅ Verify Java installation
   - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
 
 build-apk:
