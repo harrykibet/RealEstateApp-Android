@@ -1,11 +1,13 @@
 stages:
-  - test
+  - build
 
-test-job:
-  stage: test
-  image: ubuntu:latest
+before_script:
+  - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
+
+build-apk:
+  stage: build
   script:
-    - echo "Testing GitLab CI/CD"
-    - echo "Running basic commands"
-    - uname -a
-    - echo "Pipeline execution successful!"
+    - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - app/build/outputs/apk/release/
