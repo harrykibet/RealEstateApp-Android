@@ -1,10 +1,10 @@
 stages:
   - build
 
-image: ghcr.io/cirruslabs/android-sdk:30  # ✅ Pre-installed Android SDK & Java 17
+image: cirrusci/android-sdk:30  # ✅ Correct Android SDK image from Docker Hub
 
 before_script:
-  - java -version  # ✅ Verify Java is installed
+  - java -version  # ✅ Verify Java installation
   - sdkmanager --list  # ✅ Check available Android SDKs
   - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
 
