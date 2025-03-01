@@ -36,6 +36,7 @@ allprojects {
                             "META-INF/DEPENDENCIES",
                             "META-INF/COPYRIGHT.txt",
                             "META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+                            "META-INF/versions/11/OSGI-INF/MANIFEST.MF",
                             "META-INF/INDEX.LIST"
                         )
                     )
