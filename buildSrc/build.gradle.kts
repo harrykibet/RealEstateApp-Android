@@ -15,6 +15,6 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17)) // Set to Java 17 (or your required version)
+        languageVersion.set(JavaLanguageVersion.of(17)) // Set to Java 17
     }
 }

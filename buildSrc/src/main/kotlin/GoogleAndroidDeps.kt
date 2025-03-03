@@ -1,10 +1,10 @@
 
 @file:Suppress("ConstPropertyName")
 object GoogleAndroidDeps {
-    const val playServicesMaps = "com.google.android.gms:play-services-maps:${Versions.play_services_maps}"
-    const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.play_services_location}"
-    const val places = "com.google.android.libraries.places:places:${Versions.google_libs_places}"
-    const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.play_services_auth}"
+    const val playServicesMaps = "com.google.android.gms:play-services-maps:${Versions.playServicesMaps}"
+    const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.playServicesLocation}"
+    const val places = "com.google.android.libraries.places:places:${Versions.googlePlaces}"
+    const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.playServicesAuth}"
 
     val AllPlayServicesDependencies = listOf(
         playServicesMaps,

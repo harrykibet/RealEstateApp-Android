@@ -1,22 +1,31 @@
-
 @Suppress("ConstPropertyName")
 object TestingDeps {
-    const val testExtJUnit = "androidx.test.ext:junit:${Versions.androidx_test_ext_junit}"
-    const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.androidx_test_espresso_core}"
+    const val testExtJUnit = "androidx.test.ext:junit:${Versions.testExtJunit}"
+    const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"
+    const val espressoIntents = "androidx.test.espresso:espresso-intents:${Versions.espressoIntents}"
+    const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espressoContrib}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val googleTruth = "com.google.truth:truth:${Versions.google_truth}"
+    const val junitJupiter = "org.junit.jupiter:junit-jupiter:${Versions.jupiter}"
+    const val googleTruth = "com.google.truth:truth:${Versions.truth}"
     const val kotest = "io.kotest:kotest-runner-junit5:${Versions.kotest}"
     const val mock = "io.mockk:mockk:${Versions.mockk}"
-    const val leakCanary = "com.squareup.leakcanary:leakcanary-android-instrumentation:${Versions.leakcanary}"
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android-instrumentation:${Versions.leakCanary}"
+    const val uiautomator = "androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}"
 
-    //Grouped TestingDeps( AndroidTestImplementation(...) )
+
+    //Grouped TestingDeps (AndroidTestImplementation)
     val AndroidTestDependencies = listOf(
         testExtJUnit,
-        espressoCore
+        espressoCore,
+        espressoIntents,
+        espressoContrib,
+        uiautomator
     )
-    // TestImplementation(...)
+
+    // TestImplementation
     val TestDependencies = listOf(
         junit,
+        junitJupiter,
         kotest,
         mock,
         leakCanary

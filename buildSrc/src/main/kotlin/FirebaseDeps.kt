@@ -1,7 +1,7 @@
 
 @file:Suppress("ConstPropertyName")
 object FirebaseDeps {
-    const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.google_firebase_bom}"
+    const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
     const val firebaseAnalytics = "com.google.firebase:firebase-analytics"
     const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics"
     const val firebaseAuth = "com.google.firebase:firebase-auth"
