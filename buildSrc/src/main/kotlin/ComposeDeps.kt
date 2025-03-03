@@ -1,15 +1,15 @@
 
 @file:Suppress("ConstPropertyName")
 object ComposeDeps {
-    const val composeBom = "androidx.compose:compose-bom:${Versions.androidx_compose_bom}"
+    const val composeBom = "androidx.compose:compose-bom:${Versions.composeBom}"
     const val composeUi = "androidx.compose.ui:ui"
-    const val composeCompiler = "androidx.compose.compiler:compiler:${Versions.androidx_compose_compiler}"
+    const val composeCompiler = "androidx.compose.compiler:compiler:${Versions.composeCompiler}"
     const val composeMaterial = "androidx.compose.material:material"
     const val composeUiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
     const val composeUiTooling = "androidx.compose.ui:ui-tooling"
-    const val composeRuntimeLiveData = "androidx.compose.runtime:runtime-livedata:${Versions.androidx_compose_runtime}"
-    const val activityCompose = "androidx.activity:activity-compose:${Versions.androidx_activity_compose}"
-    const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.androidx_compose_material3}"
+    const val composeRuntimeLiveData = "androidx.compose.runtime:runtime-livedata:${Versions.composeRuntime}"
+    const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
+    const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.composeMaterial3}"
 
     // ComposeBom not included, add it manually in the dependencies block
     val AllComposeDependencies = listOf(

@@ -2,8 +2,8 @@
 @Suppress("constPropertyName")
 object AnalyticsDeps {
     const val guava = "com.google.guava:guava:${Versions.guava}"
-    const val androidMetrics = "androidx.metrics:metrics-performance:${Versions.android_metrics}"
-    const val appSet = "com.google.android.gms:play-services-appset:${Versions.appset}"
+    const val androidMetrics = "androidx.metrics:metrics-performance:${Versions.androidMetrics}"
+    const val appSet = "com.google.android.gms:play-services-appset:${Versions.appSet}"
     const val openTelemetryApi = "io.opentelemetry:opentelemetry-api:${Versions.openTelemetry}"
     const val openTelemetryExporter = "io.opentelemetry:opentelemetry-exporter-otlp:${Versions.openTelemetry}"
     const val micrometer = "io.micrometer:micrometer-core:${Versions.micrometer}"
