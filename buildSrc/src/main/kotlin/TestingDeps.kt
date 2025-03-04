@@ -5,6 +5,7 @@ object TestingDeps {
     const val espressoIntents = "androidx.test.espresso:espresso-intents:${Versions.espressoIntents}"
     const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espressoContrib}"
     const val junit = "junit:junit:${Versions.junit}"
+    const val coreTesting = "androidx.arch.core:core-testing:${Versions.coreTesting}"
     const val junitJupiter = "org.junit.jupiter:junit-jupiter:${Versions.jupiter}"
     const val googleTruth = "com.google.truth:truth:${Versions.truth}"
     const val kotest = "io.kotest:kotest-runner-junit5:${Versions.kotest}"
@@ -17,6 +18,7 @@ object TestingDeps {
     val AndroidTestDependencies = listOf(
         testExtJUnit,
         espressoCore,
+        coreTesting,
         espressoIntents,
         espressoContrib,
         uiautomator
@@ -25,6 +27,7 @@ object TestingDeps {
     // TestImplementation
     val TestDependencies = listOf(
         junit,
+        coreTesting,
         junitJupiter,
         kotest,
         mock,

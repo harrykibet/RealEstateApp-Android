@@ -115,6 +115,7 @@ dependencies {
     // Hilt Dependencies
     HiltDeps.AllHiltDependencies.forEach { implementation(it) }
     HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltTestingDependencies.forEach { androidTestImplementation(it) }
 
     // Media Libraries
     implementation(MediaDeps.glide)

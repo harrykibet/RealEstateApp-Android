@@ -10,6 +10,7 @@ object Versions {
 
     // ─────────────────────────────── Core Libraries ───────────────────────────────
     const val coreKtx = "1.15.0"
+    const val testCoreKtx = "1.6.1"
     const val appCompat = "1.7.0"
     const val material = "1.12.0"
     const val constraintLayout = "2.2.0"
@@ -87,6 +88,7 @@ object Versions {
     const val kotest = "5.9.1"
     const val mockk = "1.13.16"
     const val leakCanary = "3.0-alpha-8"
+    const val coreTesting = "2.2.0"
 
     // ─────────────── AndroidX Testing & UI Testing ───────────────
     const val testExtJunit = "1.2.1"
