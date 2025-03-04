@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl` // Enables Kotlin for buildSrc (relies on embedded Kotlin)
-    kotlin("jvm") version "2.0.0" // Use the same version as your project
+    kotlin("jvm") version PluginVersions.kotlin // Use the same version as your project
 }
 
 repositories {
@@ -10,11 +10,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation(CoreDeps.kotlinStdLib)
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17)) // Set to Java 17
+        languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
     }
 }

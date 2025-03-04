@@ -1,16 +1,16 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id ("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_payments"
-    compileSdk = 35
+    namespace = AndroidConfig.featurePaymentsNamespace
+    compileSdk = AndroidConfig.compileSdk
 
-    kapt{
+    kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
@@ -19,16 +19,14 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         dataBinding = true
     }
 
-
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -44,7 +42,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -52,13 +50,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 }
 
 dependencies {
-
     CoreDeps.CommonCoreDeps.forEach { implementation(it) }
     implementation(CoreDeps.material)
 
