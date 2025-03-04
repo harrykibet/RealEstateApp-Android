@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation(CoreDeps.kotlinStdLib)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 
 java {
