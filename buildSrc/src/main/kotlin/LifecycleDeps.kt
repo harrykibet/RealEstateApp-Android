@@ -5,7 +5,7 @@ object LifecycleDeps {
     const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
     const val liveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
 
-    val AllLifecycleDependencies = listOf(
+    val AllLifecycleDeps = listOf(
         lifecycleRuntime,
         viewModelKtx,
         liveDataKtx

@@ -1,6 +1,6 @@
 # Bitbucket Pipeline for Android Project with Gradle 8
 
-image: gradle:8.0.0-jdk11  # Gradle 8 with JDK 11
+image: gradle:8.12.0-jdk17  # Gradle 8 with JDK 17
 
 pipelines:
   default:

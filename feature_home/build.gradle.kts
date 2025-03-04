@@ -59,8 +59,8 @@ android {
 
 dependencies {
 
-    CoreDeps.CommonCoreDependencies.forEach { implementation(it) }
-    CoreDeps.CoreUiDependencies.forEach { implementation(it) }
+    CoreDeps.CommonCoreDeps.forEach { implementation(it) }
+    CoreDeps.CoreUiDeps.forEach { implementation(it) }
 
     implementation(ComposeDeps.composeBom)
     implementation(ComposeDeps.composeMaterial3)
@@ -79,16 +79,16 @@ dependencies {
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
 
-    NavigationDeps.AllNavigationDependencies.forEach { implementation(it) }
+    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
 
-    LifecycleDeps.AllLifecycleDependencies.forEach { implementation(it) }
+    LifecycleDeps.AllLifecycleDeps.forEach { implementation(it) }
 
-    TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.TestDeps.forEach { testImplementation(it) }
+    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDeps.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
 }

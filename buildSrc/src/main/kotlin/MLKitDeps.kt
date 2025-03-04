@@ -11,7 +11,7 @@ object MLKitDeps {
     const val mlKitTextRecognitionCloud = "com.google.android.gms:play-services-mlkit-text-recognition:${Versions.mlKitCloudTextRecognition}"
     const val mlKitImageLabelingCloud = "com.google.android.gms:play-services-mlkit-image-labeling:${Versions.mlKitCloudImageLabeling}"
 
-    val AllMlKitDependencies = listOf(
+    val AllMlKitDeps = listOf(
         mlKitBarcodeScanning,
         mlKitTextRecognitionOnDevice,
         mlKitFaceDetection,

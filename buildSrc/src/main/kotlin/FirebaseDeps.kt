@@ -13,7 +13,7 @@ object FirebaseDeps {
     const val appCheckDebug = "com.google.firebase:firebase-appcheck-debug"
 
     // FirebaseBom not included, add it manually in the dependencies block
-    val AllFirebaseDependencies = listOf(
+    val AllFirebaseDeps = listOf(
         firebaseAnalytics,
         firebasePerformance,
         firebaseConfig,

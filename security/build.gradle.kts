@@ -70,8 +70,8 @@ dependencies {
 
     implementation(project(ProjectModules.core))
 
-    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
 
     implementation(SecurityDeps.bouncyCastle)
     implementation(SecurityDeps.bouncyCastlePkix)
@@ -89,9 +89,9 @@ dependencies {
     implementation(AnalyticsDeps.micrometerPrometheus)
     implementation(AnalyticsDeps.conscrypt)
 
-    TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.TestDeps.forEach { testImplementation(it) }
+    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDeps.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
 }

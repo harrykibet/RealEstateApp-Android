@@ -52,8 +52,8 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    DatabaseDeps.AllRoomDependencies.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDependencies.forEach { kapt(it) }
+    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
+    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)
@@ -62,9 +62,9 @@ dependencies {
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
-    TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.TestDeps.forEach { testImplementation(it) }
+    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDeps.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
 }
