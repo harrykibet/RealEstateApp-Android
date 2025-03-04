@@ -1,41 +1,37 @@
 package com.application.real_estate_app
 
-
 import android.content.Intent
-import android.view.View
-import androidx.lifecycle.MutableLiveData
-import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.platform.app.InstrumentationRegistry
-import com.application.real_estate_app.R
 import com.application.real_estate_app.core.common.events.LoginEvent
 import com.application.real_estate_app.core.common.events.LogoutEvent
-import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
 import com.application.real_estate_app.ui.activities.MainActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.greenrobot.eventbus.EventBus
 import org.junit.*
-import org.junit.jupiter.api.Test
+import org.junit.rules.TestRule
 
 @HiltAndroidTest
 class MainActivityTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
+    val instantTaskExecutorRule: TestRule = androidx.arch.core.executor.testing.InstantTaskExecutorRule()
+
+    @get:Rule(order = 2)
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
     fun setup() {
-        hiltRule.inject() // Ensures dependency injection is set up before running tests
+        hiltRule.inject() // Inject dependencies before test execution
         Intents.init()
     }
 
@@ -45,7 +41,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `should show bottom navigation when authenticated`() {
+    fun shouldShowBottomNavigationWhenAuthenticated() {
         activityRule.scenario.onActivity { activity ->
             activity.navigateBasedOnAuthentication(true)
         }
@@ -55,7 +51,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `should hide bottom navigation when not authenticated`() {
+    fun shouldHideBottomNavigationWhenNotAuthenticated() {
         activityRule.scenario.onActivity { activity ->
             activity.navigateBasedOnAuthentication(false)
         }
@@ -65,30 +61,31 @@ class MainActivityTest {
     }
 
     @Test
-    fun `should navigate to home on login event`() {
-        activityRule.scenario.onActivity { activity ->
+    fun shouldNavigateToHomeOnLoginEvent() {
+        activityRule.scenario.onActivity {
             EventBus.getDefault().post(LoginEvent())
         }
 
-        // Assert that MainActivity has navigated to HomeFragment (replace with actual ID)
+        // Ensure navigation to HomeFragment
         onView(withId(R.id.homeFragment))
             .check(matches(isDisplayed()))
     }
 
     @Test
-    fun `should navigate to login on logout event`() {
-        activityRule.scenario.onActivity { activity ->
+    fun shouldNavigateToLoginOnLogoutEvent() {
+        activityRule.scenario.onActivity {
             EventBus.getDefault().post(LogoutEvent())
         }
 
-        onView(withId(R.id.feature_auth_nav_graph))
+        // Ensure navigation to login fragment
+        onView(withId(com.application.real_estate_app.feature_auth.R.id.feature_auth_nav_graph))
             .check(matches(isDisplayed()))
     }
 
     @Test
-    fun `should handle deep links with onNewIntent`() {
+    fun shouldHandleDeepLinksWithOnNewIntent() {
         val deepLinkIntent = Intent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
+            ApplicationProvider.getApplicationContext(),
             MainActivity::class.java
         ).apply {
             action = Intent.ACTION_VIEW

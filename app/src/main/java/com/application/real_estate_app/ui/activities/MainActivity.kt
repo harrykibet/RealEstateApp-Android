@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         FireStoreConfig.initFireStoreSettings()
     }
 
-    private fun navigateBasedOnAuthentication(isAuthenticated: Boolean) {
+    fun navigateBasedOnAuthentication(isAuthenticated: Boolean) {
         if (isAuthenticated) {
             showHomeFragment()
         } else {
@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
+    public override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         navController.handleDeepLink(intent)
     }
