@@ -77,8 +77,8 @@ dependencies {
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.ffmpeg)
-    implementation(MediaDeps.glide)
-    kapt(MediaDeps.glideCompiler)
+    MediaDeps.ImageDeps.forEach { implementation(it) }
+    MediaDeps.ImageDeps.forEach { kapt(it) }
 
     NetworkDeps.AllNetworkDeps.forEach {implementation(it) }
 
