@@ -74,8 +74,10 @@ dependencies {
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
 
-    implementation(MediaDeps.glide)
-    kapt(MediaDeps.glideCompiler)
+    // Media Libraries
+    MediaDeps.ImageDeps.forEach { implementation(it) }
+    MediaDeps.ImageDeps.forEach { kapt(it) }
+
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
