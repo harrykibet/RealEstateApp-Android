@@ -12,4 +12,5 @@ interface IRemoteConfigManager {
     fun getCDNEndPoint1(): String
     fun getCDNEndPoint2(): String
     fun getBaseUrl() : String
+    fun getEnableLogging(): Boolean
 }

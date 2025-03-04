@@ -72,7 +72,7 @@ dependencies {
     implementation(AnalyticsDeps.guava)
 
     implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
-    FirebaseDeps.AllFirebaseDependencies.forEach { implementation(it) }
+    FirebaseDeps.AllFirebaseDeps.forEach { implementation(it) }
 
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
@@ -80,11 +80,11 @@ dependencies {
     implementation(MediaDeps.glide)
     kapt(MediaDeps.glideCompiler)
 
-    NetworkDeps.AllNetworkDependencies.forEach {implementation(it) }
+    NetworkDeps.AllNetworkDeps.forEach {implementation(it) }
 
-    TestingDeps.TestDependencies.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDependencies.forEach { androidTestImplementation(it) }
+    TestingDeps.TestDeps.forEach { testImplementation(it) }
+    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDependencies.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDependencies.forEach { kapt(it) }
+    HiltDeps.AllHiltDeps.forEach { implementation(it) }
+    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
 }

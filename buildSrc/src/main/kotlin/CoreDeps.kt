@@ -14,13 +14,13 @@ object CoreDeps {
     const val testCoreKtx = "androidx.test:core-ktx:${Versions.testCoreKtx}"
     const val workRuntimeKtx = "androidx.work:work-runtime-ktx:${Versions.workManager}"
 
-    val CommonCoreDependencies = listOf(
+    val CommonCoreDeps = listOf(
         coreKtx,
         appCompat,
         fragmentKtx,
         activityKtx
     )
-    val CoreUiDependencies = listOf(
+    val CoreUiDeps = listOf(
         material,
         constraintLayout,
         recyclerView,

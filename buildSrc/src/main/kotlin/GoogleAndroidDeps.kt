@@ -6,7 +6,7 @@ object GoogleAndroidDeps {
     const val places = "com.google.android.libraries.places:places:${Versions.googlePlaces}"
     const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.playServicesAuth}"
 
-    val AllPlayServicesDependencies = listOf(
+    val AllPlayServicesDeps = listOf(
         playServicesMaps,
         playServicesLocation,
         places,

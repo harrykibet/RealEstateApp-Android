@@ -5,12 +5,12 @@ object DatabaseDeps {
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
 
-    val AllRoomDependencies = listOf(
+    val AllRoomDeps = listOf(
         roomKtx,
         roomRuntime
     )
 
-    val AllRoomKaptDependencies = listOf(
+    val AllRoomKaptDeps = listOf(
         roomCompiler
     )
 }

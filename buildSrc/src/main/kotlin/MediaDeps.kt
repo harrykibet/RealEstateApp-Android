@@ -4,7 +4,6 @@ object MediaDeps {
     // Media3 ExoPlayer
     const val media3ExoPlayer = "androidx.media3:media3-exoplayer:${Versions.media3}"
     const val media3Database = "androidx.media3:media3-database:${Versions.media3}"
-    const val media3ExoplayerWorkManager ="androidx.media3:media3-exoplayer-workmanager:${Versions.media3}"
     const val media3UI = "androidx.media3:media3-ui:${Versions.media3}"
     const val media3Decoder = "androidx.media3:media3-decoder:${Versions.media3}"
     const val media3Hls = "androidx.media3:media3-exoplayer-hls:${Versions.media3}"
@@ -23,6 +22,7 @@ object MediaDeps {
     // Media Router
     const val mediaRouter = "androidx.mediarouter:mediarouter:${Versions.mediaRouter}"
 
+    // FFMPEG Kit
     const val  ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.ffmpeg}"
 
     // Glide
@@ -32,15 +32,26 @@ object MediaDeps {
     // Lottie
     const val lottie = "com.airbnb.android:lottie:${Versions.lottie}"
 
+    val AnimationDeps = listOf(
+        lottie
+    )
+
+    val ImageDeps = listOf(
+        glide
+    )
+
+    val ImageKaptDeps = listOf(
+        glideCompiler
+    )
+
     // Grouped Media3 Dependencies
-    val AllMedia3Dependencies = listOf(
+    val AllMedia3Deps = listOf(
         media3ExoPlayer,
         media3UI,
         media3Hls,
         media3Database,
         mediaRouter,
         media3Decoder,
-        media3ExoplayerWorkManager,
         media3Session,
         media3Common,
         media3DataSource,

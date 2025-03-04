@@ -15,7 +15,7 @@ object TestingDeps {
 
 
     //Grouped TestingDeps (AndroidTestImplementation)
-    val AndroidTestDependencies = listOf(
+    val AndroidTestDeps = listOf(
         testExtJUnit,
         espressoCore,
         coreTesting,
@@ -25,7 +25,7 @@ object TestingDeps {
     )
 
     // TestImplementation
-    val TestDependencies = listOf(
+    val TestDeps = listOf(
         junit,
         coreTesting,
         junitJupiter,

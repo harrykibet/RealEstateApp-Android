@@ -10,7 +10,7 @@ object AnalyticsDeps {
     const val micrometerPrometheus = "io.micrometer:micrometer-registry-prometheus:${Versions.micrometer}"
     const val conscrypt = "org.conscrypt:conscrypt-openjdk-uber:${Versions.conscrypt}"
 
-    val AllAnalyticsDependencies = listOf(
+    val AllAnalyticsDeps = listOf(
         guava,
         androidMetrics,
         appSet,

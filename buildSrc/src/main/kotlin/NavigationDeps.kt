@@ -6,7 +6,7 @@ object NavigationDeps {
     const val navigationUI = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
     const val navigationTesting = "androidx.navigation:navigation-testing:${Versions.navigation}"
 
-    val AllNavigationDependencies = listOf(
+    val AllNavigationDeps = listOf(
         navigationFragment,
         navigationTesting,
         navigationUI

@@ -12,7 +12,7 @@ object NetworkDeps {
     //const val resilience_kotlin = "io.github.resilience4j:resilience4j-kotlin:${Versions.resilience4j}"
 
     // Grouped Networking Dependencies
-    val AllNetworkDependencies = listOf(
+    val AllNetworkDeps = listOf(
         okhttp,
         okhttp_interceptor,
         gson,
