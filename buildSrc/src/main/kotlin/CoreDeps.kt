@@ -13,6 +13,7 @@ object CoreDeps {
     const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
     const val testCoreKtx = "androidx.test:core-ktx:${Versions.testCoreKtx}"
     const val workRuntimeKtx = "androidx.work:work-runtime-ktx:${Versions.workManager}"
+    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib"
 
     val CommonCoreDeps = listOf(
         coreKtx,

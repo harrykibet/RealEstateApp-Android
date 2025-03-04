@@ -1,54 +1,29 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    // Add the Google services Gradle plugin
-    id("com.google.gms.google-services")
-    // Add the Crashlytics Gradle plugin
-    id("com.google.firebase.crashlytics")
-    // Add the Secrets Gradle plugin
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    // Add the Safe Args Gradle plugin
-    id("androidx.navigation.safeargs.kotlin")
-    id("org.jetbrains.kotlin.kapt")
-    // Dagger Hilt for Dependency Injection
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
-    id("org.sonarqube")
+    id(Plugins.androidApplication)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.googleServices)
+    id(Plugins.firebaseCrashlytics)
+    id(Plugins.secretsPlugin)
+    id(Plugins.navigationSafeArgs)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.dokka)
+    id(Plugins.sonarQube)
 }
 
 android {
-    namespace = "com.application.real_estate_app"
-    compileSdk = 35
-
-    kapt {
-        correctErrorTypes = true
-        useBuildCache = true
-    }
-
-    tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
-    }
-
-    buildFeatures {
-        viewBinding = true
-        dataBinding = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
+    namespace = AndroidConfig.namespace
+    compileSdk = AndroidConfig.compileSdk
 
     defaultConfig {
-        applicationId = "com.application.real_estate_app"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = AndroidConfig.applicationId
+        minSdk = AndroidConfig.minSdk
+        targetSdk = AndroidConfig.targetSdk
+        versionCode = AndroidConfig.versionCode
+        versionName = AndroidConfig.versionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -61,29 +36,16 @@ android {
         }
     }
 
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    kotlinOptions.jvmTarget = AndroidConfig.jvmTarget
 
     packaging {
         resources {
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/INDEX.LIST"
-            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
-            excludes += "META-INF/versions/11/OSGI-INF/MANIFEST.MF"
-            excludes += "META-INF/COPYRIGHT.txt"
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += Packaging.excludes
         }
     }
 }

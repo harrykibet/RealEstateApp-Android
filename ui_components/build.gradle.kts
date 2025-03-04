@@ -1,15 +1,15 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.ui_components"
-    compileSdk = 35
+    namespace = AndroidConfig.uiComponentsNamespace
+    compileSdk = AndroidConfig.compileSdk
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         dataBinding = true
     }
@@ -18,11 +18,9 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -38,7 +36,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -46,13 +44,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 }
 
 dependencies {
-
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)

@@ -1,16 +1,16 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id ("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.core"
-    compileSdk = 35
+    namespace = AndroidConfig.coreNamespace
+    compileSdk = AndroidConfig.compileSdk
 
-    kapt{
+    kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
@@ -20,9 +20,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -38,7 +37,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -46,21 +45,19 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 
     packaging {
         resources {
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/COPYRIGHT.txt"
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += Packaging.excludes
         }
     }
 }
 
 dependencies {
-
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
@@ -71,7 +68,7 @@ dependencies {
     implementation(AnalyticsDeps.appSet)
     implementation(AnalyticsDeps.guava)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
+    implementation(platform(FirebaseDeps.firebaseBom))
     FirebaseDeps.AllFirebaseDeps.forEach { implementation(it) }
 
     implementation(MediaDeps.media3ExoPlayer)
@@ -80,7 +77,7 @@ dependencies {
     MediaDeps.ImageDeps.forEach { implementation(it) }
     MediaDeps.ImageDeps.forEach { kapt(it) }
 
-    NetworkDeps.AllNetworkDeps.forEach {implementation(it) }
+    NetworkDeps.AllNetworkDeps.forEach { implementation(it) }
 
     TestingDeps.TestDeps.forEach { testImplementation(it) }
     TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }

@@ -1,14 +1,14 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id ("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_auth"
-    compileSdk = 35
+    namespace = AndroidConfig.featureAuthNamespace
+    compileSdk = AndroidConfig.compileSdk
 
     buildFeatures {
         viewBinding = true
@@ -19,15 +19,14 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-    kapt{
+    kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -43,7 +42,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -51,18 +50,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 }
 
 dependencies {
-
     implementation(CoreDeps.coreKtx)
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Using Firebase BOM for consistent versioning
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
 
@@ -71,7 +70,7 @@ dependencies {
     DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
 
-    NavigationDeps.AllNavigationDeps.forEach{ implementation(it) }
+    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
 
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))

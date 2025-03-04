@@ -1,17 +1,17 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id("com.google.dagger.hilt.android")
-    id("androidx.navigation.safeargs.kotlin")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.safeArgs)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_home"
-    compileSdk = 35
+    namespace = AndroidConfig.featureHomeNamespace
+    compileSdk = AndroidConfig.compileSdk
 
-    kapt{
+    kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
@@ -20,15 +20,14 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         dataBinding = true
     }
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -44,7 +43,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -52,13 +51,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 }
 
 dependencies {
-
     CoreDeps.CommonCoreDeps.forEach { implementation(it) }
     CoreDeps.CoreUiDeps.forEach { implementation(it) }
 
@@ -71,7 +70,7 @@ dependencies {
     MediaDeps.ImageDeps.forEach { implementation(it) }
     MediaDeps.ImageDeps.forEach { kapt(it) }
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)

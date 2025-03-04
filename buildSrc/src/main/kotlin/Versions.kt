@@ -106,6 +106,7 @@ object Versions {
     // ─────────────────────────────── Miscellaneous ───────────────────────────────
     const val ffmpeg = "6.0-2.LTS"
     const val guava = "33.4.0-jre"
+    const val protobuf = "4.29.0"
     const val appSet = "16.1.0"
     const val mediaRouter = "1.7.0"
 }

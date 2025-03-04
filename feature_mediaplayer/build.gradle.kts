@@ -1,19 +1,18 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id ("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kapt)
+    id(Plugins.hilt)
+    id(Plugins.dokka)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_mediaplayer"
-    compileSdk = 35
+    namespace = AndroidConfig.featureMediaPlayerNamespace
+    compileSdk = AndroidConfig.compileSdk
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = AndroidConfig.minSdk
+        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -33,7 +32,7 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
         }
     }
 
@@ -42,12 +41,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AndroidConfig.jvmTarget
     }
 }
 
 dependencies {
-
     MediaDeps.AllMedia3Deps.forEach { implementation(it) }
 
     implementation(project(ProjectModules.core))
