@@ -17,7 +17,7 @@ android {
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
+        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
     }
 
     buildFeatures {
@@ -28,15 +28,15 @@ android {
     defaultConfig {
         minSdk = AndroidConfig.minSdk
         testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles("consumer-rules.pro")
+        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
+                AndroidConfig.proguardRulesFile
             )
         }
     }
@@ -68,7 +68,7 @@ dependencies {
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3Hls)
     MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageDeps.forEach { kapt(it) }
+    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
 
     implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAuth)
