@@ -1,9 +1,7 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 plugins {
-    kotlin(Plugins.rootAndroid) version PluginVersions.kotlin apply false
-    kotlin(Plugins.rootJvm) version PluginVersions.kotlin apply false
-    kotlin(Plugins.rootKapt) version PluginVersions.kotlin apply false
+    id(Plugins.kotlinAndroid) version PluginVersions.kotlin apply false
+    id(Plugins.kotlinJvm) version PluginVersions.kotlin apply false
+    id(Plugins.kapt) version PluginVersions.kotlin apply false
     id(Plugins.androidLibrary) version PluginVersions.androidGradle apply false
     id(Plugins.googleServices) version PluginVersions.googleServices apply false
     id(Plugins.firebaseCrashlytics) version PluginVersions.firebaseCrashlytics apply false
