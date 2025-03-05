@@ -61,25 +61,25 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
+    implementation(platform(FirebaseDeps.getFirebaseBom()))
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
 
     implementation(GoogleAndroidDeps.playServicesAuth)
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
+    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
 
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
     implementation(EventBusDeps.eventBus)
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

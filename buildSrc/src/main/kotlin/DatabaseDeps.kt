@@ -1,16 +1,38 @@
-
-@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
+/**
+ * Object containing dependencies related to the Room persistence library.
+ *
+ * This object provides convenient access to commonly used Room dependencies,
+ * such as the Room KTX, runtime, and compiler. It also provides helper
+ * functions to retrieve these dependencies in a format suitable for build
+ * scripts.
+ */
+@Suppress("MemberVisibilityCanBePrivate")
 object DatabaseDeps {
-    const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
-    const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
-    const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
+    val roomKtx = Dependency.VersionedDependency(
+        group = "androidx.room",
+        name = "room-ktx",
+        version = Versions.room
+    )
 
-    val AllRoomDeps = listOf(
+    val roomRuntime = Dependency.VersionedDependency(
+        group = "androidx.room",
+        name = "room-runtime",
+        version = Versions.room
+    )
+
+    val roomCompiler = Dependency.VersionedDependency(
+        group = "androidx.room",
+        name = "room-compiler",
+        version = Versions.room
+    )
+
+
+    fun getRoomDeps() = listOf(
         roomKtx,
         roomRuntime
-    )
+    ).map { it.get() }
 
-    val AllRoomKaptDeps = listOf(
+    fun getRoomKaptDeps() = listOf(
         roomCompiler
-    )
+    ).map { it.get() }
 }

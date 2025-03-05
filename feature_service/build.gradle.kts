@@ -61,7 +61,7 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
+    implementation(platform(FirebaseDeps.getFirebaseBom())) // Firebase BOM for managing versions
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
@@ -69,12 +69,12 @@ dependencies {
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

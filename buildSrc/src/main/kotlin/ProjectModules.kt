@@ -1,4 +1,13 @@
 
+/**
+ * Object containing constants representing the names of project modules.
+ *
+ * This object provides a centralized location for defining and accessing the module names
+ * used throughout the project. Each constant represents a specific module within the application.
+ *
+ * The `AllProjectModules` list provides a convenient way to access all module names as a collection,
+ * excluding the `:app` module which typically acts as the entry point and orchestrator of other modules.
+ */
 @Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object ProjectModules {
     const val core = ":core"

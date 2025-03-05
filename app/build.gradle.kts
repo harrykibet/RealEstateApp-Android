@@ -55,41 +55,41 @@ android {
 }
 
 dependencies {
-    CoreDeps.CommonCoreDeps.forEach { implementation(it) }
-    CoreDeps.CoreUiDeps.forEach { implementation(it) }
+    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
+    CoreDeps.getCoreUiDeps().forEach { implementation(it) }
     implementation(CoreDeps.splashScreen)
 
     // Lifecycle Dependencies
-    LifecycleDeps.AllLifecycleDeps.forEach { implementation(it) }
+    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
 
     // Firebase Dependencies
-    implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.AllFirebaseDeps.forEach { implementation(it) }
+    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
 
     // Google Play Services
-    GoogleAndroidDeps.AllPlayServicesDeps.forEach { implementation(it) }
+    GoogleAndroidDeps.getAllPlayServicesDeps().forEach { implementation(it) }
 
     // EventBus
     implementation(EventBusDeps.eventBus)
 
     // Security Dependencies
-    SecurityDeps.BouncyDeps.forEach { implementation(it) }
+    SecurityDeps.getBouncyDeps().forEach { implementation(it) }
 
     // Navigation Dependencies
-    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
+    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
 
     // Hilt Dependencies
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
-    HiltDeps.AllHiltTestingDeps.forEach { androidTestImplementation(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    HiltDeps.getAllHiltTestingDeps().forEach { androidTestImplementation(it) }
 
     // Media Libraries
-    MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
+    MediaDeps.getImageDeps().forEach { implementation(it) }
+    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
     // Testing Dependencies
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
     // Project Modules
     ProjectModules.AllProjectModules.forEach { implementation(project(it)) }

@@ -1,19 +1,68 @@
-
-@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
+/**
+ * Object containing Firebase dependencies and helper functions for managing them.
+ *
+ * This object centralizes the definition of Firebase dependencies used in the project.
+ * It provides both the Bill of Materials (BOM) dependency and individual Firebase
+ * library dependencies managed by the BOM.
+ *
+ * The object also provides helper functions to retrieve lists of all Firebase
+ * dependencies or specifically the BOM dependency, simplifying dependency management
+ * within Gradle build scripts.
+ */
+@Suppress("MemberVisibilityCanBePrivate")
 object FirebaseDeps {
-    const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
-    const val firebaseAnalytics = "com.google.firebase:firebase-analytics"
-    const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics"
-    const val firebaseAuth = "com.google.firebase:firebase-auth"
-    const val firebaseFirestore = "com.google.firebase:firebase-firestore"
-    const val firebaseStorage = "com.google.firebase:firebase-storage"
-    const val firebasePerformance = "com.google.firebase:firebase-perf"
-    const val firebaseConfig = "com.google.firebase:firebase-config"
-    const val playIntergrity = "com.google.firebase:firebase-appcheck-playintegrity"
-    const val appCheckDebug = "com.google.firebase:firebase-appcheck-debug"
+    val firebaseBom = Dependency.BomDependency(
+        group = "com.google.firebase",
+        name = "firebase-bom",
+        version = Versions.firebaseBom
+    )
 
-    // FirebaseBom not included, add it manually in the dependencies block
-    val AllFirebaseDeps = listOf(
+    val firebaseAnalytics = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-analytics"
+    )
+
+    val firebaseCrashlytics = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-crashlytics"
+    )
+
+    val firebaseAuth = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-auth"
+    )
+
+    val firebaseFirestore = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-firestore"
+    )
+
+    val firebaseStorage = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-storage"
+    )
+
+    val firebasePerformance = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-perf"
+    )
+
+    val firebaseConfig = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-config"
+    )
+
+    val playIntegrity = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-appcheck-playintegrity"
+    )
+
+    val appCheckDebug = Dependency.BomManagedDependency(
+        group = "com.google.firebase",
+        name = "firebase-appcheck-debug"
+    )
+
+    fun getAllFirebaseDeps() = listOf(
         firebaseAnalytics,
         firebasePerformance,
         firebaseConfig,
@@ -21,7 +70,9 @@ object FirebaseDeps {
         firebaseAuth,
         firebaseFirestore,
         firebaseStorage,
-        playIntergrity,
+        playIntegrity,
         appCheckDebug
-    )
+    ).map { it.get() }
+
+    fun getFirebaseBom() = firebaseBom.get()
 }

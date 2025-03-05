@@ -57,24 +57,21 @@ android {
 }
 
 dependencies {
-    CoreDeps.CommonCoreDeps.forEach { implementation(it) }
+    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
     implementation(CoreDeps.material)
 
     implementation(NavigationDeps.navigationFragment)
 
     implementation(NetworkDeps.gson)
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
-
-    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
+    implementation(platform(FirebaseDeps.getFirebaseBom())) // Use BOM for version alignment
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
 
     // Media Libraries
-    MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
+    MediaDeps.getImageDeps().forEach { implementation(it) }
+    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
@@ -82,11 +79,14 @@ dependencies {
     implementation(GoogleAndroidDeps.playServicesLocation)
     implementation(GoogleAndroidDeps.playServicesMaps)
 
-    LifecycleDeps.AllLifecycleDeps.forEach { implementation(it) }
+    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

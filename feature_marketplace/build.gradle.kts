@@ -61,15 +61,15 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

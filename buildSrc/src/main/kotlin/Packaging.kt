@@ -1,3 +1,6 @@
+/**
+ * Object containing packaging-related configurations.
+ */
 object Packaging {
     val excludes = listOf(
         "META-INF/DEPENDENCIES",

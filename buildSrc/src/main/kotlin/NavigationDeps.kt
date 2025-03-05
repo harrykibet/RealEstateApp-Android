@@ -1,14 +1,34 @@
-
-
-@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
+/**
+ * Object containing dependencies related to Android Jetpack Navigation.
+ *
+ * This object provides convenient access to the Navigation Fragment, Navigation UI,
+ * and Navigation Testing dependencies. It also includes a helper function to retrieve
+ * all these dependencies in a single list.
+ */
+@Suppress("MemberVisibilityCanBePrivate")
 object NavigationDeps {
-    const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
-    const val navigationUI = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
-    const val navigationTesting = "androidx.navigation:navigation-testing:${Versions.navigation}"
+    val navigationFragment = Dependency.VersionedDependency(
+        group = "androidx.navigation",
+        name = "navigation-fragment-ktx",
+        version = Versions.navigation
+    )
 
-    val AllNavigationDeps = listOf(
+    val navigationUI = Dependency.VersionedDependency(
+        group = "androidx.navigation",
+        name = "navigation-ui-ktx",
+        version = Versions.navigation
+    )
+
+    val navigationTesting = Dependency.VersionedDependency(
+        group = "androidx.navigation",
+        name = "navigation-testing",
+        version = Versions.navigation
+    )
+
+    // Function to Retrieve All Dependencies
+    fun getAllNavigationDeps() = listOf(
         navigationFragment,
         navigationTesting,
         navigationUI
-    )
+    ).map { it.get() }
 }
