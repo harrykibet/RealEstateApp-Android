@@ -1,5 +1,5 @@
 
-@Suppress("constPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object AnalyticsDeps {
     const val guava = "com.google.guava:guava:${Versions.guava}"
     const val androidMetrics = "androidx.metrics:metrics-performance:${Versions.androidMetrics}"

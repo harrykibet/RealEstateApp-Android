@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object HiltDeps {
     // Dagger Hilt
     const val hiltAndroid = "com.google.dagger:hilt-android:${Versions.daggerHilt}"

@@ -1,3 +1,4 @@
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object PluginVersions {
     const val kotlin = "2.0.0"
     const val androidGradle = "8.8.2"
@@ -9,5 +10,4 @@ object PluginVersions {
     const val dokka = "1.9.0"
     const val secretsPlugin = "2.0.1"
     const val sonarQube = "6.0.1.5171"
-    const val protobuf = "4.29.0"
 }

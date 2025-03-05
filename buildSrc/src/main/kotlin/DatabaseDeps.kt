@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object DatabaseDeps {
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"

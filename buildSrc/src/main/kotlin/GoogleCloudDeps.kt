@@ -1,5 +1,5 @@
 
-@Suppress("constPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object GoogleCloudDeps {
     const val googleCloudBom = "com.google.cloud:libraries-bom:${Versions.googleCloudBom}"
     const val googleSecretsManager = "com.google.cloud:google-cloud-secretmanager"

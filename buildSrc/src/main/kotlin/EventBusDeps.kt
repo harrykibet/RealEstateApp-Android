@@ -1,6 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object EventBusDeps {
-    //Green Robot Event Bus
     const val eventBus = "org.greenrobot:eventbus:${Versions.eventBus}"
 }

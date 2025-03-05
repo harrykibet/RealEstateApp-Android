@@ -1,4 +1,4 @@
-
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object SonarQubeConfig {
     const val projectKey = "harrykibet_RealEstateApp2"
     const val organization = "harrykibet"
