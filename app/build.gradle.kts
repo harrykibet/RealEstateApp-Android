@@ -12,7 +12,7 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.namespace
+    namespace = AndroidConfig.appNamespace
     compileSdk = AndroidConfig.compileSdk
 
     defaultConfig {
