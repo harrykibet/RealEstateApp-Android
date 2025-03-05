@@ -58,19 +58,20 @@ android {
 }
 
 dependencies {
-    CoreDeps.CommonCoreDeps.forEach { implementation(it) }
-    CoreDeps.CoreUiDeps.forEach { implementation(it) }
 
-    implementation(ComposeDeps.composeBom)
+    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
+    CoreDeps.getCoreUiDeps().forEach { implementation(it) }
+
+    implementation(ComposeDeps.getComposeBom())
     implementation(ComposeDeps.composeMaterial3)
 
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3Hls)
-    MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
+    MediaDeps.getImageDeps().forEach { implementation(it) }
+    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
-    implementation(platform(FirebaseDeps.firebaseBom))
+    implementation(platform(FirebaseDeps.getFirebaseBom()))
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
@@ -78,16 +79,16 @@ dependencies {
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
+    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
 
-    LifecycleDeps.AllLifecycleDeps.forEach { implementation(it) }
+    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

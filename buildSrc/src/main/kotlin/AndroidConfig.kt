@@ -1,3 +1,11 @@
+/**
+ *  `AndroidConfig` is an object that centralizes all the configuration settings
+ *  for the Android application.
+ *  This includes SDK versions, application identifiers, testing configurations,
+ *  code obfuscation rules, and namespace definitions.
+ *  It serves as a single source of truth for all Android-related build settings,
+ *  improving consistency and maintainability.
+ */
 @Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object AndroidConfig {
 

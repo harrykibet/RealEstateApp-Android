@@ -61,22 +61,22 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(ComposeDeps.composeBom))
+    implementation(platform(ComposeDeps.getComposeBom()))
     implementation(ComposeDeps.composeMaterial3)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
+    implementation(platform(FirebaseDeps.getFirebaseBom())) // Use BOM for Firebase version alignment
     implementation(FirebaseDeps.firebaseAuth)
 
-    NavigationDeps.AllNavigationDeps.forEach { implementation(it) }
+    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
 
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 
     implementation(EventBusDeps.eventBus)
 

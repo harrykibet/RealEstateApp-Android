@@ -1,3 +1,9 @@
+/**
+ * Configuration object for SonarQube analysis.
+ *
+ * This object provides constant values and computed properties required for
+ * configuring and executing SonarQube code analysis on the project.
+ */
 @Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object SonarQubeConfig {
     const val projectKey = "harrykibet_RealEstateApp2"

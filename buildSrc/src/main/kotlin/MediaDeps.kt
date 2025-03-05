@@ -1,51 +1,56 @@
+/**
+ * Object containing dependencies related to media handling, including Media3, FFmpeg, Glide, and Lottie.
+ *
+ * This object provides easy access to various media-related libraries and their specific components.
+ * It includes dependencies for:
+ * - Media3 (ExoPlayer, UI, HLS, etc.)
+ * - Media Router
+ * - FFmpeg Kit
+ * - Glide (Image Loading)
+ * - Lottie (Animations)
+ *
+ * It also provides convenience functions to retrieve specific sets of dependencies.
+ */
 @Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object MediaDeps {
 
-    // Media3
-    const val media3ExoPlayer = "androidx.media3:media3-exoplayer:${Versions.media3}"
-    const val media3Database = "androidx.media3:media3-database:${Versions.media3}"
-    const val media3UI = "androidx.media3:media3-ui:${Versions.media3}"
-    const val media3Decoder = "androidx.media3:media3-decoder:${Versions.media3}"
-    const val media3Hls = "androidx.media3:media3-exoplayer-hls:${Versions.media3}"
-    const val media3Session = "androidx.media3:media3-session:${Versions.media3}"
-    const val media3Common = "androidx.media3:media3-common:${Versions.media3}"
-    const val media3DataSource = "androidx.media3:media3-datasource:${Versions.media3}"
-    const val media3Okhttp = "androidx.media3:media3-datasource-okhttp:${Versions.media3}"
-    const val media3Cronet = "androidx.media3:media3-datasource-cronet:${Versions.media3}"
-    const val media3Dash = "androidx.media3:media3-exoplayer-dash:${Versions.media3}"
-    const val media3Rtsp = "androidx.media3:media3-exoplayer-rtsp:${Versions.media3}"
-    const val media3Effect = "androidx.media3:media3-effect:${Versions.media3}"
-    const val media3Transformer = "androidx.media3:media3-transformer:${Versions.media3}"
-    const val media3Rtmp = "androidx.media3:media3-datasource-rtmp:${Versions.media3}"
-    const val media3WorkManager = "androidx.media3:media3-exoplayer-workmanager:${Versions.media3}"
+    // Media3 Dependencies
+    val media3ExoPlayer = Dependency.VersionedDependency("androidx.media3", "media3-exoplayer", Versions.media3)
+    val media3Database = Dependency.VersionedDependency("androidx.media3", "media3-database", Versions.media3)
+    val media3UI = Dependency.VersionedDependency("androidx.media3", "media3-ui", Versions.media3)
+    val media3Decoder = Dependency.VersionedDependency("androidx.media3", "media3-decoder", Versions.media3)
+    val media3Hls = Dependency.VersionedDependency("androidx.media3", "media3-exoplayer-hls", Versions.media3)
+    val media3Session = Dependency.VersionedDependency("androidx.media3", "media3-session", Versions.media3)
+    val media3Common = Dependency.VersionedDependency("androidx.media3", "media3-common", Versions.media3)
+    val media3DataSource = Dependency.VersionedDependency("androidx.media3", "media3-datasource", Versions.media3)
+    val media3Okhttp = Dependency.VersionedDependency("androidx.media3", "media3-datasource-okhttp", Versions.media3)
+    val media3Cronet = Dependency.VersionedDependency("androidx.media3", "media3-datasource-cronet", Versions.media3)
+    val media3Dash = Dependency.VersionedDependency("androidx.media3", "media3-exoplayer-dash", Versions.media3)
+    val media3Rtsp = Dependency.VersionedDependency("androidx.media3", "media3-exoplayer-rtsp", Versions.media3)
+    val media3Effect = Dependency.VersionedDependency("androidx.media3", "media3-effect", Versions.media3)
+    val media3Transformer = Dependency.VersionedDependency("androidx.media3", "media3-transformer", Versions.media3)
+    val media3Rtmp = Dependency.VersionedDependency("androidx.media3", "media3-datasource-rtmp", Versions.media3)
+    val media3WorkManager = Dependency.VersionedDependency("androidx.media3", "media3-exoplayer-workmanager", Versions.media3)
 
     // Media Router
-    const val mediaRouter = "androidx.mediarouter:mediarouter:${Versions.mediaRouter}"
+    val mediaRouter = Dependency.VersionedDependency("androidx.mediarouter", "mediarouter", Versions.mediaRouter)
 
     // FFMPEG Kit
-    const val  ffmpeg = "com.arthenica:ffmpeg-kit-min-gpl:${Versions.ffmpeg}"
+    val ffmpeg = Dependency.VersionedDependency("com.arthenica", "ffmpeg-kit-min-gpl", Versions.ffmpeg)
 
     // Glide
-    const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
-    const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
+    val glide = Dependency.VersionedDependency("com.github.bumptech.glide", "glide", Versions.glide)
+    val glideCompiler = Dependency.VersionedDependency("com.github.bumptech.glide", "compiler", Versions.glide)
 
     // Lottie
-    const val lottie = "com.airbnb.android:lottie:${Versions.lottie}"
+    val lottie = Dependency.VersionedDependency("com.airbnb.android", "lottie", Versions.lottie)
 
-    val AnimationDeps = listOf(
-        lottie
-    )
+    // Functions to Retrieve Dependencies
+    fun getAnimationDeps() = listOf(lottie).map { it.get() }
+    fun getImageDeps() = listOf(glide).map { it.get() }
+    fun getImageKaptDeps() = listOf(glideCompiler).map { it.get() }
 
-    val ImageDeps = listOf(
-        glide
-    )
-
-    val ImageKaptDeps = listOf(
-        glideCompiler
-    )
-
-    // Grouped Media3 Dependencies
-    val AllMedia3Deps = listOf(
+    fun getAllMedia3Deps() = listOf(
         media3ExoPlayer,
         media3UI,
         media3Hls,
@@ -63,5 +68,5 @@ object MediaDeps {
         media3Transformer,
         media3Rtmp,
         media3WorkManager
-    )
+    ).map { it.get() }
 }

@@ -68,20 +68,20 @@ dependencies {
     implementation(AnalyticsDeps.appSet)
     implementation(AnalyticsDeps.guava)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.AllFirebaseDeps.forEach { implementation(it) }
+    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
 
     implementation(MediaDeps.media3ExoPlayer)
     implementation(MediaDeps.media3UI)
     implementation(MediaDeps.ffmpeg)
-    MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
+    MediaDeps.getImageDeps().forEach { implementation(it) }
+    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
-    NetworkDeps.AllNetworkDeps.forEach { implementation(it) }
+    NetworkDeps.getAllNetworkDeps().forEach { implementation(it) }
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }

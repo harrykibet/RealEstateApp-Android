@@ -58,14 +58,11 @@ dependencies {
     implementation(SecurityDeps.securityCrypto)
 
     // Google Cloud Dependencies (KMS & Secret Manager)
-    implementation(platform(GoogleCloudDeps.googleCloudBom)) // Version alignment for Google Cloud libraries
+    implementation(platform(GoogleCloudDeps.getGoogleCloudBom())) // Version alignment for Google Cloud libraries
     implementation(GoogleCloudDeps.googleCloudKms)
     implementation(GoogleCloudDeps.googleSecretsManager)
 
     implementation(project(ProjectModules.core))
-
-    DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
-    DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
 
     implementation(SecurityDeps.bouncyCastle)
     implementation(SecurityDeps.bouncyCastlePkix)
@@ -79,9 +76,12 @@ dependencies {
     implementation(AnalyticsDeps.micrometerPrometheus)
     implementation(AnalyticsDeps.conscrypt)
 
-    TestingDeps.TestDeps.forEach { testImplementation(it) }
-    TestingDeps.AndroidTestDeps.forEach { androidTestImplementation(it) }
+    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
+    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    HiltDeps.AllHiltDeps.forEach { implementation(it) }
-    HiltDeps.AllHiltKaptDeps.forEach { kapt(it) }
+    TestingDeps.getTestDeps().forEach { testImplementation(it) }
+    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+
+    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
+    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
 }
