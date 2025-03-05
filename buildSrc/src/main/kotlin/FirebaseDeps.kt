@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object FirebaseDeps {
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
     const val firebaseAnalytics = "com.google.firebase:firebase-analytics"

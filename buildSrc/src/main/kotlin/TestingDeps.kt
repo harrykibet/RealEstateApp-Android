@@ -1,4 +1,4 @@
-@Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object TestingDeps {
     const val testExtJUnit = "androidx.test.ext:junit:${Versions.testExtJunit}"
     const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"

@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object ComposeDeps {
     const val composeBom = "androidx.compose:compose-bom:${Versions.composeBom}"
     const val composeUi = "androidx.compose.ui:ui"

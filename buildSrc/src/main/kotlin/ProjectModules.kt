@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object ProjectModules {
     const val core = ":core"
     const val featureHome = ":feature_home"

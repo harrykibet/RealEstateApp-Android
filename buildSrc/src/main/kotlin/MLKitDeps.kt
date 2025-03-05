@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object MLKitDeps {
     // GOOGLE  ML Kit On-Device
     const val mlKitBarcodeScanning = "com.google.mlkit:barcode-scanning:${Versions.mlKitBarcodeScanning}"

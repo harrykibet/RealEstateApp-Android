@@ -1,5 +1,7 @@
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object AndroidConfig {
 
+    // SDK and App Config
     const val compileSdk = 35
     const val minSdk = 26
     const val targetSdk = 35
@@ -8,7 +10,10 @@ object AndroidConfig {
     const val versionName = "1.0"
     const val jvmTarget = "17"
 
+    // Testing
     const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // Dokka
     const val dokkaPath = "dokka"
 
     // Proguard Files
@@ -18,24 +23,24 @@ object AndroidConfig {
 
     // Namespaces
     const val namespace = "com.application.real_estate_app"
-    const val coreNamespace = "com.application.real_estate_app.core"
-    const val featureAnalyticsNamespace = "com.application.real_estate_app.feature_analytics"
-    const val featureChatsNamespace = "com.application.real_estate_app.feature_chats"
-    const val featureCommentsNamespace = "com.application.real_estate_app.feature_comments"
-    const val featureFavoritesNamespace = "com.application.real_estate_app.feature_favorites"
-    const val featureHomeNamespace = "com.application.real_estate_app.feature_home"
-    const val featureProfileNamespace = "com.application.real_estate_app.feature_profile"
-    const val featureSearchNamespace = "com.application.real_estate_app.feature_search"
-    const val featureSettingsNamespace = "com.application.real_estate_app.feature_settings"
-    const val uiComponentsNamespace = "com.application.real_estate_app.ui_components"
-    const val featureAuthNamespace = "com.application.real_estate_app.feature_auth"
-    const val featureIntelligenceNamespace = "com.application.real_estate_app.feature_intelligence"
-    const val featureMarketplaceNamespace = "com.application.real_estate_app.feature_marketplace"
-    const val featureMediaPlayerNamespace = "com.application.real_estate_app.feature_mediaplayer"
-    const val featureNotificationsNamespace = "com.application.real_estate_app.feature_notifications"
-    const val featurePaymentsNamespace = "com.application.real_estate_app.feature_payments"
-    const val featurePropertyNamespace = "com.application.real_estate_app.feature_property"
-    const val featureServiceNamespace = "com.application.real_estate_app.feature_service"
-    const val localizationNamespace = "com.application.real_estate_app.feature_localization"
-    const val securityNamespace = "com.application.real_estate_app.feature_security"
+    const val coreNamespace = "$namespace.core"
+    const val featureAnalyticsNamespace = "$namespace.feature_analytics"
+    const val featureChatsNamespace = "$namespace.feature_chats"
+    const val featureCommentsNamespace = "$namespace.feature_comments"
+    const val featureFavoritesNamespace = "$namespace.feature_favorites"
+    const val featureHomeNamespace = "$namespace.feature_home"
+    const val featureProfileNamespace = "$namespace.feature_profile"
+    const val featureSearchNamespace = "$namespace.feature_search"
+    const val featureSettingsNamespace = "$namespace.feature_settings"
+    const val uiComponentsNamespace = "$namespace.ui_components"
+    const val featureAuthNamespace = "$namespace.feature_auth"
+    const val featureIntelligenceNamespace = "$namespace.feature_intelligence"
+    const val featureMarketplaceNamespace = "$namespace.feature_marketplace"
+    const val featureMediaPlayerNamespace = "$namespace.feature_mediaplayer"
+    const val featureNotificationsNamespace = "$namespace.feature_notifications"
+    const val featurePaymentsNamespace = "$namespace.feature_payments"
+    const val featurePropertyNamespace = "$namespace.feature_property"
+    const val featureServiceNamespace = "$namespace.feature_service"
+    const val localizationNamespace = "$namespace.feature_localization"
+    const val securityNamespace = "$namespace.feature_security"
 }

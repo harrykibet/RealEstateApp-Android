@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object GoogleAndroidDeps {
     const val playServicesMaps = "com.google.android.gms:play-services-maps:${Versions.playServicesMaps}"
     const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.playServicesLocation}"

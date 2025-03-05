@@ -1,7 +1,7 @@
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object MediaDeps {
 
-    // Media3 ExoPlayer
+    // Media3
     const val media3ExoPlayer = "androidx.media3:media3-exoplayer:${Versions.media3}"
     const val media3Database = "androidx.media3:media3-database:${Versions.media3}"
     const val media3UI = "androidx.media3:media3-ui:${Versions.media3}"

@@ -1,5 +1,5 @@
 
-@file:Suppress("ConstPropertyName")
+@Suppress("constPropertyName", "MemberVisibilityCanBePrivate")
 object SecurityDeps {
     const val securityCrypto = "androidx.security:security-crypto-ktx:${Versions.securityKtx}"
     const val bouncyCastle = "org.bouncycastle:bcprov-jdk18on:${Versions.bouncyCastle}"
