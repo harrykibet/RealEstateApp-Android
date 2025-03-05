@@ -8,6 +8,14 @@ object AndroidConfig {
     const val versionName = "1.0"
     const val jvmTarget = "17"
 
+    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    const val dokkaPath = "dokka"
+
+    // Proguard Files
+    const val proguardOptimizationFile = "proguard-android-optimize.txt"
+    const val proguardRulesFile = "proguard-rules.pro"
+    const val proguardConsumerRulesFile = "consumer-rules.pro"
+
     // Namespaces
     const val namespace = "com.application.real_estate_app"
     const val coreNamespace = "com.application.real_estate_app.core"
@@ -30,8 +38,4 @@ object AndroidConfig {
     const val featureServiceNamespace = "com.application.real_estate_app.feature_service"
     const val localizationNamespace = "com.application.real_estate_app.feature_localization"
     const val securityNamespace = "com.application.real_estate_app.feature_security"
-
-
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
 }

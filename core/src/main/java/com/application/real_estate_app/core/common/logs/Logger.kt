@@ -3,8 +3,10 @@ package com.application.real_estate_app.core.common.logs
 import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
+import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -14,8 +16,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 class Logger @Inject constructor(
-    private val firebaseCrashlytics: FirebaseCrashlytics
-): LoggerInterface {
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val firebaseRemoteConfig: IRemoteConfigManager
+) : LoggerInterface {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val tag = "AppLogger"
@@ -64,7 +67,8 @@ class Logger @Inject constructor(
     }
 
     private fun formatMessage(message: String): String {
-        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+        val timestamp =
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
         return "$timestamp $message"
     }
 

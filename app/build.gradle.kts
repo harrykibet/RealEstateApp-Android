@@ -30,8 +30,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
+                AndroidConfig.proguardRulesFile
             )
         }
     }
@@ -39,6 +39,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
     }
 
     kotlinOptions.jvmTarget = AndroidConfig.jvmTarget
@@ -81,7 +85,7 @@ dependencies {
 
     // Media Libraries
     MediaDeps.ImageDeps.forEach { implementation(it) }
-    MediaDeps.ImageDeps.forEach { kapt(it) }
+    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
 
     // Testing Dependencies
     TestingDeps.TestDeps.forEach { testImplementation(it) }

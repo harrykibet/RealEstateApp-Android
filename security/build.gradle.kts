@@ -13,19 +13,19 @@ android {
     defaultConfig {
         minSdk = AndroidConfig.minSdk
         testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles("consumer-rules.pro")
+        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
+        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
+                AndroidConfig.proguardRulesFile
             )
         }
     }

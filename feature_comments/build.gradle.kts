@@ -17,7 +17,7 @@ android {
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
+        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
     }
 
     buildFeatures {
@@ -28,15 +28,15 @@ android {
     defaultConfig {
         minSdk = AndroidConfig.minSdk
         testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles("consumer-rules.pro")
+        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
+                AndroidConfig.proguardRulesFile
             )
         }
     }
@@ -62,8 +62,8 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(MediaDeps.glide)
-    kapt(MediaDeps.glideCompiler)
+    MediaDeps.ImageDeps.forEach { implementation(it) }
+    MediaDeps.ImageKaptDeps.forEach { kapt(it) }
 
     DatabaseDeps.AllRoomDeps.forEach { implementation(it) }
     DatabaseDeps.AllRoomKaptDeps.forEach { kapt(it) }
