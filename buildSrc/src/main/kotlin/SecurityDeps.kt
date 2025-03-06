@@ -12,30 +12,30 @@ object SecurityDeps {
         group = "androidx.security",
         name = "security-crypto-ktx",
         version = Versions.securityKtx
-    )
+    ).toGradleNotation
 
     val bouncyCastle = Dependency.VersionedDependency(
         group = "org.bouncycastle",
         name = "bcprov-jdk18on",
         version = Versions.bouncyCastle
-    )
+    ).toGradleNotation
 
     val bouncyCastlePkix = Dependency.VersionedDependency(
         group = "org.bouncycastle",
         name = "bcpkix-jdk18on",
         version = Versions.bouncyCastle
-    )
+    ).toGradleNotation
 
     // Function to Retrieve All Crypto Dependencies
     fun getAllCryptoDeps() = listOf(
         securityCrypto,
         bouncyCastle,
         bouncyCastlePkix
-    ).map { it.get() }
+    )
 
     // Function to Retrieve Only BouncyCastle Dependencies
     fun getBouncyDeps() = listOf(
         bouncyCastle,
         bouncyCastlePkix
-    ).map { it.get() }
+    )
 }

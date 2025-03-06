@@ -50,7 +50,7 @@ dependencies {
 
     implementation(project(ProjectModules.core))
 
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAnalytics)
 
     DatabaseDeps.getRoomDeps().forEach { implementation(it) }

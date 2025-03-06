@@ -33,73 +33,73 @@ object CoreDeps {
         group = "androidx.core",
         name = "core-ktx",
         version = Versions.coreKtx
-    )
+    ).toGradleNotation
 
     val appCompat = Dependency.VersionedDependency(
         group = "androidx.appcompat",
         name = "appcompat",
         version = Versions.appCompat
-    )
+    ).toGradleNotation
 
     val material = Dependency.VersionedDependency(
         group = "com.google.android.material",
         name = "material",
         version = Versions.material
-    )
+    ).toGradleNotation
 
     val constraintLayout = Dependency.VersionedDependency(
         group = "androidx.constraintlayout",
         name = "constraintlayout",
         version = Versions.constraintLayout
-    )
+    ).toGradleNotation
 
     val viewPager2 = Dependency.VersionedDependency(
         group = "androidx.viewpager2",
         name = "viewpager2",
         version = Versions.viewPager
-    )
+    ).toGradleNotation
 
     val recyclerView = Dependency.VersionedDependency(
         group = "androidx.recyclerview",
         name = "recyclerview",
         version = Versions.recyclerView
-    )
+    ).toGradleNotation
 
     val swipeRefreshLayout = Dependency.VersionedDependency(
         group = "androidx.swiperefreshlayout",
         name = "swiperefreshlayout",
         version = Versions.swipeRefreshLayout
-    )
+    ).toGradleNotation
 
     val fragmentKtx = Dependency.VersionedDependency(
         group = "androidx.fragment",
         name = "fragment-ktx",
         version = Versions.fragmentKtx
-    )
+    ).toGradleNotation
 
     val activityKtx = Dependency.VersionedDependency(
         group = "androidx.activity",
         name = "activity-ktx",
         version = Versions.activityKtx
-    )
+    ).toGradleNotation
 
     val splashScreen = Dependency.VersionedDependency(
         group = "androidx.core",
         name = "core-splashscreen",
         version = Versions.splashScreen
-    )
+    ).toGradleNotation
 
     val testCoreKtx = Dependency.VersionedDependency(
         group = "androidx.test",
         name = "core-ktx",
         version = Versions.testCoreKtx
-    )
+    ).toGradleNotation
 
     val workRuntimeKtx = Dependency.VersionedDependency(
         group = "androidx.work",
         name = "work-runtime-ktx",
         version = Versions.workManager
-    )
+    ).toGradleNotation
 
     fun getCommonCoreDeps() = listOf(
         coreKtx,
@@ -107,7 +107,7 @@ object CoreDeps {
         material,
         fragmentKtx,
         activityKtx
-    ).map { it.get() }
+    )
 
     fun getCoreUiDeps() = listOf(
         material,
@@ -115,5 +115,5 @@ object CoreDeps {
         recyclerView,
         viewPager2,
         swipeRefreshLayout
-    ).map { it.get() }
+    )
 }

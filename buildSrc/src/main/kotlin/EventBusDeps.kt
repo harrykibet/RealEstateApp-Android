@@ -10,9 +10,9 @@ object EventBusDeps {
         group = "org.greenrobot",
         name = "eventbus",
         version = Versions.eventBus
-    )
+    ).toGradleNotation
 
     val getEventBusDeps = listOf(
         eventBus
-    ).map { it.get() }
+    )
 }

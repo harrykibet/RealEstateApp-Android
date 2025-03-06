@@ -8,7 +8,18 @@
  */
 sealed class Dependency {
 
-    abstract fun get(): String // Ensure all subclasses implement this
+
+    /**
+     * Retrieves a string representation of the object.
+     *
+     * This is an abstract function that must be implemented by all concrete subclasses.
+     * It provides a way to get a string value associated with an instance of the class.
+     * The specific meaning and content of the returned string are determined by the
+     * subclass's implementation.
+     *
+     * @return A String representing the object.
+     */
+    abstract val toGradleNotation: String
 
     /**
      * Represents a dependency with a specific group, name, and version.
@@ -21,7 +32,7 @@ sealed class Dependency {
      * @property version The version of the dependency (e.g., "1.0.0").
      */
     data class VersionedDependency(val group: String, val name: String, val version: String) : Dependency() {
-        override fun get() = "$group:$name:$version"
+        override val toGradleNotation get() = "$group:$name:$version"
     }
 
     /**
@@ -37,7 +48,7 @@ sealed class Dependency {
      * @property version The version of the BOM dependency (e.g., "26.32.0").
      */
     data class BomDependency(val group: String, val name: String, val version: String) : Dependency() {
-        override fun get() = "$group:$name:$version"
+        override val toGradleNotation get() = "$group:$name:$version"
     }
 
     /**
@@ -55,6 +66,6 @@ sealed class Dependency {
      * @see Dependency
      */
     data class BomManagedDependency(val group: String, val name: String) : Dependency() {
-        override fun get() = "$group:$name"
+        override val toGradleNotation get() = "$group:$name"
     }
 }

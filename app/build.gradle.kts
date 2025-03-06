@@ -63,7 +63,7 @@ dependencies {
     LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
 
     // Firebase Dependencies
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
 
     // Google Play Services

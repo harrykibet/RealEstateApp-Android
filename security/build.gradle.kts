@@ -58,7 +58,7 @@ dependencies {
     implementation(SecurityDeps.securityCrypto)
 
     // Google Cloud Dependencies (KMS & Secret Manager)
-    implementation(platform(GoogleCloudDeps.getGoogleCloudBom())) // Version alignment for Google Cloud libraries
+    implementation(platform(GoogleCloudDeps.googleCloudBom)) // Version alignment for Google Cloud libraries
     implementation(GoogleCloudDeps.googleCloudKms)
     implementation(GoogleCloudDeps.googleSecretsManager)
 

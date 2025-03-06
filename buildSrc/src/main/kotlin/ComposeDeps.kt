@@ -24,51 +24,51 @@ object ComposeDeps {
         group = "androidx.compose",
         name = "compose-bom",
         version = Versions.composeBom
-    )
+    ).toGradleNotation
 
     val composeUi = Dependency.BomManagedDependency(
         group = "androidx.compose.ui",
         name = "ui"
-    )
+    ).toGradleNotation
 
     val composeMaterial = Dependency.BomManagedDependency(
         group = "androidx.compose.material",
         name = "material"
-    )
+    ).toGradleNotation
 
     val composeUiToolingPreview = Dependency.BomManagedDependency(
         group = "androidx.compose.ui",
         name = "ui-tooling-preview"
-    )
+    ).toGradleNotation
 
     val composeUiTooling = Dependency.BomManagedDependency(
         group = "androidx.compose.ui",
         name = "ui-tooling"
-    )
+    ).toGradleNotation
 
     val composeCompiler = Dependency.VersionedDependency(
         group = "androidx.compose.compiler",
         name = "compiler",
         version = Versions.composeCompiler
-    )
+    ).toGradleNotation
 
     val composeRuntimeLiveData = Dependency.VersionedDependency(
         group = "androidx.compose.runtime",
         name = "runtime-livedata",
         version = Versions.composeRuntime
-    )
+    ).toGradleNotation
 
     val activityCompose = Dependency.VersionedDependency(
         group = "androidx.activity",
         name = "activity-compose",
         version = Versions.activityCompose
-    )
+    ).toGradleNotation
 
     val composeMaterial3 = Dependency.VersionedDependency(
         group = "androidx.compose.material3",
         name = "material3",
         version = Versions.composeMaterial3
-    )
+    ).toGradleNotation
 
     fun getAllComposeDeps() = listOf(
         composeUi,
@@ -78,12 +78,10 @@ object ComposeDeps {
         composeRuntimeLiveData,
         activityCompose,
         composeMaterial3
-    ).map { it.get() }
+    )
 
 
     fun getComposeDebugDeps() = listOf(
         composeUiTooling
-    ).map { it.get() }
-
-    fun getComposeBom() = composeBom.get()
+    )
 }

@@ -68,7 +68,7 @@ dependencies {
     implementation(AnalyticsDeps.appSet)
     implementation(AnalyticsDeps.guava)
 
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
 
     implementation(MediaDeps.media3ExoPlayer)

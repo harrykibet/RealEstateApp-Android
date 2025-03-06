@@ -65,7 +65,7 @@ dependencies {
     implementation(GoogleAndroidDeps.playServicesLocation)
     implementation(GoogleAndroidDeps.places)
 
-    implementation(platform(FirebaseDeps.getFirebaseBom())) // Version alignment for Firebase libraries
+    implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
     implementation(FirebaseDeps.firebaseFirestore)
 
     NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }

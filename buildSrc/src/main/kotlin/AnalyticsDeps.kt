@@ -18,49 +18,49 @@ object AnalyticsDeps {
         group = "com.google.guava",
         name = "guava",
         version = Versions.guava
-    )
+    ).toGradleNotation
 
     val androidMetrics = Dependency.VersionedDependency(
         group = "androidx.metrics",
         name = "metrics-performance",
         version = Versions.androidMetrics
-    )
+    ).toGradleNotation
 
     val appSet = Dependency.VersionedDependency(
         group = "com.google.android.gms",
         name = "play-services-appset",
         version = Versions.appSet
-    )
+    ).toGradleNotation
 
     val openTelemetryApi = Dependency.VersionedDependency(
         group = "io.opentelemetry",
         name = "opentelemetry-api",
         version = Versions.openTelemetry
-    )
+    ).toGradleNotation
 
     val openTelemetryExporter = Dependency.VersionedDependency(
         group = "io.opentelemetry",
         name = "opentelemetry-exporter-otlp",
         version = Versions.openTelemetry
-    )
+    ).toGradleNotation
 
     val micrometer = Dependency.VersionedDependency(
         group = "io.micrometer",
         name = "micrometer-core",
         version = Versions.micrometer
-    )
+    ).toGradleNotation
 
     val micrometerPrometheus = Dependency.VersionedDependency(
         group = "io.micrometer",
         name = "micrometer-registry-prometheus",
         version = Versions.micrometer
-    )
+    ).toGradleNotation
 
     val conscrypt = Dependency.VersionedDependency(
         group = "org.conscrypt",
         name = "conscrypt-openjdk-uber",
         version = Versions.conscrypt
-    )
+    ).toGradleNotation
 
     // Collect all dependencies in a list for easy retrieval
     fun getAllAnalyticsDeps() = listOf(
@@ -72,5 +72,5 @@ object AnalyticsDeps {
         micrometer,
         micrometerPrometheus,
         conscrypt
-    ).map { it.get() }
+    )
 }

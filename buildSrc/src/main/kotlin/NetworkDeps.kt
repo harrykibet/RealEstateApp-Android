@@ -11,31 +11,31 @@ object NetworkDeps {
         group = "com.squareup.okhttp3",
         name = "okhttp",
         version = Versions.okhttp
-    )
+    ).toGradleNotation
 
     val okhttpInterceptor = Dependency.VersionedDependency(
         group = "com.squareup.okhttp3",
         name = "logging-interceptor",
         version = Versions.okhttp
-    )
+    ).toGradleNotation
 
     val gson = Dependency.VersionedDependency(
         group = "com.google.code.gson",
         name = "gson",
         version = Versions.gson
-    )
+    ).toGradleNotation
 
     val retrofit = Dependency.VersionedDependency(
         group = "com.squareup.retrofit2",
         name = "retrofit",
         version = Versions.retrofit
-    )
+    ).toGradleNotation
 
     val retrofitConverterGson = Dependency.VersionedDependency(
         group = "com.squareup.retrofit2",
         name = "converter-gson",
         version = Versions.retrofit
-    )
+    ).toGradleNotation
 
     // Function to Retrieve All Networking Dependencies
     fun getAllNetworkDeps() = listOf(
@@ -44,5 +44,5 @@ object NetworkDeps {
         gson,
         retrofit,
         retrofitConverterGson
-    ).map { it.get() }
+    )
 }

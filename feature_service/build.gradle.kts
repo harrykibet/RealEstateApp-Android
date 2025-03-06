@@ -61,7 +61,7 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(FirebaseDeps.getFirebaseBom())) // Firebase BOM for managing versions
+    implementation(platform(FirebaseDeps.firebaseBom)) // Firebase BOM for managing versions
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)

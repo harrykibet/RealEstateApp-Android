@@ -13,28 +13,27 @@ object GoogleCloudDeps {
         group = "com.google.cloud",
         name = "libraries-bom",
         version = Versions.googleCloudBom
-    )
+    ).toGradleNotation
 
     val googleSecretsManager = Dependency.BomManagedDependency(
         group = "com.google.cloud",
         name = "google-cloud-secretmanager"
-    )
+    ).toGradleNotation
 
     val googleAuthCloud = Dependency.BomManagedDependency(
         group = "com.google.auth",
         name = "google-auth-library-oauth2-http"
-    )
+    ).toGradleNotation
 
     val googleCloudKms = Dependency.BomManagedDependency(
         group = "com.google.cloud",
         name = "google-cloud-kms"
-    )
+    ).toGradleNotation
 
-    fun getGoogleCloudBom() = googleCloudBom.get()
-
+    
     fun getAllManagedDependencies() = listOf(
         googleSecretsManager,
         googleAuthCloud,
         googleCloudKms
-    ).map { it.get() }
+    )
 }

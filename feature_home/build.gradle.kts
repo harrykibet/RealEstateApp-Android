@@ -62,7 +62,7 @@ dependencies {
     CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
     CoreDeps.getCoreUiDeps().forEach { implementation(it) }
 
-    implementation(ComposeDeps.getComposeBom())
+    implementation(ComposeDeps.composeBom)
     implementation(ComposeDeps.composeMaterial3)
 
     implementation(MediaDeps.media3UI)
@@ -71,7 +71,7 @@ dependencies {
     MediaDeps.getImageDeps().forEach { implementation(it) }
     MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)
