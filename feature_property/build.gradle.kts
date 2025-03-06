@@ -64,7 +64,7 @@ dependencies {
 
     implementation(NetworkDeps.gson)
 
-    implementation(platform(FirebaseDeps.getFirebaseBom())) // Use BOM for version alignment
+    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for version alignment
     implementation(FirebaseDeps.firebaseAuth)
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseStorage)

@@ -11,24 +11,24 @@ object LifecycleDeps {
         group = "androidx.lifecycle",
         name = "lifecycle-runtime-ktx",
         version = Versions.lifecycle
-    )
+    ).toGradleNotation
 
     val viewModelKtx = Dependency.VersionedDependency(
         group = "androidx.lifecycle",
         name = "lifecycle-viewmodel-ktx",
         version = Versions.lifecycle
-    )
+    ).toGradleNotation
 
     val liveDataKtx = Dependency.VersionedDependency(
         group = "androidx.lifecycle",
         name = "lifecycle-livedata-ktx",
         version = Versions.lifecycle
-    )
+    ).toGradleNotation
 
     // Function to retrieve all lifecycle dependencies
     fun getAllLifecycleDeps() = listOf(
         lifecycleRuntime,
         viewModelKtx,
         liveDataKtx
-    ).map { it.get() }
+    )
 }

@@ -1,4 +1,3 @@
-
 pluginManagement {
     repositories {
         google()
@@ -7,8 +6,12 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("de.fayard.refreshVersions") version "0.60.5" // Ensure this is the latest version
+}
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -19,6 +22,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "RealEstateApp"
+
 include(":app")
 include(":core")
 include(":feature_home")

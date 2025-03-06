@@ -11,9 +11,9 @@ object CachingDeps {
         group = "com.github.ben-manes.caffeine",
         name = "caffeine",
         version = Versions.caffeine
-    )
+    ).toGradleNotation
 
     fun getAllCachingDeps() = listOf(
         caffeine
-    ).map { it.get() }
+    )
 }

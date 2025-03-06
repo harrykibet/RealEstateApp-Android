@@ -19,38 +19,38 @@ object MLKitDeps {
         group = "com.google.mlkit",
         name = "barcode-scanning",
         version = Versions.mlKitBarcodeScanning
-    )
+    ).toGradleNotation
 
     val mlKitTextRecognitionOnDevice = Dependency.VersionedDependency(
         group = "com.google.mlkit",
         name = "text-recognition",
         version = Versions.mlKitTextRecognition
-    )
+    ).toGradleNotation
 
     val mlKitFaceDetection = Dependency.VersionedDependency(
         group = "com.google.mlkit",
         name = "face-detection",
         version = Versions.mlKitFaceDetection
-    )
+    ).toGradleNotation
 
     val mlKitImageLabelingOnDevice = Dependency.VersionedDependency(
         group = "com.google.mlkit",
         name = "image-labeling",
         version = Versions.mlKitImageLabeling
-    )
+    ).toGradleNotation
 
     // GOOGLE ML Kit Cloud-Based
     val mlKitTextRecognitionCloud = Dependency.VersionedDependency(
         group = "com.google.android.gms",
         name = "play-services-mlkit-text-recognition",
         version = Versions.mlKitCloudTextRecognition
-    )
+    ).toGradleNotation
 
     val mlKitImageLabelingCloud = Dependency.VersionedDependency(
         group = "com.google.android.gms",
         name = "play-services-mlkit-image-labeling",
         version = Versions.mlKitCloudImageLabeling
-    )
+    ).toGradleNotation
 
     // Function to Retrieve All Dependencies
     fun getAllMLKitDeps() = listOf(
@@ -60,5 +60,5 @@ object MLKitDeps {
         mlKitImageLabelingOnDevice,
         mlKitTextRecognitionCloud,
         mlKitImageLabelingCloud
-    ).map { it.get() }
+    )
 }

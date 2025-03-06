@@ -11,24 +11,24 @@ object NavigationDeps {
         group = "androidx.navigation",
         name = "navigation-fragment-ktx",
         version = Versions.navigation
-    )
+    ).toGradleNotation
 
     val navigationUI = Dependency.VersionedDependency(
         group = "androidx.navigation",
         name = "navigation-ui-ktx",
         version = Versions.navigation
-    )
+    ).toGradleNotation
 
     val navigationTesting = Dependency.VersionedDependency(
         group = "androidx.navigation",
         name = "navigation-testing",
         version = Versions.navigation
-    )
+    ).toGradleNotation
 
     // Function to Retrieve All Dependencies
     fun getAllNavigationDeps() = listOf(
         navigationFragment,
         navigationTesting,
         navigationUI
-    ).map { it.get() }
+    )
 }

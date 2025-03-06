@@ -61,10 +61,10 @@ dependencies {
     implementation(CoreDeps.appCompat)
     implementation(CoreDeps.material)
 
-    implementation(platform(ComposeDeps.getComposeBom()))
+    implementation(platform(ComposeDeps.composeBom))
     implementation(ComposeDeps.composeMaterial3)
 
-    implementation(platform(FirebaseDeps.getFirebaseBom())) // Use BOM for Firebase version alignment
+    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
     implementation(FirebaseDeps.firebaseAuth)
 
     NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }

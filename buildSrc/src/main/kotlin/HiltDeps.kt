@@ -19,44 +19,44 @@ object HiltDeps {
         group = "com.google.dagger",
         name = "hilt-android",
         version = Versions.daggerHilt
-    )
+    ).toGradleNotation
 
     val hiltAndroidCompiler = Dependency.VersionedDependency(
         group = "com.google.dagger",
         name = "hilt-android-compiler",
         version = Versions.daggerHilt
-    )
+    ).toGradleNotation
 
     val hiltAndroidTesting = Dependency.VersionedDependency(
         group = "com.google.dagger",
         name = "hilt-android-testing",
         version = Versions.daggerHilt
-    )
+    ).toGradleNotation
 
     val hiltCompiler = Dependency.VersionedDependency(
         group = "androidx.hilt",
         name = "hilt-compiler",
         version = Versions.hiltAndroidx
-    )
+    ).toGradleNotation
 
     val hiltNavigationFragment = Dependency.VersionedDependency(
         group = "androidx.hilt",
         name = "hilt-navigation-fragment",
         version = Versions.hiltAndroidx
-    )
+    ).toGradleNotation
 
     // Functions to retrieve dependencies as lists
     fun getAllHiltDeps() = listOf(
         hiltAndroid,
         hiltNavigationFragment
-    ).map { it.get() }
+    )
 
     fun getAllHiltKaptDeps() = listOf(
         hiltCompiler,
         hiltAndroidCompiler
-    ).map { it.get() }
+    )
 
     fun getAllHiltTestingDeps() = listOf(
         hiltAndroidTesting
-    ).map { it.get() }
+    )
 }

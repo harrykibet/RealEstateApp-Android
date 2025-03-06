@@ -12,27 +12,27 @@ object DatabaseDeps {
         group = "androidx.room",
         name = "room-ktx",
         version = Versions.room
-    )
+    ).toGradleNotation
 
     val roomRuntime = Dependency.VersionedDependency(
         group = "androidx.room",
         name = "room-runtime",
         version = Versions.room
-    )
+    ).toGradleNotation
 
     val roomCompiler = Dependency.VersionedDependency(
         group = "androidx.room",
         name = "room-compiler",
         version = Versions.room
-    )
+    ).toGradleNotation
 
 
     fun getRoomDeps() = listOf(
         roomKtx,
         roomRuntime
-    ).map { it.get() }
+    )
 
     fun getRoomKaptDeps() = listOf(
         roomCompiler
-    ).map { it.get() }
+    )
 }

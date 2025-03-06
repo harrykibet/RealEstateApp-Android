@@ -15,52 +15,52 @@ object FirebaseDeps {
         group = "com.google.firebase",
         name = "firebase-bom",
         version = Versions.firebaseBom
-    )
+    ).toGradleNotation
 
     val firebaseAnalytics = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-analytics"
-    )
+    ).toGradleNotation
 
     val firebaseCrashlytics = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-crashlytics"
-    )
+    ).toGradleNotation
 
     val firebaseAuth = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-auth"
-    )
+    ).toGradleNotation
 
     val firebaseFirestore = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-firestore"
-    )
+    ).toGradleNotation
 
     val firebaseStorage = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-storage"
-    )
+    ).toGradleNotation
 
     val firebasePerformance = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-perf"
-    )
+    ).toGradleNotation
 
     val firebaseConfig = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-config"
-    )
+    ).toGradleNotation
 
     val playIntegrity = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-appcheck-playintegrity"
-    )
+    ).toGradleNotation
 
     val appCheckDebug = Dependency.BomManagedDependency(
         group = "com.google.firebase",
         name = "firebase-appcheck-debug"
-    )
+    ).toGradleNotation
 
     fun getAllFirebaseDeps() = listOf(
         firebaseAnalytics,
@@ -72,7 +72,5 @@ object FirebaseDeps {
         firebaseStorage,
         playIntegrity,
         appCheckDebug
-    ).map { it.get() }
-
-    fun getFirebaseBom() = firebaseBom.get()
+    )
 }

@@ -54,7 +54,7 @@ dependencies {
     DatabaseDeps.getRoomDeps().forEach { implementation(it) }
     DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
 
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseFirestore)
     implementation(FirebaseDeps.firebaseAnalytics)
 

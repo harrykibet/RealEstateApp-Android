@@ -71,7 +71,7 @@ dependencies {
     MediaDeps.getImageDeps().forEach { implementation(it) }
     MediaDeps.getImageKaptDeps().forEach { kapt(it) }
 
-    implementation(platform(FirebaseDeps.getFirebaseBom()))
+    implementation(platform(FirebaseDeps.firebaseBom))
     implementation(FirebaseDeps.firebaseFirestore)
 
     implementation(project(ProjectModules.core))

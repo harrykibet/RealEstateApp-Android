@@ -12,30 +12,30 @@ object GoogleAndroidDeps {
         group = "com.google.android.gms",
         name = "play-services-maps",
         version = Versions.playServicesMaps
-    )
+    ).toGradleNotation
 
     val playServicesLocation = Dependency.VersionedDependency(
         group = "com.google.android.gms",
         name = "play-services-location",
         version = Versions.playServicesLocation
-    )
+    ).toGradleNotation
 
     val playServicesAuth = Dependency.VersionedDependency(
         group = "com.google.android.gms",
         name = "play-services-auth",
         version = Versions.playServicesAuth
-    )
+    ).toGradleNotation
 
     val places = Dependency.VersionedDependency(
         group = "com.google.android.libraries.places",
         name = "places",
         version = Versions.googlePlaces
-    )
+    ).toGradleNotation
 
     fun getAllPlayServicesDeps() = listOf(
         playServicesMaps,
         playServicesLocation,
         places,
         playServicesAuth
-    ).map { it.get() }
+    )
 }
