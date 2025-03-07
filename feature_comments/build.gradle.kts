@@ -58,25 +58,28 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    MediaDeps.getImageDeps().forEach { implementation(it) }
-    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
+    // Glide Dependencies
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    implementation(FirebaseDeps.firebaseFirestore)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

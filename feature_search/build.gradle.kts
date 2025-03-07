@@ -57,28 +57,29 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    implementation(GoogleAndroidDeps.playServicesMaps)
-    implementation(GoogleAndroidDeps.playServicesLocation)
-    implementation(GoogleAndroidDeps.places)
+    implementation(libs.bundles.play)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Version alignment for Firebase libraries
-    implementation(FirebaseDeps.firebaseFirestore)
 
-    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+
+    implementation(libs.bundles.navigation)
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

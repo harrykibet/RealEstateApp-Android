@@ -46,19 +46,21 @@ android {
 }
 
 dependencies {
-    MediaDeps.getAllMedia3Deps().forEach { implementation(it) }
+    implementation(libs.bundles.media3)
 
     implementation(project(ProjectModules.core))
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    implementation(FirebaseDeps.firebaseAnalytics)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

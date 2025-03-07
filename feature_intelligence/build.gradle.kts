@@ -57,21 +57,23 @@ android {
 }
 
 dependencies {
-    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
-    implementation(CoreDeps.material)
+    implementation(libs.bundles.android)
+    implementation(libs.material)
 
-    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
+    implementation(libs.bundles.lifecycle)
 
-    MLKitDeps.getAllMLKitDeps().forEach { implementation(it) }
+    implementation(libs.bundles.mlkit)
 
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }
