@@ -1,14 +1,14 @@
 plugins {
-    id(Plugins.androidApplication)
-    id(Plugins.kotlinAndroid)
-    id(Plugins.googleServices)
-    id(Plugins.firebaseCrashlytics)
-    id(Plugins.secretsPlugin)
-    id(Plugins.navigationSafeArgs)
-    id(Plugins.kapt)
-    id(Plugins.hilt)
-    id(Plugins.dokka)
-    id(Plugins.sonarQube)
+    id("com.android.application")
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    alias(libs.plugins.com.google.firebase.crashlytics)
+    alias(libs.plugins.com.google.gms.google.services)
+    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.org.sonarqube)
 }
 
 android {
@@ -55,41 +55,40 @@ android {
 }
 
 dependencies {
-    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
-    CoreDeps.getCoreUiDeps().forEach { implementation(it) }
-    implementation(CoreDeps.splashScreen)
+    implementation(libs.bundles.android)
+    implementation(libs.core.splashscreen)
 
     // Lifecycle Dependencies
-    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
+    implementation(libs.bundles.lifecycle)
 
     // Firebase Dependencies
-    implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 
     // Google Play Services
-    GoogleAndroidDeps.getAllPlayServicesDeps().forEach { implementation(it) }
+    implementation(libs.bundles.play)
 
     // EventBus
-    implementation(EventBusDeps.eventBus)
+    implementation(libs.eventbus)
 
     // Security Dependencies
-    SecurityDeps.getBouncyDeps().forEach { implementation(it) }
+    implementation(libs.bundles.bouncy)
 
     // Navigation Dependencies
-    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
+    implementation(libs.bundles.navigation)
 
     // Hilt Dependencies
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
-    HiltDeps.getAllHiltTestingDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.hilt.android.testing)
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 
-    // Media Libraries
-    MediaDeps.getImageDeps().forEach { implementation(it) }
-    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
+    // Glide Dependencies
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
     // Testing Dependencies
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    testImplementation(libs.bundles.testing)
+    androidTestImplementation(libs.bundles.androidTesting)
 
     // Project Modules
     ProjectModules.AllProjectModules.forEach { implementation(project(it)) }

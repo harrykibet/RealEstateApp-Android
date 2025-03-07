@@ -1,16 +1,16 @@
 plugins {
-    id(Plugins.kotlinAndroid) version PluginVersions.kotlin apply false
-    id(Plugins.kotlinJvm) version PluginVersions.kotlin apply false
-    id(Plugins.kapt) version PluginVersions.kotlin apply false
-    id(Plugins.androidLibrary) version PluginVersions.androidGradle apply false
-    id(Plugins.googleServices) version PluginVersions.googleServices apply false
-    id(Plugins.firebaseCrashlytics) version PluginVersions.firebaseCrashlytics apply false
-    id(Plugins.navigationSafeArgs) version PluginVersions.navigationSafeArgs apply false
-    id(Plugins.hilt) version PluginVersions.hilt apply false
-    id(Plugins.room) version PluginVersions.room apply false
-    id(Plugins.dokka) version PluginVersions.dokka apply false
-    id(Plugins.secretsPlugin) version PluginVersions.secretsPlugin apply false
-    id(Plugins.sonarQube) version PluginVersions.sonarQube apply false
+    id("com.android.application") version "8.8.2" apply false
+    alias(libs.plugins.org.jetbrains.kotlin.android)  apply false
+    alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
+    alias(libs.plugins.org.jetbrains.kotlin.kapt) apply false
+    alias(libs.plugins.com.google.gms.google.services) apply false
+    alias(libs.plugins.com.google.firebase.crashlytics) apply false
+    alias(libs.plugins.androidx.navigation.safeargs.kotlin) apply false
+    alias(libs.plugins.com.google.dagger.hilt.android) apply false
+    alias(libs.plugins.androidx.room) apply false
+    alias(libs.plugins.org.jetbrains.dokka) apply false
+    alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin) apply false
+    alias(libs.plugins.org.sonarqube) apply false
 }
 
 allprojects {
@@ -26,10 +26,17 @@ allprojects {
             exclude(group = "com.google.firebase", module = "protolite-well-known-types")
         }
 
-        afterEvaluate {
-            if (plugins.hasPlugin(Plugins.androidApplication) || plugins.hasPlugin(Plugins.androidLibrary)) {
-                extensions.findByType<com.android.build.gradle.internal.dsl.BaseAppModuleExtension>()?.apply {
-                    packaging.resources.excludes.addAll(Packaging.excludes)
+        allprojects {
+            subprojects {
+
+                afterEvaluate {
+                    if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+                        extensions.findByType<com.android.build.gradle.BaseExtension>()?.apply {
+                            packagingOptions {
+                                resources.excludes.addAll(Packaging.excludes)
+                            }
+                        }
+                    }
                 }
             }
         }
