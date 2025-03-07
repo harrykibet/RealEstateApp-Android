@@ -51,10 +51,10 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 }

@@ -51,37 +51,33 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    implementation(SecurityDeps.securityCrypto)
+    implementation(libs.security.crypto.ktx)
 
     // Google Cloud Dependencies (KMS & Secret Manager)
-    implementation(platform(GoogleCloudDeps.googleCloudBom)) // Version alignment for Google Cloud libraries
-    implementation(GoogleCloudDeps.googleCloudKms)
-    implementation(GoogleCloudDeps.googleSecretsManager)
+    implementation(platform(libs.google.cloud.bom)) // Version alignment for Google Cloud libraries
+    implementation(libs.google.cloud.kms)
+    implementation(libs.google.cloud.secretmanager)
 
     implementation(project(ProjectModules.core))
 
-    implementation(SecurityDeps.bouncyCastle)
-    implementation(SecurityDeps.bouncyCastlePkix)
+    implementation(libs.bundles.bouncy)
 
-    implementation(CachingDeps.caffeine)
+    implementation(libs.caffeine)
 
-    // Observability & Monitoring
-    implementation(AnalyticsDeps.openTelemetryApi)
-    implementation(AnalyticsDeps.openTelemetryExporter)
-    implementation(AnalyticsDeps.micrometer)
-    implementation(AnalyticsDeps.micrometerPrometheus)
-    implementation(AnalyticsDeps.conscrypt)
+    implementation(libs.bundles.analytics)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

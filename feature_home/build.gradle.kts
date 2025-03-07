@@ -59,36 +59,39 @@ android {
 
 dependencies {
 
-    CoreDeps.getCommonCoreDeps().forEach { implementation(it) }
-    CoreDeps.getCoreUiDeps().forEach { implementation(it) }
+    implementation(libs.bundles.android)
 
-    implementation(ComposeDeps.composeBom)
-    implementation(ComposeDeps.composeMaterial3)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.material3)
 
-    implementation(MediaDeps.media3UI)
-    implementation(MediaDeps.media3ExoPlayer)
-    implementation(MediaDeps.media3Hls)
-    MediaDeps.getImageDeps().forEach { implementation(it) }
-    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer.hls)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    implementation(FirebaseDeps.firebaseAuth)
-    implementation(FirebaseDeps.firebaseFirestore)
-    implementation(FirebaseDeps.firebaseStorage)
+    // Glide Dependencies
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
+    implementation(libs.bundles.navigation)
 
-    LifecycleDeps.getAllLifecycleDeps().forEach { implementation(it) }
+    implementation(libs.bundles.lifecycle)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

@@ -57,29 +57,32 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    implementation(FirebaseDeps.firebaseAuth)
-    implementation(FirebaseDeps.firebaseFirestore)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
 
-    implementation(GoogleAndroidDeps.playServicesAuth)
+    implementation(libs.play.services.auth)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
+    // Navigation Dependencies
+    implementation(libs.bundles.navigation)
 
     implementation(project(ProjectModules.uiComponents))
     implementation(project(ProjectModules.core))
 
-    implementation(EventBusDeps.eventBus)
+    implementation(libs.eventbus)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

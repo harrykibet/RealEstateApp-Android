@@ -57,28 +57,30 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    implementation(platform(ComposeDeps.composeBom))
-    implementation(ComposeDeps.composeMaterial3)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.material3)
 
-    implementation(platform(FirebaseDeps.firebaseBom)) // Use BOM for Firebase version alignment
-    implementation(FirebaseDeps.firebaseAuth)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
 
-    NavigationDeps.getAllNavigationDeps().forEach { implementation(it) }
+    implementation(libs.bundles.navigation)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 
-    implementation(EventBusDeps.eventBus)
+    implementation(libs.eventbus)
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))

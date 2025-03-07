@@ -57,29 +57,33 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
-    implementation(CoreDeps.swipeRefreshLayout)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.swiperefreshlayout)
 
-    DatabaseDeps.getRoomDeps().forEach { implementation(it) }
-    DatabaseDeps.getRoomKaptDeps().forEach { kapt(it) }
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    implementation(MediaDeps.media3UI)
-    implementation(MediaDeps.media3ExoPlayer)
-    implementation(MediaDeps.media3Hls)
-    MediaDeps.getImageDeps().forEach { implementation(it) }
-    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer.hls)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
-    implementation(FirebaseDeps.firebaseFirestore)
+    // Glide Dependencies
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
 
     implementation(project(ProjectModules.core))
     implementation(project(ProjectModules.uiComponents))
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

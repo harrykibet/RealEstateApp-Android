@@ -78,7 +78,6 @@ dependencies {
     implementation(libs.glide)
     kapt(libs.glide.compiler)
 
-
     implementation(libs.bundles.networking)
 
     androidTestImplementation(libs.bundles.androidTesting)
