@@ -1,9 +1,9 @@
 plugins {
-    id(Plugins.androidLibrary)
-    id(Plugins.kotlinAndroid)
-    id(Plugins.kapt)
-    id(Plugins.hilt)
-    id(Plugins.dokka)
+    alias(libs.plugins.com.android.library)
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.org.jetbrains.dokka)
 }
 
 android {
@@ -58,30 +58,33 @@ android {
 }
 
 dependencies {
-    implementation(CoreDeps.coreKtx)
-    implementation(CoreDeps.appCompat)
-    implementation(CoreDeps.material)
-    implementation(CoreDeps.testCoreKtx)
-    implementation(CoreDeps.workRuntimeKtx)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.core.testing)
+    implementation(libs.work.runtime.ktx)
 
-    implementation(AnalyticsDeps.androidMetrics)
-    implementation(AnalyticsDeps.appSet)
-    implementation(AnalyticsDeps.guava)
+    implementation(libs.metrics.performance)
+    implementation(libs.play.services.appset)
+    implementation(libs.guava)
 
     implementation(platform(FirebaseDeps.firebaseBom))
-    FirebaseDeps.getAllFirebaseDeps().forEach { implementation(it) }
+    implementation(libs.bundles.firebase)
 
-    implementation(MediaDeps.media3ExoPlayer)
-    implementation(MediaDeps.media3UI)
-    implementation(MediaDeps.ffmpeg)
-    MediaDeps.getImageDeps().forEach { implementation(it) }
-    MediaDeps.getImageKaptDeps().forEach { kapt(it) }
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.ffmpeg.kit.min.gpl)
+    // Glide Dependencies
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
-    NetworkDeps.getAllNetworkDeps().forEach { implementation(it) }
 
-    TestingDeps.getTestDeps().forEach { testImplementation(it) }
-    TestingDeps.getAndroidTestDeps().forEach { androidTestImplementation(it) }
+    implementation(libs.bundles.networking)
 
-    HiltDeps.getAllHiltDeps().forEach { implementation(it) }
-    HiltDeps.getAllHiltKaptDeps().forEach { kapt(it) }
+    androidTestImplementation(libs.bundles.androidTesting)
+    testImplementation(libs.bundles.testing)
+
+    // Hilt Dependencies
+    implementation(libs.bundles.hilt)
+    kapt(libs.bundles.hiltKapt)
 }

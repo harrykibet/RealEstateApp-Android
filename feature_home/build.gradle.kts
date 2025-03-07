@@ -1,10 +1,10 @@
 plugins {
-    id(Plugins.androidLibrary)
-    id(Plugins.kotlinAndroid)
-    id(Plugins.kapt)
-    id(Plugins.hilt)
-    id(Plugins.safeArgs)
-    id(Plugins.dokka)
+    alias(libs.plugins.com.android.library)
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
 }
 
 android {
