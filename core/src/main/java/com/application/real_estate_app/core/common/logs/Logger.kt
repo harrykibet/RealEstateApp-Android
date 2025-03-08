@@ -16,8 +16,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class Logger @Inject constructor(
-    private val firebaseCrashlytics: FirebaseCrashlytics,
-    private val firebaseRemoteConfig: IRemoteConfigManager
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : LoggerInterface {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
