@@ -68,12 +68,13 @@ dependencies {
     implementation(libs.play.services.appset)
     implementation(libs.guava)
 
-    implementation(platform(FirebaseDeps.firebaseBom))
+    implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
 
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.ffmpeg.kit.min.gpl)
+
     // Glide Dependencies
     implementation(libs.glide)
     kapt(libs.glide.compiler)
