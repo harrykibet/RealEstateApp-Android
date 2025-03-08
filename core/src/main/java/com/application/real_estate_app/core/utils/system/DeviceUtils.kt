@@ -10,7 +10,6 @@ import android.view.Display
 import androidx.core.app.ActivityManagerCompat
 import androidx.core.content.getSystemService
 import android.media.MediaCodecInfo
-import androidx.annotation.RequiresApi
 import com.application.real_estate_app.core.domain.interfaces.IDeviceUtils
 import com.application.real_estate_app.core.domain.models.DeviceInfo
 import javax.inject.Inject
@@ -47,8 +46,6 @@ class DeviceUtils @Inject constructor(
     }
 
     override fun supports10BitHdr(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-
         val codecList = MediaCodecList(MediaCodecList.ALL_CODECS)
         return codecList.codecInfos.any { codec ->
             codec.supportedTypes.any { mimeType ->
