@@ -12,7 +12,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
     }
 
     tasks.dokkaHtml.configure {
