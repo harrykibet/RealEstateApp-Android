@@ -6,6 +6,8 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version = 
 
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.0" }
 
+com-google-devtools-ksp = { id = "com.google.devtools.ksp", version = "2.1.10-1.0.31" }
+
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "2.0.0" }
 
 com-android-library = { id = "com.android.library", version = "8.8.2" }
@@ -167,7 +169,7 @@ hilt = [
 
 hiltKapt = [
     "androidx-hilt-hilt-compiler",
-    "hilt-android-compiler"
+    "hilt-compiler"
 ]
 
 testing = [
@@ -400,7 +402,7 @@ analysis-kotlin-descriptors = "org.jetbrains.dokka:analysis-kotlin-descriptors:1
 
 dokka-base = "org.jetbrains.dokka:dokka-base:1.9.0"
 
-com-google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
 
 kotlin-build-tools-impl = { module = "org.jetbrains.kotlin:kotlin-build-tools-impl" }
 

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.org.jetbrains.dokka)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
@@ -11,10 +11,6 @@ android {
     namespace = AndroidConfig.featureHomeNamespace
     compileSdk = AndroidConfig.compileSdk
 
-    kapt {
-        correctErrorTypes = true
-        useBuildCache = true
-    }
 
     tasks.dokkaHtml.configure {
         outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
@@ -70,7 +66,7 @@ dependencies {
 
     // Glide Dependencies
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.compiler)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
@@ -82,7 +78,7 @@ dependencies {
 
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     implementation(libs.bundles.navigation)
 
@@ -93,5 +89,5 @@ dependencies {
 
     // Hilt Dependencies
     implementation(libs.bundles.hilt)
-    kapt(libs.bundles.hiltKapt)
+    ksp(libs.bundles.hiltKapt)
 }

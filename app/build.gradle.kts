@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.com.google.firebase.crashlytics)
     alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.org.jetbrains.dokka)
     alias(libs.plugins.org.sonarqube)
@@ -81,11 +81,11 @@ dependencies {
     // Hilt Dependencies
     androidTestImplementation(libs.hilt.android.testing)
     implementation(libs.bundles.hilt)
-    kapt(libs.bundles.hiltKapt)
+    ksp(libs.bundles.hiltKapt)
 
     // Glide Dependencies
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.compiler)
 
     // Testing Dependencies
     testImplementation(libs.bundles.testing)
