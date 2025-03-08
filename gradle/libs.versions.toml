@@ -4,7 +4,7 @@
 
 [versions]
 
-kotlin = "2.1.10"
+kotlin = "2.0.0"
 
 androidx-hilt = "1.2.0"
 
@@ -107,7 +107,7 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.re
 
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"  }
 
-com-google-devtools-ksp = { id = "com.google.devtools.ksp", version = "2.1.10-1.0.31" }
+com-google-devtools-ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.21" }
 
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 
