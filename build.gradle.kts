@@ -3,7 +3,7 @@ plugins {
     id("com.android.library") version "8.8.2" apply false
     alias(libs.plugins.org.jetbrains.kotlin.android)  apply false
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
-    alias(libs.plugins.org.jetbrains.kotlin.kapt) apply false
+    alias(libs.plugins.com.google.devtools.ksp) apply false
     alias(libs.plugins.com.google.gms.google.services) apply false
     alias(libs.plugins.com.google.firebase.crashlytics) apply false
     alias(libs.plugins.androidx.navigation.safeargs.kotlin) apply false
