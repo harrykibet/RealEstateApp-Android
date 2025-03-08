@@ -19,7 +19,7 @@ allprojects {
         configurations.all {
             resolutionStrategy.eachDependency {
                 if (requested.group == "com.google.protobuf") {
-                    useVersion(Versions.protobuf) // Force latest Protobuf version
+                    useVersion("4.29.0") // Force latest Protobuf version
                 }
             }
 
@@ -42,7 +42,7 @@ allprojects {
             }
         }
 
-        apply(plugin = Plugins.sonarQube)
+        apply(plugin = "org.sonarqube")
 
         configure<org.sonarqube.gradle.SonarExtension> {
             properties {
