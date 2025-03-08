@@ -26,6 +26,11 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    hilt {
+        enableAggregatingTask = true
+    }
+
+
     buildTypes {
         release {
             isMinifyEnabled = false
