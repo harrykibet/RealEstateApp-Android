@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
