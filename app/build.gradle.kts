@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     alias(libs.plugins.com.google.firebase.crashlytics)
@@ -12,17 +12,17 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.appNamespace
-    compileSdk = AndroidConfig.compileSdk
+    namespace = "com.application.real_estate_app"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = AndroidConfig.applicationId
-        minSdk = AndroidConfig.minSdk
-        targetSdk = AndroidConfig.targetSdk
-        versionCode = AndroidConfig.versionCode
-        versionName = AndroidConfig.versionName
+        applicationId = "com.application.real_estate_app"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
 
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -35,8 +35,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -47,14 +47,19 @@ android {
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
-    kotlinOptions.jvmTarget = AndroidConfig.jvmTarget
+    kotlinOptions.jvmTarget = "17"
 
     packaging {
         resources {
-            excludes += Packaging.excludes
+            excludes += listOf("META-INF/DEPENDENCIES",
+                "META-INF/INDEX.LIST",
+                "META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+                "META-INF/versions/11/OSGI-INF/MANIFEST.MF",
+                "META-INF/COPYRIGHT.txt",
+                "/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }
@@ -98,7 +103,26 @@ dependencies {
     androidTestImplementation(libs.bundles.androidTesting)
 
     // Project Modules
-    ProjectModules.AllProjectModules.forEach { implementation(project(it)) }
+    implementation(projects.core)
+    implementation(projects.uiComponents)
+    implementation(projects.localization)
+    implementation(projects.security)
+    implementation(projects.featureService)
+    implementation(projects.featureSettings)
+    implementation(projects.featureAnalytics)
+    implementation(projects.featureMediaplayer)
+    implementation(projects.featureIntelligence)
+    implementation(projects.featurePayments)
+    implementation(projects.featureMarketplace)
+    implementation(projects.featureFavorites)
+    implementation(projects.featureChats)
+    implementation(projects.featureNotifications)
+    implementation(projects.featureComments)
+    implementation(projects.featureProperty)
+    implementation(projects.featureAuth)
+    implementation(projects.featureHome)
+    implementation(projects.featureSearch)
+    implementation(projects.featureProfile)
 }
 
 

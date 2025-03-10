@@ -1,30 +1,39 @@
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `kotlin-dsl` // Enables Kotlin for buildSrc (relies on embedded Kotlin)
-    kotlin("jvm") version "2.0.0"
-    alias(libs.plugins.com.android.library)
-    alias(libs.plugins.org.jetbrains.kotlin.android) // Use the same version as your project
 }
 
-repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-    maven("https://jitpack.io")
+// Configure the build-logic plugins to target JDK 17
+// This matches the JDK used to build the project, and is not related to what is running on device.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
-dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-}
-android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+dependencies {
+    compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.android.tools.common)
+    compileOnly(libs.compose.gradle.plugin)
+    compileOnly(libs.firebase.crashlytics.gradle.plugin)
+    compileOnly(libs.firebase.performance.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
+    compileOnly(libs.ksp.gradle.plugin)
+    compileOnly(libs.room.gradle.plugin)
+    compileOnly(libs.sonarqube.gradle.plugin)
+    implementation(libs.truth)
+}
+
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
     }
 }

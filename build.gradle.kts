@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application") version "8.8.2" apply false
-    id("com.android.library") version "8.8.2" apply false
+    alias(libs.plugins.com.android.application)  apply false
+    alias(libs.plugins.com.android.library) apply false
     alias(libs.plugins.org.jetbrains.kotlin.android)  apply false
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.com.google.devtools.ksp) apply false
@@ -34,7 +34,12 @@ allprojects {
                     if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
                         extensions.findByType<com.android.build.gradle.BaseExtension>()?.apply {
                             packagingOptions {
-                                resources.excludes.addAll(Packaging.excludes)
+                                resources.excludes.addAll(listOf( "META-INF/DEPENDENCIES",
+                                    "META-INF/INDEX.LIST",
+                                    "META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+                                    "META-INF/versions/11/OSGI-INF/MANIFEST.MF",
+                                    "META-INF/COPYRIGHT.txt",
+                                    "/META-INF/{AL2.0,LGPL2.1}"))
                             }
                         }
                     }

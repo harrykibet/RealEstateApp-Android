@@ -7,32 +7,32 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.coreNamespace
-    compileSdk = AndroidConfig.compileSdk
+    namespace = "com.application.real_estate_app.core"
+    compileSdk = 35
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     defaultConfig {
-        minSdk = AndroidConfig.minSdk
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
+        minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile( "proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
@@ -42,12 +42,17 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = AndroidConfig.jvmTarget
+        jvmTarget = "17"
     }
 
     packaging {
         resources {
-            excludes += Packaging.excludes
+            excludes += listOf("META-INF/DEPENDENCIES",
+                "META-INF/INDEX.LIST",
+                "META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+                "META-INF/versions/11/OSGI-INF/MANIFEST.MF",
+                "META-INF/COPYRIGHT.txt",
+                "/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }

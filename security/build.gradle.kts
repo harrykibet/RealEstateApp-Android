@@ -7,32 +7,32 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.securityNamespace
-    compileSdk = AndroidConfig.compileSdk
+    namespace = "com.application.real_estate_app.security"
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = AndroidConfig.minSdk
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
+        minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
@@ -42,11 +42,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = AndroidConfig.jvmTarget
-    }
-
-    packaging {
-        resources.excludes.addAll(Packaging.excludes)
+        jvmTarget = "17"
     }
 }
 
@@ -62,7 +58,7 @@ dependencies {
     implementation(libs.google.cloud.kms)
     implementation(libs.google.cloud.secretmanager)
 
-    implementation(project(ProjectModules.core))
+    implementation(projects.core)
 
     implementation(libs.bundles.bouncy)
 
