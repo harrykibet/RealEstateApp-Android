@@ -8,36 +8,32 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.featureCommentsNamespace
-    compileSdk = AndroidConfig.compileSdk
-
-    tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
-    }
-
-    buildFeatures {
-        viewBinding = true
-    }
+    namespace = "com.application.real_estate_app.feature_comments"
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = AndroidConfig.minSdk
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
+        minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
@@ -47,7 +43,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = AndroidConfig.jvmTarget
+        jvmTarget = "17"
     }
 }
 
@@ -67,8 +63,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
 
-    implementation(project(ProjectModules.core))
-    implementation(project(ProjectModules.uiComponents))
+    implementation(projects.uiComponents)
+    implementation(projects.core)
 
     androidTestImplementation(libs.bundles.androidTesting)
     testImplementation(libs.bundles.testing)

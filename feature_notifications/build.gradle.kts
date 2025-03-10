@@ -7,38 +7,32 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.featureNotificationsNamespace
-    compileSdk = AndroidConfig.compileSdk
-
-
-
-    tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
-    }
-
-    buildFeatures {
-        viewBinding = true
-    }
+    namespace = "com.application.real_estate_app.feature_notifications"
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = AndroidConfig.minSdk
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
+        minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    tasks.dokkaHtml.configure {
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
@@ -46,8 +40,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = AndroidConfig.jvmTarget
+        jvmTarget = "17"
     }
 }
 
@@ -56,8 +51,8 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(project(ProjectModules.core))
-    implementation(project(ProjectModules.uiComponents))
+    implementation(projects.uiComponents)
+    implementation(projects.core)
 
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)

@@ -7,32 +7,32 @@ plugins {
 }
 
 android {
-    namespace = AndroidConfig.featureMediaPlayerNamespace
-    compileSdk = AndroidConfig.compileSdk
+    namespace = "com.application.real_estate_app.feature_mediaplayer"
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = AndroidConfig.minSdk
-        testInstrumentationRunner = AndroidConfig.testInstrumentationRunner
-        consumerProguardFiles(AndroidConfig.proguardConsumerRulesFile)
+        minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir(AndroidConfig.dokkaPath))
+        outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(AndroidConfig.proguardOptimizationFile),
-                AndroidConfig.proguardRulesFile
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AndroidConfig.jvmTarget.toInt()))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
@@ -40,15 +40,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = AndroidConfig.jvmTarget
+        jvmTarget = "17"
     }
 }
 
 dependencies {
     implementation(libs.bundles.media3)
 
-    implementation(project(ProjectModules.core))
+    implementation(projects.core)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
