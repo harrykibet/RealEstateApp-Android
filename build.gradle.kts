@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.com.google.firebase.crashlytics) apply false
     alias(libs.plugins.androidx.navigation.safeargs.kotlin) apply false
     alias(libs.plugins.com.google.dagger.hilt.android) apply false
-    alias(libs.plugins.androidx.room) apply false
+    alias(libs.plugins.androidx.room)  apply false
     alias(libs.plugins.org.jetbrains.dokka) apply false
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin) apply false
     alias(libs.plugins.org.sonarqube) apply false
@@ -39,24 +39,6 @@ allprojects {
                         }
                     }
                 }
-            }
-        }
-
-        apply(plugin = "org.sonarqube")
-
-        configure<org.sonarqube.gradle.SonarExtension> {
-            properties {
-                property("sonar.projectKey", SonarQubeConfig.projectKey)
-                property("sonar.organization", SonarQubeConfig.organization)
-                property("sonar.host.url", SonarQubeConfig.hostUrl)
-                property("sonar.sourceEncoding", SonarQubeConfig.sourceEncoding)
-                property("sonar.sources", SonarQubeConfig.sources)
-                property("sonar.androidVariant", SonarQubeConfig.androidVariant)
-                property("sonar.exclusions", SonarQubeConfig.exclusions)
-                property("sonar.tests", SonarQubeConfig.tests)
-                property("sonar.java.binaries", SonarQubeConfig.javaBinaries)
-                property("sonar.junit.reportPaths", SonarQubeConfig.junitReportPaths)
-                property("sonar.coverage.jacoco.xmlReportPaths", SonarQubeConfig.jacocoReportPaths)
             }
         }
     }
