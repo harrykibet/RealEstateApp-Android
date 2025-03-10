@@ -62,6 +62,7 @@ android {
 dependencies {
     implementation(libs.bundles.android)
     implementation(libs.firebase.appcheck.debug)
+    implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.core.splashscreen)
 
     // Lifecycle Dependencies
