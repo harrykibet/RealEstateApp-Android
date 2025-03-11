@@ -6,9 +6,9 @@ plugins {
     alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.org.jetbrains.dokka)
-    alias(libs.plugins.org.sonarqube)
+    alias(libs.plugins.realestateapp.sonarqube)
 }
 
 android {

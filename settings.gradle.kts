@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -44,4 +45,3 @@ include(":feature_settings")
 include(":feature_service")
 include(":feature_analytics")
 include(":feature_mediaplayer")
-include(":build-logic:convention")
