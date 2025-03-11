@@ -30,6 +30,10 @@ android {
         enableAggregatingTask = true
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
 
     buildTypes {
         release {
