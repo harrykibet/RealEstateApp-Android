@@ -37,3 +37,24 @@ tasks {
         failOnWarning = true
     }
 }
+
+gradlePlugin {
+    plugins {
+        register("hilt") {
+            id = libs.plugins.realestateapp.hilt.get().pluginId
+            implementationClass = "HiltConventionPlugin"
+        }
+        register("androidRoom") {
+            id = libs.plugins.realestateapp.android.room.get().pluginId
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
+        register("androidFirebase") {
+            id = libs.plugins.realestateapp.android.application.firebase.get().pluginId
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
+        register("sonarqube") {
+            id = libs.plugins.realestateapp.sonarqube.get().pluginId
+            implementationClass = "SonarQubeConventionPlugin"
+        }
+    }
+}
