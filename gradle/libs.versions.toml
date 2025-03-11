@@ -157,6 +157,8 @@ realestateapp-android-room = { id = "com.application.real_estate_app.android.roo
 
 realestateapp-android-application-firebase = { id = "com.application.real_estate_app.android.application.firebase"}
 
+realestateapp-android-packaging = { id = "com.application.real_estate_app.android.packaging"}
+
 [bundles]
 android = [
     "core-ktx",

@@ -56,5 +56,9 @@ gradlePlugin {
             id = libs.plugins.realestateapp.sonarqube.get().pluginId
             implementationClass = "SonarQubeConventionPlugin"
         }
+        register("androidPackaging") {
+            id = libs.plugins.realestateapp.android.packaging.get().pluginId
+            implementationClass = "AndroidPackagingConventionPlugin"
+        }
     }
 }

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.android.packaging)
 }
 
 android {
@@ -43,17 +44,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    packaging {
-        resources {
-            excludes += listOf("META-INF/DEPENDENCIES",
-                "META-INF/INDEX.LIST",
-                "META-INF/versions/9/OSGI-INF/MANIFEST.MF",
-                "META-INF/versions/11/OSGI-INF/MANIFEST.MF",
-                "META-INF/COPYRIGHT.txt",
-                "/META-INF/{AL2.0,LGPL2.1}")
-        }
     }
 }
 
