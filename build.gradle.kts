@@ -17,12 +17,6 @@ plugins {
 allprojects {
     subprojects {
         configurations.all {
-            resolutionStrategy.eachDependency {
-                if (requested.group == "com.google.protobuf") {
-                    useVersion("4.29.0") // Force latest Protobuf version
-                }
-            }
-
             exclude(group = "com.google.protobuf", module = "protobuf-javalite")
             exclude(group = "com.google.firebase", module = "protolite-well-known-types")
         }
