@@ -19,6 +19,10 @@ android {
         outputDirectory.set(layout.buildDirectory.dir("dokka"))
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
