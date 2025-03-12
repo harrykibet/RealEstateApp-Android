@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.realestateapp.android.room)
+    alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.org.jetbrains.dokka)
 }
 
@@ -56,10 +56,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.swiperefreshlayout)
 
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
-
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.media3.exoplayer.hls)
@@ -76,8 +72,4 @@ dependencies {
 
     androidTestImplementation(libs.bundles.androidTesting)
     testImplementation(libs.bundles.testing)
-
-    // Hilt Dependencies
-    implementation(libs.bundles.hilt)
-    ksp(libs.bundles.hiltKapt)
 }
