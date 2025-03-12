@@ -5,9 +5,8 @@ plugins {
     alias(libs.plugins.com.google.firebase.crashlytics)
     alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
-    alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.sonarqube)
     alias(libs.plugins.realestateapp.android.packaging)
 }
@@ -85,8 +84,6 @@ dependencies {
 
     // Hilt Dependencies
     androidTestImplementation(libs.hilt.android.testing)
-    implementation(libs.bundles.hilt)
-    ksp(libs.bundles.hiltKapt)
 
     // Glide Dependencies
     implementation(libs.glide)
