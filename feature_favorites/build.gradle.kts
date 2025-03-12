@@ -63,6 +63,8 @@ dependencies {
     // Glide Dependencies
     implementation(libs.glide)
     ksp(libs.glide.compiler)
+    
+    implementation(libs.bundles.navigation)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
