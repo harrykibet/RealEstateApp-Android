@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
-    alias(libs.plugins.com.google.firebase.crashlytics)
-    alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.sonarqube)
     alias(libs.plugins.realestateapp.android.packaging)
@@ -59,16 +58,16 @@ android {
 
 dependencies {
     implementation(libs.bundles.android)
-    implementation(libs.firebase.appcheck.debug)
-    implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.core.splashscreen)
 
     // Lifecycle Dependencies
     implementation(libs.bundles.lifecycle)
 
     // Firebase Dependencies
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
+    implementation(libs.firebase.config)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.appcheck.debug)
+    implementation(libs.firebase.appcheck.playintegrity)
 
     // Google Play Services
     implementation(libs.bundles.play)

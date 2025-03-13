@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.realestateapp.android.room)
     alias(libs.plugins.realestateapp.hilt)
+    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.org.jetbrains.dokka)
 }
 
@@ -66,7 +67,6 @@ dependencies {
     
     implementation(libs.bundles.navigation)
 
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
 
     implementation(projects.uiComponents)

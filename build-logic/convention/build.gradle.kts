@@ -49,8 +49,8 @@ gradlePlugin {
             implementationClass = "AndroidRoomConventionPlugin"
         }
         register("androidFirebase") {
-            id = libs.plugins.realestateapp.android.application.firebase.get().pluginId
-            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+            id = libs.plugins.realestateapp.firebase.get().pluginId
+            implementationClass = "FirebaseConventionPlugin"
         }
         register("sonarqube") {
             id = libs.plugins.realestateapp.sonarqube.get().pluginId
@@ -59,6 +59,10 @@ gradlePlugin {
         register("androidPackaging") {
             id = libs.plugins.realestateapp.android.packaging.get().pluginId
             implementationClass = "AndroidPackagingConventionPlugin"
+        }
+        register("androidTesting") {
+            id = libs.plugins.realestateapp.android.testing.get().pluginId
+            implementationClass = "AndroidTestingConventionPlugin"
         }
     }
 }
