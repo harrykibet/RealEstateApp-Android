@@ -9,52 +9,17 @@ plugins {
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.sonarqube)
     alias(libs.plugins.realestateapp.android.packaging)
+    alias(libs.plugins.realestateapp.android.config)
 }
 
 android {
     namespace = "com.application.real_estate_app"
-    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.application.real_estate_app"
-        minSdk = 26
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
     }
-
-    hilt {
-        enableAggregatingTask = true
-    }
-
-    buildFeatures {
-        viewBinding = true
-    }
-
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    tasks.dokkaHtml.configure {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
-    }
-
-    kotlinOptions.jvmTarget = "17"
 }
 
 dependencies {

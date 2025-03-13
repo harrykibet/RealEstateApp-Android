@@ -26,6 +26,7 @@ dependencies {
     compileOnly(libs.firebase.performance.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
+    compileOnly(libs.dokka.gradle.plugin)
     compileOnly(libs.room.gradle.plugin)
     compileOnly(libs.sonarqube.gradle.plugin)
     implementation(libs.truth)
@@ -63,6 +64,10 @@ gradlePlugin {
         register("androidTesting") {
             id = libs.plugins.realestateapp.android.testing.get().pluginId
             implementationClass = "TestingConventionPlugin"
+        }
+        register("androidConfig") {
+            id = libs.plugins.realestateapp.android.config.get().pluginId
+            implementationClass = "AndroidCommonConfigPlugin"
         }
     }
 }
