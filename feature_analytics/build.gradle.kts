@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.dokka)
     alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.android.room)
+    alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.hilt)
 }
 
@@ -61,7 +62,4 @@ dependencies {
 
     implementation(projects.uiComponents)
     implementation(projects.core)
-
-    androidTestImplementation(libs.bundles.androidTesting)
-    testImplementation(libs.bundles.testing)
 }

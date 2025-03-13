@@ -62,7 +62,7 @@ gradlePlugin {
         }
         register("androidTesting") {
             id = libs.plugins.realestateapp.android.testing.get().pluginId
-            implementationClass = "AndroidTestingConventionPlugin"
+            implementationClass = "TestingConventionPlugin"
         }
     }
 }

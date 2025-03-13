@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.android.packaging)
+    alias(libs.plugins.realestateapp.android.testing)
 }
 
 android {
@@ -70,7 +71,4 @@ dependencies {
     ksp(libs.glide.compiler)
 
     implementation(libs.bundles.networking)
-
-    androidTestImplementation(libs.bundles.androidTesting)
-    testImplementation(libs.bundles.testing)
 }
