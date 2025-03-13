@@ -14,7 +14,6 @@ class FirebaseConventionPlugin : Plugin<Project> {
             // Apply Firebase-related plugins only in the app module
             if (isAppModule) {
                 pluginManager.apply("com.google.gms.google-services")
-                pluginManager.apply("com.google.firebase.firebase-perf")
                 pluginManager.apply("com.google.firebase.crashlytics")
             }
 

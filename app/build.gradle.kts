@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.sonarqube)
@@ -87,10 +88,6 @@ dependencies {
     // Glide Dependencies
     implementation(libs.glide)
     ksp(libs.glide.compiler)
-
-    // Testing Dependencies
-    testImplementation(libs.bundles.testing)
-    androidTestImplementation(libs.bundles.androidTesting)
 
     // Project Modules
     implementation(projects.core)

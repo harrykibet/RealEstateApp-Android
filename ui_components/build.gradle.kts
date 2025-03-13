@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.android.testing)
 }
 
 android {
@@ -53,7 +54,4 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-
-    androidTestImplementation(libs.bundles.androidTesting)
-    testImplementation(libs.bundles.testing)
 }
