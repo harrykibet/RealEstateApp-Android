@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
-    alias(libs.plugins.org.jetbrains.dokka)
     alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
@@ -18,6 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.application.real_estate_app"
         versionCode = 1
+        targetSdk = 35
         versionName = "1.0"
     }
 }
