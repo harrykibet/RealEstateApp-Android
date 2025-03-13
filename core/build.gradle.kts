@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.realestateapp.android.packaging)
 }
@@ -58,7 +59,6 @@ dependencies {
     implementation(libs.play.services.appset)
     implementation(libs.guava)
 
-    implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
 
     implementation(libs.media3.exoplayer)
