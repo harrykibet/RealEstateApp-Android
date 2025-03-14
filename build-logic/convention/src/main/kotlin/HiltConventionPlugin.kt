@@ -1,6 +1,8 @@
+import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 class HiltConventionPlugin : Plugin<Project> {
@@ -11,6 +13,7 @@ class HiltConventionPlugin : Plugin<Project> {
             dependencies {
                 "ksp"(lib.findLibrary("hilt.compiler").get())
             }
+
 
             // Add support for Jvm Module, base on org.jetbrains.kotlin.jvm
             pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
@@ -25,6 +28,11 @@ class HiltConventionPlugin : Plugin<Project> {
                 dependencies {
                     "implementation"(lib.findLibrary("hilt.android").get())
                 }
+            }
+
+            // ✅ Enable Aggregating Task for KSP
+            extensions.configure<KspExtension> {
+                arg("dagger.hilt.generateAggregatedDeps", "true")
             }
         }
     }
