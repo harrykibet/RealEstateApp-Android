@@ -32,7 +32,7 @@ class HiltConventionPlugin : Plugin<Project> {
 
             // ✅ Enable Aggregating Task for KSP
             extensions.configure<KspExtension> {
-                arg("dagger.hilt.generateAggregatedDeps", "true")
+                arg("dagger.hilt.android.experimental.enableAggregatingTask", "true")
             }
         }
     }
