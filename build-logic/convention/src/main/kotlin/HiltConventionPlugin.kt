@@ -29,11 +29,6 @@ class HiltConventionPlugin : Plugin<Project> {
                     "implementation"(lib.findLibrary("hilt.android").get())
                 }
             }
-
-            // ✅ Enable Aggregating Task for KSP
-            extensions.configure<KspExtension> {
-                arg("dagger.hilt.android.experimental.enableAggregatingTask", "true")
-            }
         }
     }
 }
