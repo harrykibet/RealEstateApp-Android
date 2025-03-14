@@ -19,6 +19,10 @@ android {
         targetSdk = 35
         versionName = "1.0"
     }
+
+    hilt {
+        enableAggregatingTask = true
+    }
 }
 
 dependencies {
