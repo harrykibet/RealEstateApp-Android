@@ -39,11 +39,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 jvmToolchain(17) // Sets JVM target
             }
 
-            // Ensure Hilt aggregation task is enabled
-            extensions.configure<KspExtension> {
-                arg("dagger.hilt.android.plugin.enableAggregatingTask", "true")
-            }
-
             tasks.withType<DokkaTask>().configureEach {
                 outputDirectory.set(layout.buildDirectory.dir("dokka"))
             }
