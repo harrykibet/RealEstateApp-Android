@@ -16,12 +16,11 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             val isAppModule = plugins.hasPlugin("com.android.application")
 
             if (isAppModule) {
-                pluginManager.apply("com.android.application") // ✅ Apply correct plugin
                 extensions.configure<ApplicationExtension> {
                     configureAndroidCommon()
                 }
             } else {
-                pluginManager.apply("com.android.library") // ✅ Apply correct plugin
+                pluginManager.apply("com.android.library")
                 extensions.configure<LibraryExtension> {
                     configureAndroidCommon()
                     defaultConfig {
@@ -33,6 +32,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.android")
             pluginManager.apply("org.jetbrains.dokka")
             pluginManager.apply("dagger.hilt.android.plugin")
+            pluginManager.apply("com.google.devtools.ksp")
 
             // ✅ Configure KotlinOptions properly
             extensions.configure<KotlinAndroidProjectExtension> {

@@ -2,7 +2,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    `kotlin-dsl` // Enables Kotlin for buildSrc (relies on embedded Kotlin)
+    `kotlin-dsl` // Enables Kotlin for build-logic (relies on embedded Kotlin)
 }
 
 // Configure the build-logic plugins to target JDK 17
