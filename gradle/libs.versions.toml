@@ -433,7 +433,7 @@ truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 leakcanary-android-instrumentation = { group = "com.squareup.leakcanary", name = "leakcanary-android-instrumentation", version.ref = "leakcanary" }
 
 
-# Dependencies of the included buildLogic
+# Dependencies of the included build-logic
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
