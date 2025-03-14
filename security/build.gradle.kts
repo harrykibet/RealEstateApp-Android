@@ -17,7 +17,7 @@ dependencies {
     implementation(libs.security.crypto.ktx)
 
     // Google Cloud Dependencies (KMS & Secret Manager)
-    implementation(platform(libs.google.cloud.bom)) // Version alignment for Google Cloud libraries
+    implementation(platform(libs.google.cloud.bom))
     implementation(libs.google.cloud.kms)
     implementation(libs.google.cloud.secretmanager)
 
