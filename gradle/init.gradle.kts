@@ -55,6 +55,10 @@ val ciConfig = BuildConfig(
 // Select configuration based on environment
 val config: BuildConfig = if (isCI) ciConfig else localConfig
 
+// Also set them as system properties explicitly
+System.setProperty("org.gradle.jvmargs", config.jvmArgs.joinToString(" "))
+System.setProperty("kotlin.daemon.jvmargs", config.kotlinArgs.joinToString(" "))
+
 gradle.settingsEvaluated {
     // Apply JVM args to Gradle daemon
     gradle.startParameter.systemPropertiesArgs = mutableMapOf(
