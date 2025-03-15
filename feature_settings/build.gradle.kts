@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_settings"
+    namespace = "com.application.real_estate_app.feature.feature_settings"
 }
 
 dependencies {

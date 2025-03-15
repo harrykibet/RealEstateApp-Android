@@ -5,6 +5,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       vars:
+        CI: "true"  # Define CI environment variable for Kotlin daemon optimization
         PACKAGE_NAME: "io.codemagic.androidquicksample"
       groups:
         - google_play      # Stores Google Play API credentials
