@@ -3,6 +3,9 @@ stages:
 
 image: cirrusci/android-sdk:30  # ✅ Android SDK Docker image
 
+variables:
+  CI: "true"  # ✅ Define CI environment variable for Kotlin daemon optimization
+
 before_script:
   - apt-get update && apt-get install -y openjdk-17-jdk  # ✅ Ensure Java 17 is installed
   - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"

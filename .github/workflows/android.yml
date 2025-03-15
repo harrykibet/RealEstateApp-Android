@@ -7,13 +7,16 @@ on:
     branches: [ "main" ]
     types: [ opened, synchronize, reopened ]
 
+env:
+  CI: true  # Setting CI environment variable
+
 jobs:
   setup:
     name: Setup & Define Modules
     runs-on: ubuntu-latest
     outputs:
       modules: "core feature_home feature_property feature_auth feature_search feature_profile ui_components feature_analytics feature_mediaplayer app localization security feature_intelligence feature_payments feature_marketplace feature_favorites feature_chats feature_notifications feature_comments feature_settings feature_service"
-      
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

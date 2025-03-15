@@ -27,6 +27,8 @@ pipelines:
           - gradle
           - android-sdk
         script:
+          - echo "Setting CI environment variable..."
+          - export CI="true"  # ✅ Define CI environment variable for Kotlin Daemon
           - echo "Running Gradle build..."
           - ./gradlew clean build --stacktrace
         artifacts:
@@ -44,6 +46,7 @@ pipelines:
         deployment: production
         script:
           - echo "Deploying to production..."
+          - export CI="true"  # ✅ Ensure CI variable is set in deployment
           - ./gradlew assembleRelease
           - echo "Uploading APK or AAB to production..."
           # Replace with actual deployment commands (e.g., uploading to Play Store)
