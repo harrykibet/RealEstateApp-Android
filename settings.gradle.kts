@@ -1,6 +1,3 @@
-// Apply the init script at the beginning
-apply(from = file("gradle/init.gradle.kts"))
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
