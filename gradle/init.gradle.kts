@@ -1,3 +1,5 @@
+
+// Add [ CI = true ] to your CI/CD workflow as an environment variable to pass this check
 val isCI = System.getenv("CI")?.toBooleanStrict() ?: false
 
 println("Initializing Gradle with CI mode ${if (isCI) "enabled" else "disabled"}")
