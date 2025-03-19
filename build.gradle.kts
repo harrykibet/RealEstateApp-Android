@@ -23,10 +23,3 @@ allprojects {
     }
 }
 
-tasks.register("printJvmArgs") {
-    doLast {
-        println("🔥 Applied JVM Args: " + System.getProperty("org.gradle.jvmargs"))
-        println("🔥 Kotlin Daemon Args: " + System.getProperty("kotlin.daemon.jvmargs"))
-    }
-}
-

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="dark_gray">#FF444444</color>
+    <color name="light_gray">#FFCCCCCC</color>
+    <color name="green">#00FF00</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue">#0000FF</color>
+    <color name="green_dark">#013220</color>
+    <color name="green_light">#00FF00</color>
+    <color name="red">#FF0000</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="gray">#808080</color>
+    <color name="selected_color">@color/colorOnPrimary</color>  <!-- Example: Pink for selected items -->
+    <color name="default_color">#808080</color>   <!-- Example: Grey for unselected items -->
+    <color name="unselected_color">@color/dark_gray</color> <!-- Color for inactive state -->
+    <color name="shadow_color">@android:color/holo_blue_dark</color>
+    <color name="action_button_color">@color/black</color> <!-- Black for day mode -->
+    <color name="button_background">#FFFFFF</color> <!-- Light color -->
+    <color name="button_tint">#000000</color> <!-- Dark text/icon color -->
+    <color name="color_primary">#FFFFFF</color>
+    <color name="colorPrimary">#FFFFFF</color>"
+    <color name="addProperty_background">@color/white</color>
+    <color name="colorSecondary">#FFFFFF</color>
+    <color name="colorOnPrimary">#000000</color>
+    <color name="editTextBackground">@color/light_gray</color>
+    <color name="strokeColor">@color/light_gray</color>
+    <color name="colorButton">#3700B3</color>
+    <color name="sendButton">@color/black</color>
+    <color name="required">@color/colorOnPrimarySoft</color>
+    <color name="optional">@color/colorOnPrimarySoft</color>
+    <color name="colorOnPrimarySoft">#333333</color>
+    <color name="colorAccent">#FF4081</color> <!-- Pink accent -->
+    <color name="colorPrimaryDark">#FFFFFF</color> <!-- White -->
+    <color name="colorOnSecondary">#000000</color> <!-- Color for text/icons on secondary -->
+</resources>
