@@ -29,55 +29,55 @@ dependencies {
     implementation(libs.bundles.android)
     implementation(libs.core.splashscreen)
 
-    // Lifecycle Dependencies
     implementation(libs.bundles.lifecycle)
 
-    // Firebase Dependencies
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.appcheck.playintegrity)
 
-    // Google Play Services
     implementation(libs.bundles.play)
 
-    // EventBus
     implementation(libs.eventbus)
 
-    // Security Dependencies
     implementation(libs.bundles.bouncy)
 
-    // Navigation Dependencies
     implementation(libs.bundles.navigation)
 
-    // Hilt Dependencies
     androidTestImplementation(libs.hilt.android.testing)
 
-    // Glide Dependencies
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 
-    // Project Modules
-    implementation(projects.core)
-    implementation(projects.uiComponents)
+    implementation(projects.core.interfaces)
+    implementation(projects.core.model)
+    implementation(projects.core.data)
+    implementation(projects.core.common)
+    implementation(projects.core.notifications)
+    implementation(projects.core.analytics)
+    implementation(projects.core.network)
+    implementation(projects.core.utils)
+    implementation(projects.core.ui)
+    implementation(projects.core.domain)
+
+
     implementation(projects.localization)
     implementation(projects.security)
-    implementation(projects.featureService)
-    implementation(projects.featureSettings)
-    implementation(projects.featureAnalytics)
-    implementation(projects.featureMediaplayer)
-    implementation(projects.featureIntelligence)
-    implementation(projects.featurePayments)
-    implementation(projects.featureMarketplace)
-    implementation(projects.featureFavorites)
-    implementation(projects.featureChats)
-    implementation(projects.featureNotifications)
-    implementation(projects.featureComments)
-    implementation(projects.featureProperty)
-    implementation(projects.featureAuth)
-    implementation(projects.featureHome)
-    implementation(projects.featureSearch)
-    implementation(projects.featureProfile)
+
+    implementation(projects.feature.service)
+    implementation(projects.feature.settings)
+    implementation(projects.feature.player)
+    implementation(projects.feature.intelligence)
+    implementation(projects.feature.payments)
+    implementation(projects.feature.market)
+    implementation(projects.feature.favorites)
+    implementation(projects.feature.chats)
+    implementation(projects.feature.comments)
+    implementation(projects.feature.property)
+    implementation(projects.feature.auth)
+    implementation(projects.feature.home)
+    implementation(projects.feature.search)
+    implementation(projects.feature.profile)
 }
 
 

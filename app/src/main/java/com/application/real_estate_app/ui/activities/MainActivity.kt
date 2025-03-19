@@ -14,9 +14,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.application.real_estate_app.R
-import com.application.real_estate_app.core.common.events.LoginEvent
-import com.application.real_estate_app.core.common.events.LogoutEvent
-import com.application.real_estate_app.core.common.misc.Consts
+import com.application.real_estate_app.core_common.events.LoginEvent
+import com.application.real_estate_app.core_common.events.LogoutEvent
+import com.application.real_estate_app.core_common.misc.Consts
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
 import com.application.real_estate_app.utils.FireStoreConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView

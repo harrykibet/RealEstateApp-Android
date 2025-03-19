@@ -18,7 +18,7 @@
         </compositeConfiguration>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="17" />
+        <option name="gradleJvm" value="jbr-21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -26,25 +26,33 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/feature_analytics" />
-            <option value="$PROJECT_DIR$/feature_auth" />
-            <option value="$PROJECT_DIR$/feature_chats" />
-            <option value="$PROJECT_DIR$/feature_comments" />
-            <option value="$PROJECT_DIR$/feature_favorites" />
-            <option value="$PROJECT_DIR$/feature_home" />
-            <option value="$PROJECT_DIR$/feature_intelligence" />
-            <option value="$PROJECT_DIR$/feature_marketplace" />
-            <option value="$PROJECT_DIR$/feature_mediaplayer" />
-            <option value="$PROJECT_DIR$/feature_notifications" />
-            <option value="$PROJECT_DIR$/feature_payments" />
-            <option value="$PROJECT_DIR$/feature_profile" />
-            <option value="$PROJECT_DIR$/feature_property" />
-            <option value="$PROJECT_DIR$/feature_search" />
-            <option value="$PROJECT_DIR$/feature_service" />
-            <option value="$PROJECT_DIR$/feature_settings" />
+            <option value="$PROJECT_DIR$/core/analytics" />
+            <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/interfaces" />
+            <option value="$PROJECT_DIR$/core/model" />
+            <option value="$PROJECT_DIR$/core/network" />
+            <option value="$PROJECT_DIR$/core/notifications" />
+            <option value="$PROJECT_DIR$/core/ui" />
+            <option value="$PROJECT_DIR$/core/utils" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/auth" />
+            <option value="$PROJECT_DIR$/feature/chats" />
+            <option value="$PROJECT_DIR$/feature/comments" />
+            <option value="$PROJECT_DIR$/feature/favorites" />
+            <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/intelligence" />
+            <option value="$PROJECT_DIR$/feature/market" />
+            <option value="$PROJECT_DIR$/feature/payments" />
+            <option value="$PROJECT_DIR$/feature/player" />
+            <option value="$PROJECT_DIR$/feature/profile" />
+            <option value="$PROJECT_DIR$/feature/property" />
+            <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/feature/service" />
+            <option value="$PROJECT_DIR$/feature/settings" />
             <option value="$PROJECT_DIR$/localization" />
             <option value="$PROJECT_DIR$/security" />
-            <option value="$PROJECT_DIR$/ui_components" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
