@@ -1,7 +1,7 @@
 package com.application.real_estate_app.security.data.sources.remote
 
 import android.os.Build
-import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.core_interface.LoggerInterface
 import com.application.real_estate_app.security.domain.interfaces.IGoogleCloudSecretsManager
 import com.application.real_estate_app.security.domain.models.CacheKey
 import com.application.real_estate_app.security.domain.models.SecretId
