@@ -15,7 +15,10 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(libs.firebase.firestore)
+    implementation(libs.bundles.firebase)
 
     implementation(projects.core.model)
+    implementation(projects.core.interfaces)
+    implementation(projects.core.common)
+    implementation(projects.core.utils)
 }

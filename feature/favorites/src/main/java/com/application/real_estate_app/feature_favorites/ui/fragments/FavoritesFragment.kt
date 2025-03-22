@@ -1,6 +1,5 @@
 package com.application.real_estate_app.feature_favorites.ui.fragments
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,16 +10,17 @@ import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_interface.AuthRepoInterface
+import com.application.real_estate_app.core_interface.IAuthRepository
 import com.application.real_estate_app.core_interface.IExoplayer
 import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_ui.adapters.PropertyAdapter
 import com.application.real_estate_app.core_ui.navigation.DeepLinks
+import com.application.real_estate_app.core_ui.viewmodels.PropertyViewModel
 import com.application.real_estate_app.feature_favorites.R
-import com.application.real_estate_app.feature_favorites.ui.adapters.FavoritesAdapter
 import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
-import com.application.real_estate_app.feature_favorites.ui.viewmodels.FavoritesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 
 @UnstableApi
@@ -29,15 +29,15 @@ class FavoritesFragment : Fragment() {
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var favoritesAdapter: FavoritesAdapter
+    private lateinit var propertyAdapter: PropertyAdapter
 
     @Inject
-    lateinit var authChecker: AuthRepoInterface // Inject Authentication API
+    lateinit var authChecker: IAuthRepository // Inject Authentication API
 
     @Inject
     lateinit var exoPlayer: IExoplayer  // Inject ExoPlayer Media Player
 
-    private val favoritesViewModel: FavoritesViewModel by viewModels()
+    private val propertyViewModel: PropertyViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +55,7 @@ class FavoritesFragment : Fragment() {
         setupObservers()
 
         if (savedInstanceState == null) {
-            favoritesViewModel.loadLikedProperties { exception ->
+            propertyViewModel.loadLikedProperties { exception ->
                 Toast.makeText(requireContext(),
                     getString(R.string.error_loading_liked_properties, exception.message),
                     Toast.LENGTH_SHORT).show()
@@ -65,9 +65,9 @@ class FavoritesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val currentUserId = authChecker.getCurrentUserId()
-        favoritesAdapter = FavoritesAdapter(
-            viewModel = favoritesViewModel,
-            onClick = { propertyId -> favoritesViewModel.fetchPropertyById(propertyId)
+        propertyAdapter = PropertyAdapter(
+            viewModel = propertyViewModel,
+            onClick = { propertyId -> propertyViewModel.fetchPropertyById(propertyId)
             { exception ->
                 Toast.makeText(requireContext(),
                     getString(R.string.error_fetching_property, exception.message),
@@ -80,14 +80,14 @@ class FavoritesFragment : Fragment() {
 
         binding.favoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = favoritesAdapter
-            favoritesAdapter.attachRecyclerViewScrollListener(this)
+            adapter = propertyAdapter
+            propertyAdapter.attachRecyclerViewScrollListener(this)
         }
     }
 
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            favoritesViewModel.loadLikedProperties{ exception ->
+            propertyViewModel.loadLikedProperties{ exception ->
                 Toast.makeText(requireContext(),
                     getString(R.string.error_loading_liked_properties, exception.message),
                     Toast.LENGTH_SHORT).show()
@@ -96,7 +96,7 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        favoritesViewModel.likedProperties.observe(viewLifecycleOwner) { properties ->
+        propertyViewModel.likedProperties.observe(viewLifecycleOwner) { properties ->
             updateUI(properties)
         }
     }
@@ -106,7 +106,7 @@ class FavoritesFragment : Fragment() {
             binding.emptyStateTextView.visibility = View.VISIBLE
         } else {
             binding.emptyStateTextView.visibility = View.GONE
-            favoritesAdapter.submitList(properties)
+            propertyAdapter.submitList(properties)
         }
         binding.swipeRefreshLayout.isRefreshing = false
     }
@@ -114,11 +114,9 @@ class FavoritesFragment : Fragment() {
     // Navigate via deep link
     private fun navigateToComments(propertyId: String, currentUserId: String?) {
         // Construct the deep link URI using the constant
-        val uri = Uri.parse(
-            DeepLinks.COMMENT_FRAGMENT
+        val uri = DeepLinks.COMMENT_FRAGMENT
             .replace(DeepLinks.PROPERTY_ID_PLACEHOLDER, propertyId)
-            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING)
-        )
+            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING).toUri()
 
         // Use NavController to navigate with the deep link
         findNavController().navigate(uri)

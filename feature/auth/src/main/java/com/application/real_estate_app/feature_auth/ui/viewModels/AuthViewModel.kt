@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.application.real_estate_app.core_interface.IAuthRepository
 import com.application.real_estate_app.core_model.User
 import com.application.real_estate_app.core_model.UserType
-import com.application.real_estate_app.feature_auth.domain.interfaces.IAuthRepo
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val googleSignInClient: GoogleSignInClient,
-    private val authApi: IAuthRepo
+    private val authApi: IAuthRepository
 ) : ViewModel() {
 
     companion object Signing {const val RC_SIGN_IN = 9001}
@@ -163,7 +163,7 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    private suspend fun sendEmailVerification() {
+    private fun sendEmailVerification() {
         viewModelScope.launch {
             try {
                 authApi.getCurrentUser()?.sendEmailVerification()?.await()

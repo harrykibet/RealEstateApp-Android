@@ -1,7 +1,6 @@
 package com.application.real_estate_app.feature_home.ui.fragments
 
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,18 +13,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_interface.AuthRepoInterface
+import com.application.real_estate_app.core_interface.IAuthRepository
 import com.application.real_estate_app.core_interface.IExoplayer
 import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_ui.adapters.PropertyAdapter
 import com.application.real_estate_app.core_ui.navigation.DeepLinks
+import com.application.real_estate_app.core_ui.viewmodels.LikeStatus
 import com.application.real_estate_app.feature_home.R
-import com.application.real_estate_app.feature_home.ui.adapters.PropertyAdapter
 import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
 import com.application.real_estate_app.feature_home.ui.viewModels.HomeViewModel
-import com.application.real_estate_app.feature_home.ui.viewModels.LikeStatus
-import com.application.real_estate_app.feature_home.ui.viewModels.PropertyViewModel
+import com.application.real_estate_app.core_ui.viewmodels.PropertyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 @UnstableApi
 @AndroidEntryPoint
@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
     private lateinit var propertyAdapter: PropertyAdapter
 
     @Inject
-    lateinit var authApi: AuthRepoInterface
+    lateinit var authApi: IAuthRepository
     @Inject
     lateinit var exoPlayer: IExoplayer
     @Inject
@@ -164,11 +164,9 @@ class HomeFragment : Fragment() {
     // Navigate via deep link
     private fun navigateToComments(propertyId: String, currentUserId: String?) {
         // Construct the deep link URI using the constant
-        val uri = Uri.parse(
-            DeepLinks.COMMENT_FRAGMENT
+        val uri = DeepLinks.COMMENT_FRAGMENT
             .replace(DeepLinks.PROPERTY_ID_PLACEHOLDER, propertyId)
-            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING)
-        )
+            .replace(DeepLinks.USER_ID_PLACEHOLDER, currentUserId ?: Consts.EMPTY_STRING).toUri()
 
         // Use NavController to navigate with the deep link
         findNavController().navigate(uri)

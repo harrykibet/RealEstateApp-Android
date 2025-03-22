@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
     alias(libs.plugins.realestateapp.android.testing)
+    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
 }
 
@@ -18,6 +19,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    implementation(libs.bundles.firebase)
 
     implementation(projects.core.interfaces)
     implementation(projects.core.common)

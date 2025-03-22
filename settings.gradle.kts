@@ -25,7 +25,6 @@ dependencyResolutionManagement {
 rootProject.name = "RealEstateApp"
 
 include(":app")
-include(":security")
 include(":localization")
 
 
@@ -55,3 +54,9 @@ include(":core:data")
 include(":core:domain")
 include(":core:model")
 include(":core:interfaces")
+include(":core:database")
+include(":core:security")
+include(":core:datastore")
+include(":core:datastore-proto")
+include(":benchmark")
+include(":benchmark:baselineprofile")

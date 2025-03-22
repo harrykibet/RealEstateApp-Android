@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.realestateapp.android.packaging)
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -18,6 +19,14 @@ android {
         versionCode = 1
         targetSdk = 35
         versionName = "1.0"
+    }
+    buildTypes {
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+        }
     }
 
     hilt {
@@ -43,41 +52,47 @@ dependencies {
     implementation(libs.bundles.bouncy)
 
     implementation(libs.bundles.navigation)
+    implementation(libs.androidx.profileinstaller)
 
     androidTestImplementation(libs.hilt.android.testing)
 
     implementation(libs.glide)
+    "baselineProfile"(project(":benchmark:baselineprofile"))
     ksp(libs.glide.compiler)
 
-    implementation(projects.core.interfaces)
-    implementation(projects.core.model)
-    implementation(projects.core.data)
-    implementation(projects.core.common)
-    implementation(projects.core.notifications)
-    implementation(projects.core.analytics)
-    implementation(projects.core.network)
-    implementation(projects.core.utils)
+
     implementation(projects.core.ui)
+    implementation(projects.core.data)
+    implementation(projects.core.utils)
+    implementation(projects.core.model)
     implementation(projects.core.domain)
+    implementation(projects.core.common)
+    implementation(projects.core.network)
+    implementation(projects.core.security)
+    implementation(projects.core.database)
+    implementation(projects.core.datastore)
+    implementation(projects.core.analytics)
+    implementation(projects.core.interfaces)
+    implementation(projects.core.notifications)
+    implementation(projects.core.datastoreProto)
 
 
-    implementation(projects.localization)
-    implementation(projects.security)
-
-    implementation(projects.feature.service)
-    implementation(projects.feature.settings)
-    implementation(projects.feature.player)
-    implementation(projects.feature.intelligence)
-    implementation(projects.feature.payments)
-    implementation(projects.feature.market)
-    implementation(projects.feature.favorites)
-    implementation(projects.feature.chats)
-    implementation(projects.feature.comments)
-    implementation(projects.feature.property)
     implementation(projects.feature.auth)
     implementation(projects.feature.home)
+    implementation(projects.feature.chats)
+    implementation(projects.feature.player)
+    implementation(projects.feature.market)
     implementation(projects.feature.search)
+    implementation(projects.feature.service)
     implementation(projects.feature.profile)
+    implementation(projects.feature.comments)
+    implementation(projects.feature.property)
+    implementation(projects.feature.settings)
+    implementation(projects.feature.payments)
+    implementation(projects.feature.favorites)
+    implementation(projects.feature.intelligence)
+
+    implementation(projects.localization)
 }
 
 
