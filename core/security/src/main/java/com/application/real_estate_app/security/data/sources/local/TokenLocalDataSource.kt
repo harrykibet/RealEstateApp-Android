@@ -5,6 +5,7 @@ import com.application.real_estate_app.core_common.errors.Result
 import com.application.real_estate_app.security.domain.interfaces.ITokenLocalDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
 
 class TokenLocalDataSource(
     private val encryptedPrefs: SharedPreferences
@@ -15,7 +16,7 @@ class TokenLocalDataSource(
     }
 
     override suspend fun saveToken(token: String) = withContext(Dispatchers.IO) {
-        encryptedPrefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
+        encryptedPrefs.edit { putString(KEY_AUTH_TOKEN, token) }
         Result.Success(Unit)
     }
 
@@ -24,7 +25,7 @@ class TokenLocalDataSource(
     }
 
     override suspend fun clearToken() = withContext(Dispatchers.IO) {
-        encryptedPrefs.edit().remove(KEY_AUTH_TOKEN).apply()
+        encryptedPrefs.edit { remove(KEY_AUTH_TOKEN) }
         Result.Success(Unit)
     }
 }
