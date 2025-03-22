@@ -13,4 +13,15 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+
+    implementation(libs.bundles.lifecycle)
+
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
+
+    implementation(libs.media3.common)
+    implementation(libs.media3.ui)
+
+    implementation(projects.core.interfaces)
+    implementation(projects.core.model)
 }

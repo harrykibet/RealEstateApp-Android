@@ -1,7 +1,5 @@
 package com.application.real_estate_app.feature_property.di
 
-import com.application.real_estate_app.feature_property.data.sources.remote.RemoteDataSource
-import com.application.real_estate_app.feature_property.domain.interfaces.IRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

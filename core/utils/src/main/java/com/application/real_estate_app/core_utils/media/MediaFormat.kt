@@ -43,6 +43,9 @@ enum class MediaFormat(val extension: String, val mimeType: String) {
         val VIDEO_FORMATS = setOf(MP4, MKV, AVI, MOV, FLV, WEBM)
         val AUDIO_FORMATS = setOf(MP3, WAV, FLAC, AAC, OGG)
 
+        const val MEDIA_TYPE_IMAGES = "images"
+        const val MEDIA_TYPE_VIDEOS = "videos"
+
         /**
          * Finds a `MediaFormat` by file extension.
          */

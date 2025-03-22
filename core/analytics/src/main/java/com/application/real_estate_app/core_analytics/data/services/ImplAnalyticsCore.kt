@@ -2,7 +2,7 @@ package com.application.real_estate_app.core_analytics.data.services
 
 import com.application.real_estate_app.core_analytics.data.repositories.AnalyticsRepository
 import com.application.real_estate_app.core_interface.AnalyticsRepoInterface
-import com.application.real_estate_app.core_interface.AuthRepoInterface
+import com.application.real_estate_app.core_interface.IAuthRepository
 import com.application.real_estate_app.core_interface.IDeviceUtils
 import com.application.real_estate_app.core_interface.ILocationUtils
 import com.application.real_estate_app.core_model.AnalyticsEvent
@@ -12,7 +12,7 @@ class ImplAnalyticsCore @Inject constructor(
     private val analyticsApi: AnalyticsRepository,
     private val deviceUtils: IDeviceUtils,
     private val locationUtils: ILocationUtils,
-    private val authApi: AuthRepoInterface
+    private val authApi: IAuthRepository
 ) : AnalyticsRepoInterface {
 
     override suspend fun logEvent(

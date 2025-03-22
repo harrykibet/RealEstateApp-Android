@@ -5,13 +5,12 @@ import androidx.lifecycle.LiveData
 import com.application.real_estate_app.core_model.Property
 import com.application.real_estate_app.feature_property.data.entities.PropertyDraftEntity
 import com.application.real_estate_app.feature_property.data.sources.local.LocalDataSource
-import com.application.real_estate_app.feature_property.data.sources.remote.RemoteDataSource
 import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyRepository
 import javax.inject.Inject
 
 class PropertyRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: IPropertyRepository
 ) : IPropertyRepository {
 
     // Local Draft Operations

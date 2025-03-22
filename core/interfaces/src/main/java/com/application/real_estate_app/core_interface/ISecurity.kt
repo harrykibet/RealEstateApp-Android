@@ -1,5 +1,7 @@
 package com.application.real_estate_app.core_interface
 
+import com.application.real_estate_app.core_common.errors.Result
+
 /**
  * Defines security-related operations such as encryption, decryption, signing, and verification.
  */

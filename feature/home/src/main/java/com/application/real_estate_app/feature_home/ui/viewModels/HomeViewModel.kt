@@ -4,15 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.application.real_estate_app.core_interface.IPropertyRepository
 import com.application.real_estate_app.core_model.Property
-import com.application.real_estate_app.feature_home.domain.interfaces.IHomeRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val api: IHomeRepo
+    private val api: IPropertyRepository
 ) : ViewModel() {
 
     private val _propertiesLiveData = MutableLiveData<List<Property>>()

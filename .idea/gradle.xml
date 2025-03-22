@@ -23,17 +23,23 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/benchmark" />
+            <option value="$PROJECT_DIR$/benchmark/baselineprofile" />
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/analytics" />
             <option value="$PROJECT_DIR$/core/common" />
             <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/database" />
+            <option value="$PROJECT_DIR$/core/datastore" />
+            <option value="$PROJECT_DIR$/core/datastore-proto" />
             <option value="$PROJECT_DIR$/core/domain" />
             <option value="$PROJECT_DIR$/core/interfaces" />
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/notifications" />
+            <option value="$PROJECT_DIR$/core/security" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/core/utils" />
             <option value="$PROJECT_DIR$/feature" />
@@ -52,7 +58,6 @@
             <option value="$PROJECT_DIR$/feature/service" />
             <option value="$PROJECT_DIR$/feature/settings" />
             <option value="$PROJECT_DIR$/localization" />
-            <option value="$PROJECT_DIR$/security" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
