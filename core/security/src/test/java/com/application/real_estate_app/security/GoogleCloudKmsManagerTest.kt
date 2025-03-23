@@ -1,8 +1,8 @@
 package com.application.real_estate_app.security
 
 import android.util.Base64
-import com.application.real_estate_app.core.domain.interfaces.IRemoteConfigManager
-import com.application.real_estate_app.core.domain.interfaces.LoggerInterface
+import com.application.real_estate_app.core_interface.IRemoteConfigManager
+import com.application.real_estate_app.core_interface.LoggerInterface
 import com.application.real_estate_app.security.data.sources.remote.GoogleCloudKmsManager
 import com.application.real_estate_app.security.utils.exceptions.CryptoOperationException
 import com.application.real_estate_app.security.utils.exceptions.GoogleKmsException

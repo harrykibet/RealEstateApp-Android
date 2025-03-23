@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -10,27 +11,36 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidCommonConfigPlugin : Plugin<Project> {
+    private var isDynamicFeatureModule: Boolean = false
     override fun apply(target: Project) {
         with(target) {
             val isAppModule = plugins.hasPlugin("com.android.application")
+            isDynamicFeatureModule = plugins.hasPlugin("com.android.dynamic-feature")
 
-            if (isAppModule) {
-                extensions.configure<ApplicationExtension> {
-                    configureAndroidCommon()
+            when {
+                isAppModule -> {
+                    extensions.configure<ApplicationExtension> {
+                        configureAndroidCommon()
+                    }
                 }
-            } else {
-                pluginManager.apply("com.android.library")
-                extensions.configure<LibraryExtension> {
-                    configureAndroidCommon()
-                    defaultConfig {
-                        consumerProguardFiles("consumer-rules.pro") // ✅ Only for library modules
+                isDynamicFeatureModule -> {
+                    extensions.configure<DynamicFeatureExtension> {
+                        configureAndroidCommon()
+                    }
+                }
+                else -> {
+                    pluginManager.apply("com.android.library")
+                    extensions.configure<LibraryExtension> {
+                        configureAndroidCommon()
+                        defaultConfig {
+                            consumerProguardFiles("consumer-rules.pro") // ✅ Only for library modules
+                        }
                     }
                 }
             }
 
             pluginManager.apply("org.jetbrains.kotlin.android")
             pluginManager.apply("org.jetbrains.dokka")
-            pluginManager.apply("dagger.hilt.android.plugin")
             pluginManager.apply("com.google.devtools.ksp")
 
             // ✅ Configure KotlinOptions properly
@@ -64,10 +74,13 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
         buildTypes {
             getByName("release") {
                 isMinifyEnabled = false
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
+                // ✅ Dynamic feature modules will inherit from app module
+                if (!isDynamicFeatureModule) {
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
             }
         }
     }
