@@ -27,7 +27,6 @@ rootProject.name = "RealEstateApp"
 include(":app")
 include(":localization")
 
-
 include(":feature:home")
 include(":feature:auth")
 include(":feature:profile")
@@ -43,6 +42,8 @@ include(":feature:settings")
 include(":feature:service")
 include(":feature:player")
 
+include(":benchmark")
+include(":benchmark:baselineprofile")
 
 include(":core:analytics")
 include(":core:network")
@@ -57,6 +58,10 @@ include(":core:interfaces")
 include(":core:database")
 include(":core:security")
 include(":core:datastore")
+include(":core:designsystem")
+include(":core:testing")
 include(":core:datastore-proto")
-include(":benchmark")
-include(":benchmark:baselineprofile")
+
+include(":compliance")
+include(":legal")
+include(":lint")

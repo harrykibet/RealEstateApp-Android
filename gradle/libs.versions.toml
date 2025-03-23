@@ -127,6 +127,7 @@ realestateapp-android-packaging = { id = "com.application.real_estate_app.androi
 realestateapp-android-testing = { id = "com.application.real_estate_app.android.testing"}
 realestateapp-android-config = { id = "com.application.real_estate_app.android.config"}
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "androidGradlePlugin" }
 
 
 
@@ -414,6 +415,9 @@ security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx
 bcprov-jdk18on = {group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncy"}
 bcpkix-jdk18on = {group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncy"}
 
+# BenchMark and BaselineProfile
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
 # Google Cloud
 google-cloud-bom = "com.google.cloud:libraries-bom:26.55.0"
@@ -448,7 +452,5 @@ ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devt
 room-gradle-plugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
 sonarqube-gradle-plugin = { group = "org.sonarqube", name = "org.sonarqube.gradle.plugin", version = "6.0.0.5145" }
 dokka-gradle-plugin = {group = "org.jetbrains.dokka", name = "dokka-gradle-plugin", version.ref = "dokka"}
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
-androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
-androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
+
 

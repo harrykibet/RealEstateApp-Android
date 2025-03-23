@@ -27,7 +27,12 @@ android {
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
+        release{
+            // Ensure Baseline Profile is fresh for release builds.
+            baselineProfile.automaticGenerationDuringBuild = true
+        }
     }
+    dynamicFeatures += setOf(":legal", ":compliance")
 
     hilt {
         enableAggregatingTask = true
@@ -57,9 +62,9 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
 
     implementation(libs.glide)
-    "baselineProfile"(project(":benchmark:baselineprofile"))
     ksp(libs.glide.compiler)
 
+    baselineProfile(projects.benchmark.baselineprofile)
 
     implementation(projects.core.ui)
     implementation(projects.core.data)
@@ -68,11 +73,13 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.network)
+    implementation(projects.core.testing)
     implementation(projects.core.security)
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.analytics)
     implementation(projects.core.interfaces)
+    implementation(projects.core.designsystem)
     implementation(projects.core.notifications)
     implementation(projects.core.datastoreProto)
 
@@ -92,7 +99,17 @@ dependencies {
     implementation(projects.feature.favorites)
     implementation(projects.feature.intelligence)
 
+    implementation(projects.lint)
     implementation(projects.localization)
+}
+
+baselineProfile {
+    // Don't build on every iteration of a full assemble.
+    // Instead enable generation directly for the release build variant.
+    automaticGenerationDuringBuild = false
+
+    // Make use of Dex Layout Optimizations via Startup Profiles
+    dexLayoutOptimization = true
 }
 
 
