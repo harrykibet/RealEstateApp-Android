@@ -4,7 +4,7 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.application.real_estate_app.core_interface.IRemoteConfigManager
+import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

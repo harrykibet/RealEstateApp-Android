@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.real_estate_app.core_interface.ICommentsRepository
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
+import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
 import com.application.real_estate_app.core_model.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch

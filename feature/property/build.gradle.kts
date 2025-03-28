@@ -25,11 +25,9 @@ dependencies {
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 
-    implementation(projects.core.interfaces)
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.common)
-    implementation(projects.core.utils)
 
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)

@@ -17,7 +17,7 @@ import com.application.real_estate_app.core_ui.R
 import com.application.real_estate_app.core_ui.databinding.PropertyItemBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core_interface.IExoplayer
+import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.core_model.Property
 import com.application.real_estate_app.core_ui.viewmodels.PropertyViewModel
 

@@ -27,9 +27,9 @@ dependencies {
 
     implementation(libs.firebase.firestore)
 
-    implementation(projects.core.interfaces)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.ui)
 }

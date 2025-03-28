@@ -3,7 +3,7 @@ package com.application.real_estate_app.core_common.logs
 import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.io.File
 import java.io.FileWriter

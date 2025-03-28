@@ -1,10 +1,10 @@
 package com.application.real_estate_app.core_data.repositories
 
-import com.application.real_estate_app.core_interface.IAuthRepository
 import com.application.real_estate_app.core_common.errors.Errors
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.db_names.FirestoreCollections
-import com.application.real_estate_app.core_interface.INetworkHandler
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
+import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

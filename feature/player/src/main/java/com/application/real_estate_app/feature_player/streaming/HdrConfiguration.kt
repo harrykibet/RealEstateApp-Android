@@ -2,7 +2,7 @@ package com.application.real_estate_app.feature_player.streaming
 
 import android.graphics.PixelFormat
 import android.os.Build
-import com.application.real_estate_app.core_interface.IDeviceUtils
+import com.application.real_estate_app.core_common.interfaces.IDeviceUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 

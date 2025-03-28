@@ -11,7 +11,9 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidCommonConfigPlugin : Plugin<Project> {
+
     private var isDynamicFeatureModule: Boolean = false
+
     override fun apply(target: Project) {
         with(target) {
             val isAppModule = plugins.hasPlugin("com.android.application")
@@ -33,7 +35,8 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                     extensions.configure<LibraryExtension> {
                         configureAndroidCommon()
                         defaultConfig {
-                            consumerProguardFiles("consumer-rules.pro") // ✅ Only for library modules
+                            // ✅ Only for library modules
+                            consumerProguardFiles("consumer-rules.pro")
                         }
                     }
                 }

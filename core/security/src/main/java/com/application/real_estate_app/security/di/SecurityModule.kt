@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.application.real_estate_app.core_interface.ISecurity
 import com.application.real_estate_app.security.data.repositories.SecurityRepository
 import com.application.real_estate_app.security.domain.interfaces.ISecurityRepo
+import com.application.real_estate_app.security.domain.interfaces.ISecurity
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -18,7 +18,6 @@ dependencies {
     implementation(libs.bundles.firebase)
 
     implementation(projects.core.model)
-    implementation(projects.core.interfaces)
     implementation(projects.core.common)
-    implementation(projects.core.utils)
+    implementation(projects.core.network)
 }

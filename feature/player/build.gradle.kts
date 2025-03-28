@@ -13,9 +13,10 @@ android {
 dependencies {
     implementation(libs.bundles.media3)
 
-    implementation(projects.core.interfaces)
-    implementation(projects.core.utils)
     implementation(projects.core.common)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
+    implementation(projects.core.network)
 
     implementation(libs.firebase.analytics)
 }

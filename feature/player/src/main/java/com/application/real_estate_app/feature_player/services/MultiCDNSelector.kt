@@ -1,7 +1,7 @@
 package com.application.real_estate_app.feature_player.services
 
-import com.application.real_estate_app.core_interface.INetworkUtils
-import com.application.real_estate_app.core_interface.IRemoteConfigManager
+import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_network.interfaces.INetworkUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -29,9 +29,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
 
-    implementation(projects.core.interfaces)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.ui)
 

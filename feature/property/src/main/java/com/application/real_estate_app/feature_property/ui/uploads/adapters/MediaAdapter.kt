@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
-import com.application.real_estate_app.core_utils.media.MediaFileUtils
+import com.application.real_estate_app.core_common.media.MediaFileUtils
 import com.bumptech.glide.Glide
 import com.application.real_estate_app.feature_property.R
 

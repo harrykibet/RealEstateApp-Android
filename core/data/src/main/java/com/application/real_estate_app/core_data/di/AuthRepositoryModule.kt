@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.di
 
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 import com.application.real_estate_app.core_data.repositories.AuthRepository
-import com.application.real_estate_app.core_interface.IAuthRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

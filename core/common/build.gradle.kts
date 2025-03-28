@@ -15,9 +15,16 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
+    implementation(libs.bundles.firebase)
+
     implementation(libs.androidx.test.core.ktx)
+    implementation(libs.work.runtime.ktx)
 
     implementation(libs.firebase.crashlytics)
 
-    implementation(projects.core.interfaces)
+    implementation(libs.ffmpeg.kit.min.gpl)
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
+
+    implementation(projects.core.model)
 }

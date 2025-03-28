@@ -1,12 +1,12 @@
 package com.application.real_estate_app.feature_search.data.sources.remote
 
 import com.application.real_estate_app.core_common.errors.Errors
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.db_entities.PropertyEntity
 import com.application.real_estate_app.core_data.db_names.FirestoreCollections
 import com.application.real_estate_app.core_data.db_names.FirestoreFields
 import com.application.real_estate_app.core_data.mappers.toDomainModel
-import com.application.real_estate_app.core_interface.INetworkHandler
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.Property
 import com.application.real_estate_app.feature_search.domain.interfaces.IRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore

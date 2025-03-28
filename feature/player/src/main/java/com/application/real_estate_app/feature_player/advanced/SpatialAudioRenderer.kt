@@ -6,7 +6,7 @@ import android.media.Spatializer
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioSink
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import java.lang.Exception
 import javax.inject.Inject
 
