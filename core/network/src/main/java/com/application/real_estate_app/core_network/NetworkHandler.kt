@@ -5,8 +5,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import com.application.real_estate_app.core_common.errors.Errors
-import com.application.real_estate_app.core_interface.INetworkHandler
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
+import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

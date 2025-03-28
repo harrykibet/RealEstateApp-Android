@@ -1,7 +1,6 @@
 package com.application.real_estate_app.security.domain.interfaces
 
 import com.application.real_estate_app.core_common.errors.Result
-import com.application.real_estate_app.core_interface.CryptMode
 
 /**
  * Defines security repository operations for handling encryption, decryption, signing, verification,

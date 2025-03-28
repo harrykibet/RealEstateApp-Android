@@ -1,6 +1,7 @@
 package com.application.real_estate_app.core_network.di
 
-import com.application.real_estate_app.core_interface.INetworkUtils
+import com.application.real_estate_app.core_network.NetworkUtils
+import com.application.real_estate_app.core_network.interfaces.INetworkUtils
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,5 +13,5 @@ import javax.inject.Singleton
 abstract class NetworkUtilsModule {
     @Binds
     @Singleton
-    abstract fun bindNetworkUtils(networkUtils: com.application.real_estate_app.core_network.NetworkUtils) : INetworkUtils
+    abstract fun bindNetworkUtils(networkUtils: NetworkUtils) : INetworkUtils
 }

@@ -28,6 +28,14 @@ android {
             isDebuggable = false
         }
         release{
+            signingConfigs {
+                getByName("debug") {
+                    storeFile = file(rootProject.extra["myValue"] as String)
+                    storePassword = "2001birth"
+                    keyAlias = "key0"
+                    keyPassword = "2001birth"
+                }
+            }
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
@@ -68,7 +76,6 @@ dependencies {
 
     implementation(projects.core.ui)
     implementation(projects.core.data)
-    implementation(projects.core.utils)
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.common)
@@ -78,7 +85,6 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.analytics)
-    implementation(projects.core.interfaces)
     implementation(projects.core.designsystem)
     implementation(projects.core.notifications)
     implementation(projects.core.datastoreProto)

@@ -6,7 +6,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.ui.PlayerView
-import com.application.real_estate_app.core_interface.IExoplayer
+import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.feature_player.streaming.ContentPreloader
 import javax.inject.Inject
 import javax.inject.Singleton

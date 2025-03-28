@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.application.real_estate_app.core_common.events.LogoutEvent
-import com.application.real_estate_app.core_interface.IAuthRepository
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 import com.application.real_estate_app.feature_profile.R
 import com.application.real_estate_app.feature_profile.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint

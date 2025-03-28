@@ -2,10 +2,10 @@ package com.application.real_estate_app.core_analytics.data.repositories
 
 import com.application.real_estate_app.core_analytics.domain.interfaces.IAnalyticsRepo
 import com.application.real_estate_app.core_common.errors.Errors
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.db_names.FirestoreCollections
 import com.application.real_estate_app.core_data.db_names.FirestoreFields
-import com.application.real_estate_app.core_interface.INetworkHandler
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.AnalyticsEvent
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore

@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
-import com.application.real_estate_app.core_utils.system.DeviceUtils
+import com.application.real_estate_app.core_common.system.DeviceUtils
 import com.application.real_estate_app.feature_player.streaming.HdrConfiguration
 import javax.inject.Inject
 

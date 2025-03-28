@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.application.real_estate_app.core_interface.IMediaCompressor
-import com.application.real_estate_app.core_interface.LoggerInterface
-import com.application.real_estate_app.core_utils.media.MediaFileUtils
+import com.application.real_estate_app.core_common.interfaces.IMediaCompressor
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
+import com.application.real_estate_app.core_common.media.MediaFileUtils
 import com.application.real_estate_app.feature_property.R
 import com.application.real_estate_app.feature_property.databinding.FragmentMediaSelectionBinding
 import com.application.real_estate_app.feature_property.ui.uploads.adapters.MediaAdapter

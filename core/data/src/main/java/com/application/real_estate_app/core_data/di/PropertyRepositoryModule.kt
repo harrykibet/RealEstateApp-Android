@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.di
 
+import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
 import com.application.real_estate_app.core_data.repositories.PropertyRepository
-import com.application.real_estate_app.core_interface.IPropertyRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

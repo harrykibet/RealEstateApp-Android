@@ -10,8 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_interface.IAuthRepository
-import com.application.real_estate_app.core_interface.IExoplayer
+import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.core_model.Property
 import com.application.real_estate_app.core_ui.adapters.PropertyAdapter
 import com.application.real_estate_app.core_ui.navigation.DeepLinks
@@ -21,6 +20,7 @@ import com.application.real_estate_app.feature_favorites.databinding.FragmentFav
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 
 
 @UnstableApi

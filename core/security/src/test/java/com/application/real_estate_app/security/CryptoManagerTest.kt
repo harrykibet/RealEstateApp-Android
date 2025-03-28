@@ -1,8 +1,8 @@
 package com.application.real_estate_app.security
 
 import android.util.Base64
-import com.application.real_estate_app.core_interface.LoggerInterface
 import com.application.real_estate_app.core_common.errors.Result
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.security.data.sources.local.CryptoManager
 import io.mockk.*
 import kotlinx.coroutines.runBlocking

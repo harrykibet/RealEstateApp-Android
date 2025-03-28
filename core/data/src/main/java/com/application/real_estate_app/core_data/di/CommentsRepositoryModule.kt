@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.di
 
+import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
 import com.application.real_estate_app.core_data.repositories.CommentsRepository
-import com.application.real_estate_app.core_interface.ICommentsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

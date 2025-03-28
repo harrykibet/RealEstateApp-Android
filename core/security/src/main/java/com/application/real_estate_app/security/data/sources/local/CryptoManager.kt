@@ -3,9 +3,9 @@ package com.application.real_estate_app.security.data.sources.local
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import com.application.real_estate_app.core_interface.LoggerInterface
 import com.application.real_estate_app.security.domain.interfaces.ICryptoManager
 import com.application.real_estate_app.core_common.errors.Result
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.KeyPairGenerator

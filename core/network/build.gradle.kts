@@ -22,6 +22,5 @@ dependencies {
 
     implementation(libs.bundles.firebase)
 
-    implementation(projects.core.interfaces)
     implementation(projects.core.common)
 }

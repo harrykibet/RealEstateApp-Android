@@ -13,9 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_interface.IAuthRepository
-import com.application.real_estate_app.core_interface.IExoplayer
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.core_ui.adapters.PropertyAdapter
 import com.application.real_estate_app.core_ui.navigation.DeepLinks
 import com.application.real_estate_app.core_ui.viewmodels.LikeStatus
@@ -26,6 +24,8 @@ import com.application.real_estate_app.core_ui.viewmodels.PropertyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 
 @UnstableApi
 @AndroidEntryPoint

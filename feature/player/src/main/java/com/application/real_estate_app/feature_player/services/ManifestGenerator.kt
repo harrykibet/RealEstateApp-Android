@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_player.services
 
-import com.application.real_estate_app.core_interface.IDeviceUtils
+import com.application.real_estate_app.core_common.interfaces.IDeviceUtils
 import javax.inject.Inject
 
 // Dynamic manifest adjustments

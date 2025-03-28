@@ -1,12 +1,12 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_common.errors.Errors
+import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.db_entities.CommentEntity
 import com.application.real_estate_app.core_data.db_names.FirestoreCollections
 import com.application.real_estate_app.core_data.db_names.FirestoreFields
-import com.application.real_estate_app.core_interface.ICommentsRepository
-import com.application.real_estate_app.core_interface.INetworkHandler
-import com.application.real_estate_app.core_interface.LoggerInterface
+import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
+import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.Comment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

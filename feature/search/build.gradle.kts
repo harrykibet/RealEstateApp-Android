@@ -21,8 +21,8 @@ dependencies {
 
     implementation(libs.bundles.navigation)
 
-    implementation(projects.core.interfaces)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.network)
     implementation(projects.core.common)
 }
