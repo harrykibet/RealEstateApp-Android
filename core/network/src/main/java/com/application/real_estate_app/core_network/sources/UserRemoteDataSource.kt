@@ -4,31 +4,38 @@ import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_model.User
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_network.interfaces.IUserRemoteDataSource
+import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRemoteDataSource @Inject constructor(
-    private val db: FirebaseFirestore, // Injected via DI
-    private val logger: LoggerInterface, // Injected via DI
-    private val network: INetworkHandler // Injected via DI
+    private val firestore: FirebaseFirestore, // Renamed for clarity
+    private val logger: LoggerInterface,
+    private val network: INetworkHandler
 ) : IUserRemoteDataSource {
-    override suspend fun getUserInfo(userId: String) : User {
-        // Fetch user data from FireStore if not cached
-        firestore.collection(FirestoreCollections.USERS)
-            .document(comment!!.userId!!)
-            .get()
-            .addOnSuccessListener { document ->
-                val user = document.toObject(User::class.java)
-                if (user != null) {
-                    userCache[comment.userId] = user // Cache the user data
-                    holder.bind(comment, user)
-                } else {
-                    holder.bind(comment, null) // Pass null if user data is not found
-                }
-            }
-            .addOnFailureListener {
-                holder.bind(comment, null) // Handle failure by binding with null user
-            }
-    }
 
+    override suspend fun getUserById(userId: String): User? {
+        if (userId.isBlank()) {
+            logger.e("${this::class.simpleName}: Invalid userId provided.")
+            return null
+        }
+
+        return network.safeApiCallSuspend(
+            apiCall = {
+                val snapshot = firestore.collection(FirestoreCollections.USERS)
+                    .document(userId)
+                    .get()
+                    .await()
+                val user = snapshot.toObject(User::class.java)
+
+                logger.d("${this::class.simpleName}: Successfully fetched user for ID: $userId")
+                user
+            },
+            onFailure = { e ->
+                logger.e("${this::class.simpleName}: Error fetching user by ID $userId - ${e.message ?: "Unknown error"}")
+                null
+            }
+        )
+    }
 }

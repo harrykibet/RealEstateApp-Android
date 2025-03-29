@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
+import com.application.real_estate_app.core_data.interfaces.IUserRepository
 import com.application.real_estate_app.core_model.Comment
+import com.application.real_estate_app.core_model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
     private val api: ICommentsRepository,
+    private val userRepo: IUserRepository,
     private val logger: LoggerInterface
 ) : ViewModel() {
 
@@ -28,6 +31,8 @@ class CommentsViewModel @Inject constructor(
 
     private val _noCommentsPlaceholderVisibility = MutableLiveData<Int>()
     val noCommentsPlaceholderVisibility: LiveData<Int> get() = _noCommentsPlaceholderVisibility
+
+    private val userCache = mutableMapOf<String, User?>()
 
     // Start listening for comments on a specific property
     fun startListeningForComments(
@@ -78,6 +83,18 @@ class CommentsViewModel @Inject constructor(
                 _commentSubmitStatus.value = false
                 log("Error submitting comment: ${e.message}")
                 onFailure(e)
+            }
+        }
+    }
+
+    fun getUser(userId: String, onResult: (User?) -> Unit) {
+        if (userCache.containsKey(userId)) {
+            onResult(userCache[userId])
+        } else {
+            viewModelScope.launch {
+                val user = userRepo.getUserById(userId)
+                userCache[userId] = user
+                onResult(user)
             }
         }
     }
