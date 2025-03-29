@@ -22,6 +22,13 @@ android {
     }
 
     signingConfigs {
+        getByName("debug") { // Ensure debug signing config exists
+            storeFile = rootProject.file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+
         create("release") {
             storeFile = rootProject.file("AppKeyStore/keystore.jks")
             storePassword = "2001birth"
