@@ -20,7 +20,7 @@ android {
         // for easy local/CI testing.
         create("benchmark") {
             isDebuggable = true
-            signingConfig = getByName("debug").signingConfig
+            signingConfig = getByName("release").signingConfig
             matchingFallbacks += listOf("release")
         }
     }

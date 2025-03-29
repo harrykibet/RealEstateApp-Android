@@ -20,14 +20,25 @@ android {
         targetSdk = 35
         versionName = "1.0"
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(rootProject.file(properties["RELEASE_STORE_FILE"] as String))
+            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
+            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
+            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
+        }
+    }
+
     buildTypes {
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
         release{
+            signingConfig = signingConfigs.getByName("release")
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
