@@ -17,8 +17,6 @@ plugins {
     alias(libs.plugins.android.dynamic.feature) apply false
 }
 
-val myValue by extra("../AppKeyStore/keystore.jks")
-
 allprojects {
     subprojects {
         configurations.all {
