@@ -1,9 +1,11 @@
 package com.application.real_estate_app.core_network.di
 
+import com.application.real_estate_app.core_network.interfaces.IAnalyticsRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.ICommentsRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.IPropertyRemoteDatasource
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
+import com.application.real_estate_app.core_network.sources.AnalyticsRemoteDataSource
 import com.application.real_estate_app.core_network.sources.AuthRemoteDataSource
 import com.application.real_estate_app.core_network.sources.CommentsRemoteDataSource
 import com.application.real_estate_app.core_network.sources.PropertyRemoteDataSource
@@ -34,4 +36,8 @@ abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindCommentsRemoteSource(dataSource: CommentsRemoteDataSource) : ICommentsRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAnalyticsRemoteSource(dataSource: AnalyticsRemoteDataSource) : IAnalyticsRemoteDataSource
 }

@@ -9,7 +9,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.application.real_estate_app.core_common.events.EventTypes
 import com.application.real_estate_app.core_common.interfaces.IBatteryManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_data.interfaces.AnalyticsRepoInterface
+import com.application.real_estate_app.core_data.interfaces.IAnalyticsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 @UnstableApi
 class PlaybackQualityService @Inject constructor(
-    private val analyticsClient: AnalyticsRepoInterface,
+    private val analyticsClient: IAnalyticsRepository,
     private val logger: LoggerInterface,
     private val batteryManager: IBatteryManager
 ) : AnalyticsListener {

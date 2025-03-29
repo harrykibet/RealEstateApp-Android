@@ -11,16 +11,15 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_network.db_names.FirestoreFields
+import androidx.fragment.app.viewModels
 import com.application.real_estate_app.feature_search.R
+import com.application.real_estate_app.feature_search.ui.viewmodels.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -41,6 +40,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     @Inject
     lateinit var db: FirebaseFirestore
+
+    private val searchViewModel: SearchViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,7 +113,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
 
                                 // Optionally load properties near this location
-                                loadNearbyProperties(latLng.latitude, latLng.longitude)
+                                if(!searchViewModel.loadNearbyProperties(map, latLng.latitude, latLng.longitude)){
+                                    handleNoNearbyProperties()
+                                }
                             }
                         }
                         .addOnFailureListener { exception ->
@@ -178,7 +181,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14f))
 
                     // Retrieve nearby properties from firestore
-                    loadNearbyProperties(it.latitude, it.longitude)
+                    if(!searchViewModel.loadNearbyProperties(map, it.latitude, it.longitude)){
+                        handleNoNearbyProperties()
+                    }
                 }
             }
     }
@@ -200,7 +205,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         // Load properties in a default popular location
         val defaultLocation = LatLng(-1.286389, 36.817223) // Nairobi, Kenya
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
-        loadNearbyProperties(defaultLocation.latitude, defaultLocation.longitude)
+        searchViewModel.loadNearbyProperties(map, defaultLocation.latitude, defaultLocation.longitude)
         } else {
             Toast.makeText(
                 requireContext(),

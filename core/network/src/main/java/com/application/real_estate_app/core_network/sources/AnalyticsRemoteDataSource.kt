@@ -1,24 +1,30 @@
-package com.application.real_estate_app.core_analytics.data.repositories
+package com.application.real_estate_app.core_network.sources
 
-import com.application.real_estate_app.core_analytics.domain.interfaces.IAnalyticsRepo
 import com.application.real_estate_app.core_common.errors.Errors
+import com.application.real_estate_app.core_common.interfaces.IDeviceUtils
+import com.application.real_estate_app.core_common.interfaces.ILocationUtils
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_common.firebase.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.AnalyticsEvent
+import com.application.real_estate_app.core_network.db_names.FirestoreCollections
+import com.application.real_estate_app.core_network.interfaces.IAnalyticsRemoteDataSource
+import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AnalyticsRepository @Inject constructor(
+class AnalyticsRemoteDataSource @Inject constructor(
     db: FirebaseFirestore,
     private val network: INetworkHandler,
     private val logger: LoggerInterface,
+    private val deviceUtils: IDeviceUtils,
+    private val authApi : IAuthRemoteDataSource,
+    private val locationUtils: ILocationUtils,
     private val firebaseAnalytics: FirebaseAnalytics
-) : IAnalyticsRepo {
+) : IAnalyticsRemoteDataSource {
 
     private val analyticsCollection = db.collection(FirestoreCollections.ANALYTICS)
 
@@ -34,6 +40,31 @@ class AnalyticsRepository @Inject constructor(
                 exception.message?.let { log(it) }
             }
         ) ?: false // Return false if result is null
+    }
+
+    override suspend fun logEvent(
+        message: String,
+        eventType: String,
+        customMetadata: Map<String, String>?,
+        onFailure: (Exception) -> Unit
+    ): Boolean {
+        val metadata = customMetadata?.toMutableMap() ?: mutableMapOf()
+        metadata["message"] = message  // Add default message if not already present
+        val deviceInfo = deviceUtils.getDeviceInfo()
+        val locationInfo = locationUtils.getLocationInfo()
+
+        val analyticsEvent = authApi.getCurrentUserId()?.let {
+            AnalyticsEvent(
+                eventId = generateEventId(),
+                eventType = eventType,
+                userId = it,
+                timestamp = System.currentTimeMillis(),
+                metadata = metadata,
+                deviceInfo = deviceInfo,
+                userLocation = locationInfo
+            )
+        }
+        return logEvent(analyticsEvent!!, onFailure)
     }
 
     override suspend fun getEventsForUser(userId: String, onFailure: (Exception) -> Unit): List<AnalyticsEvent> {

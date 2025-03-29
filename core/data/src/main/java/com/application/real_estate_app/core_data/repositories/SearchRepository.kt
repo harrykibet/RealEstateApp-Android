@@ -4,6 +4,7 @@ import com.application.real_estate_app.core_data.interfaces.ISearchRepository
 import com.application.real_estate_app.core_model.Property
 import com.application.real_estate_app.core_database.interfaces.ISearchLocalDataSource
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
+import com.google.android.gms.maps.GoogleMap
 import javax.inject.Inject
 
 class SearchRepository @Inject constructor(
@@ -28,7 +29,7 @@ class SearchRepository @Inject constructor(
         localDataSource.clearSearchHistory()
     }
 
-    override suspend fun loadNearbyProperties(userLat: Double, userLng: Double): Boolean {
-        return remoteDataSource.loadNearbyProperties(userLat, userLng)
+    override suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean {
+        return remoteDataSource.loadNearbyProperties(map, userLat, userLng)
     }
 }

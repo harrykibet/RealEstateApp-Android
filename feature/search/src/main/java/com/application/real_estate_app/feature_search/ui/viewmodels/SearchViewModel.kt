@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.ISearchRepository
 import com.application.real_estate_app.core_model.Property
+import com.google.android.gms.maps.GoogleMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +33,14 @@ class SearchViewModel @Inject constructor(
                 // Handle error
             }
         }
+    }
+    
+    fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean {
+        var nearbyPropertiesFound = false
+        viewModelScope.launch {
+            nearbyPropertiesFound = searchRepository.loadNearbyProperties(map, userLat, userLng)
+        }
+        return nearbyPropertiesFound
     }
 
     fun loadSearchHistory() {
