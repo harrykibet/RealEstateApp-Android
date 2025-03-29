@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_data.db_entities
+package com.application.real_estate_app.core_network.db_entities
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ServerTimestamp

@@ -23,6 +23,5 @@ dependencies {
     implementation(libs.bundles.firebase)
 
     implementation(projects.core.common)
-    implementation(projects.core.data)
     implementation(projects.core.model)
 }
