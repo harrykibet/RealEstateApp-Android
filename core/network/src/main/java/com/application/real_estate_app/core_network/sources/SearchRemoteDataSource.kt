@@ -49,37 +49,39 @@ class SearchRemoteDataSource @Inject constructor(
         ) ?: emptyList()
     }
 
-    override suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double) : Boolean {
+    override suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean {
         val nearbyDistanceThreshold = 10.0 // Distance in kilometers
-        var propertiesFound = false
 
-        db.collection(FirestoreCollections.PROPERTIES)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val result = task.result
-                    result?.let {
-                        for (document in it.documents) {
-                            val propertyLat = document.getDouble(FirestoreFields.LATITUDE) ?: 0.0
-                            val propertyLng = document.getDouble(FirestoreFields.LONGITUDE) ?: 0.0
-                            val propertyName = document.getString(FirestoreFields.TITLE) ?: Consts.PROPERTY
+        return network.safeApiCallSuspend(
+            apiCall = {
+                val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
+                    .get()
+                    .await()
 
-                            val distanceToProperty =
-                                calculateDistance(userLat, userLng, propertyLat, propertyLng)
+                var propertiesFound = false
 
-                            if (distanceToProperty <= nearbyDistanceThreshold) {
-                                propertiesFound = true
-                                val propertyLocation = LatLng(propertyLat, propertyLng)
-                                map.addMarker(
-                                    MarkerOptions().position(propertyLocation).title(propertyName)
-                                )
-                            }
-                        }
+                for (document in propertiesSnapshot.documents) {
+                    val propertyLat = document.getDouble(FirestoreFields.LATITUDE) ?: 0.0
+                    val propertyLng = document.getDouble(FirestoreFields.LONGITUDE) ?: 0.0
+                    val propertyName = document.getString(FirestoreFields.TITLE) ?: Consts.PROPERTY
+
+                    val distanceToProperty = calculateDistance(userLat, userLng, propertyLat, propertyLng)
+
+                    if (distanceToProperty <= nearbyDistanceThreshold) {
+                        propertiesFound = true
+                        val propertyLocation = LatLng(propertyLat, propertyLng)
+                        map.addMarker(MarkerOptions().position(propertyLocation).title(propertyName))
                     }
                 }
-            }.await()
-        return propertiesFound
+                propertiesFound
+            },
+            onFailure = { e ->
+                log("Error loading nearby properties: ${e.message}")
+                false // Return false in case of failure
+            }
+        ) ?: false
     }
+
 
     private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
         val earthRadius = 6371.0 // Earth's radius in kilometers
