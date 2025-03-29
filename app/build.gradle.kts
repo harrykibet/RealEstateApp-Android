@@ -28,14 +28,6 @@ android {
             isDebuggable = false
         }
         release{
-            signingConfigs {
-                getByName("debug") {
-                    storeFile = file(rootProject.extra["myValue"] as String)
-                    storePassword = "2001birth"
-                    keyAlias = "key0"
-                    keyPassword = "2001birth"
-                }
-            }
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
