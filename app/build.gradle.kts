@@ -22,23 +22,22 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file("$rootDir/AppKeyStore/keystore.jks") // Path to your keystore
-            storePassword = "2001birth"  // Keystore password
-            keyAlias = "key0"  // Your key alias
-            keyPassword = "2001birth"  // Key password
+        create("debug") {
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 
     buildTypes {
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
         release{
-            signingConfig = signingConfigs.getByName("release")
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
         }
