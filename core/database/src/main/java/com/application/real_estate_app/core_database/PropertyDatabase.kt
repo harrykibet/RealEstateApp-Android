@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.application.real_estate_app.core_database.dao.PropertyDraftDao
 import com.application.real_estate_app.core_database.entities.PropertyDraftEntity
-import com.application.real_estate_app.feature_property.data.mappers.RoomTypeConverters
+import com.application.real_estate_app.core_database.mappers.RoomTypeConverters
 
 @Database(entities = [PropertyDraftEntity::class], version = 1, exportSchema = false)
 @TypeConverters(RoomTypeConverters::class)

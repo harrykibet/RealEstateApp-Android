@@ -1,4 +1,4 @@
-package com.application.real_estate_app.feature_property.data.mappers
+package com.application.real_estate_app.core_database.mappers
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
