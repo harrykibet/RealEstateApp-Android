@@ -1,20 +1,13 @@
-package com.application.real_estate_app.core_data.interfaces
+package com.application.real_estate_app.core_network.interfaces
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import com.application.real_estate_app.core_database.entities.PropertyDraftEntity
 import com.application.real_estate_app.core_model.Property
 
-interface IPropertyRepository {
+interface IPropertyRemoteDatasource {
     // LiveData to monitor the upload status
     val uploadStatus: LiveData<Boolean>
     val uploadError: LiveData<String?>
-
-    suspend fun getDraftById(draftId: Int): PropertyDraftEntity?
-    suspend fun saveDraft(draft: PropertyDraftEntity): Long
-    suspend fun getAllDrafts(): List<PropertyDraftEntity>
-    suspend fun deleteDraft(draftId: Int)
-    suspend fun clearAllDrafts()
 
     suspend fun uploadProperty(
         property: Property,
