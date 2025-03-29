@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_database
+package com.application.real_estate_app.core_database.sources
 
 import com.application.real_estate_app.core_database.dao.PropertyDraftDao
 import com.application.real_estate_app.core_database.interfaces.IPropertyLocalDataSource

@@ -1,7 +1,7 @@
-package com.application.real_estate_app.core_network.interfaces
+package com.application.real_estate_app.core_data.interfaces
 
 import com.application.real_estate_app.core_model.User
 
-interface IUserRemoteDataSource {
+interface IUserRepository {
     suspend fun getUserById(userId: String): User?
 }

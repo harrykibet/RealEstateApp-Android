@@ -5,22 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_common.firebase.db_names.FirestoreCollections
 import com.application.real_estate_app.core_model.Comment
 import com.application.real_estate_app.core_model.User
 import com.application.real_estate_app.feature_comments.R
 import com.application.real_estate_app.feature_comments.databinding.ItemCommentBinding
+import com.application.real_estate_app.feature_comments.ui.viewmodels.CommentsViewModel
 import com.bumptech.glide.Glide
-import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
-
-    private var commentList = mutableListOf<Comment?>()
-    private val userCache = mutableMapOf<String?, User>() // Cache to store user data
-    private val firestore = FirebaseFirestore.getInstance() // Initialize once for FireStore instance
+class CommentAdapter (
+    private var commentList: List<Comment?>,
+    private val viewModel: CommentsViewModel
+) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         val binding = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -30,13 +28,10 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = commentList[position]
 
-        // Check cache for user data
-        //TODO("Use viewModel to check cache for user data")
-        if (userCache.containsKey(comment?.userId)) {
-            holder.bind(comment!!, userCache[comment.userId])
-        } else
+        viewModel.getUser(comment?.userId!!) { user ->
+            holder.bind(comment, user)
+        }
     }
-
     override fun getItemCount(): Int = commentList.size
 
     inner class CommentViewHolder(private val binding: ItemCommentBinding) :
@@ -63,13 +58,13 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         }
     }
 
-    // Method to update comments using DiffUtil for efficient RecyclerView updates
     fun updateComments(newComments: List<Comment?>) {
-        val diffCallback = CommentDiffCallback(commentList, newComments)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        val diffResult = DiffUtil.calculateDiff(CommentDiffCallback(commentList, newComments))
 
-        // Update the list after diff calculation
-        commentList = newComments.toMutableList()
+        synchronized(this) {
+            commentList = newComments.toList() // Ensure immutability
+        }
+
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -82,7 +77,6 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
 class CommentDiffCallback(
     private val oldList: List<Comment?>,
     private val newList: List<Comment?>
-
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
 

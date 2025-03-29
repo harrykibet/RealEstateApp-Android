@@ -5,11 +5,13 @@ import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSo
 import com.application.real_estate_app.core_network.interfaces.ICommentsRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.IPropertyRemoteDatasource
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
+import com.application.real_estate_app.core_network.interfaces.IUserRemoteDataSource
 import com.application.real_estate_app.core_network.sources.AnalyticsRemoteDataSource
 import com.application.real_estate_app.core_network.sources.AuthRemoteDataSource
 import com.application.real_estate_app.core_network.sources.CommentsRemoteDataSource
 import com.application.real_estate_app.core_network.sources.PropertyRemoteDataSource
 import com.application.real_estate_app.core_network.sources.SearchRemoteDataSource
+import com.application.real_estate_app.core_network.sources.UserRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -20,7 +22,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class RemoteDataSourceModule {
 
-    // bind IFeatureSearchRepo to FeatureSearchRepo
     @Binds
     @Singleton
     abstract fun bindSearchRemoteSource(dataSource: SearchRemoteDataSource) : ISearchRemoteDataSource
@@ -40,4 +41,8 @@ abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindAnalyticsRemoteSource(dataSource: AnalyticsRemoteDataSource) : IAnalyticsRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRemoteDataSource(dataSource : UserRemoteDataSource) : IUserRemoteDataSource
 }

@@ -46,7 +46,10 @@ class CommentFragment : BottomSheetDialogFragment() {
         val userId = args.userId
 
         // Set up RecyclerView
-        commentAdapter = CommentAdapter()
+        commentAdapter = CommentAdapter(
+            commentList = emptyList(),
+            viewModel = commentsViewModel
+        )
         binding.commentsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = commentAdapter

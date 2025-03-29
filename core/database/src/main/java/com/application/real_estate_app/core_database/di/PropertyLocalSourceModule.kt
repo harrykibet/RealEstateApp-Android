@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_database.di
 
-import com.application.real_estate_app.core_database.PropertyLocalDataSource
+import com.application.real_estate_app.core_database.sources.PropertyLocalDataSource
 import com.application.real_estate_app.core_database.interfaces.IPropertyLocalDataSource
 import dagger.Binds
 import dagger.Module

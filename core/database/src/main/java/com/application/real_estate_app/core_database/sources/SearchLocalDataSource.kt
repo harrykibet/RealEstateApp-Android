@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_database
+package com.application.real_estate_app.core_database.sources
 
 import com.application.real_estate_app.core_database.dao.SearchHistoryDao
 import com.application.real_estate_app.core_database.entities.SearchHistoryEntity
