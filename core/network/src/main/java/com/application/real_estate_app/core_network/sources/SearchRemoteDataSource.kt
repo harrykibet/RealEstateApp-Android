@@ -9,8 +9,10 @@ import com.application.real_estate_app.core_network.mappers.toDomainModel
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.Property
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLng
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
+import com.google.android.gms.maps.GoogleMap
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -47,10 +49,9 @@ class SearchRemoteDataSource @Inject constructor(
         ) ?: emptyList()
     }
 
-    override suspend fun loadNearbyProperties(userLat: Double, userLng: Double) : Boolean {
+    override suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double) : Boolean {
         val nearbyDistanceThreshold = 10.0 // Distance in kilometers
         var propertiesFound = false
-        //TODO("Create a property repository method for the below logic")
 
         db.collection(FirestoreCollections.PROPERTIES)
             .get()

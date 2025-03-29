@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.bundles.firebase)
+    implementation(libs.play.services.maps)
 
     implementation(projects.core.model)
     implementation(projects.core.common)

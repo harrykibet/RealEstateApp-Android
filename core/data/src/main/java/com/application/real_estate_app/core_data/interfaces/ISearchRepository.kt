@@ -1,6 +1,7 @@
 package com.application.real_estate_app.core_data.interfaces
 
 import com.application.real_estate_app.core_model.Property
+import com.google.android.gms.maps.GoogleMap
 
 interface ISearchRepository {
 
@@ -14,5 +15,5 @@ interface ISearchRepository {
 
     suspend fun clearSearchHistory()
 
-    suspend fun loadNearbyProperties(userLat: Double, userLng: Double): Boolean
+    suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean
 }

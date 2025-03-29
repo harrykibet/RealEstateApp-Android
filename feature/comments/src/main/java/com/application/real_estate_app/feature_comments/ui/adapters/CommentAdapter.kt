@@ -34,24 +34,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         //TODO("Use viewModel to check cache for user data")
         if (userCache.containsKey(comment?.userId)) {
             holder.bind(comment!!, userCache[comment.userId])
-        } else {
-            // Fetch user data from FireStore if not cached
-            firestore.collection(FirestoreCollections.USERS)
-                .document(comment!!.userId!!)
-                .get()
-                .addOnSuccessListener { document ->
-                    val user = document.toObject(User::class.java)
-                    if (user != null) {
-                        userCache[comment.userId] = user // Cache the user data
-                        holder.bind(comment, user)
-                    } else {
-                        holder.bind(comment, null) // Pass null if user data is not found
-                    }
-                }
-                .addOnFailureListener {
-                    holder.bind(comment, null) // Handle failure by binding with null user
-                }
-        }
+        } else
     }
 
     override fun getItemCount(): Int = commentList.size
