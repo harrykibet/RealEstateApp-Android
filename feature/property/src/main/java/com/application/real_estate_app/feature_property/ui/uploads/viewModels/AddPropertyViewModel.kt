@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.IAuthRepository
+import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
 import com.application.real_estate_app.core_model.Property
-import com.application.real_estate_app.feature_property.domain.interfaces.IPropertyRepository
 import com.application.real_estate_app.feature_property.utils.PropertyData
 import com.application.real_estate_app.feature_property.utils.AddPropertyUiState
 import com.application.real_estate_app.feature_property.utils.PropertyStrings
