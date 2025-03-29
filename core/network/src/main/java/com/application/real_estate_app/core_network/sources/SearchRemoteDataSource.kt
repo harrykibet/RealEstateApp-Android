@@ -2,12 +2,12 @@ package com.application.real_estate_app.core_network.sources
 
 import com.application.real_estate_app.core_common.errors.Errors
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_data.db_entities.PropertyEntity
-import com.application.real_estate_app.core_data.db_names.FirestoreCollections
-import com.application.real_estate_app.core_data.db_names.FirestoreFields
-import com.application.real_estate_app.core_data.mappers.toDomainModel
+import com.application.real_estate_app.core_network.db_entities.PropertyEntity
+import com.application.real_estate_app.core_network.db_names.FirestoreFields
+import com.application.real_estate_app.core_network.mappers.toDomainModel
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

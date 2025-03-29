@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_data.db_names.FirestoreCollections
-import com.application.real_estate_app.core_data.db_names.FirestoreFields
+import com.application.real_estate_app.core_common.firebase.db_names.FirestoreCollections
+import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.feature_search.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices

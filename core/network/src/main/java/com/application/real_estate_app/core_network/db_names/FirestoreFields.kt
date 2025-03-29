@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_data.db_names
+package com.application.real_estate_app.core_network.db_names
 
 object FirestoreFields {
         const val ACTIVE = "active"

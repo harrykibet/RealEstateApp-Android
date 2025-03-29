@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_data.db_names.FirestoreCollections
+import com.application.real_estate_app.core_common.firebase.db_names.FirestoreCollections
 import com.application.real_estate_app.core_model.Comment
 import com.application.real_estate_app.core_model.User
 import com.application.real_estate_app.feature_comments.R

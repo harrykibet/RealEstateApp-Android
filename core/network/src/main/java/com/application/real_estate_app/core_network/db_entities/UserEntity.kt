@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_data.db_entities
+package com.application.real_estate_app.core_network.db_entities
 
 import com.application.real_estate_app.core_model.User
 import com.application.real_estate_app.core_model.UserType
