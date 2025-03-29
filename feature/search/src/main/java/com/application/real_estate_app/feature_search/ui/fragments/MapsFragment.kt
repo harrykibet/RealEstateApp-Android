@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.application.real_estate_app.core_common.misc.Consts
-import com.application.real_estate_app.core_common.firebase.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.feature_search.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -31,10 +30,6 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback {
@@ -188,40 +183,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
     }
 
-    private fun loadNearbyProperties(userLat: Double, userLng: Double) {
-        val nearbyDistanceThreshold = 10.0 // Distance in kilometers
-        var propertiesFound = false
-        //TODO("Create a property repository method for the below logic")
 
-        db.collection(FirestoreCollections.PROPERTIES)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val result = task.result
-                    result?.let {
-                        for (document in it.documents) {
-                            val propertyLat = document.getDouble(FirestoreFields.LATITUDE) ?: 0.0
-                            val propertyLng = document.getDouble(FirestoreFields.LONGITUDE) ?: 0.0
-                            val propertyName = document.getString(FirestoreFields.TITLE) ?: Consts.PROPERTY
-
-                            val distanceToProperty =
-                                calculateDistance(userLat, userLng, propertyLat, propertyLng)
-
-                            if (distanceToProperty <= nearbyDistanceThreshold) {
-                                propertiesFound = true
-                                val propertyLocation = LatLng(propertyLat, propertyLng)
-                                map.addMarker(
-                                    MarkerOptions().position(propertyLocation).title(propertyName)
-                                )
-                            }
-                        }
-                        if (!propertiesFound) {
-                            handleNoNearbyProperties()
-                        }
-                    }
-                }
-            }
-    }
 
     private fun handleNoNearbyProperties() {
         if (zoomOutCount < maxZoomOutAttempts) {
@@ -244,17 +206,5 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 requireContext(),
                 getString(R.string.no_properties_after_zoom_out, maxZoomOutAttempts),Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
-        val earthRadius = 6371.0 // Earth's radius in kilometers
-        val latDiff = Math.toRadians(lat2 - lat1)
-        val lngDiff = Math.toRadians(lng2 - lng1)
-
-        val a = sin(latDiff / 2) * sin(latDiff / 2) +
-                cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
-                sin(lngDiff / 2) * sin(lngDiff / 2)
-        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        return earthRadius * c
     }
 }

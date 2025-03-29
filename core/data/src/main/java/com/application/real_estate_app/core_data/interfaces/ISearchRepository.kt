@@ -13,4 +13,6 @@ interface ISearchRepository {
     suspend fun getSearchHistory(): List<String>
 
     suspend fun clearSearchHistory()
+
+    suspend fun loadNearbyProperties(userLat: Double, userLng: Double): Boolean
 }

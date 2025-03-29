@@ -27,4 +27,8 @@ class SearchRepository @Inject constructor(
     override suspend fun clearSearchHistory() {
         localDataSource.clearSearchHistory()
     }
+
+    override suspend fun loadNearbyProperties(userLat: Double, userLng: Double): Boolean {
+        return remoteDataSource.loadNearbyProperties(userLat, userLng)
+    }
 }
