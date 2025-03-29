@@ -5,4 +5,5 @@ import com.application.real_estate_app.core_model.Property
 interface ISearchRemoteDataSource {
     // Search Properties
     suspend fun searchProperties(query: String, limit: Int, onFailure: (Exception) -> Unit): List<Property>
+    suspend fun loadNearbyProperties(userLat: Double, userLng: Double): Boolean
 }
