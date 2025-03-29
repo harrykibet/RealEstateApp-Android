@@ -14,12 +14,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("AppKeyStore/keystore.jks")
+            storePassword = "2001birth"
+            keyAlias = "key0"
+            keyPassword = "2001birth"
+        }
+    }
+
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your
         // release build (for example, with minification on). It"s signed with a debug key
         // for easy local/CI testing.
         create("benchmark") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             isDebuggable = true
             matchingFallbacks += listOf("release")
         }
