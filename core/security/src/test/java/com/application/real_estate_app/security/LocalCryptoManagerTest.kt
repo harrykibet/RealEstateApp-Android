@@ -3,7 +3,6 @@ package com.application.real_estate_app.security
 import android.util.Base64
 import com.application.real_estate_app.core_common.errors.Result
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.security.LocalCryptoManager
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -17,7 +16,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class localCryptoManagerTest {
+class LocalCryptoManagerTest {
 
     private lateinit var cryptoManager: LocalCryptoManager
     private lateinit var logger: LoggerInterface

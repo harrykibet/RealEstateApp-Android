@@ -1,10 +1,11 @@
-package com.application.real_estate_app.security
+package com.application.real_estate_app.core_network
 
 import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.security.utils.exceptions.InvalidApiKeyException
-import com.application.real_estate_app.security.utils.extensions.ApiKeyValidator
-import com.application.real_estate_app.security.utils.extensions.ServiceNames
+import com.application.real_estate_app.core_network.interfaces.IApiKeyValidator
+import com.application.real_estate_app.core_network.utils.ApiKeyValidator
+import com.application.real_estate_app.core_network.utils.ServiceNames
+import com.application.real_estate_app.core_network.exceptions.InvalidApiKeyException
 import io.mockk.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertThrows
