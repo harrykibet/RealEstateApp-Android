@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network.db_entities
 
-import com.application.real_estate_app.core_model.User
-import com.application.real_estate_app.core_model.UserType
+import com.application.real_estate_app.core_model.user.User
+import com.application.real_estate_app.core_model.user.UserType
 
 data class UserEntity(
     val userId: String? = null,

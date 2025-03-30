@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network.sources
 
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_model.User
+import com.application.real_estate_app.core_model.user.User
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_network.interfaces.IUserRemoteDataSource
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections

@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.application.real_estate_app.core_common.interfaces.ILocationUtils
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_model.UserLocation
+import com.application.real_estate_app.core_model.user.UserLocation
 import java.util.Locale
 import javax.inject.Inject
 

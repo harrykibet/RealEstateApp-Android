@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network.db_entities
 
-import com.application.real_estate_app.core_model.ServiceType
-import com.application.real_estate_app.core_model.Location
+import com.application.real_estate_app.core_model.service.ServiceType
+import com.application.real_estate_app.core_model.system.Location
 import com.google.firebase.firestore.DocumentSnapshot
 import java.util.Date
 

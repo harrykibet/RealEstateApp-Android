@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.IAuthRepository
-import com.application.real_estate_app.core_model.User
-import com.application.real_estate_app.core_model.UserType
+import com.application.real_estate_app.core_model.user.User
+import com.application.real_estate_app.core_model.user.UserType
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException

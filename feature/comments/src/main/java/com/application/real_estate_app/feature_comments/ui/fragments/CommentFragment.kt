@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.application.real_estate_app.core_model.Comment
+import com.application.real_estate_app.core_model.feature.Comment
 import com.application.real_estate_app.feature_comments.R
 import com.application.real_estate_app.feature_comments.databinding.FragmentCommentBinding
 import com.application.real_estate_app.feature_comments.ui.adapters.CommentAdapter

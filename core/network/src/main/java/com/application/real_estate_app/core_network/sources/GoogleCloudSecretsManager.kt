@@ -6,8 +6,8 @@ import com.application.real_estate_app.core_model.utils.SemanticVersion
 import com.application.real_estate_app.core_network.interfaces.IGoogleCloudSecretsManager
 import com.application.real_estate_app.core_network.utils.SensitiveString
 import com.application.real_estate_app.core_network.exceptions.SecretsManagerException
-import com.application.real_estate_app.core_model.CacheKey
-import com.application.real_estate_app.core_model.SecretId
+import com.application.real_estate_app.core_model.security.CacheKey
+import com.application.real_estate_app.core_model.security.SecretId
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause

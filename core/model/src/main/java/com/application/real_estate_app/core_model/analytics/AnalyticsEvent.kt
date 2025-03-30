@@ -1,4 +1,7 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.analytics
+
+import com.application.real_estate_app.core_model.system.DeviceInfo
+import com.application.real_estate_app.core_model.user.UserLocation
 
 data class AnalyticsEvent(
     val eventId: String,

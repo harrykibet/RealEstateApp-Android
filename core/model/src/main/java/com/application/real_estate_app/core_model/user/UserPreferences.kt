@@ -1,4 +1,6 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.user
+
+import com.application.real_estate_app.core_model.property.PriceRange
 
 data class UserPreferences(
     val preferredPropertyTypes: List<String>, // e.g., Apartment, House, Studio

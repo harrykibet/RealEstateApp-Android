@@ -16,7 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.application.real_estate_app.core_common.events.LoginEvent
-import com.application.real_estate_app.core_model.UserType
+import com.application.real_estate_app.core_model.user.UserType
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.feature_auth.databinding.FragmentSignUpBinding
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel

@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_data.interfaces.ISearchRepository
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 import com.application.real_estate_app.core_database.interfaces.ISearchLocalDataSource
 import com.application.real_estate_app.core_network.interfaces.ISearchRemoteDataSource
 import com.google.android.gms.maps.GoogleMap

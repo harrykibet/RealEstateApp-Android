@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
-import com.application.real_estate_app.core_model.Comment
+import com.application.real_estate_app.core_model.feature.Comment
 import com.application.real_estate_app.core_network.interfaces.ICommentsRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

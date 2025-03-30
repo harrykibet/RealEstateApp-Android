@@ -5,7 +5,7 @@ import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.db_entities.CommentEntity
 import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
-import com.application.real_estate_app.core_model.Comment
+import com.application.real_estate_app.core_model.feature.Comment
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.interfaces.ICommentsRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

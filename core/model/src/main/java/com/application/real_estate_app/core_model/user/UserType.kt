@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.user
 
 enum class UserType(val displayName: String) {
     TENANT("Tenant"),

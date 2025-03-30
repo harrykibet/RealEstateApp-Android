@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_data.interfaces
 
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 import com.google.android.gms.maps.GoogleMap
 
 interface ISearchRepository {

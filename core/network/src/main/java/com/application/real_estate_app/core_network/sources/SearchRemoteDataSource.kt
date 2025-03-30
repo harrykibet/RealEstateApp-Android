@@ -7,7 +7,7 @@ import com.application.real_estate_app.core_network.db_entities.PropertyEntity
 import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.core_network.mappers.toDomainModel
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections

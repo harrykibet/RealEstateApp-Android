@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_data.interfaces.IAnalyticsRepository
-import com.application.real_estate_app.core_model.AnalyticsEvent
+import com.application.real_estate_app.core_model.analytics.AnalyticsEvent
 import com.application.real_estate_app.core_network.interfaces.IAnalyticsRemoteDataSource
 import javax.inject.Inject
 

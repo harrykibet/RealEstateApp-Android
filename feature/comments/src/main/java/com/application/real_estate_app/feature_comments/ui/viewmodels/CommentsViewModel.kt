@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_data.interfaces.ICommentsRepository
 import com.application.real_estate_app.core_data.interfaces.IUserRepository
-import com.application.real_estate_app.core_model.Comment
-import com.application.real_estate_app.core_model.User
+import com.application.real_estate_app.core_model.feature.Comment
+import com.application.real_estate_app.core_model.user.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch

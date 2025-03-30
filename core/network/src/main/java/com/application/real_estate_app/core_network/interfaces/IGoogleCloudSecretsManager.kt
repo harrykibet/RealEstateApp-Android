@@ -1,8 +1,8 @@
 package com.application.real_estate_app.core_network.interfaces
 
 import com.application.real_estate_app.core_network.utils.SensitiveString
-import com.application.real_estate_app.core_model.CacheKey
-import com.application.real_estate_app.core_model.SecretId
+import com.application.real_estate_app.core_model.security.CacheKey
+import com.application.real_estate_app.core_model.security.SecretId
 
 
 interface IGoogleCloudSecretsManager {
