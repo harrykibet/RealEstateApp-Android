@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network.sources
 
 import android.util.Base64
-import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.exceptions.CryptoOperationException
 import com.application.real_estate_app.core_network.exceptions.GoogleKmsException
@@ -46,7 +46,7 @@ import javax.inject.Singleton
 @Singleton
 class GoogleCloudKmsManager @Inject constructor(
     private val kmsClient: KeyManagementServiceClient,
-    private val remoteConfig: IRemoteConfigManager,
+    private val remoteConfig: com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager,
     private val projectId: String,
     private val logger: LoggerInterface
 ) : IGoogleCloudKmsManager {

@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_network.utils
 
-import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.exceptions.InvalidApiKeyException
 import com.application.real_estate_app.core_network.interfaces.IApiKeyValidator
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class ApiKeyValidator @Inject constructor(
     private val logger: LoggerInterface,
-    private val remoteConfigManager: IRemoteConfigManager
+    private val remoteConfigManager: com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
 ) : IApiKeyValidator {
 
     private val googleKeyPattern: Regex

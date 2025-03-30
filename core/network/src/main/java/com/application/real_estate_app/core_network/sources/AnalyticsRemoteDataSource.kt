@@ -31,7 +31,7 @@ class AnalyticsRemoteDataSource @Inject constructor(
     override suspend fun logEvent(event: AnalyticsEvent, onFailure: (Exception) -> Unit): Boolean {
         return network.safeApiCallSuspend(
             apiCall = {
-                // Save the event to Firestore
+                // Save the event to FireStore
                 analyticsCollection.document(event.eventId).set(event).await()
                 true // Indicate success
             },
@@ -70,7 +70,7 @@ class AnalyticsRemoteDataSource @Inject constructor(
     override suspend fun getEventsForUser(userId: String, onFailure: (Exception) -> Unit): List<AnalyticsEvent> {
         return network.safeApiCallSuspend(
             apiCall = {
-                // Query Firestore for events related to the specified user
+                // Query FireStore for events related to the specified user
                 val querySnapshot = analyticsCollection
                     .whereEqualTo(FirestoreFields.USER_ID, userId)
                     .get().await()
