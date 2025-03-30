@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network
 
 import android.util.Base64
-import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_network.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.exceptions.CryptoOperationException
 import com.application.real_estate_app.core_network.sources.GoogleCloudKmsManager
@@ -19,7 +19,7 @@ import java.security.GeneralSecurityException
 class GoogleCloudKmsManagerTest {
 
     private lateinit var kmsClient: KeyManagementServiceClient
-    private lateinit var remoteConfig: com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+    private lateinit var remoteConfig: IRemoteConfigManager
     private lateinit var logger: LoggerInterface
     private lateinit var googleCloudKmsManager: GoogleCloudKmsManager
 

@@ -4,7 +4,7 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_network.interfaces.IRemoteConfigManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,7 +55,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        remoteConfigManager: com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+        remoteConfigManager: IRemoteConfigManager
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(remoteConfigManager.getBaseUrl()) // Use the dynamically provided base URL
