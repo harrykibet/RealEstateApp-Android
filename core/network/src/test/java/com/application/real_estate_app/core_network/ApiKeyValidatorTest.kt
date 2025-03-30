@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_network
 
-import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_network.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.interfaces.IApiKeyValidator
 import com.application.real_estate_app.core_network.utils.ApiKeyValidator
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 class ApiKeyValidatorTest {
 
     private lateinit var logger: LoggerInterface
-    private lateinit var remoteConfigManager: com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+    private lateinit var remoteConfigManager: IRemoteConfigManager
     private lateinit var apiKeyValidator: IApiKeyValidator
 
     @BeforeAll

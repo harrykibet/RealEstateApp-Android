@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_network.di
 
-import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_network.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_network.interfaces.IAnalyticsRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.ICommentsRemoteDataSource
