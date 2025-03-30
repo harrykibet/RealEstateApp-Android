@@ -1,7 +1,7 @@
-package com.application.real_estate_app.core_common.firebase
+package com.application.real_estate_app.core_network.sources
 
 import android.content.Context
-import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
+import com.application.real_estate_app.core_domain.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import org.json.JSONObject

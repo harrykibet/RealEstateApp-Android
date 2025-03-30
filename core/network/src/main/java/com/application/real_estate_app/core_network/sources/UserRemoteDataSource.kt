@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRemoteDataSource @Inject constructor(
-    private val firestore: FirebaseFirestore, // Renamed for clarity
+    private val firestore: FirebaseFirestore,
     private val logger: LoggerInterface,
     private val network: INetworkHandler
 ) : IUserRemoteDataSource {

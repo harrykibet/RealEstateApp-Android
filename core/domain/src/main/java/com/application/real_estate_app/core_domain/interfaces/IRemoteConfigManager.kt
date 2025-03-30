@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_common.interfaces
+package com.application.real_estate_app.core_domain.interfaces
 
 interface IRemoteConfigManager {
     fun getGoogleKeyPattern(): String

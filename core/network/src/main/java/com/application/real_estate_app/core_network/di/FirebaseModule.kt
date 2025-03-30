@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_common.di
+package com.application.real_estate_app.core_network.di
 
 import android.content.Context
 import android.util.Log
