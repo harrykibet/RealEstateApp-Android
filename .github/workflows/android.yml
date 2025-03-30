@@ -87,17 +87,29 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Generate Debug Keystore (if missing)
+        run: |
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            echo "Generating debug.keystore..."
+            keytool -genkeypair -v -keystore $HOME/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=Android,C=US"
+          else
+            echo "Debug keystore already exists."
+          fi
+
       - name: Decode and Store Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ~/.gradle/keystore.jks
 
       - name: Generate Gradle Properties for Signing
         run: |
           mkdir -p ~/.gradle
           cat <<EOF >> ~/.gradle/gradle.properties
-          signingStoreFile=keystore.jks
+          signingStoreFile=~/.gradle/keystore.jks
           signingStorePassword=${{ secrets.KEYSTORE_PASSWORD }}
           signingKeyAlias=${{ secrets.KEY_ALIAS }}
           signingKeyPassword=${{ secrets.KEY_PASSWORD }}
+          org.gradle.caching=true
           EOF
 
       - name: Cache Gradle Dependencies

@@ -14,6 +14,28 @@ before_script:
   - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
   - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties  # ✅ Create `local.properties`
 
+  # ✅ Generate Debug Keystore
+  - |
+    DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+
+    if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
+      echo "Removing existing debug keystore..."
+      rm -f "$DEBUG_KEYSTORE_PATH"
+    fi
+
+    echo "Generating new debug keystore..."
+    keytool -genkey -v \
+      -keystore "$DEBUG_KEYSTORE_PATH" \
+      -storepass android \
+      -alias androiddebugkey \
+      -keypass android \
+      -dname "CN=Android Debug,O=Android,C=US" \
+      -keyalg RSA \
+      -keysize 2048 \
+      -validity 10000
+
+    echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
+
 build-apk:
   stage: build
   script:

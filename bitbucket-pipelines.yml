@@ -22,6 +22,30 @@ pipelines:
           - echo "Android SDK setup complete."
 
     - step:
+        name: Generate Debug Keystore
+        script:
+          - |
+            DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+            
+            if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
+              echo "Removing existing debug keystore..."
+              rm -f "$DEBUG_KEYSTORE_PATH"
+            fi
+
+            echo "Generating new debug keystore..."
+            keytool -genkey -v \
+              -keystore "$DEBUG_KEYSTORE_PATH" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -dname "CN=Android Debug,O=Android,C=US" \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000
+
+            echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
+
+    - step:
         name: Build and Test
         caches:
           - gradle
