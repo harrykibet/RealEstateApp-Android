@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_common.interfaces
 
-import com.application.real_estate_app.core_model.DeviceInfo
+import com.application.real_estate_app.core_model.system.DeviceInfo
 
 interface IDeviceUtils {
     fun getDeviceInfo(): DeviceInfo

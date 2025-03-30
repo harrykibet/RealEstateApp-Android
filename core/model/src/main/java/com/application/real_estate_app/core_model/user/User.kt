@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.user
 
 data class User(
     val userId: String?,

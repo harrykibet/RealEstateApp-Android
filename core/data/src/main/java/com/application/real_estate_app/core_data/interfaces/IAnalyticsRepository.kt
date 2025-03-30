@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_data.interfaces
 
-import com.application.real_estate_app.core_model.AnalyticsEvent
+import com.application.real_estate_app.core_model.analytics.AnalyticsEvent
 
 interface IAnalyticsRepository {
     suspend fun logEvent(

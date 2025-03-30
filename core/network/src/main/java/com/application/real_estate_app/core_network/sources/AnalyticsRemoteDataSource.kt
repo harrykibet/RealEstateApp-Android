@@ -6,7 +6,7 @@ import com.application.real_estate_app.core_common.interfaces.ILocationUtils
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
-import com.application.real_estate_app.core_model.AnalyticsEvent
+import com.application.real_estate_app.core_model.analytics.AnalyticsEvent
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.interfaces.IAnalyticsRemoteDataSource
 import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource

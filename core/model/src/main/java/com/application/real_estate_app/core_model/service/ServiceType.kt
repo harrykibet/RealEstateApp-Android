@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.service
 
 enum class ServiceType {
     // General Maintenance and Cleaning

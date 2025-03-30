@@ -10,8 +10,8 @@ import com.application.real_estate_app.core_network.db_names.FirestoreFields
 import com.application.real_estate_app.core_network.mappers.toDomainModel
 import com.application.real_estate_app.core_network.mappers.toEntityModel
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
-import com.application.real_estate_app.core_model.Likes
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.feature.Likes
+import com.application.real_estate_app.core_model.property.Property
 import com.application.real_estate_app.core_common.media.MediaFormat
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.application.real_estate_app.core_network.interfaces.IPropertyRemoteDatasource

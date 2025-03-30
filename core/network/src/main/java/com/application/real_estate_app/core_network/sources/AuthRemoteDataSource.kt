@@ -4,7 +4,7 @@ import com.application.real_estate_app.core_common.errors.Errors
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_network.interfaces.INetworkHandler
 import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource
-import com.application.real_estate_app.core_model.User
+import com.application.real_estate_app.core_model.user.User
 import com.application.real_estate_app.core_network.db_names.FirestoreCollections
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

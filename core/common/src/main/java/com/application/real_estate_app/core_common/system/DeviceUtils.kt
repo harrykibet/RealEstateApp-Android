@@ -11,7 +11,7 @@ import androidx.core.app.ActivityManagerCompat
 import androidx.core.content.getSystemService
 import android.media.MediaCodecInfo
 import com.application.real_estate_app.core_common.interfaces.IDeviceUtils
-import com.application.real_estate_app.core_model.DeviceInfo
+import com.application.real_estate_app.core_model.system.DeviceInfo
 import javax.inject.Inject
 
 class DeviceUtils @Inject constructor(

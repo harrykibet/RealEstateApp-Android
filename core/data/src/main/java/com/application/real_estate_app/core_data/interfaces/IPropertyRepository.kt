@@ -3,7 +3,7 @@ package com.application.real_estate_app.core_data.interfaces
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.application.real_estate_app.core_database.entities.PropertyDraftEntity
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 
 interface IPropertyRepository {
     // LiveData to monitor the upload status

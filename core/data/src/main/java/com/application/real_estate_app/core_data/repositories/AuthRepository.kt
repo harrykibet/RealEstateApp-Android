@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_data.interfaces.IAuthRepository
-import com.application.real_estate_app.core_model.User
+import com.application.real_estate_app.core_model.user.User
 import com.application.real_estate_app.core_network.interfaces.IAuthRemoteDataSource
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

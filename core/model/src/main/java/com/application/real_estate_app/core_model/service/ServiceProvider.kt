@@ -1,5 +1,6 @@
-package com.application.real_estate_app.core_model
+package com.application.real_estate_app.core_model.service
 
+import com.application.real_estate_app.core_model.system.Location
 import java.util.Date
 
 data class ServiceProvider(

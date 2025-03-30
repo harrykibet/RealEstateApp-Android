@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
 import com.application.real_estate_app.core_database.entities.PropertyDraftEntity
 import com.application.real_estate_app.core_database.interfaces.IPropertyLocalDataSource
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 import com.application.real_estate_app.core_network.interfaces.IPropertyRemoteDatasource
 import javax.inject.Inject
 

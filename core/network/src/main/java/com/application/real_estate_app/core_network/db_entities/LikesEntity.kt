@@ -1,6 +1,6 @@
 package com.application.real_estate_app.core_network.db_entities
 
-import com.application.real_estate_app.core_model.Likes
+import com.application.real_estate_app.core_model.feature.Likes
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 

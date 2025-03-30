@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_network.mappers
 
 import com.application.real_estate_app.core_network.db_entities.PropertyEntity
-import com.application.real_estate_app.core_model.Property
+import com.application.real_estate_app.core_model.property.Property
 
 // Extension function to convert PropertyEntity to Domain model
 fun PropertyEntity.toDomainModel(): Property {
