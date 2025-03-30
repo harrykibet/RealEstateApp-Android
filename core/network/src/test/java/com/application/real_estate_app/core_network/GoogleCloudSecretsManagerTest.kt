@@ -1,12 +1,13 @@
-package com.application.real_estate_app.security
+package com.application.real_estate_app.core_network
 
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.security.data.sources.remote.GoogleCloudSecretsManager
-import com.application.real_estate_app.security.domain.models.CacheKey
-import com.application.real_estate_app.security.domain.models.SecretId
-import com.application.real_estate_app.security.utils.exceptions.SecretsManagerException
-import com.application.real_estate_app.security.utils.extensions.SemanticVersion
-import com.application.real_estate_app.security.utils.extensions.SensitiveString
+import com.application.real_estate_app.core_network.interfaces.IGoogleCloudSecretsManager
+import com.application.real_estate_app.core_network.utils.SensitiveString
+import com.application.real_estate_app.core_network.sources.GoogleCloudSecretsManager
+import com.application.real_estate_app.core_network.exceptions.SecretsManagerException
+import com.application.real_estate_app.core_model.utils.SemanticVersion
+import com.application.real_estate_app.core_model.CacheKey
+import com.application.real_estate_app.core_model.SecretId
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache
 import com.google.cloud.secretmanager.v1.*
 import io.mockk.*
