@@ -6,9 +6,4 @@ data class UserClassificationResult(
     val confidenceScore: Double
 )
 
-enum class UserCategory {
-    HIGH_VALUE,
-    CASUAL,
-    NEW_USER,
-    INACTIVE
-}
+

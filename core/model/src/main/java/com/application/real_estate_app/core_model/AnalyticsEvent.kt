@@ -10,17 +10,6 @@ data class AnalyticsEvent(
     val userLocation: UserLocation?
 )
 
-data class DeviceInfo(
-    val os: String,
-    val browser: String,
-    val deviceType: String,
-    val screenResolution: String,
-    val appVersion: String
-)
 
-data class UserLocation(
-    val country: String,
-    val city: String,
-    val latitude: Double,
-    val longitude: Double
-)
+
+

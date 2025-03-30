@@ -6,8 +6,3 @@ data class PropertyFeatures(
     val amenitiesCount: Int
 )
 
-data class UserFeatures(
-    val totalInteractions: Int,
-    val avgPricePreference: Double,
-    val preferredLocationScore: Int
-)
