@@ -14,12 +14,39 @@ workflows:
       - name: Set Android SDK location
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+
+      - name: Generate Debug Keystore
+        script: |
+          DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+
+          # Remove existing debug keystore if it exists
+          if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
+            echo "Removing existing debug keystore..."
+            rm -f "$DEBUG_KEYSTORE_PATH"
+          fi
+
+          # Generate a new debug keystore
+          echo "Generating new debug keystore..."
+          keytool -genkey -v \
+            -keystore "$DEBUG_KEYSTORE_PATH" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000
+
+          echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
+
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
+
       - name: Build Android release (APK)
         script: |
           ./gradlew assembleRelease -PversionCode=1.0 -PversionName=1.0.2 --build-cache
+
       - name: Check APK Existence
         script: |
           APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
@@ -29,6 +56,7 @@ workflows:
             echo "❌ ERROR: APK not found at $APK_PATH"
             exit 1
           fi
+
       - name: Sign the APK
         script: |
           APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
@@ -39,12 +67,15 @@ workflows:
             -keypass $CM_KEY_PASSWORD "$APK_PATH" $CM_KEY_ALIAS
 
           mv "$APK_PATH" "$SIGNED_APK"
+
       - name: Verify APK Directory
         script: |
           echo "APK directory contents:"
           ls -alh app/build/outputs/apk/release/
+
     artifacts:
       - app/build/outputs/**/*.apk
+
     publishing:
       email:
         recipients:
