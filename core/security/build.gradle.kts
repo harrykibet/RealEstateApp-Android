@@ -16,10 +16,6 @@ dependencies {
 
     implementation(libs.security.crypto.ktx)
 
-    implementation(platform(libs.google.cloud.bom))
-    implementation(libs.google.cloud.kms)
-    implementation(libs.google.cloud.secretmanager)
-
     implementation(projects.core.common)
 
     implementation(libs.bundles.bouncy)

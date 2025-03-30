@@ -18,8 +18,11 @@ dependencies {
     implementation(libs.bundles.firebase)
     implementation(libs.play.services.maps)
 
+    implementation(libs.security.crypto.ktx)
+
     implementation(projects.core.model)
     implementation(projects.core.common)
     implementation(projects.core.database)
+    implementation(projects.core.security)
     implementation(projects.core.network)
 }
