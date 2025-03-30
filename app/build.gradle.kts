@@ -23,7 +23,8 @@ android {
 
     signingConfigs {
         getByName("debug") { // Ensure debug signing config exists
-            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
+            val debugKeystorePath = "/root/.android/debug.keystore" // CI root path
+            storeFile = file(debugKeystorePath)
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
