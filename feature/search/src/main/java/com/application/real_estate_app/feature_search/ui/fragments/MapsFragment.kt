@@ -180,7 +180,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     val userLocation = LatLng(it.latitude, it.longitude)
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14f))
 
-                    // Retrieve nearby properties from firestore
+                    // Retrieve nearby properties
                     if(!searchViewModel.loadNearbyProperties(map, it.latitude, it.longitude)){
                         handleNoNearbyProperties()
                     }

@@ -56,7 +56,7 @@ include(":core:model")
 include(":core:database")
 include(":core:security")
 include(":core:datastore")
-include(":core:designsystem")
+include(":core:design-system")
 include(":core:testing")
 include(":core:datastore-proto")
 

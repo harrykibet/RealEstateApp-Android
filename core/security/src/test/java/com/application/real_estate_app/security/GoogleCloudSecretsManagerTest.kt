@@ -2,7 +2,6 @@ package com.application.real_estate_app.security
 
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.security.data.sources.remote.GoogleCloudSecretsManager
-import com.application.real_estate_app.security.domain.interfaces.IGoogleCloudSecretsManager
 import com.application.real_estate_app.security.domain.models.CacheKey
 import com.application.real_estate_app.security.domain.models.SecretId
 import com.application.real_estate_app.security.utils.exceptions.SecretsManagerException

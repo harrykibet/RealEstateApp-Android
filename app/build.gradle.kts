@@ -96,7 +96,7 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.analytics)
-    implementation(projects.core.designsystem)
+    implementation(projects.core.designSystem)
     implementation(projects.core.notifications)
     implementation(projects.core.datastoreProto)
 

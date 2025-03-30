@@ -2,7 +2,6 @@ package com.application.real_estate_app.security
 
 import com.application.real_estate_app.core_common.interfaces.IRemoteConfigManager
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
-import com.application.real_estate_app.security.domain.interfaces.IApiKeyValidator
 import com.application.real_estate_app.security.utils.exceptions.InvalidApiKeyException
 import com.application.real_estate_app.security.utils.extensions.ApiKeyValidator
 import com.application.real_estate_app.security.utils.extensions.ServiceNames
