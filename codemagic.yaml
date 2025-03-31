@@ -69,10 +69,12 @@ workflows:
       - name: Sign the APK
         script: |
           APK_DIR="app/build/outputs/apk/release/"
+          
+          # Try to find an unsigned APK first
           APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
-          SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
 
           if [ -f "$APK_FILE" ]; then
+            SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
             echo "Signing APK: $APK_FILE"
             jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
               -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
@@ -80,10 +82,19 @@ workflows:
 
             mv "$APK_FILE" "$SIGNED_APK"
             echo "✅ Signed APK: $SIGNED_APK"
+          
           else
-            echo "❌ ERROR: Unsigned APK not found"
-            exit 1
+            # If the unsigned APK doesn't exist, check for an already signed APK
+            SIGNED_APK=$(find "$APK_DIR" -name "*.apk" | head -n 1)
+
+            if [ -f "$SIGNED_APK" ]; then
+              echo "✅ Already signed APK found: $SIGNED_APK"
+            else
+              echo "❌ ERROR: No APK found (neither unsigned nor signed)"
+              exit 1
+            fi
           fi
+
 
 
       - name: Verify APK Directory
