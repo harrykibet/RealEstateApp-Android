@@ -1,9 +1,9 @@
-package com.application.real_estate_app.core_network
+package com.application.real_estate_app.core_common.system
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import com.application.real_estate_app.core_network.interfaces.INetworkUtils
+import com.application.real_estate_app.core_common.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException

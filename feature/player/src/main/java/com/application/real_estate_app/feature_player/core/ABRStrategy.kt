@@ -8,7 +8,7 @@ import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.application.real_estate_app.core_common.interfaces.IBatteryManager
 import com.application.real_estate_app.core_common.interfaces.IDeviceUtils
-import com.application.real_estate_app.core_network.interfaces.INetworkUtils
+import com.application.real_estate_app.core_common.interfaces.INetworkUtils
 import com.google.common.collect.ImmutableList
 import java.lang.Long.min
 import javax.inject.Inject

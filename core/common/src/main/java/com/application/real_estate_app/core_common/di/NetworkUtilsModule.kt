@@ -1,7 +1,7 @@
-package com.application.real_estate_app.core_network.di
+package com.application.real_estate_app.core_common.di
 
-import com.application.real_estate_app.core_network.NetworkUtils
-import com.application.real_estate_app.core_network.interfaces.INetworkUtils
+import com.application.real_estate_app.core_common.system.NetworkUtils
+import com.application.real_estate_app.core_common.interfaces.INetworkUtils
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -1,7 +1,7 @@
-package com.application.real_estate_app.core_network.interfaces
+package com.application.real_estate_app.core_common.interfaces
 
 import android.net.ConnectivityManager
-import com.application.real_estate_app.core_network.NetworkUtils.NetworkStatusResult
+import com.application.real_estate_app.core_common.system.NetworkUtils.NetworkStatusResult
 
 interface INetworkUtils {
     fun hasInternetAccess(): Boolean
