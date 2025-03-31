@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.room)
     alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)

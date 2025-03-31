@@ -67,6 +67,9 @@ object EventTypes {
     const val EVENT_EXCEPTION_CAUGHT = "Exception caught"
     const val EVENT_DATABASE_ERROR = "Database error"
 
+    // CDN Events
+    const val EVENT_CDN_FAILURE = "CDN failure"
+
     // Analytics Events
     const val EVENT_PUSH_NOTIFICATION_RECEIVED = "User received push notification"
     const val EVENT_PUSH_NOTIFICATION_OPENED = "User opened push notification"

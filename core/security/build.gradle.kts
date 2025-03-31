@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.room)
     alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.hilt)
 }
@@ -19,8 +18,4 @@ dependencies {
     implementation(projects.core.common)
 
     implementation(libs.bundles.bouncy)
-
-    implementation(libs.caffeine)
-
-    implementation(libs.bundles.analytics)
 }

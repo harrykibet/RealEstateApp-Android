@@ -26,9 +26,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback {
@@ -38,8 +36,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private var zoomOutCount = 0
     private val maxZoomOutAttempts = 1 // Limit to 1 zoom-out
 
-    @Inject
-    lateinit var db: FirebaseFirestore
 
     private val searchViewModel: SearchViewModel by viewModels()
 

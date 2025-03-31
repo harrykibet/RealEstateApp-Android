@@ -1,7 +1,7 @@
 package com.application.real_estate_app.feature_player.analytics
 
-import androidx.core.os.bundleOf
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.application.real_estate_app.core_common.events.EventTypes
+import com.application.real_estate_app.core_data.interfaces.IAnalyticsRepository
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,15 +10,16 @@ import javax.inject.Singleton
 @Suppress("Unused")
 @Singleton
 class QoSEventLogger @Inject constructor(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val analyticsClient: IAnalyticsRepository,
 ) {
     private val errorCodes = ConcurrentHashMap<String, Int>()
 
-    fun logCDNFailure(cdnUrl: String, responseCode: Int) {
-        firebaseAnalytics.logEvent("cdn_failure", bundleOf(
-            "cdn_url" to cdnUrl,
-            "response_code" to responseCode
-        ))
+    suspend fun logCDNFailure(cdnUrl: String, responseCode: Int) {
+        analyticsClient.logEvent(message = "$cdnUrl : $responseCode",
+            eventType = EventTypes.EVENT_CDN_FAILURE,
+            onFailure = {
+                // Handle Failure
+            })
         errorCodes.compute(cdnUrl) { _, v -> (v ?: 0) + 1 }
     }
 
