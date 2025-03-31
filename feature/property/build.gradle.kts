@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.room)
     alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
 }
 
@@ -17,10 +15,6 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
 
     implementation(libs.gson)
-
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.storage)
 
     implementation(libs.glide)
     ksp(libs.glide.compiler)

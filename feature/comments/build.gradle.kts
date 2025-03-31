@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.room)
     alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.firebase)
     alias(libs.plugins.realestateapp.hilt)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
 }
@@ -20,8 +18,6 @@ dependencies {
     ksp(libs.glide.compiler)
 
     implementation(libs.bundles.navigation)
-
-    implementation(libs.firebase.firestore)
 
     implementation(projects.core.model)
     implementation(projects.core.data)
