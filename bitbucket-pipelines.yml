@@ -25,7 +25,8 @@ pipelines:
         name: Generate Debug Keystore
         script:
           - |
-            DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+            DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
+            sudo mkdir -p /root/.android
             
             if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
               echo "Removing existing debug keystore..."
@@ -42,6 +43,7 @@ pipelines:
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000
+            sudo chmod 644 $DEBUG_KEYSTORE_PATH
 
             echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
 

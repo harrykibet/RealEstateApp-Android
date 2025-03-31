@@ -89,9 +89,9 @@ jobs:
 
       - name: Generate Debug Keystore (if missing)
         run: |
-          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+          if [ ! -f "/root/.android/debug.keystore" ]; then
             echo "Generating debug.keystore..."
-            keytool -genkeypair -v -keystore $HOME/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 \
+            keytool -genkeypair -v -keystore /root/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 \
               -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=Android,C=US"
           else
             echo "Debug keystore already exists."

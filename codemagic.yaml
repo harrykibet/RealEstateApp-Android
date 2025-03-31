@@ -17,7 +17,10 @@ workflows:
 
       - name: Generate Debug Keystore
         script: |
-          DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+          DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
+          
+          # Ensure the directory exists
+          sudo mkdir -p /root/.android
 
           # Remove existing debug keystore if it exists
           if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
@@ -36,6 +39,9 @@ workflows:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000
+          
+          # Ensure proper file permissions
+          sudo chmod 644 $DEBUG_KEYSTORE_PATH 
 
           echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
 
@@ -49,24 +55,36 @@ workflows:
 
       - name: Check APK Existence
         script: |
-          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
-          if [ -f "$APK_PATH" ]; then
-            echo "✅ APK found: $APK_PATH"
+          APK_DIR="app/build/outputs/apk/release/"
+          APK_FILE=$(find "$APK_DIR" -name "*.apk" | head -n 1)
+
+          if [ -f "$APK_FILE" ]; then
+            echo "✅ APK found: $APK_FILE"
           else
-            echo "❌ ERROR: APK not found at $APK_PATH"
+            echo "❌ ERROR: APK not found in $APK_DIR"
             exit 1
           fi
 
+
       - name: Sign the APK
         script: |
-          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
-          SIGNED_APK="app/build/outputs/apk/release/app-release.apk"
-          
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
-            -keypass $CM_KEY_PASSWORD "$APK_PATH" $CM_KEY_ALIAS
+          APK_DIR="app/build/outputs/apk/release/"
+          APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
+          SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
 
-          mv "$APK_PATH" "$SIGNED_APK"
+          if [ -f "$APK_FILE" ]; then
+            echo "Signing APK: $APK_FILE"
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+              -keystore $CM_KEYSTORE_PATH -storepass $CM_KEYSTORE_PASSWORD \
+              -keypass $CM_KEY_PASSWORD "$APK_FILE" $CM_KEY_ALIAS
+
+            mv "$APK_FILE" "$SIGNED_APK"
+            echo "✅ Signed APK: $SIGNED_APK"
+          else
+            echo "❌ ERROR: Unsigned APK not found"
+            exit 1
+          fi
+
 
       - name: Verify APK Directory
         script: |
