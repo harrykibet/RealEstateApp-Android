@@ -2,7 +2,7 @@ package com.application.real_estate_app.feature_player.streaming
 
 import com.application.real_estate_app.core_common.interfaces.IBatteryManager
 import com.application.real_estate_app.core_common.misc.Consts.PRIORITY_NORMAL
-import com.application.real_estate_app.core_network.interfaces.INetworkUtils
+import com.application.real_estate_app.core_common.interfaces.INetworkUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
