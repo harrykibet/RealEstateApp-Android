@@ -1,7 +1,7 @@
 package com.application.real_estate_app.core_data.repositories
 
 import com.application.real_estate_app.core_common.errors.Result
-import com.application.real_estate_app.core_data.interfaces.CryptMode
+import com.application.real_estate_app.core_data.CryptMode
 import com.application.real_estate_app.core_data.interfaces.ICryptoRepository
 import com.application.real_estate_app.core_data.interfaces.ISecurityRepository
 import com.application.real_estate_app.security.interfaces.ITokenLocalDataSource

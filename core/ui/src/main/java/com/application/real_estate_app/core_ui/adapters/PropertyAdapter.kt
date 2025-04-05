@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.core_model.property.Property
 import com.application.real_estate_app.core_ui.viewmodels.PropertyViewModel
+import androidx.core.view.isVisible
 
 // Refactor the adapter for performance and reduce the functions it handle
 class PropertyAdapter (
@@ -234,7 +235,7 @@ class PropertyAdapter (
         }
 
         fun reattachExoPlayer(videoUrl: String) {
-            if (binding.propertyVideoPlayer.visibility == View.VISIBLE) {
+            if (binding.propertyVideoPlayer.isVisible) {
                 exoPlayer.attachPlayerToView(binding.propertyVideoPlayer, videoUrl)
                 isVideoPlaying = true
             }

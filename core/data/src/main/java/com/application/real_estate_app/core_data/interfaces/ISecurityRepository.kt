@@ -1,6 +1,7 @@
 package com.application.real_estate_app.core_data.interfaces
 
 import com.application.real_estate_app.core_common.errors.Result
+import com.application.real_estate_app.core_data.CryptMode
 
 /**
  * Defines security-related operations such as encryption, decryption, signing, and verification.
@@ -19,10 +20,4 @@ interface ISecurityRepository {
     suspend fun clearToken(): Result<Unit>
 }
 
-/**
- * Represents encryption modes for security operations.
- */
-enum class CryptMode {
-    REMOTE,  // Cloud-based encryption (Google KMS)
-    LOCAL    // Local device-based encryption
-}
+
