@@ -13,4 +13,6 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.bundles.lifecycle)
+
+    implementation(projects.core.ui)
 }

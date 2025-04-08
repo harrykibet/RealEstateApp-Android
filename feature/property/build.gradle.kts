@@ -22,6 +22,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.common)
+    implementation(projects.core.ui)
 
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)

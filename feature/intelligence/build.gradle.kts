@@ -15,4 +15,6 @@ dependencies {
     implementation(libs.bundles.lifecycle)
 
     implementation(libs.bundles.mlkit)
+
+    implementation(projects.core.ui)
 }
