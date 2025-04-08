@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class MultiCDNSelector @Inject constructor(
     private val networkUtils: INetworkUtils,
-    private val remoteConfigManager: IRemoteConfigManager
+    remoteConfigManager: IRemoteConfigManager
 ) {
     private val cdnEndpoints = listOf(
         remoteConfigManager.getCDNEndPoint1(),
