@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.application.real_estate_app.core_common.misc.Consts
 import com.application.real_estate_app.core_model.feature.Comment
 import com.application.real_estate_app.core_model.user.User
-import com.application.real_estate_app.feature_comments.R
+import com.application.real_estate_app.core_ui.R
 import com.application.real_estate_app.feature_comments.databinding.ItemCommentBinding
 import com.application.real_estate_app.feature_comments.ui.viewmodels.CommentsViewModel
 import com.bumptech.glide.Glide
