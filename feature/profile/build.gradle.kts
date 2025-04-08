@@ -24,5 +24,6 @@ dependencies {
     implementation(libs.eventbus)
 
     implementation(projects.core.common)
+    implementation(projects.core.ui)
     implementation(projects.core.data)
 }
