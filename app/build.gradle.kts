@@ -22,13 +22,13 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") { // Ensure debug signing config exists
-            val debugKeystorePath = "/root/.android/debug.keystore" // CI root path
-            storeFile = file(debugKeystorePath)
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
+            getByName("debug") {
+                storeFile = rootProject.file("AppKeyStore/debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+
 
         create("release") {
             storeFile = rootProject.file("AppKeyStore/keystore.jks")
