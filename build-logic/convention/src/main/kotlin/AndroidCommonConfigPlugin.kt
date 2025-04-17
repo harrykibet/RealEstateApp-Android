@@ -68,7 +68,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
         }
 
         buildFeatures.viewBinding = true
-        buildFeatures.compose = true
 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
