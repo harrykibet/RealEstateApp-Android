@@ -13,9 +13,6 @@ dependencies {
 
     implementation(libs.bundles.android)
 
-    implementation(platform(libs.compose.bom))
-    implementation(libs.material3)
-
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.domain)

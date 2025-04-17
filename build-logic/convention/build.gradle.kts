@@ -69,5 +69,9 @@ gradlePlugin {
             id = libs.plugins.realestateapp.android.config.get().pluginId
             implementationClass = "AndroidCommonConfigPlugin"
         }
+        register("androidCompose") {
+            id = libs.plugins.realestateapp.android.compose.get().pluginId
+            implementationClass = "ComposeConventionPlugin"
+        }
     }
 }
