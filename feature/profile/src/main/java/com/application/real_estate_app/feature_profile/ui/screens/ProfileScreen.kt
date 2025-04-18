@@ -31,8 +31,8 @@ import com.application.real_estate_app.core_ui.theme.RealEstateAppTheme
 @Composable
 fun ProfileScreen(
     profileImage: Painter = painterResource(R.drawable.ic_launcher_round),
-    name: String = "John Doe",
-    email: String = "john.doe@example.com",
+    name: String = "Harry Kemboi",
+    email: String = "truman948@gmail.com",
     onEditProfileClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
 ) {
@@ -107,8 +107,8 @@ fun ProfileScreenPreview() {
     RealEstateAppTheme  {
         ProfileScreen(
             profileImage = painterResource(id = R.drawable.ic_launcher_round),
-            name = "Jane Developer",
-            email = "jane.dev@example.com"
+            name = "Harry Kemboi",
+            email = "truman948@gmail.com"
         )
     }
 }
