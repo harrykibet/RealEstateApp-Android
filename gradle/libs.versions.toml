@@ -107,6 +107,7 @@ org-sonarqube = { id = "org.sonarqube", version = "6.0.1.5171" }
 
 # Firebase
 com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
+com-google-firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 
 # Google
 com-google-gms-google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
