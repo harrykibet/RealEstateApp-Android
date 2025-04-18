@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId = "com.application.real_estate_app"
         versionCode = 1
-        targetSdk = 35
+        targetSdk = 36
         versionName = "1.0"
     }
 
