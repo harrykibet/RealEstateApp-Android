@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.application.real_estate_app.feature_profile.ui.screens.ProfileScreen
+import com.application.real_estate_app.feature_auth.ui.screens.LoginScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController, isAuthenticated: Boolean) {
@@ -17,6 +18,6 @@ fun AppNavHost(navController: NavHostController, isAuthenticated: Boolean) {
         //composable("add") { AddPropertyScreen() }
        // composable("favorites") { FavoritesScreen() }
         composable("profile") { ProfileScreen() }
-       // composable("login") { LoginScreen() }
+        composable("login") { LoginScreen() }
     }
 }
