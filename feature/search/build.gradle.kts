@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.bundles.play)
+    implementation(libs.maps.compose)
+
 
     implementation(libs.bundles.navigation)
 

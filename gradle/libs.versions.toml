@@ -58,6 +58,7 @@ kotlin = "2.0.0"
 kotest = "5.9.1"
 ksp = "2.0.0-1.0.21"
 leakcanary = "3.0-alpha-8"
+maps-compose = "4.3.3"
 mockk = "1.13.16"
 metrics-performance = "1.0.0-beta01"
 micrometer-core = "1.15.0-M2"
@@ -279,6 +280,7 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "google-dagger" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "google-dagger" }
 hilt-navigation-fragment = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "androidx-hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "google-dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
 
@@ -330,6 +332,7 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-android-play-services-location" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "google-android-places" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-android-play-services-auth" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "maps-compose" }
 
 
 # Events
