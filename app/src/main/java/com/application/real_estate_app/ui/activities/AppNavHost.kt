@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.application.real_estate_app.feature_profile.ui.screens.ProfileScreen
 import com.application.real_estate_app.feature_auth.ui.screens.LoginScreen
+import com.application.real_estate_app.feature_search.ui.screens.MapWithSearchBar
 
 @Composable
 fun AppNavHost(navController: NavHostController, isAuthenticated: Boolean) {
@@ -14,7 +15,7 @@ fun AppNavHost(navController: NavHostController, isAuthenticated: Boolean) {
         startDestination = if (isAuthenticated) "home" else "login"
     ) {
         //composable("home") { HomeScreen() }
-       // composable("explore") { ExploreScreen() }
+        composable("explore") { MapWithSearchBar() }
         //composable("add") { AddPropertyScreen() }
        // composable("favorites") { FavoritesScreen() }
         composable("profile") { ProfileScreen() }
