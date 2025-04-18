@@ -5,5 +5,4 @@ interface LoggerInterface {
     fun i(message: String)
     fun w(message: String, throwable: Throwable? = null)
     fun e(message: String, throwable: Throwable? = null)
-    fun saveLogToFile(message: String, throwable: Throwable? = null)
 }
