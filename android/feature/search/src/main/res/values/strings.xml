@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_maps_key">"AIzaSyAMbM4FJlF3OZ2ok1gwXsndHXDO6YnB_H4"</string>
+    <string name="search_location">Search location</string>
+    <string name="fetch_location_error">Failed to fetch location details: %1$s</string>
+    <string name="location_not_found">Location not found</string>
+    <string name="search_location_error">Error in searching location: %1$s</string>
+    <string name="no_nearby_properties">No nearby properties found. Zooming out to show more properties.</string>
+    <string name="no_properties_after_zoom_out">No nearby properties found after %1$d zoom-out attempts.</string>
+</resources>

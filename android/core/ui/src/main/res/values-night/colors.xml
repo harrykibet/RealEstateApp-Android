@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="action_button_color">#FFFFFF</color> <!-- White for night mode -->
+    <color name="button_background">#000000</color> <!-- Dark color -->
+    <color name="button_tint">#FFFFFF</color> <!-- Light text/icon color -->
+    <color name="addProperty_background">#000000</color>
+    <color name="colorPrimaryDark">#121212</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="color_primary">#000000</color>
+    <color name="colorAccent">@color/blue</color>
+    <color name="strokeColor">#80000000</color>
+    <color name="sendButton">@color/white</color>
+    <color name="required">@color/colorOnPrimarySoft</color>
+    <color name="unselected_color">@color/dark_gray</color> <!-- Color for inactive state -->
+    <color name="selected_color">@color/colorOnPrimary</color>  <!-- Color for active state -->
+    <color name="colorButton">#3700B3</color>
+    <color name="dark_gray">#FF444444</color>
+    <color name="optional">@color/colorOnPrimarySoft</color>
+    <color name="editTextBackground">@color/dark_gray</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnPrimarySoft">#B3FFFFFF</color> <!-- 70% opacity -->
+    <color name="colorSecondary">#000000</color>
+    <color name="colorOnSecondary">#FFFFFF</color> <!-- Change this if needed -->
+</resources>

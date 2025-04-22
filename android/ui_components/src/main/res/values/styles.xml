@@ -1,0 +1,55 @@
+
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+    </style>
+
+    <!-- Active item text appearance (larger text, selected color) -->
+    <style name="BottomNavTextAppearanceActive" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/black</item> <!-- Adjust color as needed -->
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Inactive item text appearance (smaller text, unselected color) -->
+    <style name="BottomNavTextAppearanceInactive" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">8sp</item>
+        <item name="android:textColor">@color/black</item> <!-- Adjust color as needed -->
+        <item name="android:textAllCaps">false</item>
+    </style>
+        <!-- Custom style for BottomSheetDialogFragment -->
+        <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+            <!-- Set a custom background drawable with rounded corners -->
+            <item name="android:background">@drawable/bottom_sheet_background</item>
+
+            <!-- Set elevation for shadow effect -->
+            <item name="android:elevation">8dp</item>
+
+            <!-- Padding for content inside the bottom sheet -->
+            <item name="android:padding">16dp</item>
+
+            <!-- Transparent navigation bar for a seamless look -->
+            <item name="android:windowTranslucentNavigation">true</item>
+        </style>
+
+    <!-- Shape appearance for rounded corners -->
+        <style name="ShapeAppearanceOverlay.BottomSheetDialog" parent="">
+            <item name="cornerFamily">rounded</item>
+            <item name="cornerSize">16dp</item>
+        </style>
+
+    <!-- Define the circular shape with elevation  -->
+    <style name="FAB_Circle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MaterialComponents.SmallComponent</item>
+    </style>
+</resources>

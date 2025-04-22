@@ -1,0 +1,83 @@
+# Bitbucket Pipeline for Android Project with Gradle 8
+
+image: gradle:8.12.0-jdk17  # Gradle 8 with JDK 17
+
+pipelines:
+  default:
+    - step:
+        name: Setup Android Environment
+        caches:
+          - gradle
+          - android-sdk
+        script:
+          - echo "Installing Android SDK..."
+          - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
+          - unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
+          - mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
+          - rm commandlinetools.zip
+          - echo "Downloading and installing Android SDK components..."
+          - $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "extras;android;m2repository" "extras;google;m2repository"
+          - echo "Accepting licenses..."
+          - yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --licenses || true
+          - echo "Android SDK setup complete."
+
+    - step:
+        name: Generate Debug Keystore
+        script:
+          - |
+            DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
+            sudo mkdir -p /root/.android
+            
+            if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
+              echo "Removing existing debug keystore..."
+              rm -f "$DEBUG_KEYSTORE_PATH"
+            fi
+
+            echo "Generating new debug keystore..."
+            keytool -genkey -v \
+              -keystore "$DEBUG_KEYSTORE_PATH" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -dname "CN=Android Debug,O=Android,C=US" \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000
+            sudo chmod 644 $DEBUG_KEYSTORE_PATH
+
+            echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
+
+    - step:
+        name: Build and Test
+        caches:
+          - gradle
+          - android-sdk
+        script:
+          - echo "Setting CI environment variable..."
+          - export CI="true"  # ✅ Define CI environment variable for Kotlin Daemon
+          - echo "Running Gradle build..."
+          - ./gradlew clean build --stacktrace
+        artifacts:
+          - app/build/outputs/**
+        after-script:
+          - pipe: atlassian/checkstyle-report:0.3.0
+
+    - step:
+        name: Security Scan
+        script:
+          - pipe: atlassian/git-secrets-scan:0.5.1
+
+    - step:
+        name: Deploy to Production
+        deployment: production
+        script:
+          - echo "Deploying to production..."
+          - export CI="true"  # ✅ Ensure CI variable is set in deployment
+          - ./gradlew assembleRelease
+          - echo "Uploading APK or AAB to production..."
+          # Replace with actual deployment commands (e.g., uploading to Play Store)
+          - echo "Deployment complete."
+
+definitions:
+  caches:
+    android-sdk: ~/.android
