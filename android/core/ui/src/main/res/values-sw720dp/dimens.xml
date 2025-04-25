@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Custom widths for screens 720dp smallest width -->
-<!-- res/values-sw720dp/dimens.xml -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="design_bottom_navigation_item_max_width" tools:override="true">720dp</dimen>
-    <dimen name="design_bottom_navigation_active_item_max_width" tools:override="true">720dp</dimen>
-    <dimen name="max_width_text_field">480dp</dimen>
-</resources>

@@ -1,7 +1,0 @@
-<!-- res/values-w600dp/dimens.xml -->
-<!-- Custom widths for 600dp+ screens -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="design_bottom_navigation_item_max_width" tools:override="true">600dp</dimen>
-    <dimen name="design_bottom_navigation_active_item_max_width" tools:override="true">600dp</dimen>
-    <dimen name="max_width_text_field">400dp</dimen>"
-</resources>
