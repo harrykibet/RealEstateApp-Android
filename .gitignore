@@ -21,10 +21,12 @@ my-firebase-admin-app/
 
 # Android Studio/IDE specific files
 .idea/caches/
+.idea/AndroidProjectSystem.xml
 .idea/libraries/
 .idea/modules.xml
 .idea/workspace.xml
 .idea/navEditor.xml
+.idea/inspectionProfiles/Project_Default.xml
 .idea/assetWizardSettings.xml
 
 # macOS specific
@@ -32,8 +34,10 @@ my-firebase-admin-app/
 
 # Build outputs (do not commit compiled files)
 build/
+build-logic/.kotlin/errors
 captures/
 .externalNativeBuild/
+.kotlin/sessions/
 .cxx/
 
 # Scripts
@@ -43,3 +47,4 @@ captures/
 # Misc
 dependencies_tree.txt
 dependency_tree.txt
+java_pid4268.hprof
