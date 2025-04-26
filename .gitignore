@@ -16,7 +16,6 @@ AI_ML_ApiKey.json
 AppKeyStore/
 firestore.rules
 .firebaserc
-app/google-services.json
 my-firebase-admin-app/
 
 # Android Studio/IDE specific files
