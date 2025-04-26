@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature_comments_nav_graph"
+    app:startDestination="@id/commentFragment">
+    <!-- Comment Fragment -->
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="com.application.real_estate_app.feature_comments.ui.fragments.CommentFragment"
+        android:label="Comments"
+        tools:layout="@layout/fragment_comment" >
+        <deepLink
+            android:id= "@+id/commentFragmentDeepLink"
+            app:uri="https://real_estate_app.com/commentFragment/property/{propertyId}/user/{userId}"/>
+        <argument
+            android:name="propertyId"
+            app:argType = "string"
+            android:defaultValue=""/>
+        <argument
+            android:name="userId"
+            app:argType = "string"
+            android:defaultValue=""/>
+    </fragment>
+</navigation>

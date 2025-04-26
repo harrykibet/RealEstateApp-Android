@@ -1,0 +1,19 @@
+{
+  "name": "realestateapp",
+  "version": "1.0.0",
+  "description": "🏠 Real Estate Listing App\r The Real Estate Listing App is designed to simplify the process of finding rental properties in Kenya. The app bridges the gap between property owners and tenants by offering an easy-to-use platform for listing, discovering, and managing rental properties.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harrykibet/RealEstateApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harrykibet/RealEstateApp/issues"
+  },
+  "homepage": "https://github.com/harrykibet/RealEstateApp#readme"
+}

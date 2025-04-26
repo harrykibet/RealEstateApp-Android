@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_logo">App Logo</string>
+    <string name="app_name">Estatia</string>
+    <string name="authentication_status">Authentication Status: %1$s</string>
+    <string name="title_compliance">Compliance</string>
+    <string name="title_comply">Comply</string>
+    <string name="title_legal">Legal</string>
+</resources>

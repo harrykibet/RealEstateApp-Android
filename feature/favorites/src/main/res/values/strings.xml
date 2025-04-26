@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_liked_properties_yet">No liked properties yet</string>
+    <string name="error_loading_liked_properties">Error loading liked properties %1$s</string>
+    <string name="error_fetching_property">Error fetching property %1$s</string>
+</resources>

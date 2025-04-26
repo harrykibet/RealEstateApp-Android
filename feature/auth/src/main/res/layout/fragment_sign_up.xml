@@ -1,0 +1,170 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context="com.application.real_estate_app.feature_auth.ui.fragments.SignUpFragment">
+
+    <!-- App Name -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/AppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_new_account"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textAppearance="?attr/textAppearanceBody1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- UserName Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userNameInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:maxWidth="500dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:hint="@string/username"
+        app:hintEnabled="true"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/AppName"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp"
+        app:helperTextTextColor="?attr/colorOnPrimaryContainer"
+        app:helperText="Enter your userName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_edittext_background"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Email Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:maxWidth="500dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:hint="@string/email_address"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userNameInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"
+        app:errorEnabled="true"
+        app:hintEnabled="true"
+        app:helperText="Enter a valid email address"
+        app:helperTextTextColor="?attr/colorOnPrimaryContainer">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailEditText"
+            android:layout_width="match_parent"
+            android:background="@drawable/rounded_edittext_background"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Phone Number Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phoneInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:maxWidth="500dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:hint="@string/phone_number"
+        app:hintEnabled="true"
+        app:errorEnabled="true"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:helperText="Include your country code, e.g., +254"
+        app:helperTextTextColor="?attr/colorOnPrimaryContainer">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phoneEditText"
+            android:background="@drawable/rounded_edittext_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <!-- Password Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:maxWidth="500dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:hint="@string/password2"
+        app:hintEnabled="true"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phoneInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"
+        app:helperText="Password must be at least 6 characters"
+        app:endIconMode="password_toggle"
+        app:helperTextTextColor="?attr/colorOnPrimaryContainer">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_edittext_background"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Spinner
+        android:id="@+id/userTypeSpinner"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:minWidth="300dp"
+        android:maxWidth="500dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:background="@drawable/rounded_edittext_background"
+        app:layout_constraintTop_toBottomOf="@id/passwordInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Sign-Up Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSignUp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintWidth_percent="0.3"
+        android:text="@string/sign_up"
+        android:background="@drawable/rounded_button_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userTypeSpinner" />
+
+    <!-- Already have an account -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/AlreadyHaveAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/already_have_an_account_log_in"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/btnSignUp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

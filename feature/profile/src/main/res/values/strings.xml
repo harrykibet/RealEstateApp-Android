@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="user_email">User Email</string>
+    <string name="log_out">Log Out</string>
+    <string name="log_out_failed">Logout failed %1$s</string>
+    <string name="profile_picture">profile_picture</string>
+    <string name="john_doe">John Doe</string>
+    <string name="john_doe_example_com">john.doe@example.com</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
+</resources>

@@ -1,0 +1,21 @@
+package com.application.real_estate_app.core_network.interfaces
+
+import com.application.real_estate_app.core_model.analytics.AnalyticsEvent
+
+interface IAnalyticsRemoteDataSource {
+
+    suspend fun logEvent(event: AnalyticsEvent, onFailure: (Exception) -> Unit): Boolean
+    suspend fun getEventsForUser(
+        userId: String,
+        onFailure: (Exception) -> Unit
+    ): List<AnalyticsEvent>
+
+    suspend fun getEventById(eventId: String, onFailure: (Exception) -> Unit): AnalyticsEvent?
+    suspend fun generateEventId(): String
+    suspend fun logEvent(
+        message: String,
+        eventType: String,
+        customMetadata: Map<String, String>?,
+        onFailure: (Exception) -> Unit
+    ): Boolean
+}
