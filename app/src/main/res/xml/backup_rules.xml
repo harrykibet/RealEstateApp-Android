@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Exclude google-services.json from device-to-device backups -->
+    <exclude domain="file" path="google-services.json" />
+
+    <!-- Example: Exclude cache directory (recommended) -->
+    <exclude domain="file" path="cache/" />
+
+    <!-- Example: Exclude no-backup directory (if you have one) -->
+    <exclude domain="file" path="no_backup/" />
+
+    <!-- Example: Exclude external cache (optional) -->
+    <exclude domain="external" path="Android/data/your.package.name/cache/" />
+
+    <!-- You can add more <exclude> or <include> as needed -->
+</full-backup-content>

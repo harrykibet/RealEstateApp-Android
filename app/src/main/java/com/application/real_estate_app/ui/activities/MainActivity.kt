@@ -14,11 +14,16 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.application.real_estate_app.R
+import com.application.real_estate_app.feature_auth.R.id.loginFragment
+import com.application.real_estate_app.feature_home.R.id.homeFragment
+import com.application.real_estate_app.feature_profile.R.id.profileFragment
+import com.application.real_estate_app.feature_search.R.id.mapsFragment
+import com.application.real_estate_app.feature_property.R.id.addPropertyFragment
+import com.application.real_estate_app.feature_favorites.R.id.favoritesFragment
 import com.application.real_estate_app.core_common.events.LoginEvent
 import com.application.real_estate_app.core_common.events.LogoutEvent
 import com.application.real_estate_app.core_common.misc.Consts
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
-import com.application.real_estate_app.utils.FireStoreConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -78,9 +83,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-
-        // Initialize FireStore settings
-        FireStoreConfig.initFireStoreSettings()
     }
 
     fun navigateBasedOnAuthentication(isAuthenticated: Boolean) {
@@ -114,27 +116,27 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.homeFragment -> {
+                homeFragment -> {
                     navController.navigate(com.application.real_estate_app.feature_home.R.id.feature_home_nav_graph)
                     true
                 }
 
-                R.id.mapsFragment -> {
+                mapsFragment -> {
                     navController.navigate(com.application.real_estate_app.feature_search.R.id.feature_explore_nav_graph)
                     true
                 }
 
-                R.id.addPropertyFragment -> {
+                addPropertyFragment -> {
                     navController.navigate(com.application.real_estate_app.feature_property.R.id.feature_property_nav_graph)
                     true
                 }
 
-                R.id.favoritesFragment -> {
+                favoritesFragment -> {
                     navController.navigate(com.application.real_estate_app.feature_favorites.R.id.feature_favorite_nav_graph)
                     true
                 }
 
-                R.id.profileFragment -> {
+                profileFragment -> {
                     navController.navigate(com.application.real_estate_app.feature_profile.R.id.feature_profile_nav_graph)
                     true
                 }
