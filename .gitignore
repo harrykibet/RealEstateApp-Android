@@ -37,7 +37,7 @@ build/
 build-logic/.kotlin/errors
 captures/
 .externalNativeBuild/
-.kotlin/sessions/
+.kotlin/sessions/u
 .cxx/
 
 # Scripts
@@ -48,3 +48,7 @@ captures/
 dependencies_tree.txt
 dependency_tree.txt
 java_pid4268.hprof
+*.apk
+*.mp4
+large_assets/
+
