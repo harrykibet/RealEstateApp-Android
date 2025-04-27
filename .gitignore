@@ -7,13 +7,11 @@ local.properties
 gradle.properties
 
 # Firebase and API keys (sensitive information)
-google-services.json
 G-Play_Intergrity_Api.json
 firebase.json
 firestore.indexes.json
 MapsApiKey.json
 AI_ML_ApiKey.json
-AppKeyStore/
 firestore.rules
 .firebaserc
 my-firebase-admin-app/

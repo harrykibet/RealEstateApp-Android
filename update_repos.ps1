@@ -1,5 +1,5 @@
 # Define remotes and branch
-$repos = @("gitlab", "github", "bitbucket")
+$repos = @("gitlab", "github")
 $branch = "main"
 
 # Function to update a repository
