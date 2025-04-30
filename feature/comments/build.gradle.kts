@@ -1,8 +1,5 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.android.compose)
-    alias(libs.plugins.realestateapp.hilt)
+    alias(libs.plugins.realestateapp.android.feature)
 }
 
 android {
@@ -20,7 +17,4 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)
-    implementation(projects.core.data)
-    implementation(projects.core.ui)
-    implementation(projects.core.common)
 }

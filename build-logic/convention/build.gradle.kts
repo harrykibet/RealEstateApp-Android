@@ -85,5 +85,9 @@ gradlePlugin {
             id = libs.plugins.realestateapp.android.benchmark.get().pluginId
             implementationClass = "AndroidBenchmarkConventionPlugin"
         }
+        register("androidFeature") {
+            id = libs.plugins.realestateapp.android.feature.get().pluginId
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }

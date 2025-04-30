@@ -1,3 +1,16 @@
+buildscript {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+    }
+}
+
 plugins {
     alias(libs.plugins.com.android.application)  apply false
     alias(libs.plugins.com.android.library) apply false
