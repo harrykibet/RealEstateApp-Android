@@ -14,31 +14,6 @@ plugins {
 android {
     namespace = "com.application.real_estate_app"
 
-    defaultConfig {
-        applicationId = "com.application.real_estate_app"
-        versionCode = 1
-        targetSdk = 36
-        versionName = "1.0"
-    }
-
-    signingConfigs {
-            getByName("debug") {
-                storeFile = rootProject.file("AppKeyStore/debug.keystore")
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
-            }
-
-
-        create("release") {
-            storeFile = rootProject.file("AppKeyStore/keystore.jks")
-            storePassword = "2001birth"
-            keyAlias = "key0"
-            keyPassword = "2001birth"
-        }
-    }
-
-
     buildTypes {
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
