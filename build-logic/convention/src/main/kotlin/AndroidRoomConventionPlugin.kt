@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import utils.libs
 
 class AndroidRoomConventionPlugin : Plugin<Project> {
 
@@ -25,9 +26,9 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(lib.findLibrary("room.runtime").get())
-                "implementation"(lib.findLibrary("room.ktx").get())
-                "ksp"(lib.findLibrary("room.compiler").get())
+                "implementation"(libs.findLibrary("room.runtime").get())
+                "implementation"(libs.findLibrary("room.ktx").get())
+                "ksp"(libs.findLibrary("room.compiler").get())
             }
         }
     }

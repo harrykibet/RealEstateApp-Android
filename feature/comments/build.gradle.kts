@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.android.compose)
     alias(libs.plugins.realestateapp.hilt)
-    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
 }
 
 android {

@@ -1,22 +1,22 @@
 [versions]
 
-androidGradlePlugin = "8.8.2"
-androidTools = "31.9.1"
+androidGradlePlugin = "8.9.2"
+androidTools = "31.9.2"
 androidx-activity = "1.10.1"
 androidx-appcompat = "1.7.0"
 androidx-arch-core = "2.2.0"
 androidx-constraintlayout = "2.2.1"
 androidx-core = "1.16.0"
-androidx-core-splashscreen = "1.2.0-beta01"
+androidx-core-splashscreen = "1.2.0-beta02"
 androidx-fragment = "1.8.6"
 androidx-hilt = "1.2.0"
-androidx-lifecycle = "2.9.0-beta01"
+androidx-lifecycle = "2.9.0-rc01"
 androidx-metrics = "1.0.0-beta02"
 androidx-media3 = "1.6.1"
 androidx-mediarouter = "1.7.0"
-androidx-navigation = "2.9.0-beta01"
+androidx-navigation = "2.9.0-rc01"
 androidx-recyclerview = "1.4.0"
-androidx-room = "2.7.0"
+androidx-room = "2.7.1"
 androidx-security-crypto = "1.1.0-alpha07"
 androidx-swiperefreshlayout = "1.2.0-beta01"
 androidx-test-core = "1.6.1"
@@ -24,16 +24,16 @@ androidx-test-espresso = "3.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-uiautomator = "2.3.0"
 androidx-viewpager2 = "1.1.0"
-androidx-work = "2.10.0"
+androidx-work = "2.10.1"
 androidxLintGradle = "1.0.0-alpha03"
 bouncy = "1.80"
 caffeine = "3.2.0"
-compose-bom =  "2025.04.00"
+compose-bom =  "2025.04.01"
 conscrypt-openjdk-uber = "2.5.2"
 converter-gson = "2.11.0"
 dokka = "2.0.0"
 ffmpeg = "6.0-2.LTS"
-firebase-bom = "33.12.0"
+firebase-bom = "33.13.0"
 firebaseCrashlyticsPlugin = "3.0.3"
 firebasePerfPlugin = "1.4.2"
 google-android-material = "1.12.0"
@@ -54,9 +54,9 @@ gson = "2.12.1"
 hilt-android = "2.50"
 junit-junit = "4.13.2"
 junit-jupiter = "5.12.0"
-kotlin = "2.0.0"
+kotlin = "2.1.10"
 kotest = "5.9.1"
-ksp = "2.0.0-1.0.21"
+ksp = "2.1.10-1.0.31"
 leakcanary = "3.0-alpha-8"
 maps-compose = "4.3.3"
 mockk = "1.13.16"
@@ -113,7 +113,7 @@ com-google-firebase-perf = { id = "com.google.firebase.firebase-perf", version =
 com-google-gms-google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 
 # Safe Args
-androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version = "2.8.8" }
+androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version = "2.8.9" }
 
 # Secrets
 com-google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version = "2.0.1" }
@@ -127,6 +127,9 @@ realestateapp-android-packaging = { id = "com.application.real_estate_app.androi
 realestateapp-android-testing = { id = "com.application.real_estate_app.android.testing"}
 realestateapp-android-config = { id = "com.application.real_estate_app.android.config"}
 realestateapp-android-compose = { id = "com.application.real_estate_app.android.compose"}
+realestateapp-android-application = { id = "com.application.real_estate_app.android.application"}
+realestateapp-android-dynamic-feature = { id = "com.application.real_estate_app.android.dynamic-feature"}
+realestateapp-android-benchmark = { id = "com.application.real_estate_app.android.benchmark"}
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "androidGradlePlugin" }
 

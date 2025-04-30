@@ -73,5 +73,17 @@ gradlePlugin {
             id = libs.plugins.realestateapp.android.compose.get().pluginId
             implementationClass = "ComposeConventionPlugin"
         }
+        register("dynamicFeature") {
+            id = libs.plugins.realestateapp.android.dynamic.feature.get().pluginId
+            implementationClass = "DynamicFeatureConventionPlugin"
+        }
+        register("androidApplication") {
+            id = libs.plugins.realestateapp.android.application.get().pluginId
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        register("androidBenchmark") {
+            id = libs.plugins.realestateapp.android.benchmark.get().pluginId
+            implementationClass = "AndroidBenchmarkConventionPlugin"
+        }
     }
 }

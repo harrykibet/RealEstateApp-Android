@@ -1,33 +1,15 @@
 plugins {
-    alias(libs.plugins.android.test)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+   alias(libs.plugins.realestateapp.android.benchmark)
 }
 
 android {
     namespace = "com.application.real_estate_app.core_benchmark"
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 26
-        targetSdk = 36
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    signingConfigs {
-        create("release") {
-            storeFile = rootProject.file("AppKeyStore/keystore.jks")
-            storePassword = "2001birth"
-            keyAlias = "key0"
-            keyPassword = "2001birth"
-        }
-    }
 
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your
-        // release build (for example, with minification on). It"s signed with a release key
+        // release build (for example, with minification on). It"s signed with a debug key
         create("benchmark") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true
             matchingFallbacks += listOf("release")
         }

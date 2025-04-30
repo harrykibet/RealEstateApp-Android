@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.com.android.application)
+    alias(libs.plugins.realestateapp.android.application)
     alias(libs.plugins.realestateapp.android.config)
     alias(libs.plugins.realestateapp.android.testing)
     alias(libs.plugins.realestateapp.firebase)
@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.realestateapp.android.packaging)
     alias(libs.plugins.realestateapp.android.compose)
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
-    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.baselineprofile)
 }
 

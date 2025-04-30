@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.exclude
+import utils.libs
 
 class FirebaseConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -20,17 +21,17 @@ class FirebaseConventionPlugin : Plugin<Project> {
 
             dependencies {
                 // Apply Firebase BOM for all modules
-                val bom = lib.findLibrary("firebase.bom").get()
+                val bom = libs.findLibrary("firebase.bom").get()
                 "implementation"(platform(bom))
 
                 // Apply Firebase dependencies only in the app module
                 if (isAppModule) {
-                    "implementation"(lib.findLibrary("firebase.analytics").get())
-                    "implementation"(lib.findLibrary("firebase.perf").get()) {
+                    "implementation"(libs.findLibrary("firebase.analytics").get())
+                    "implementation"(libs.findLibrary("firebase.perf").get()) {
                         exclude(group = "com.google.protobuf", module = "protobuf-javalite")
                         exclude(group = "com.google.firebase", module = "protolite-well-known-types")
                     }
-                    "implementation"(lib.findLibrary("firebase.crashlytics").get())
+                    "implementation"(libs.findLibrary("firebase.crashlytics").get())
                 }
             }
 

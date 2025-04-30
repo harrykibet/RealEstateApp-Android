@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.dynamic.feature)
+    alias(libs.plugins.realestateapp.android.dynamic.feature)
     alias(libs.plugins.realestateapp.android.config)
     alias(libs.plugins.realestateapp.android.testing)
 }

@@ -1,9 +1,8 @@
-import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import utils.libs
 
 class HiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -11,14 +10,14 @@ class HiltConventionPlugin : Plugin<Project> {
             apply(plugin = "com.google.devtools.ksp")
 
             dependencies {
-                "ksp"(lib.findLibrary("hilt.compiler").get())
+                "ksp"(libs.findLibrary("hilt.compiler").get())
             }
 
 
             // Add support for Jvm Module, base on org.jetbrains.kotlin.jvm
             pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
                 dependencies {
-                    "implementation"(lib.findLibrary("hilt.core").get())
+                    "implementation"(libs.findLibrary("hilt.core").get())
                 }
             }
 
@@ -26,8 +25,8 @@ class HiltConventionPlugin : Plugin<Project> {
             pluginManager.withPlugin("com.android.base") {
                 apply(plugin = "dagger.hilt.android.plugin")
                 dependencies {
-                    "implementation"(lib.findLibrary("hilt.android").get())
-                    "implementation"(lib.findLibrary("hilt.navigation.compose").get())
+                    "implementation"(libs.findLibrary("hilt.android").get())
+                    "implementation"(libs.findLibrary("hilt.navigation.compose").get())
                 }
             }
         }

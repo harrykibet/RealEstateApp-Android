@@ -1,14 +1,12 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
-    alias(libs.plugins.android.test)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.realestateapp.android.benchmark)
     alias(libs.plugins.baselineprofile)
 }
 
 android {
     namespace = "com.application.real_estate_app.baselineprofile"
-    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -17,13 +15,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    defaultConfig {
-        minSdk = 28
-        targetSdk = 36
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     targetProjectPath = ":app"
