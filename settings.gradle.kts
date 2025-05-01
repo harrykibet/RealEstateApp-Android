@@ -1,27 +1,34 @@
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
         gradlePluginPortal()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
     }
 }
 
-plugins {
-    id("de.fayard.refreshVersions") version "0.60.5" // Ensure this is the latest version
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+    }
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        gradlePluginPortal()
-        mavenCentral()
-    }
-}
 
 rootProject.name = "RealEstateApp"
 

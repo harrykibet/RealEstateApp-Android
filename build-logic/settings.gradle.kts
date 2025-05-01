@@ -14,9 +14,7 @@ dependencyResolutionManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
-        maven("https://jitpack.io")
         mavenCentral()
-        gradlePluginPortal()
     }
     versionCatalogs {
         create("libs") {
@@ -24,7 +22,6 @@ dependencyResolutionManagement {
         }
     }
 }
-
 
 rootProject.name = "build-logic"
 include(":convention")
