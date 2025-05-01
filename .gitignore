@@ -17,14 +17,7 @@ firestore.rules
 my-firebase-admin-app/
 
 # Android Studio/IDE specific files
-.idea/caches/
-.idea/AndroidProjectSystem.xml
-.idea/libraries/
-.idea/modules.xml
-.idea/workspace.xml
-.idea/navEditor.xml
-.idea/inspectionProfiles/Project_Default.xml
-.idea/assetWizardSettings.xml
+.idea/
 
 # macOS specific
 .DS_Store
