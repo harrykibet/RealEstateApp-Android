@@ -63,3 +63,4 @@ Each feature is a **dynamic module** and follows **MVVM** with **Hilt**, **Jetpa
 
    ```bash
    git clone https://github.com/harrykibet/RealEstateApp-Android.git
+   git clone https://github.com/harrykibet/RealEstateApp-Android.git
