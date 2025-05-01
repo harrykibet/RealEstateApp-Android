@@ -32,7 +32,7 @@ compose-bom =  "2025.04.01"
 conscrypt-openjdk-uber = "2.5.2"
 converter-gson = "2.11.0"
 dokka = "2.0.0"
-ffmpeg = "6.0-2.LTS"
+ffmpeg = "6.0.LTS"
 firebase-bom = "33.13.0"
 firebaseCrashlyticsPlugin = "3.0.3"
 firebasePerfPlugin = "1.4.2"
@@ -60,6 +60,7 @@ ksp = "2.1.10-1.0.31"
 leakcanary = "3.0-alpha-8"
 maps-compose = "4.3.3"
 mockk = "1.13.16"
+moduleGraph = "2.7.1"
 metrics-performance = "1.0.0-beta01"
 micrometer-core = "1.15.0-M2"
 micrometer-registry-prometheus = "1.15.0-M2"
@@ -89,6 +90,9 @@ org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "k
 
 # Lint
 android-lint = { id = "com.android.lint", version.ref = "androidGradlePlugin" }
+
+# Module Graph
+module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
 
 # Test
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }

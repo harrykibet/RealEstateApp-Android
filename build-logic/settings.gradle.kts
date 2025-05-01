@@ -14,6 +14,7 @@ dependencyResolutionManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        maven("https://jitpack.io")
         mavenCentral()
         gradlePluginPortal()
     }

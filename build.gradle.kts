@@ -8,8 +8,10 @@ buildscript {
             }
         }
         mavenCentral()
+        maven("https://jitpack.io")
+        gradlePluginPortal()
     }
-}
+    }
 
 plugins {
     alias(libs.plugins.com.android.application)  apply false
@@ -30,6 +32,7 @@ plugins {
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.android.dynamic.feature) apply false
+    alias(libs.plugins.module.graph) apply false
 }
 
 allprojects {

@@ -9,11 +9,11 @@ class AndroidBenchmarkConventionPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.android")
 
         extensions.configure<TestExtension> {
-            compileSdk = 36
+            compileSdk = 35
 
             defaultConfig {
                 minSdk = 28
-                targetSdk = 36
+                targetSdk = 35
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
         }

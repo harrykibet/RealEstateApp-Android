@@ -59,7 +59,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
 
     // ✅ Extract common Android configurations
     private fun <T> T.configureAndroidCommon() where T : CommonExtension<*, *, *, *, *, *> {
-        compileSdk = 36
+        compileSdk = 35
 
         defaultConfig.apply {
             minSdk = 26

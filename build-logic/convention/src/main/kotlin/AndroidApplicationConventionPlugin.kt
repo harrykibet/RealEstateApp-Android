@@ -7,12 +7,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.android.application")
 
         extensions.configure<AppExtension>("android") {
-            compileSdkVersion(36)
+            compileSdkVersion(35)
 
             defaultConfig {
                 applicationId = "com.application.real_estate_app"
                 minSdk = 26
-                targetSdk = 36
+                targetSdk = 35
                 versionCode = 1
                 versionName = "1.0"
             }
