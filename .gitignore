@@ -17,6 +17,7 @@ firestore.rules
 my-firebase-admin-app/
 
 # Android Studio/IDE specific files
+.idea/
 
 # macOS specific
 .DS_Store
