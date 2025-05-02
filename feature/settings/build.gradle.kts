@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.realestateapp.android.feature)
-    alias(libs.plugins.org.jetbrains.dokka)
 }
 
 android {

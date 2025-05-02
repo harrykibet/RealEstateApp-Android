@@ -1,14 +1,5 @@
 plugins {
     alias(libs.plugins.realestateapp.android.application)
-    alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.firebase)
-    alias(libs.plugins.realestateapp.hilt)
-    alias(libs.plugins.realestateapp.sonarqube)
-    alias(libs.plugins.realestateapp.android.packaging)
-    alias(libs.plugins.realestateapp.android.compose)
-    alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin)
-    alias(libs.plugins.baselineprofile)
 }
 
 android {
