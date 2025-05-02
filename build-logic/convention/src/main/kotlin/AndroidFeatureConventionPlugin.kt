@@ -9,6 +9,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.application.real_estate_app.android.testing")
         pluginManager.apply("com.application.real_estate_app.android.compose")
         pluginManager.apply("com.application.real_estate_app.hilt")
+        pluginManager.apply("androidx.navigation.safeargs.kotlin")
 
         dependencies {
             "implementation"(project(":core:ui"))

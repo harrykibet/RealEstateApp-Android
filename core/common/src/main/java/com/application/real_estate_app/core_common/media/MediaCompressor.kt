@@ -6,8 +6,6 @@ import android.net.Uri
 import com.application.real_estate_app.core_common.interfaces.IMediaCompressor
 import com.application.real_estate_app.core_common.interfaces.LoggerInterface
 import com.application.real_estate_app.core_common.system.FileUtils
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.ReturnCode
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -85,26 +83,6 @@ class MediaCompressor @Inject constructor(
         if (!outputDir.exists()) outputDir.mkdirs()
 
         val outputFile = File(outputDir, "compressed_video_${System.currentTimeMillis()}.mp4")
-
-        val ffmpegCommand = "-i ${file.absolutePath} -preset veryfast -c:v libx264 -crf 28 -c:a aac -b:a 128k ${outputFile.absolutePath}"
-
-        FFmpegKit.executeAsync(ffmpegCommand) { session ->
-            val returnCode: ReturnCode? = session.returnCode
-
-            when {
-                ReturnCode.isSuccess(returnCode) -> {
-                    logger.d("FFmpegKit: Video compression successful!")
-                    callback(outputFile)
-                }
-                ReturnCode.isCancel(returnCode) -> {
-                    logger.e("FFmpegKit: Compression canceled")
-                    callback(null)
-                }
-                else -> {
-                    logger.e("FFmpegKit: Compression failed: ${session.failStackTrace}")
-                    callback(null)
-                }
-            }
-        }
+       // TODO("Fix FFmpeg discontinued support for Android.")
     }
 }
