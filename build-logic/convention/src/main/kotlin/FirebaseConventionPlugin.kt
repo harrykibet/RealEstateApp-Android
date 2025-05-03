@@ -19,6 +19,12 @@ class FirebaseConventionPlugin : Plugin<Project> {
                 pluginManager.apply("com.google.firebase.firebase-perf")
             }
 
+            // Exclude problematic dependencies
+            configurations.all {
+                exclude(group = "com.google.protobuf", module = "protobuf-javalite")
+                exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+            }
+
             dependencies {
                 // Apply Firebase BOM for all modules
                 val bom = libs.findLibrary("firebase.bom").get()
@@ -27,10 +33,7 @@ class FirebaseConventionPlugin : Plugin<Project> {
                 // Apply Firebase dependencies only in the app module
                 if (isAppModule) {
                     "implementation"(libs.findLibrary("firebase.analytics").get())
-                    "implementation"(libs.findLibrary("firebase.perf").get()) {
-                        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-                        exclude(group = "com.google.firebase", module = "protolite-well-known-types")
-                    }
+                    "implementation"(libs.findLibrary("firebase.perf").get())
                     "implementation"(libs.findLibrary("firebase.crashlytics").get())
                 }
             }

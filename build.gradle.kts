@@ -33,12 +33,3 @@ plugins {
     alias(libs.plugins.module.graph) apply false
 }
 
-allprojects {
-    subprojects {
-        configurations.all {
-            exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-            exclude(group = "com.google.firebase", module = "protolite-well-known-types")
-        }
-    }
-}
-
