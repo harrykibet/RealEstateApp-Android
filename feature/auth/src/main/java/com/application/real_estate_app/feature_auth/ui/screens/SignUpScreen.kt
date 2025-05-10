@@ -217,19 +217,28 @@ fun RoundedElevatedTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            label = { Text(label) },
+            label = { Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant) },
             singleLine = true,
             shape = shape,
             visualTransformation = visualTransformation,
             colors = TextFieldDefaults.colors(
-                //setting the text field background when it is focused
-                focusedContainerColor = MaterialTheme.colorScheme.primary,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
 
-                //setting the text field background when it is unfocused or initial state
-                unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
 
-                //setting the text field background when it is disabled
-                disabledContainerColor = MaterialTheme.colorScheme.onSurface),
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+            ),
             modifier = Modifier.fillMaxWidth()
         )
     }
