@@ -13,19 +13,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.application.real_estate_app.core_ui.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
+import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
 import com.application.real_estate_app.feature_auth.R
 
 @Composable
 fun SignUpScreen(
-    onSignUpClick: () -> Unit,
-    onAlreadyHaveAccountClick: () -> Unit
+    onSignUpClick: () -> Unit, onAlreadyHaveAccountClick: () -> Unit
 ) {
     var userName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -89,8 +86,7 @@ fun SignUpScreen(
                 .fillMaxWidth()
                 .clickable { expandedDropdown = true }
                 .padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
+            style = MaterialTheme.typography.bodyMedium)
 
         UserTypeDropdownMenu(
             expanded = expandedDropdown,
@@ -98,8 +94,7 @@ fun SignUpScreen(
             onSelectUserType = { selectedType ->
                 userType = selectedType
                 expandedDropdown = false
-            }
-        )
+            })
 
         // Sign-Up Button
         Button(
@@ -119,8 +114,7 @@ fun SignUpScreen(
 
         // Already have an account text
         TextButton(
-            onClick = onAlreadyHaveAccountClick,
-            modifier = Modifier.padding(top = 16.dp)
+            onClick = onAlreadyHaveAccountClick, modifier = Modifier.padding(top = 16.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.already_have_an_account_log_in),
@@ -133,13 +127,10 @@ fun SignUpScreen(
 
 @Composable
 fun UserTypeDropdownMenu(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onSelectUserType: (String) -> Unit
+    expanded: Boolean, onDismissRequest: () -> Unit, onSelectUserType: (String) -> Unit
 ) {
     DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest
+        expanded = expanded, onDismissRequest = onDismissRequest
     ) {
         // Tenant Option
         DropdownMenuItem(
@@ -165,8 +156,7 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Tenant") }
-        )
+            text = { Text(text = "Tenant") })
         // Landlord Option
         DropdownMenuItem(
             onClick = {
@@ -191,79 +181,30 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Landlord") }
-        )
+            text = { Text(text = "Landlord") })
     }
 }
 
-@Composable
-fun RoundedElevatedTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    modifier: Modifier = Modifier,
-    isPassword: Boolean = false
-) {
-    val visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
-    val shape = RoundedCornerShape(16.dp)
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(4.dp, shape), // Apply shadow
-        shape = shape,
-        tonalElevation = 4.dp,
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-            singleLine = true,
-            shape = shape,
-            visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    @Preview(
+        name = "Light Mode",
+        showBackground = true,
+        uiMode = Configuration.UI_MODE_NIGHT_NO,
+        widthDp = 400
+    )
 
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+    @Preview(
+        name = "Dark Mode",
+        showBackground = true,
+        uiMode = Configuration.UI_MODE_NIGHT_YES,
+        widthDp = 400
+    )
 
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    widthDp = 400
-)
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 400
-)
-@Composable
-fun SignUpScreenPreview() {
-    RealEstateAppTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            SignUpScreen(
-                onSignUpClick = {},
-                onAlreadyHaveAccountClick = {}
-            )
+    @Composable
+    fun SignUpScreenPreview() {
+        RealEstateAppTheme {
+            Surface(modifier = Modifier.fillMaxSize()) {
+                SignUpScreen(onSignUpClick = {}, onAlreadyHaveAccountClick = {})
+            }
         }
     }
-}
