@@ -1,6 +1,6 @@
 package com.application.real_estate_app.feature_auth.ui.screens
 
-import android.content.res.Configuration
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
