@@ -1,6 +1,7 @@
 package com.application.real_estate_app.feature_auth.ui.screens
 
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -15,31 +16,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.application.real_estate_app.core_design_system.component.GoogleSignInButton
+import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
 import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
@@ -95,48 +90,22 @@ fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.height(40.dp))
-
-        OutlinedTextField(
+        RoundedElevatedTextField(
             value = "",
             onValueChange = {},
-            label = { Text(stringResource(R.string.email_or_phone_number)) },
+            label = stringResource(R.string.email_or_phone_number),
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .padding(vertical = 4.dp),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Gray,
-                disabledBorderColor = Color.LightGray,
-                errorBorderColor = Color.Red
-            )
-        )
+                .padding(vertical = 4.dp))
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
+        RoundedElevatedTextField(
             value = "",
             onValueChange = {},
-            label = { Text(stringResource(R.string.password)) },
-            visualTransformation = PasswordVisualTransformation(),
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.VisibilityOff,
-                    contentDescription = null
-                )
-            },
+            label = stringResource(R.string.password),
             modifier = Modifier
-                .fillMaxWidth(0.9f),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Gray,
-                disabledBorderColor = Color.LightGray,
-                errorBorderColor = Color.Red
-            )
-        )
+                .fillMaxWidth(0.9f))
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -191,11 +160,19 @@ fun LoginScreen(
 }
 
 @Preview(
-    name = "Login Screen Preview",
-    showSystemUi = true,
+    name = "Light Mode",
     showBackground = true,
-    device = "spec:width=411dp,height=891dp,dpi=420"
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 400
 )
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 400
+)
+
 @Composable
 fun LoginScreenPreview() {
     RealEstateAppTheme {
