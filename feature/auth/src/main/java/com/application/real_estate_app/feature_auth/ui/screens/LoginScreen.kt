@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.application.real_estate_app.core_design_system.component.GoogleSignInButton
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
 import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
