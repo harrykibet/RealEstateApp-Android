@@ -186,25 +186,41 @@ fun UserTypeDropdownMenu(
 }
 
 
-    @Preview(
-        name = "Light Mode",
-        showBackground = true,
-        uiMode = Configuration.UI_MODE_NIGHT_NO,
-        widthDp = 400
-    )
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 400
+)
 
-    @Preview(
-        name = "Dark Mode",
-        showBackground = true,
-        uiMode = Configuration.UI_MODE_NIGHT_YES,
-        widthDp = 400
-    )
-
-    @Composable
-    fun SignUpScreenPreview() {
-        RealEstateAppTheme {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                SignUpScreen(onSignUpClick = {}, onAlreadyHaveAccountClick = {})
-            }
+@Composable
+fun SignUpScreenLightPreview() {
+    RealEstateAppTheme(useDarkTheme = false) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            SignUpScreen(
+                onSignUpClick = {},
+                onAlreadyHaveAccountClick = {}
+            )
         }
     }
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 400
+)
+
+@Composable
+fun SignUpScreenDarkPreview() {
+    RealEstateAppTheme(useDarkTheme = true) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            SignUpScreen(
+                onSignUpClick = {},
+                onAlreadyHaveAccountClick = {}
+            )
+        }
+    }
+}
+

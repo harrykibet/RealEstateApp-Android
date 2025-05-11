@@ -1,5 +1,6 @@
 package com.application.real_estate_app.feature_profile.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
@@ -101,15 +103,41 @@ fun ProfileScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 400
+)
 @Composable
-fun ProfileScreenPreview() {
-    RealEstateAppTheme {
-        ProfileScreen(
-            profileImage = painterResource(id = R.drawable.ic_launcher_round),
-            name = "Harry Kemboi",
-            email = "truman948@gmail.com"
-        )
+fun ProfileScreenLightPreview() {
+    RealEstateAppTheme(useDarkTheme = false) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            ProfileScreen(
+                profileImage = painterResource(id = R.drawable.ic_launcher_round),
+                name = "Harry Kemboi",
+                email = "truman948@gmail.com"
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 400
+)
+@Composable
+fun ProfileScreenDarkPreview() {
+    RealEstateAppTheme(useDarkTheme = true) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            ProfileScreen(
+                profileImage = painterResource(id = R.drawable.ic_launcher_round),
+                name = "Harry Kemboi",
+                email = "truman948@gmail.com"
+            )
+        }
     }
 }
 

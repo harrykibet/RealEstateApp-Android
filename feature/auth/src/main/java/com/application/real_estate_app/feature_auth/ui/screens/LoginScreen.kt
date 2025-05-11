@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -165,6 +166,17 @@ fun LoginScreen(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400
 )
+@Composable
+fun LoginScreenLightPreview() {
+    RealEstateAppTheme(useDarkTheme = false) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            LoginScreen()
+        }
+    }
+}
 
 @Preview(
     name = "Dark Mode",
@@ -172,13 +184,18 @@ fun LoginScreen(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400
 )
-
 @Composable
-fun LoginScreenPreview() {
-    RealEstateAppTheme {
-        LoginScreen()
+fun LoginScreenDarkPreview() {
+    RealEstateAppTheme(useDarkTheme = true) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            LoginScreen()
+        }
     }
 }
+
 
 
 

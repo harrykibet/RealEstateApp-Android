@@ -16,7 +16,7 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
-class RealEstateApp : Application()  {
+class EstatiaApp : Application()  {
 
     @Inject
     lateinit var logger: LoggerInterface

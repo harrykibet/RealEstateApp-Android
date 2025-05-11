@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".RealEstateApp"
+        android:name=".EstatiaApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -47,7 +47,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="real_estate_app.com"
+                    android:host="estatia.com"
                     android:path="/homeFragment"
                     android:scheme="https" />
             </intent-filter>
