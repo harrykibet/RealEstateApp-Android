@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -127,10 +128,13 @@ fun SignUpScreen(
 
 @Composable
 fun UserTypeDropdownMenu(
-    expanded: Boolean, onDismissRequest: () -> Unit, onSelectUserType: (String) -> Unit
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onSelectUserType: (String) -> Unit
 ) {
     DropdownMenu(
-        expanded = expanded, onDismissRequest = onDismissRequest
+        expanded = expanded,
+        onDismissRequest = onDismissRequest
     ) {
         // Tenant Option
         DropdownMenuItem(
@@ -156,7 +160,9 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Tenant") })
+            text = { Text(text = "Tenant") }
+        )
+
         // Landlord Option
         DropdownMenuItem(
             onClick = {
@@ -181,7 +187,35 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Landlord") })
+            text = { Text(text = "Landlord") }
+        )
+
+        // Agent Option
+        DropdownMenuItem(
+            onClick = {
+                onSelectUserType("Agent")
+                onDismissRequest()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Work, contentDescription = "Agent Icon")
+            },
+            trailingIcon = {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Selected")
+            },
+            enabled = true,
+            colors = MenuItemColors(
+                textColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                leadingIconColor = MaterialTheme.colorScheme.onSurface,
+                trailingIconColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface
+            ),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+            interactionSource = remember { MutableInteractionSource() },
+            text = { Text(text = "Agent") }
+        )
     }
 }
 

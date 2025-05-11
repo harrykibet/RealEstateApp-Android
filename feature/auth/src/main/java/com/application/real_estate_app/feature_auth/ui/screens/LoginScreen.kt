@@ -105,8 +105,8 @@ fun LoginScreen(
             value = "",
             onValueChange = {},
             label = stringResource(R.string.password),
-            modifier = Modifier
-                .fillMaxWidth(0.9f))
+            modifier = Modifier.fillMaxWidth(0.9f),
+            isPassword = true)
 
         Spacer(modifier = Modifier.height(24.dp))
 
