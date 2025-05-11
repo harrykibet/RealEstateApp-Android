@@ -29,6 +29,8 @@ class ComposeConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
                 "debugImplementation"(libs.findLibrary("androidx-compose-ui-tooling").get())
                 "implementation"(libs.findLibrary("material-icons-extended").get())
+                "implementation"(libs.findLibrary("androidx-compose-foundation").get())
+                "implementation"(libs.findLibrary("coil-compose").get())
             }
         }
     }

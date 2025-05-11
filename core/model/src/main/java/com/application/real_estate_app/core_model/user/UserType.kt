@@ -2,6 +2,7 @@ package com.application.real_estate_app.core_model.user
 
 enum class UserType(val displayName: String) {
     TENANT("Tenant"),
+    AGENT("Agent"),
     PROPERTY_OWNER("Property Owner");
 
     companion object {

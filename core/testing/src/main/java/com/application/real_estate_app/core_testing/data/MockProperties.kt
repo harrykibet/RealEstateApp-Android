@@ -1,0 +1,64 @@
+package com.application.real_estate_app.core_testing.data
+
+import com.application.real_estate_app.core_model.property.Property
+import java.util.Date
+
+object MockProperties {
+
+    fun single(): Property {
+        return Property(
+            id = "prop_001",
+            title = "Modern 2 Bedroom Apartment",
+            description = "A spacious and modern apartment in the heart of the city with all amenities included.",
+            price = 55000.0,
+            imageUrls = listOf(
+                "https://via.placeholder.com/600x400.png?text=Living+Room",
+                "https://via.placeholder.com/600x400.png?text=Bedroom",
+                "https://via.placeholder.com/600x400.png?text=Kitchen"
+            ),
+            videoUrls = listOf(
+                "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
+            ),
+            videosAvailable = true,
+            latitude = -1.2921,
+            longitude = 36.8219,
+            createdAt = Date(),
+            ownerId = "user_123",
+            ownerName = "James Kibet",
+            contactPhone = "+254712345678",
+            contactEmail = "owner@example.com",
+            county = "Nairobi",
+            active = true,
+            viewsCount = 152,
+            likesCount = 45,
+            commentsCount = 12,
+            sharesCount = 6,
+            propertyType = "Apartment",
+            bedrooms = 2,
+            bathrooms = 2,
+            areaSize = 85.0,
+            amenities = listOf("WiFi", "Parking", "Swimming Pool"),
+            features = "Balcony, Security System, Backup Generator",
+            depositAmount = 55000.0,
+            address = "Westlands, Nairobi",
+            availableFrom = "2025-06-01",
+            leaseTerms = "12 months minimum lease",
+            available = true
+        )
+    }
+
+    fun list(count: Int = 5): List<Property> = List(count) {
+        single().copy(
+            id = "prop_${it + 1}",
+            title = "Property #${it + 1}",
+            price = 30000.0 + (it * 5000),
+            bedrooms = 1 + (it % 3),
+            bathrooms = 1 + (it % 2),
+            likesCount = 10 * (it + 1),
+            viewsCount = 50 * (it + 1),
+            imageUrls = listOf(
+                "https://via.placeholder.com/600x400.png?text=Image+${it + 1}"
+            )
+        )
+    }
+}

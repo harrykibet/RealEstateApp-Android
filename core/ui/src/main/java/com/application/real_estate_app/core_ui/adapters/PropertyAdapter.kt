@@ -43,9 +43,9 @@ class PropertyAdapter (
         val property = getItem(position)
         holder.bind(property)
 
-        if (property.video && property.videoUrl.isNotEmpty()) {
+        if (property.videosAvailable && property.videoUrls.isNotEmpty()) {
             if (position == currentlyPlayingPosition) {
-                holder.reattachExoPlayer(property.videoUrl.first())
+                holder.reattachExoPlayer(property.videoUrls.first())
             } else {
                 holder.releaseExoPlayer()
             }
@@ -93,7 +93,7 @@ class PropertyAdapter (
             visiblePosition != currentlyPlayingPosition
         ) {
             val property = currentList.getOrNull(visiblePosition)
-            if (property?.video == true) {
+            if (property?.videosAvailable == true) {
                 playVideoAtPosition(visiblePosition, recyclerView)
             }
         }
@@ -121,7 +121,7 @@ class PropertyAdapter (
             visiblePosition != currentlyPlayingPosition
         ) {
             val property = currentList.getOrNull(visiblePosition)
-            if (property?.video == true) {
+            if (property?.videosAvailable == true) {
                 playVideoAtPosition(visiblePosition, recyclerView)
             }
         }
@@ -132,8 +132,8 @@ class PropertyAdapter (
         val nextPosition = position + 1
         if (nextPosition < currentList.size) {
             val nextProperty = getItem(nextPosition)
-            if (nextProperty.video && nextProperty.videoUrl.isNotEmpty()) {
-                exoPlayer.preloadMedia(nextProperty.videoUrl.first())
+            if (nextProperty.videosAvailable && nextProperty.videoUrls.isNotEmpty()) {
+                exoPlayer.preloadMedia(nextProperty.videoUrls.first())
             }
         }
     }
@@ -165,17 +165,17 @@ class PropertyAdapter (
             binding.contentDescription.text = property.description
 
             // Handle video or image loading
-            if (property.video && property.videoUrl.isNotEmpty()) {
+            if (property.videosAvailable && property.videoUrls.isNotEmpty()) {
                 binding.propertyVideoPlayer.visibility = View.VISIBLE
                 binding.propertyImagePager.visibility = View.GONE
-                exoPlayer.attachPlayerToView(binding.propertyVideoPlayer, property.videoUrl.first())
+                exoPlayer.attachPlayerToView(binding.propertyVideoPlayer, property.videoUrls.first())
                 isVideoPlaying = true
             } else {
                 binding.propertyVideoPlayer.visibility = View.GONE
                 binding.propertyImagePager.visibility = View.VISIBLE
                 exoPlayer.detachPlayer()// Detach player if no video
                 isVideoPlaying = false
-                imagePagerAdapter.submitList(property.imageUrl.toList())
+                imagePagerAdapter.submitList(property.imageUrls.toList())
             }
 
             // Set item click listener
@@ -186,7 +186,7 @@ class PropertyAdapter (
             updateLikeButtonUI(isLiked)
 
             // Load image list and initialize dot indicators
-            val imageList = property.imageUrl.toList()
+            val imageList = property.imageUrls.toList()
             imagePagerAdapter.submitList(imageList)
             setupDotIndicator(imageList.size)  // Initialize dot indicators
             updateDotIndicator(0) // Set default to the first image indicator
