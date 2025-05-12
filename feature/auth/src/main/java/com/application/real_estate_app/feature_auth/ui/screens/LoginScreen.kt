@@ -42,6 +42,10 @@ import com.application.real_estate_app.core_design_system.theme.RealEstateAppThe
 
 @Composable
 fun LoginScreen(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
@@ -92,8 +96,8 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
         RoundedElevatedTextField(
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = onEmailChange,
             label = stringResource(R.string.email_or_phone_number),
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -102,8 +106,8 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         RoundedElevatedTextField(
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
             modifier = Modifier.fillMaxWidth(0.9f),
             isPassword = true)
@@ -173,7 +177,16 @@ fun LoginScreenLightPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LoginScreen()
+            LoginScreen(
+                email = "",
+                onEmailChange = {},
+                password = "",
+                onPasswordChange = {},
+                onLoginClick = {},
+                onSignUpClick = {},
+                onForgotPasswordClick = {},
+                onGoogleSignInClick = {}
+            )
         }
     }
 }
@@ -191,7 +204,16 @@ fun LoginScreenDarkPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LoginScreen()
+            LoginScreen(
+                email = "",
+                onEmailChange = {},
+                password = "",
+                onPasswordChange = {},
+                onLoginClick = {},
+                onSignUpClick = {},
+                onForgotPasswordClick = {},
+                onGoogleSignInClick = {}
+            )
         }
     }
 }
