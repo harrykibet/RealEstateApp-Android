@@ -18,6 +18,7 @@ dependencies {
     ksp(libs.glide.compiler)
 
     implementation(projects.core.model)
+    implementation(projects.core.testing)
 
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)

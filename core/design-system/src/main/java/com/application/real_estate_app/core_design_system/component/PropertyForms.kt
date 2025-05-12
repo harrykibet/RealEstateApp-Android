@@ -1,4 +1,4 @@
-package com.application.real_estate_app.core_testing.composables
+package com.application.real_estate_app.core_design_system.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 
 @Composable
 fun MockBasicDetailsForm() {
