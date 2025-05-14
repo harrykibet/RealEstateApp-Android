@@ -10,7 +10,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.application.real_estate_app.core_common.events.LoginEvent
 import com.application.real_estate_app.core_common.events.LogoutEvent
-import com.application.real_estate_app.ui.activities.MainActivity
 import com.application.real_estate_app.feature_home.R.id.homeFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

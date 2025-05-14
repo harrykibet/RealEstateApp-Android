@@ -1,4 +1,4 @@
-package com.application.real_estate_app.ui.activities
+package com.application.real_estate_app.ui
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme

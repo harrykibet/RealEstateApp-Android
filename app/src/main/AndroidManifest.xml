@@ -24,7 +24,7 @@
             android:value="AIzaSyAMbM4FJlF3OZ2ok1gwXsndHXDO6YnB_H4" />
 
         <activity
-            android:name=".ui.activities.SplashScreenActivity"
+            android:name=".SplashScreenActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Material3.DayNight.NoActionBar">
@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize|uiMode"
             android:exported="true"
             android:launchMode="singleTop"

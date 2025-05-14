@@ -1,4 +1,4 @@
-package com.application.real_estate_app.ui.activities
+package com.application.real_estate_app
 
 import android.annotation.SuppressLint
 import android.content.Intent

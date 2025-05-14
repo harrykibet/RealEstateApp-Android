@@ -1,4 +1,4 @@
-package com.application.real_estate_app.ui.activities
+package com.application.real_estate_app
 
 import android.content.Intent
 import android.os.Build
@@ -13,8 +13,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.application.real_estate_app.R
-import com.application.real_estate_app.feature_auth.R.id.loginFragment
 import com.application.real_estate_app.feature_home.R.id.homeFragment
 import com.application.real_estate_app.feature_profile.R.id.profileFragment
 import com.application.real_estate_app.feature_search.R.id.mapsFragment
