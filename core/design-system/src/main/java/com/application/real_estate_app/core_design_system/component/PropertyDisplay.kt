@@ -37,9 +37,10 @@ import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 fun PropertyCard(
     modifier: Modifier = Modifier,
     property: Property,
-    onLikeClick: () -> Unit,
-    onCommentClick: () -> Unit,
-    onShareClick: () -> Unit,
+    onPropertyClick: (Property) -> Unit,
+    onLikeClick: (Property) -> Unit,
+    onCommentClick: (Property) -> Unit,
+    onShareClick: (Property) -> Unit,
     exoPlayer: IExoplayer // Pass the ExoPlayer interface
 ) {
     Box(
@@ -155,16 +156,19 @@ fun PropertyCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ActionButton(
+                            property = property,
                             icon = Icons.Default.Favorite,
                             count = property.likesCount.toString(),
                             onClick = onLikeClick
                         )
                         ActionButton(
+                            property = property,
                             icon = Icons.AutoMirrored.Default.Comment,
                             count = property.commentsCount.toString(),
                             onClick = onCommentClick
                         )
                         ActionButton(
+                            property = property,
                             icon = Icons.Default.Share,
                             count = property.sharesCount.toString(),
                             onClick = onShareClick
@@ -195,15 +199,16 @@ fun ImagePager(imageUrls: List<String>) {
 
 @Composable
 private fun ActionButton(
+    property: Property,
     icon: ImageVector,
     count: String,
-    onClick: () -> Unit
+    onClick: (Property) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(end = 12.dp)
     ) {
-        IconButton(onClick = onClick) {
+        IconButton(onClick = { onClick(property) }) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,

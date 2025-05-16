@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
 import com.application.real_estate_app.core_model.property.Property
+import com.application.real_estate_app.feature_home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,6 +17,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState
 
     private val _propertiesLiveData = MutableLiveData<List<Property>>()
     val propertiesLiveData: LiveData<List<Property>> get() = _propertiesLiveData

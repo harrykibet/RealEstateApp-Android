@@ -171,7 +171,7 @@ fun LoginScreen(
     widthDp = 400
 )
 @Composable
-fun LoginScreenLightPreview() {
+fun LoginScreenLight() {
     RealEstateAppTheme(useDarkTheme = false) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -198,7 +198,7 @@ fun LoginScreenLightPreview() {
     widthDp = 400
 )
 @Composable
-fun LoginScreenDarkPreview() {
+fun LoginScreenDark() {
     RealEstateAppTheme(useDarkTheme = true) {
         Surface(
             modifier = Modifier.fillMaxSize(),
