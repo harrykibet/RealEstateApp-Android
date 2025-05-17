@@ -15,9 +15,15 @@ data object HomeRoute // route to Home screen
 @Serializable
 data object HomeBaseRoute // route to base navigation graph
 
-fun NavController.navigateToHome(navOptions: NavOptions) = navigate(route = HomeRoute, navOptions)
+@Serializable
+data class PropertyDetailRoute( val propertyId: String) // route to property detail screen
+
+fun NavController.navigateToHome(navOptions: NavOptions? = null) = navigate(route = HomeRoute, navOptions)
+
+fun NavController.navigateToPropertyDetail(propertyId: String) = navigate(route = PropertyDetailRoute(propertyId))
 
 fun NavGraphBuilder.homeGraph(
+    onBackClick: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit
 ) {
     navigation<HomeBaseRoute>(startDestination = HomeRoute) {
@@ -43,7 +49,8 @@ fun NavGraphBuilder.homeGraph(
             ),
         ) {
             HomeRoute(
-                onNavigateToPropertyDetail = onNavigateToPropertyDetail
+                onNavigateToPropertyDetail = onNavigateToPropertyDetail,
+                onBackClick = onBackClick
             )
         }
     }

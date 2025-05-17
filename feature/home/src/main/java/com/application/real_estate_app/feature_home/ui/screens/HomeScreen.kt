@@ -19,6 +19,7 @@ import com.application.real_estate_app.feature_home.ui.viewModels.HomeViewModel
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
+    onBackClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -29,6 +30,7 @@ internal fun HomeRoute(
         onPropertyClick = { property ->
             property.id?.let { onNavigateToPropertyDetail(it) }
         },
+        onBackClick = onBackClick,
         onLikeClick = { property ->
             viewModel.toggleLike(property)
         },
@@ -46,6 +48,7 @@ internal fun HomeRoute(
 @Composable
 internal fun HomeScreen(
     state: HomeUiState,
+    onBackClick: () -> Unit,
     onPropertyClick: (Property) -> Unit,
     onLikeClick: (Property) -> Unit,
     onCommentClick: (Property) -> Unit,

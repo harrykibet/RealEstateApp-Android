@@ -7,33 +7,33 @@ import com.application.real_estate_app.feature_home.navigation.homeGraph
 import com.application.real_estate_app.feature_profile.navigation.profileGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.application.real_estate_app.feature_auth.navigation.AuthBaseRoute
 import com.application.real_estate_app.feature_auth.navigation.LoginRoute
-import com.application.real_estate_app.feature_home.navigation.HomeRoute
+import com.application.real_estate_app.feature_home.navigation.HomeBaseRoute
 import com.application.real_estate_app.feature_home.navigation.navigateToHome
+import com.application.real_estate_app.feature_home.navigation.navigateToPropertyDetail
+import com.application.real_estate_app.feature_property.navigation.propertyAdditionGraph
+import com.application.real_estate_app.feature_search.navigation.searchGraph
 import com.application.real_estate_app.ui.RealEstateAppState
 
 @Composable
 fun AppNavHost(
     appState: RealEstateAppState,
     isUserAuthenticated: Boolean,
-    onShowSnackbar: suspend (String, String?) -> Boolean,
+    //onShowSnackBar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val navController = appState.navController
 
     // Determine the dynamic start destination
-    val startDestination = if (isUserAuthenticated) {
-        HomeRoute // or HomeRoute if you're using constants
-    } else {
-        LoginRoute // or LoginRoute if you're using constants
-    }
+    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthBaseRoute
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        // ----------- AUTH GRAPH -----------
+
         authGraph(
             onAuthenticated = {
                 // Navigate to the home graph after successful login
@@ -43,27 +43,18 @@ fun AppNavHost(
             }
         )
 
-        // ----------- HOME GRAPH -----------
         homeGraph(
             onNavigateToPropertyDetail = { propertyId ->
                 navController.navigateToPropertyDetail(propertyId)
-            }
+            },
+            onBackClick = navController::popBackStack
         )
 
-        // ----------- PROFILE GRAPH -----------
-        profileGraph(
-            onBack = { navController.popBackStack() }
-        )
+        profileGraph(onBackClick = navController::popBackStack)
 
-        // ----------- SEARCH  GRAPH -----------
-        searchGraph(
-            onBack = { navController.popBackStack() }
-        )
+        searchGraph(onBackClick = navController::popBackStack)
 
-        // ----------- PROPERTY ADDITION GRAPH -----------
-        propertyAdditionGraph(
-            onBack = { navController.popBackStack() }
-        )
+        propertyAdditionGraph(onBackClick = navController::popBackStack)
     }
 }
 
