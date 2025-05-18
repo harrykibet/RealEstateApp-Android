@@ -17,6 +17,8 @@ dependencies {
 
     implementation(libs.bundles.lifecycle)
 
+    implementation(libs.metrics.performance)
+
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 

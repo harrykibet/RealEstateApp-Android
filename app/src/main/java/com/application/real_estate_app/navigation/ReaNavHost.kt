@@ -14,14 +14,13 @@ import com.application.real_estate_app.feature_home.navigation.navigateToHome
 import com.application.real_estate_app.feature_home.navigation.navigateToPropertyDetail
 import com.application.real_estate_app.feature_property.navigation.propertyAdditionGraph
 import com.application.real_estate_app.feature_search.navigation.searchGraph
-import com.application.real_estate_app.ui.RealEstateAppState
+import com.application.real_estate_app.ui.ReaAppState
 
 @Composable
-fun AppNavHost(
-    appState: RealEstateAppState,
+fun ReaNavHost(
+    appState: ReaAppState,
     isUserAuthenticated: Boolean,
-    //onShowSnackBar: suspend (String, String?) -> Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
 

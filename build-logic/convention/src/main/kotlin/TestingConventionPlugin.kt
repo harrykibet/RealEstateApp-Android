@@ -8,6 +8,7 @@ class TestingConventionPlugin : Plugin<Project> {
         with(target) {
 
             dependencies {
+                "implementation"(libs.findLibrary("androidx.tracing").get())
                 // Common unit test dependencies
                 listOf(
                     libs.findLibrary("junit.junit").get(),

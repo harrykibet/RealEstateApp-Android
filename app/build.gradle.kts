@@ -31,6 +31,8 @@ dependencies {
 
     implementation(libs.bundles.lifecycle)
 
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.appcheck.debug)

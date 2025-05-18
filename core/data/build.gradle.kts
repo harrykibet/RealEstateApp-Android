@@ -20,7 +20,10 @@ dependencies {
 
     implementation(libs.security.crypto.ktx)
 
+    implementation(libs.kotlinx.datetime)
+
     implementation(projects.core.model)
+    implementation(projects.core.datastore)
     implementation(projects.core.common)
     implementation(projects.core.database)
     implementation(projects.core.security)

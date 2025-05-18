@@ -9,6 +9,11 @@ import com.application.real_estate_app.feature_profile.navigation.ProfileRoute
 import com.application.real_estate_app.feature_favorites.navigation.FavoritesRoute
 import com.application.real_estate_app.feature_property.navigation.PropertyRoute
 import com.application.real_estate_app.core_design_system.icons.RealEstateIcons
+import com.application.real_estate_app.feature_favorites.navigation.FavoritesBaseRoute
+import com.application.real_estate_app.feature_home.navigation.HomeBaseRoute
+import com.application.real_estate_app.feature_profile.navigation.ProfileBaseRoute
+import com.application.real_estate_app.feature_property.navigation.PropertyBaseRoute
+import com.application.real_estate_app.feature_search.navigation.ExploreBaseRoute
 import kotlin.reflect.KClass
 
 /**
@@ -28,34 +33,38 @@ enum class TopLevelDestination(
         iconTextId = R.string.home,
         titleTextId = R.string.home,
         route = HomeRoute::class,
-        baseRoute = HomeRoute::class
+        baseRoute = HomeBaseRoute::class
     ),
     EXPLORE(
         selectedIcon = RealEstateIcons.Explore,
         unselectedIcon = RealEstateIcons.ExploreBorder,
         iconTextId = R.string.explore,
         titleTextId = R.string.explore,
-        route = ExploreRoute::class
+        route = ExploreRoute::class,
+        baseRoute = ExploreBaseRoute::class
     ),
     ADD_PROPERTY(
         selectedIcon = RealEstateIcons.AddCircle,
         unselectedIcon = RealEstateIcons.AddCircleOutline,
         iconTextId = R.string.add_property,
         titleTextId = R.string.add_property,
-        route = PropertyRoute::class
+        route = PropertyRoute::class,
+        baseRoute = PropertyBaseRoute::class
     ),
     FAVORITES(
         selectedIcon = RealEstateIcons.Favorites,
         unselectedIcon = RealEstateIcons.FavoriteBorder,
         iconTextId = R.string.favorites,
         titleTextId = R.string.favorites,
-        route = FavoritesRoute::class
+        route = FavoritesRoute::class,
+        baseRoute = FavoritesBaseRoute::class
     ),
     PROFILE(
         selectedIcon = RealEstateIcons.Profile,
         unselectedIcon = RealEstateIcons.ProfileBorder,
         iconTextId = R.string.profile,
         titleTextId = R.string.profile,
-        route = ProfileRoute::class
+        route = ProfileRoute::class,
+        baseRoute = ProfileBaseRoute::class
     )
 }
