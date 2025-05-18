@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
-import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
 import com.application.real_estate_app.feature_auth.R
 
 @Composable
@@ -229,7 +229,7 @@ fun UserTypeDropdownMenu(
 
 @Composable
 fun SignUpScreenLightPreview() {
-    RealEstateAppTheme(useDarkTheme = false) {
+    ReaTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             SignUpScreen(
                 onSignUpClick = {},
@@ -248,7 +248,7 @@ fun SignUpScreenLightPreview() {
 
 @Composable
 fun SignUpScreenDarkPreview() {
-    RealEstateAppTheme(useDarkTheme = true) {
+    ReaTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             SignUpScreen(
                 onSignUpClick = {},

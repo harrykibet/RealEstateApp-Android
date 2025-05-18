@@ -32,13 +32,13 @@ internal fun HomeRoute(
         },
         onBackClick = onBackClick,
         onLikeClick = { property ->
-            viewModel.toggleLike(property)
+            //viewModel.toggleLike(property)
         },
         onCommentClick = { property ->
-            viewModel.toggleComment(property)
+            //viewModel.toggleComment(property)
         },
         onShareClick = { property ->
-            viewModel.shareProperty(property)
+            //viewModel.shareProperty(property)
         },
         exoPlayer = viewModel.exoPlayer
     )

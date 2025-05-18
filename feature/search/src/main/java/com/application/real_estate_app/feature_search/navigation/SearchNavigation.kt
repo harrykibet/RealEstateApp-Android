@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.application.real_estate_app.feature_search.ui.screens.MapWithSearchBar
 import kotlinx.serialization.Serializable
 
 @Serializable data object ExploreRoute // route to Explore screen
@@ -18,7 +19,7 @@ fun NavGraphBuilder.searchGraph(
 ) {
     navigation<ExploreBaseRoute>(startDestination = ExploreRoute) {
         composable<ExploreRoute> {
-            ExploreRoute()
+            MapWithSearchBar()
         }
     }
 }

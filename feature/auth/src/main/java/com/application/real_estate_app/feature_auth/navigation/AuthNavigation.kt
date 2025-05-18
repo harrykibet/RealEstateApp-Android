@@ -32,12 +32,12 @@ fun NavGraphBuilder.authGraph(
         composable<LoginRoute> {
             LoginRoute(
                 onNavigateToHome = onAuthenticated,
-                onNavigateToSignUp = { navigateToSignUp() },
-                onNavigateToForgotPassword = { navigateToForgotPassword() }
+                onNavigateToSignUp = { /*navigateToSignUp()*/ },
+                onNavigateToForgotPassword = { /*navigateToForgotPassword()*/ }
             )
         }
-        composable<SignUpRoute> {
-            SignUpRoute(
+        /*composable<SignUpRoute> {
+            SignUpRoute (
                 onNavigateToLogin = { navigateToLogin() }
             )
         }
@@ -51,6 +51,6 @@ fun NavGraphBuilder.authGraph(
                 email = backStackEntry.arguments?.getString("email") ?: "",
                 onNavigateToLogin = { navigateToLogin() }
             )
-        }
+        }*/
     }
 }

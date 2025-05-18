@@ -45,7 +45,15 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.application.real_estate_app.navigation.ReaNavHost
 import com.application.real_estate_app.navigation.TopLevelDestination
+import com.application.real_estate_app.core_design_system.icons.ReaIcons
+import com.application.real_estate_app.core_design_system.theme.GradientColors
+import com.application.real_estate_app.core_design_system.theme.LocalGradientColors
+import com.application.real_estate_app.core_design_system.component.ReaBackground
+import com.application.real_estate_app.core_design_system.component.ReaGradientBackground
+import com.application.real_estate_app.core_design_system.component.ReaTopAppBar
+import com.application.real_estate_app.core_design_system.component.ReaNavigationSuiteScaffold
 import kotlin.reflect.KClass
+import com.application.real_estate_app.R
 
 @Composable
 fun ReaApp(
@@ -57,8 +65,8 @@ fun ReaApp(
         appState.currentTopLevelDestination == TopLevelDestination.HOME
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
-    NiaBackground(modifier = modifier) {
-        NiaGradientBackground(
+    ReaBackground(modifier = modifier) {
+        ReaGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
                 LocalGradientColors.current
             } else {
@@ -106,20 +114,20 @@ internal fun ReaApp(
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
-    val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
-        .collectAsStateWithLifecycle()
+    /*val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
+        .collectAsStateWithLifecycle()*/
     val currentDestination = appState.currentDestination
 
-    if (showSettingsDialog) {
+    /*if (showSettingsDialog) {
         SettingsDialog(
             onDismiss = { onSettingsDismissed() },
         )
-    }
+    }*/
 
-    NiaNavigationSuiteScaffold(
+    ReaNavigationSuiteScaffold(
         navigationSuiteItems = {
             appState.topLevelDestinations.forEach { destination ->
-                val hasUnread = unreadDestinations.contains(destination)
+                //val hasUnread = unreadDestinations.contains(destination)
                 val selected = currentDestination
                     .isRouteInHierarchy(destination.baseRoute)
                 item(
@@ -141,7 +149,7 @@ internal fun ReaApp(
                     modifier =
                         Modifier
                             .testTag("NiaNavItem")
-                            .then(if (hasUnread) Modifier.notificationDot() else Modifier),
+                            //.then(if (hasUnread) Modifier.notificationDot() else Modifier),
                 )
             }
         },
@@ -176,15 +184,15 @@ internal fun ReaApp(
                 val destination = appState.currentTopLevelDestination
                 var shouldShowTopAppBar = false
 
-                if (destination != null) {
+                /*if (destination != null) {
                     shouldShowTopAppBar = true
                     ReaTopAppBar(
                         titleRes = destination.titleTextId,
-                        navigationIcon = RealEstateIcons.Search,
+                        navigationIcon = ReaIcons.Search,
                         navigationIconContentDescription = stringResource(
                             id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                         ),
-                        actionIcon = NiaIcons.Settings,
+                        actionIcon = ReaIcons.Settings,
                         actionIconContentDescription = stringResource(
                             id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
                         ),
@@ -192,9 +200,9 @@ internal fun ReaApp(
                             containerColor = Color.Transparent,
                         ),
                         onActionClick = { onTopAppBarActionClick() },
-                        onNavigationClick = { appState.navigateToSearch() },
+                        onNavigationClick = { /*appState.navigateToSearch()*/ },
                     )
-                }
+                }*/
 
                 Box(
                     // Workaround for https://issuetracker.google.com/338478720
@@ -208,7 +216,7 @@ internal fun ReaApp(
                 ) {
                     ReaNavHost(
                         appState = appState,
-                        isUserAuthenticated = isUserAuthenticated
+                        isUserAuthenticated = false // TODO: Check if user is authenticated
                     )
                 }
 

@@ -8,7 +8,7 @@ import com.application.real_estate_app.feature_search.navigation.ExploreRoute
 import com.application.real_estate_app.feature_profile.navigation.ProfileRoute
 import com.application.real_estate_app.feature_favorites.navigation.FavoritesRoute
 import com.application.real_estate_app.feature_property.navigation.PropertyRoute
-import com.application.real_estate_app.core_design_system.icons.RealEstateIcons
+import com.application.real_estate_app.core_design_system.icons.ReaIcons
 import com.application.real_estate_app.feature_favorites.navigation.FavoritesBaseRoute
 import com.application.real_estate_app.feature_home.navigation.HomeBaseRoute
 import com.application.real_estate_app.feature_profile.navigation.ProfileBaseRoute
@@ -28,40 +28,40 @@ enum class TopLevelDestination(
     val baseRoute: KClass<*> = route,
 ) {
     HOME(
-        selectedIcon = RealEstateIcons.Home,
-        unselectedIcon = RealEstateIcons.HomeBorder,
+        selectedIcon = ReaIcons.Home,
+        unselectedIcon = ReaIcons.HomeBorder,
         iconTextId = R.string.home,
         titleTextId = R.string.home,
         route = HomeRoute::class,
         baseRoute = HomeBaseRoute::class
     ),
     EXPLORE(
-        selectedIcon = RealEstateIcons.Explore,
-        unselectedIcon = RealEstateIcons.ExploreBorder,
+        selectedIcon = ReaIcons.Explore,
+        unselectedIcon = ReaIcons.ExploreBorder,
         iconTextId = R.string.explore,
         titleTextId = R.string.explore,
         route = ExploreRoute::class,
         baseRoute = ExploreBaseRoute::class
     ),
     ADD_PROPERTY(
-        selectedIcon = RealEstateIcons.AddCircle,
-        unselectedIcon = RealEstateIcons.AddCircleOutline,
+        selectedIcon = ReaIcons.AddCircle,
+        unselectedIcon = ReaIcons.AddCircleOutline,
         iconTextId = R.string.add_property,
         titleTextId = R.string.add_property,
         route = PropertyRoute::class,
         baseRoute = PropertyBaseRoute::class
     ),
     FAVORITES(
-        selectedIcon = RealEstateIcons.Favorites,
-        unselectedIcon = RealEstateIcons.FavoriteBorder,
+        selectedIcon = ReaIcons.Favorites,
+        unselectedIcon = ReaIcons.FavoriteBorder,
         iconTextId = R.string.favorites,
         titleTextId = R.string.favorites,
         route = FavoritesRoute::class,
         baseRoute = FavoritesBaseRoute::class
     ),
     PROFILE(
-        selectedIcon = RealEstateIcons.Profile,
-        unselectedIcon = RealEstateIcons.ProfileBorder,
+        selectedIcon = ReaIcons.Profile,
+        unselectedIcon = ReaIcons.ProfileBorder,
         iconTextId = R.string.profile,
         titleTextId = R.string.profile,
         route = ProfileRoute::class,

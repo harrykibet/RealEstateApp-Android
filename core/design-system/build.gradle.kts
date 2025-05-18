@@ -15,6 +15,9 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.navigationSuite)
+
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
 

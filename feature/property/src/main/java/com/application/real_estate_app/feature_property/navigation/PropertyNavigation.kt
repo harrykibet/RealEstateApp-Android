@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.application.real_estate_app.feature_property.ui.screens.PropertyFormScreen
 import kotlinx.serialization.Serializable
 
 @Serializable data object PropertyBaseRoute // route to base navigation graph
@@ -18,7 +19,7 @@ fun NavGraphBuilder.propertyAdditionGraph(
 ) {
     navigation<PropertyBaseRoute>(startDestination = PropertyRoute) {
         composable<PropertyRoute> {
-            PropertyRoute()
+            PropertyFormScreen()
         }
     }
 }

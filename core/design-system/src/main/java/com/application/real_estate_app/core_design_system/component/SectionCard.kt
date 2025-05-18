@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
 @Composable
 fun SectionCard(
@@ -55,7 +55,7 @@ fun SectionCard(
 )
 @Composable
 fun SectionCardLightPreview() {
-    RealEstateAppTheme(useDarkTheme = false) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -96,7 +96,7 @@ fun SectionCardLightPreview() {
 )
 @Composable
 fun SectionCardDarkPreview() {
-    RealEstateAppTheme(useDarkTheme = true) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

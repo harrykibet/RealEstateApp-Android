@@ -27,7 +27,8 @@ fun FavoritesScreen() {
                 onLikeClick = { /* handle like */ },
                 onCommentClick = { /* handle comment */ },
                 onShareClick = { /* handle share */ },
-                exoPlayer = exoPlayer // Pass the ExoPlayer interface
+                exoPlayer = exoPlayer,
+                onPropertyClick = { /* handle property click */ }
             )
         }
     }

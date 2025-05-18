@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.real_estate_app.core_data.interfaces.IPropertyRepository
+import com.application.real_estate_app.core_domain.interfaces.IExoplayer
 import com.application.real_estate_app.core_model.property.Property
 import com.application.real_estate_app.feature_home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,11 @@ class HomeViewModel @Inject constructor(
 
     private val isLoadingMutable = MutableLiveData<Boolean>()
     //val isLoading: LiveData<Boolean> get() = isLoadingMutable
+
+    val exoPlayer: IExoplayer
+        get() {
+            TODO()
+        }
 
     private var lastVisibleDocument: String? = null
     private var canLoadMore = true

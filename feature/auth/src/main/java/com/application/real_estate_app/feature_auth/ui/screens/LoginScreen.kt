@@ -38,7 +38,7 @@ import com.application.real_estate_app.core_design_system.component.GoogleSignIn
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
-import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
 @Composable
 fun LoginScreen(
@@ -172,7 +172,7 @@ fun LoginScreen(
 )
 @Composable
 fun LoginScreenLight() {
-    RealEstateAppTheme(useDarkTheme = false) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -199,7 +199,7 @@ fun LoginScreenLight() {
 )
 @Composable
 fun LoginScreenDark() {
-    RealEstateAppTheme(useDarkTheme = true) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

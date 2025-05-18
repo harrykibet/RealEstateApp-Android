@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
 
 @Composable
@@ -108,7 +108,7 @@ fun RoundedElevatedTextField(
 )
 @Composable
 fun RoundedElevatedTextFieldLightPreview() {
-    RealEstateAppTheme(useDarkTheme = false) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -126,7 +126,7 @@ fun RoundedElevatedTextFieldLightPreview() {
 )
 @Composable
 fun RoundedElevatedTextFieldDarkPreview() {
-    RealEstateAppTheme(useDarkTheme = true) {
+    ReaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

@@ -36,7 +36,7 @@ fun rememberReaAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
 ): ReaAppState {
-    NavigationTrackingSideEffect(navController)
+    //NavigationTrackingSideEffect(navController)
     return remember(
         navController,
         coroutineScope,
@@ -139,7 +139,7 @@ class ReaAppState(
 
 /**
  * Stores information about navigation events to be used with JankStats
- */
+
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavHostController) {
     TrackDisposableJank(navController) { metricsHolder ->
@@ -153,4 +153,4 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
             navController.removeOnDestinationChangedListener(listener)
         }
     }
-}
+}*/

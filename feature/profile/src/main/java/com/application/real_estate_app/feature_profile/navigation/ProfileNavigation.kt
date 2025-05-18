@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.application.real_estate_app.feature_profile.ui.screens.ProfileScreen
 import kotlinx.serialization.Serializable
 
 @Serializable data object ProfileBaseRoute // route to base navigation graph
@@ -18,7 +19,7 @@ fun NavGraphBuilder.profileGraph(
 ) {
     navigation<ProfileBaseRoute>(startDestination = ProfileRoute) {
         composable<ProfileRoute> {
-            ProfileRoute()
+            ProfileScreen()
         }
     }
 }

@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.application.real_estate_app.core_design_system.R
-import com.application.real_estate_app.core_design_system.theme.RealEstateAppTheme
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
 @Composable
 fun GoogleSignInButton(
@@ -67,7 +67,7 @@ fun GoogleSignInButton(
 )
 @Composable
 fun GoogleSignInButtonPreview() {
-     RealEstateAppTheme {
+     ReaTheme {
         GoogleSignInButton(onClick = {})
     }
 }
