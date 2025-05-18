@@ -14,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
 import com.application.real_estate_app.core_ui.R
 
@@ -112,7 +112,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenLightPreview() {
     ReaTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
+        ReaBackground {
             ProfileScreen(
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",
@@ -131,7 +131,7 @@ fun ProfileScreenLightPreview() {
 @Composable
 fun ProfileScreenDarkPreview() {
     ReaTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
+        ReaBackground {
             ProfileScreen(
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",

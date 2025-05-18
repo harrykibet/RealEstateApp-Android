@@ -1,16 +1,36 @@
 plugins {
     alias(libs.plugins.realestateapp.android.config)
     alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.hilt)
+    alias(libs.plugins.protobuf)
 }
 
 android {
     namespace = "com.application.real_estate_app.core_datastore_proto"
 }
 
-dependencies {
+// Setup protobuf configuration, generating lite Java and Kotlin classes
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
+androidComponents.beforeVariants {
+    android.sourceSets.named(it.name) {
+        val buildDir = layout.buildDirectory.get().asFile
+        kotlin.srcDir(buildDir.resolve("generated/source/proto/${it.name}/kotlin"))
+    }
+}
+
+dependencies {
+    api(libs.protobuf.kotlin.lite)
 }

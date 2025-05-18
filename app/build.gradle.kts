@@ -33,6 +33,8 @@ dependencies {
 
     implementation(libs.kotlinx.datetime)
 
+    implementation(libs.kotlinx.coroutines.guava)
+
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.appcheck.debug)

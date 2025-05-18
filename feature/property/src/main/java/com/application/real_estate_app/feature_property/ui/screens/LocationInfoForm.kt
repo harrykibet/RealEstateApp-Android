@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
@@ -93,10 +94,7 @@ fun LocationInfoFormDarkPreview() {
 @Composable
 fun LocationInfoFormLightPreview() {
     ReaTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        ReaBackground {
             LocationInfoForm()
         }
     }

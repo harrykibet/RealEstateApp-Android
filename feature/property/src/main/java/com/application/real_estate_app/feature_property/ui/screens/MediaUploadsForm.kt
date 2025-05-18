@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
 
@@ -85,10 +86,7 @@ fun MediaUploadsFormDarkPreview() {
 @Composable
 fun MediaUploadsFormLightPreview() {
     ReaTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        ReaBackground {
             MediaUploadsForm()
         }
     }

@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.application.real_estate_app.core_design_system.component.GoogleSignInButton
+import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
@@ -173,10 +173,7 @@ fun LoginScreen(
 @Composable
 fun LoginScreenLight() {
     ReaTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        ReaBackground {
             LoginScreen(
                 email = "",
                 onEmailChange = {},
@@ -200,10 +197,7 @@ fun LoginScreenLight() {
 @Composable
 fun LoginScreenDark() {
     ReaTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        ReaBackground {
             LoginScreen(
                 email = "",
                 onEmailChange = {},

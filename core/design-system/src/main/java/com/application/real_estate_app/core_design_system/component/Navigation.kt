@@ -300,17 +300,18 @@ fun ReaNavigationRailPreview() {
         ReaIcons.ExploreBorder,
         ReaIcons.AddCircleOutline,
         ReaIcons.FavoriteBorder,
-        ReaIcons.ProfileBorder,
+        ReaIcons.ProfileBorder
     )
+
     val selectedIcons = listOf(
         ReaIcons.Home,
         ReaIcons.Explore,
         ReaIcons.AddCircle,
         ReaIcons.Favorites,
-        ReaIcons.Profile,
+        ReaIcons.Profile
     )
 
-        ReaTheme {
+    ReaTheme {
         ReaNavigationRail {
             items.forEachIndexed { index, item ->
                 ReaNavigationRailItem(

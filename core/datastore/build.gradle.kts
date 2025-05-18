@@ -13,4 +13,10 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+
+    implementation(libs.androidx.dataStore)
+    implementation(libs.kotlinx.coroutines.test)
+
+    implementation(projects.core.model)
+    implementation(projects.core.network)
 }

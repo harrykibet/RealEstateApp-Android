@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
 import com.application.real_estate_app.feature_auth.R
@@ -101,8 +102,8 @@ fun SignUpScreen(
         Button(
             onClick = onSignUpClick,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
+                .fillMaxWidth(0.5f)
+                .height(52.dp)
                 .padding(top = 16.dp),
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -230,7 +231,7 @@ fun UserTypeDropdownMenu(
 @Composable
 fun SignUpScreenLightPreview() {
     ReaTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        ReaBackground {
             SignUpScreen(
                 onSignUpClick = {},
                 onAlreadyHaveAccountClick = {}
@@ -249,7 +250,7 @@ fun SignUpScreenLightPreview() {
 @Composable
 fun SignUpScreenDarkPreview() {
     ReaTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        ReaBackground {
             SignUpScreen(
                 onSignUpClick = {},
                 onAlreadyHaveAccountClick = {}
