@@ -19,7 +19,7 @@ syntax = "proto3";
 import "com/application/real_estate_app/core_datastore_proto/data/dark_theme_config.proto";
 import "com/application/real_estate_app/core_datastore_proto/data/theme_brand.proto";
 
-option java_package = "com/application/real_estate_app/core_datastore_proto";
+option java_package = "com/application/real_estate_app/core_datastore";
 option java_multiple_files = true;
 
 message UserPreferences {
