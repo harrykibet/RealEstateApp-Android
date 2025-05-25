@@ -23,9 +23,11 @@ import com.application.real_estate_app.core_ui.TrackDisposableJank
 import com.application.real_estate_app.feature_favorites.navigation.navigateToFavorites
 import com.application.real_estate_app.feature_profile.navigation.navigateToProfile
 import com.application.real_estate_app.feature_property.navigation.navigateToPropertyForm
-import com.application.real_estate_app.feature_search.navigation.navigateToExplore
+import com.application.real_estate_app.feature_search.navigation.navigateToSearch
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.TimeZone
@@ -107,6 +109,12 @@ class ReaAppState(
      */
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
 
+    /**
+     * The top level destinations that have unread news resources.
+     */
+    val topLevelDestinationsWithUnreadResources: StateFlow<Set<TopLevelDestination>> =
+        MutableStateFlow(emptySet())
+
     val currentTimeZone = timeZoneMonitor.currentTimeZone
         .stateIn(
             coroutineScope,
@@ -139,13 +147,15 @@ class ReaAppState(
 
             when (topLevelDestination) {
                 TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
-                TopLevelDestination.EXPLORE -> navController.navigateToExplore(topLevelNavOptions)
+                TopLevelDestination.EXPLORE -> navController.navigateToSearch(topLevelNavOptions)
                 TopLevelDestination.ADD_PROPERTY -> navController.navigateToPropertyForm(topLevelNavOptions)
                 TopLevelDestination.FAVORITES -> navController.navigateToFavorites(topLevelNavOptions)
                 TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)
             }
         }
     }
+
+    fun navigateToSearch() = navController.navigateToSearch()
 }
 
 /**

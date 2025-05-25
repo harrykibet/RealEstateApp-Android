@@ -53,7 +53,9 @@ import com.application.real_estate_app.core_design_system.component.ReaGradientB
 import com.application.real_estate_app.core_design_system.component.ReaTopAppBar
 import com.application.real_estate_app.core_design_system.component.ReaNavigationSuiteScaffold
 import kotlin.reflect.KClass
+import com.application.real_estate_app.feature_settings.R as settingsR
 import com.application.real_estate_app.R
+import com.application.real_estate_app.feature_settings.SettingsDialog
 
 @Composable
 fun ReaApp(
@@ -203,7 +205,7 @@ internal fun ReaApp(
                             containerColor = Color.Transparent,
                         ),
                         onActionClick = { onTopAppBarActionClick() },
-                        onNavigationClick = { /*appState.navigateToSearch()*/ },
+                        onNavigationClick = { appState.navigateToSearch() },
                     )
                 }
 

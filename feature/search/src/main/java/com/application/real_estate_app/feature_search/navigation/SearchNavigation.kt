@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object ExploreBaseRoute // route to base navigation graph
 
-fun NavController.navigateToExplore(navOptions: NavOptions? = null) = navigate(ExploreRoute, navOptions)
+fun NavController.navigateToSearch(navOptions: NavOptions? = null) = navigate(ExploreRoute, navOptions)
 
 fun NavGraphBuilder.searchGraph(
     onBackClick: () -> Unit

@@ -26,7 +26,7 @@ import com.application.real_estate_app.core_data.util.NetworkMonitor
 import com.application.real_estate_app.core_data.util.TimeZoneMonitor
 import com.application.real_estate_app.MainActivityViewModel.MainActivityUiState.Loading
 import com.application.real_estate_app.core_analytics.AnalyticsHelper
-import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 import com.application.real_estate_app.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -53,6 +53,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+
+    @Inject
+    lateinit var authRepository: IAuthRepository
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -117,6 +120,7 @@ class MainActivity : ComponentActivity() {
             val appState = rememberReaAppState(
                 networkMonitor = networkMonitor,
                 timeZoneMonitor = timeZoneMonitor,
+                authRepository = authRepository
             )
 
             val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
