@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.application.real_estate_app.core_design_system.component.ReaBackground
 import com.application.real_estate_app.core_design_system.component.RoundedElevatedTextField
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
+import com.application.real_estate_app.core_ui.DevicePreviews
 import com.application.real_estate_app.feature_auth.R
 
 @Composable
@@ -228,6 +229,7 @@ fun UserTypeDropdownMenu(
     widthDp = 400
 )
 
+@DevicePreviews
 @Composable
 fun SignUpScreenLightPreview() {
     ReaTheme {
@@ -247,6 +249,7 @@ fun SignUpScreenLightPreview() {
     widthDp = 400
 )
 
+@DevicePreviews
 @Composable
 fun SignUpScreenDarkPreview() {
     ReaTheme {

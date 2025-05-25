@@ -39,6 +39,7 @@ import com.application.real_estate_app.core_design_system.component.RoundedEleva
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
 import com.application.real_estate_app.core_design_system.theme.ReaTheme
+import com.application.real_estate_app.core_ui.DevicePreviews
 
 @Composable
 fun LoginScreen(
@@ -170,6 +171,8 @@ fun LoginScreen(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400
 )
+
+@DevicePreviews
 @Composable
 fun LoginScreenLight() {
     ReaTheme {
@@ -194,6 +197,8 @@ fun LoginScreenLight() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400
 )
+
+@DevicePreviews
 @Composable
 fun LoginScreenDark() {
     ReaTheme {
