@@ -12,6 +12,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AuthRemoteDataSource @Inject constructor(
@@ -135,9 +139,21 @@ class AuthRemoteDataSource @Inject constructor(
             })
     }
 
-    override fun isUserAuthenticated(): Boolean {
-        return firebaseAuth.currentUser != null
+    override fun isUserAuthenticated(): Flow<Boolean> = callbackFlow {
+        val authListener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser != null)
+        }
+
+        firebaseAuth.addAuthStateListener(authListener)
+
+        // Emit initial value
+        trySend(firebaseAuth.currentUser != null)
+
+        awaitClose {
+            firebaseAuth.removeAuthStateListener(authListener)
+        }
     }
+
 
     override fun getCurrentUserId(): String? {
         return firebaseAuth.currentUser?.uid

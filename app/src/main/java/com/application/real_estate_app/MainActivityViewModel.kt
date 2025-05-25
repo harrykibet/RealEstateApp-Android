@@ -2,6 +2,7 @@ package com.application.real_estate_app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.application.real_estate_app.core_data.interfaces.IUserRepository
 import com.application.real_estate_app.core_model.user.UserData
 import com.application.real_estate_app.core_model.utils.DarkThemeConfig
 import com.application.real_estate_app.core_model.utils.ThemeBrand
@@ -14,16 +15,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    //userDataRepository: UserDataRepository,
+    userDataRepository: IUserRepository
 ) : ViewModel() {
-    /*val uiState: StateFlow<MainActivityUiState> = userData.map {
+    val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
         MainActivityUiState.Success(it)
     }.stateIn(
         scope = viewModelScope,
         initialValue = MainActivityUiState.Loading,
         started = SharingStarted.WhileSubscribed(5_000),
     )
-}*/
 
     sealed interface MainActivityUiState {
         data object Loading : MainActivityUiState

@@ -22,18 +22,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAMbM4FJlF3OZ2ok1gwXsndHXDO6YnB_H4" />
-
-        <activity
-            android:name=".SplashScreenActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.Material3.DayNight.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|uiMode"
@@ -48,7 +36,6 @@
 
                 <data
                     android:host="estatia.com"
-                    android:path="/homeFragment"
                     android:scheme="https" />
             </intent-filter>
         </activity>

@@ -114,20 +114,23 @@ internal fun ReaApp(
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
-    /*val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
-        .collectAsStateWithLifecycle()*/
+    val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
+        .collectAsStateWithLifecycle()
+
+    val isUserAuthenticated by appState.isUserAuthenticated.collectAsStateWithLifecycle()
+
     val currentDestination = appState.currentDestination
 
-    /*if (showSettingsDialog) {
+    if (showSettingsDialog) {
         SettingsDialog(
             onDismiss = { onSettingsDismissed() },
         )
-    }*/
+    }
 
     ReaNavigationSuiteScaffold(
         navigationSuiteItems = {
             appState.topLevelDestinations.forEach { destination ->
-                //val hasUnread = unreadDestinations.contains(destination)
+                val hasUnread = unreadDestinations.contains(destination)
                 val selected = currentDestination
                     .isRouteInHierarchy(destination.baseRoute)
                 item(
@@ -149,7 +152,7 @@ internal fun ReaApp(
                     modifier =
                         Modifier
                             .testTag("NiaNavItem")
-                            //.then(if (hasUnread) Modifier.notificationDot() else Modifier),
+                            .then(if (hasUnread) Modifier.notificationDot() else Modifier),
                 )
             }
         },
@@ -180,11 +183,11 @@ internal fun ReaApp(
                         ),
                     ),
             ) {
-                // Show the top app bar on top level destinations.
+                //Show the top app bar on top level destinations.
                 val destination = appState.currentTopLevelDestination
                 var shouldShowTopAppBar = false
 
-                /*if (destination != null) {
+                if (destination != null) {
                     shouldShowTopAppBar = true
                     ReaTopAppBar(
                         titleRes = destination.titleTextId,
@@ -202,7 +205,7 @@ internal fun ReaApp(
                         onActionClick = { onTopAppBarActionClick() },
                         onNavigationClick = { /*appState.navigateToSearch()*/ },
                     )
-                }*/
+                }
 
                 Box(
                     // Workaround for https://issuetracker.google.com/338478720
@@ -216,7 +219,7 @@ internal fun ReaApp(
                 ) {
                     ReaNavHost(
                         appState = appState,
-                        isUserAuthenticated = false // TODO: Check if user is authenticated
+                        isUserAuthenticated = isUserAuthenticated
                     )
                 }
 

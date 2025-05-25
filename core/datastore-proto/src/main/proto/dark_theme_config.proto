@@ -16,11 +16,12 @@
 
 syntax = "proto3";
 
-option java_package = "com/application/real_estate_app/core_datastore";
+option java_package = "com.application.real_estate_app.core_datastore";
 option java_multiple_files = true;
 
-enum ThemeBrandProto {
-  THEME_BRAND_UNSPECIFIED = 0;
-  THEME_BRAND_DEFAULT = 1;
-  THEME_BRAND_ANDROID = 2;
+enum DarkThemeConfigProto {
+  DARK_THEME_CONFIG_UNSPECIFIED = 0;
+  DARK_THEME_CONFIG_FOLLOW_SYSTEM = 1;
+  DARK_THEME_CONFIG_LIGHT = 2;
+  DARK_THEME_CONFIG_DARK = 3;
 }

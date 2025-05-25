@@ -16,10 +16,10 @@
 
 syntax = "proto3";
 
-import "com/application/real_estate_app/core_datastore_proto/data/dark_theme_config.proto";
-import "com/application/real_estate_app/core_datastore_proto/data/theme_brand.proto";
+import "dark_theme_config.proto";
+import "theme_brand.proto";
 
-option java_package = "com/application/real_estate_app/core_datastore";
+option java_package = "com.application.real_estate_app.core_datastore";
 option java_multiple_files = true;
 
 message UserPreferences {
@@ -27,7 +27,7 @@ message UserPreferences {
     repeated int32 deprecated_int_followed_property_ids = 1;
     int32 propertyChangeListVersion = 3;
     int32 ownerChangeListVersion = 4;
-    int32 newsResourceChangeListVersion = 6;
+    int32 userChangeListVersion = 6;
     repeated int32 deprecated_int_followed_owner_ids = 7;
     bool has_done_int_to_string_id_migration = 8;
     repeated string deprecated_followed_property_ids = 9;

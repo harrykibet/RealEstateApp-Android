@@ -1,181 +1,170 @@
 package com.application.real_estate_app
 
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.ViewTreeObserver
-import android.widget.Toast
-import androidx.activity.addCallback
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import com.application.real_estate_app.feature_home.R.id.homeFragment
-import com.application.real_estate_app.feature_profile.R.id.profileFragment
-import com.application.real_estate_app.feature_search.R.id.mapsFragment
-import com.application.real_estate_app.feature_property.R.id.addPropertyFragment
-import com.application.real_estate_app.feature_favorites.R.id.favoritesFragment
-import com.application.real_estate_app.core_common.events.LoginEvent
-import com.application.real_estate_app.core_common.events.LogoutEvent
-import com.application.real_estate_app.core_common.misc.Consts
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.metrics.performance.JankStats
+import androidx.tracing.trace
+import com.application.real_estate_app.core_ui.LocalTimeZone
+import com.application.real_estate_app.core_analytics.LocalAnalyticsHelper
+import com.application.real_estate_app.ui.rememberReaAppState
+import com.application.real_estate_app.ui.ReaApp
+import com.application.real_estate_app.core_design_system.theme.ReaTheme
+import com.application.real_estate_app.core_data.util.NetworkMonitor
+import com.application.real_estate_app.core_data.util.TimeZoneMonitor
+import com.application.real_estate_app.MainActivityViewModel.MainActivityUiState.Loading
+import com.application.real_estate_app.core_analytics.AnalyticsHelper
 import com.application.real_estate_app.feature_auth.ui.viewModels.AuthViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.application.real_estate_app.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
-    private lateinit var navController: NavController
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var bottomNavigationView: BottomNavigationView
-    private val authViewModel: AuthViewModel by viewModels() // ViewModel for checking authentication
+    /**
+     * Lazily inject [JankStats], which is used to track jank throughout the app.
+     */
+    @Inject
+    lateinit var lazyStats: dagger.Lazy<JankStats>
 
+    @Inject
+    lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var timeZoneMonitor: TimeZoneMonitor
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
+
+    private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Install the splash screen before calling super.onCreate
-            installSplashScreen()
-        }
-
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.mainactivity)
 
-        navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        // Initialize the NavController
-        navController = navHostFragment.navController
+        // We keep this as a mutable state, so that we can track changes inside the composition.
+        // This allows us to react to dark/light mode changes.
+        var themeSettings by mutableStateOf(
+            ThemeSettings(
+                darkTheme = resources.configuration.isSystemInDarkTheme,
+                androidTheme = Loading.shouldUseAndroidTheme,
+                disableDynamicTheming = Loading.shouldDisableDynamicTheming,
+            ),
+        )
 
-        bottomNavigationView = findViewById(R.id.bottomNavigation)
-
-        // Check if authentication status is passed in the intent for Android 11 and below
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            val isAuthenticated = intent.getBooleanExtra(Consts.USER_AUTHENTICATED, false)
-            navigateBasedOnAuthentication(isAuthenticated)
-        }
-        // Android 12 +
-        else{
-            authViewModel.checkAuthentication() // Trigger the authentication check
-
-            // Keep the splash screen visible until authentication check completes
-            val content = findViewById<View>(android.R.id.content)
-            content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                override fun onPreDraw(): Boolean {
-                    // Check if the authentication check is complete
-                    return if (authViewModel.isAuthCheckComplete()) {
-                        content.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Authentication status
-                        authViewModel.isUserLoggedIn.value?.let { isAuthenticated ->
-                            Toast.makeText(this@MainActivity, getString(R.string.authentication_status, isAuthenticated.toString()), Toast.LENGTH_SHORT).show()
-                            navigateBasedOnAuthentication(isAuthenticated)
+        // Update the uiState
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(
+                    isSystemInDarkTheme(),
+                    viewModel.uiState,
+                ) { systemDark, uiState ->
+                    ThemeSettings(
+                        darkTheme = uiState.shouldUseDarkTheme(systemDark),
+                        androidTheme = uiState.shouldUseAndroidTheme,
+                        disableDynamicTheming = uiState.shouldDisableDynamicTheming,
+                    )
+                }
+                    .onEach { themeSettings = it }
+                    .map { it.darkTheme }
+                    .distinctUntilChanged()
+                    .collect { darkTheme ->
+                        trace("ReaEdgeToEdge") {
+                            // Turn off the decor fitting system windows, which allows us to handle insets,
+                            // including IME animations, and go edge-to-edge.
+                            // This is the same parameters as the default enableEdgeToEdge call, but we manually
+                            // resolve whether or not to show dark theme using uiState, since it can be different
+                            // than the configuration's dark theme value based on the user preference.
+                            enableEdgeToEdge(
+                                statusBarStyle = SystemBarStyle.auto(
+                                    lightScrim = android.graphics.Color.TRANSPARENT,
+                                    darkScrim = android.graphics.Color.TRANSPARENT,
+                                ) { darkTheme },
+                                navigationBarStyle = SystemBarStyle.auto(
+                                    lightScrim = lightScrim,
+                                    darkScrim = darkScrim,
+                                ) { darkTheme },
+                            )
                         }
-                        true // Proceed with normal rendering
-                    } else {
-                        false // Hold off on drawing the UI
                     }
-                }
-            })
-        }
-    }
-
-    fun navigateBasedOnAuthentication(isAuthenticated: Boolean) {
-        if (isAuthenticated) {
-            showHomeFragment()
-        } else {
-            showLoginFragment()
-        }
-    }
-
-    private fun showHomeFragment() {
-        bottomNavigationView.visibility = View.VISIBLE
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-        setupBottomNavigation()
-
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-        navGraph.setStartDestination(com.application.real_estate_app.feature_home.R.id.feature_home_nav_graph)
-        navController.graph = navGraph
-    }
-
-
-    private fun showLoginFragment() {
-        bottomNavigationView.visibility = View.GONE
-
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-        navGraph.setStartDestination(com.application.real_estate_app.feature_auth.R.id.feature_auth_nav_graph)
-        navController.graph = navGraph
-    }
-
-
-    private fun setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                homeFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_home.R.id.feature_home_nav_graph)
-                    true
-                }
-
-                mapsFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_search.R.id.feature_explore_nav_graph)
-                    true
-                }
-
-                addPropertyFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_property.R.id.feature_property_nav_graph)
-                    true
-                }
-
-                favoritesFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_favorites.R.id.feature_favorite_nav_graph)
-                    true
-                }
-
-                profileFragment -> {
-                    navController.navigate(com.application.real_estate_app.feature_profile.R.id.feature_profile_nav_graph)
-                    true
-                }
-
-                else -> false
             }
         }
 
-        onBackPressedDispatcher.addCallback(this@MainActivity) {
-            val currentDestination = navController.currentDestination?.id
-            val isAtRoot = currentDestination == com.application.real_estate_app.feature_auth.R.id.loginFragment ||
-                    currentDestination == com.application.real_estate_app.feature_home.R.id.homeFragment
+        // Keep the splash screen on-screen until the UI state is loaded. This condition is
+        // evaluated each time the app needs to be redrawn so it should be fast to avoid blocking
+        // the UI.
+        splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.shouldKeepSplashScreen() }
 
-            if (!navController.popBackStack() && isAtRoot) {
-                finish()
+        setContent {
+            val appState = rememberReaAppState(
+                networkMonitor = networkMonitor,
+                timeZoneMonitor = timeZoneMonitor,
+            )
+
+            val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
+
+            CompositionLocalProvider(
+                LocalAnalyticsHelper provides analyticsHelper,
+                LocalTimeZone provides currentTimeZone,
+            ) {
+                ReaTheme(
+                    darkTheme = themeSettings.darkTheme,
+                    androidTheme = themeSettings.androidTheme,
+                    disableDynamicTheming = themeSettings.disableDynamicTheming,
+                ) {
+                    ReaApp(appState)
+                }
             }
         }
     }
 
-    public override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        navController.handleDeepLink(intent)
+    override fun onResume() {
+        super.onResume()
+        lazyStats.get().isTrackingEnabled = true
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this@MainActivity)  // Register to listen for events
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this@MainActivity)  // Unregister when the activity stops
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onLogoutEvent(event: LogoutEvent) {
-        showLoginFragment()
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onLoginEvent(event: LoginEvent) {
-        showHomeFragment()
+    override fun onPause() {
+        super.onPause()
+        lazyStats.get().isTrackingEnabled = false
     }
 }
+
+/**
+ * The default light scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=35-38;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+/**
+ * The default dark scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
+/**
+ * Class for the system theme settings.
+ * This wrapping class allows us to combine all the changes and prevent unnecessary recompositions.
+ */
+data class ThemeSettings(
+    val darkTheme: Boolean,
+    val androidTheme: Boolean,
+    val disableDynamicTheming: Boolean,
+)

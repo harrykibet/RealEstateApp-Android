@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
@@ -59,7 +60,7 @@ class AuthRepository @Inject constructor(
         return remoteDataSource.sendPasswordResetEmail(email, onFailure)
     }
 
-    override fun isUserAuthenticated(): Boolean {
+    override fun isUserAuthenticated(): Flow<Boolean> {
         return remoteDataSource.isUserAuthenticated()
     }
 

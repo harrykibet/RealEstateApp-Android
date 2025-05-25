@@ -35,6 +35,8 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.guava)
 
+    implementation(libs.metrics.performance)
+
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.appcheck.debug)

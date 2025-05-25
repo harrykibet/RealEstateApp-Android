@@ -19,6 +19,8 @@ dependencies {
 
     implementation(libs.metrics.performance)
 
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 

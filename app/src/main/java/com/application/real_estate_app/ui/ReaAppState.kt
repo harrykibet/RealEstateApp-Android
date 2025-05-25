@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import androidx.tracing.trace
+import com.application.real_estate_app.core_data.interfaces.IAuthRepository
 import com.application.real_estate_app.core_data.util.NetworkMonitor
 import com.application.real_estate_app.feature_home.navigation.navigateToHome
 import com.application.real_estate_app.navigation.TopLevelDestination
@@ -33,21 +34,24 @@ import kotlinx.datetime.TimeZone
 fun rememberReaAppState(
     networkMonitor: NetworkMonitor,
     timeZoneMonitor: TimeZoneMonitor,
+    authRepository: IAuthRepository,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
 ): ReaAppState {
-    //NavigationTrackingSideEffect(navController)
+    NavigationTrackingSideEffect(navController)
     return remember(
         navController,
         coroutineScope,
         networkMonitor,
         timeZoneMonitor,
+        authRepository
     ) {
         ReaAppState(
             navController = navController,
             coroutineScope = coroutineScope,
             networkMonitor = networkMonitor,
             timeZoneMonitor = timeZoneMonitor,
+            authRepository = authRepository
         )
     }
 }
@@ -58,8 +62,15 @@ class ReaAppState(
     coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,
     timeZoneMonitor: TimeZoneMonitor,
+    val authRepository: IAuthRepository
 ) {
     private val previousDestination = mutableStateOf<NavDestination?>(null)
+
+    val isUserAuthenticated = authRepository.isUserAuthenticated().stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false,
+    )
 
     val currentDestination: NavDestination?
         @Composable get() {
@@ -138,7 +149,7 @@ class ReaAppState(
 }
 
 /**
- * Stores information about navigation events to be used with JankStats
+ * Stores information about navigation events to be used with JankStats **/
 
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavHostController) {
@@ -153,4 +164,4 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
             navController.removeOnDestinationChangedListener(listener)
         }
     }
-}*/
+}
