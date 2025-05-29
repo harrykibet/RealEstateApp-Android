@@ -18,7 +18,6 @@ android {
             baselineProfile.automaticGenerationDuringBuild = true
         }
     }
-    dynamicFeatures += setOf(":legal", ":compliance")
 
     hilt {
         enableAggregatingTask = true

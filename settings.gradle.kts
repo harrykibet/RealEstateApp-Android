@@ -66,7 +66,4 @@ include(":core:datastore")
 include(":core:design-system")
 include(":core:testing")
 include(":core:datastore-proto")
-
-include(":compliance")
-include(":legal")
 include(":lint")
