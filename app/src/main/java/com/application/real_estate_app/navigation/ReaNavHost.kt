@@ -29,7 +29,7 @@ fun ReaNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = HomeBaseRoute,
         modifier = modifier,
     ) {
 
