@@ -1,0 +1,70 @@
+package com.estatia.realestate.apps.navigation
+
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.application.real_estate_app.R
+import com.estatia.realestate.apps.feature.home.navigation.HomeRoute
+import com.estatia.realestate.apps.feature.search.navigation.ExploreRoute
+import com.estatia.realestate.apps.feature.profile.navigation.ProfileRoute
+import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesRoute
+import com.estatia.realestate.apps.feature.property.navigation.PropertyRoute
+import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesBaseRoute
+import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
+import com.estatia.realestate.apps.feature.profile.navigation.ProfileBaseRoute
+import com.estatia.realestate.apps.feature.property.navigation.PropertyBaseRoute
+import com.estatia.realestate.apps.feature.search.navigation.ExploreBaseRoute
+import kotlin.reflect.KClass
+
+/**
+ * Represents a top-level destination in the app. Contains metadata used in the UI and navigation.
+ */
+enum class TopLevelDestination(
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+    @StringRes val iconTextId: Int,
+    @StringRes val titleTextId: Int,
+    val route: KClass<*>,
+    val baseRoute: KClass<*> = route,
+) {
+    HOME(
+        selectedIcon = ReaIcons.Home,
+        unselectedIcon = ReaIcons.HomeBorder,
+        iconTextId = R.string.home,
+        titleTextId = R.string.home,
+        route = HomeRoute::class,
+        baseRoute = HomeBaseRoute::class
+    ),
+    EXPLORE(
+        selectedIcon = ReaIcons.Explore,
+        unselectedIcon = ReaIcons.ExploreBorder,
+        iconTextId = R.string.explore,
+        titleTextId = R.string.explore,
+        route = ExploreRoute::class,
+        baseRoute = ExploreBaseRoute::class
+    ),
+    ADD_PROPERTY(
+        selectedIcon = ReaIcons.AddCircle,
+        unselectedIcon = ReaIcons.AddCircleOutline,
+        iconTextId = R.string.add_property,
+        titleTextId = R.string.add_property,
+        route = PropertyRoute::class,
+        baseRoute = PropertyBaseRoute::class
+    ),
+    FAVORITES(
+        selectedIcon = ReaIcons.Favorites,
+        unselectedIcon = ReaIcons.FavoriteBorder,
+        iconTextId = R.string.favorites,
+        titleTextId = R.string.favorites,
+        route = FavoritesRoute::class,
+        baseRoute = FavoritesBaseRoute::class
+    ),
+    PROFILE(
+        selectedIcon = ReaIcons.Profile,
+        unselectedIcon = ReaIcons.ProfileBorder,
+        iconTextId = R.string.profile,
+        titleTextId = R.string.profile,
+        route = ProfileRoute::class,
+        baseRoute = ProfileBaseRoute::class
+    )
+}

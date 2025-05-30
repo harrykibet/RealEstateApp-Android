@@ -1,0 +1,5 @@
+package com.estatia.realestate.apps.core.common.events
+
+import com.estatia.realestate.apps.core.common.events.EventTypes
+
+data class LoginEvent(val message: String = EventTypes.EVENT_USER_LOGIN)
