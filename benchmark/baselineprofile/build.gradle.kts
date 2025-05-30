@@ -1,12 +1,12 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
-    alias(libs.plugins.realestateapp.android.benchmark)
+    alias(libs.plugins.estatia.android.benchmark)
     alias(libs.plugins.baselineprofile)
 }
 
 android {
-    namespace = "com.application.real_estate_app.baselineprofile"
+    namespace = "com.estatia.realestate.apps.baselineprofile"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

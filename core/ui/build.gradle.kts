@@ -1,12 +1,12 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.android.compose)
-    alias(libs.plugins.realestateapp.hilt)
+    alias(libs.plugins.estatia.android.config)
+    alias(libs.plugins.estatia.android.testing)
+    alias(libs.plugins.estatia.android.compose)
+    alias(libs.plugins.estatia.hilt)
 }
 
 android {
-    namespace = "com.application.real_estate_app.core_ui"
+    namespace = "com.estatia.realestate.apps.core.ui"
 }
 
 dependencies {

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.application.real_estate_app.feature_search.ui.fragments.MapsFragment"
+        android:name="com.estatia.realestate.apps.feature.search.ui.fragments.MapsFragment"
         android:label="@string/search_location"
         tools:layout="@layout/fragment_maps">
         <deepLink

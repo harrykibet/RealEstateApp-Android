@@ -1,9 +1,9 @@
 plugins {
-   alias(libs.plugins.realestateapp.android.benchmark)
+   alias(libs.plugins.estatia.android.benchmark)
 }
 
 android {
-    namespace = "com.application.real_estate_app.core_benchmark"
+    namespace = "com.estatia.realestate.apps.benchmark"
 
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your

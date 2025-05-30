@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.fragments.FavoritesFragment">
+        tools:context="com.estatia.realestate.apps.feature.favorites.ui.fragments.FavoritesFragment">
 
         <!-- Placeholder message for no liked properties -->
         <com.google.android.material.textview.MaterialTextView

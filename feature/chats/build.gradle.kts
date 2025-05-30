@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.feature)
+    alias(libs.plugins.estatia.android.feature)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_chats"
+    namespace = "com.estatia.realestate.apps.feature.chats"
 }
 
 dependencies {

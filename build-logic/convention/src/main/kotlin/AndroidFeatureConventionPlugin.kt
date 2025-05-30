@@ -6,10 +6,10 @@ import utils.libs
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
 
-        pluginManager.apply("com.application.real_estate_app.android.config")
-        pluginManager.apply("com.application.real_estate_app.android.testing")
-        pluginManager.apply("com.application.real_estate_app.android.compose")
-        pluginManager.apply("com.application.real_estate_app.hilt")
+        pluginManager.apply("com.estatia.realestate.apps.android.config")
+        pluginManager.apply("com.estatia.realestate.apps.android.testing")
+        pluginManager.apply("com.estatia.realestate.apps.android.compose")
+        pluginManager.apply("com.estatia.realestate.apps.hilt")
         pluginManager.apply("androidx.navigation.safeargs.kotlin")
         pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 

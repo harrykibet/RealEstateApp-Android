@@ -1,8 +1,8 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.testing)
-    alias(libs.plugins.realestateapp.firebase)
-    alias(libs.plugins.realestateapp.hilt)
+    alias(libs.plugins.estatia.android.config)
+    alias(libs.plugins.estatia.android.testing)
+    alias(libs.plugins.estatia.firebase)
+    alias(libs.plugins.estatia.hilt)
 }
 
 android {

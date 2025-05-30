@@ -1,10 +1,10 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.feature)
-    alias(libs.plugins.realestateapp.firebase)
+    alias(libs.plugins.estatia.android.feature)
+    alias(libs.plugins.estatia.firebase)
 }
 
 android {
-    namespace = "com.application.real_estate_app.feature_auth"
+    namespace = "com.estatia.realestate.apps.feature.auth"
 }
 
 dependencies {

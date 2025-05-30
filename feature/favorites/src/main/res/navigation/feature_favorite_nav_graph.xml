@@ -8,7 +8,7 @@
     <!-- Favorites Fragment -->
     <fragment
         android:id="@+id/favoritesFragment"
-        android:name="com.application.real_estate_app.feature_favorites.ui.fragments.FavoritesFragment"
+        android:name="com.estatia.realestate.apps.feature.favorites.ui.fragments.FavoritesFragment"
         android:label="Favorites"
         tools:layout="@layout/fragment_favorites">
         <deepLink

@@ -135,23 +135,20 @@ androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotli
 com-google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version = "2.0.1" }
 
 # Custom plugins defined by this project
-realestateapp-sonarqube = { id = "com.application.real_estate_app.sonarqube" }
-realestateapp-hilt = { id = "com.application.real_estate_app.hilt"}
-realestateapp-android-room = { id = "com.application.real_estate_app.android.room"}
-realestateapp-firebase = { id = "com.application.real_estate_app.android.application.firebase"}
-realestateapp-android-packaging = { id = "com.application.real_estate_app.android.packaging"}
-realestateapp-android-testing = { id = "com.application.real_estate_app.android.testing"}
-realestateapp-android-config = { id = "com.application.real_estate_app.android.config"}
-realestateapp-android-compose = { id = "com.application.real_estate_app.android.compose"}
-realestateapp-android-application = { id = "com.application.real_estate_app.android.application"}
-realestateapp-android-dynamic-feature = { id = "com.application.real_estate_app.android.dynamic-feature"}
-realestateapp-android-benchmark = { id = "com.application.real_estate_app.android.benchmark"}
-realestateapp-android-feature = { id = "com.application.real_estate_app.android.feature"}
+estatia-sonarqube = { id = "com.estatia.realestate.apps.sonarqube" }
+estatia-hilt = { id = "com.estatia.realestate.apps.hilt"}
+estatia-android-room = { id = "com.estatia.realestate.apps.android.room"}
+estatia-firebase = { id = "com.estatia.realestate.apps.android.application.firebase"}
+estatia-android-packaging = { id = "com.estatia.realestate.apps.android.packaging"}
+estatia-android-testing = { id = "com.estatia.realestate.apps.android.testing"}
+estatia-android-config = { id = "com.estatia.realestate.apps.android.config"}
+estatia-android-compose = { id = "com.estatia.realestate.apps.android.compose"}
+estatia-android-application = { id = "com.estatia.realestate.apps.android.application"}
+estatia-android-dynamic-feature = { id = "com.estatia.realestate.apps.android.dynamic-feature"}
+estatia-android-benchmark = { id = "com.estatia.realestate.apps.android.benchmark"}
+estatia-android-feature = { id = "com.estatia.realestate.apps.android.feature"}
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "androidGradlePlugin" }
-
-
-
 
 
 [bundles]

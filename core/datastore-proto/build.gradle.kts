@@ -1,11 +1,11 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.config)
-    alias(libs.plugins.realestateapp.android.testing)
+    alias(libs.plugins.estatia.android.config)
+    alias(libs.plugins.estatia.android.testing)
     alias(libs.plugins.protobuf)
 }
 
 android {
-    namespace = "com.application.real_estate_app.core_datastore_proto"
+    namespace = "com.estatia.realestate.apps.core.datastore.proto"
 }
 
 // Setup protobuf configuration, generating lite Java and Kotlin classes

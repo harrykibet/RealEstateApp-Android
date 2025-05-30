@@ -16,7 +16,7 @@
 
 syntax = "proto3";
 
-option java_package = "com.application.real_estate_app.core_datastore";
+option java_package = "com.estatia.realestate.apps.core.datastore";
 option java_multiple_files = true;
 
 enum ThemeBrandProto {

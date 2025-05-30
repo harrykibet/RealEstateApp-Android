@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.realestateapp.android.application)
+    alias(libs.plugins.estatia.android.application)
 }
 
 android {
-    namespace = "com.application.real_estate_app"
+    namespace = "com.estatia.realestate.apps"
 
     buildTypes {
         create("benchmark") {

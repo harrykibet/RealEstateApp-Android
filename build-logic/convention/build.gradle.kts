@@ -42,51 +42,51 @@ tasks {
 gradlePlugin {
     plugins {
         register("hilt") {
-            id = libs.plugins.realestateapp.hilt.get().pluginId
+            id = libs.plugins.estatia.hilt.get().pluginId
             implementationClass = "HiltConventionPlugin"
         }
         register("androidRoom") {
-            id = libs.plugins.realestateapp.android.room.get().pluginId
+            id = libs.plugins.estatia.android.room.get().pluginId
             implementationClass = "AndroidRoomConventionPlugin"
         }
         register("androidFirebase") {
-            id = libs.plugins.realestateapp.firebase.get().pluginId
+            id = libs.plugins.estatia.firebase.get().pluginId
             implementationClass = "FirebaseConventionPlugin"
         }
         register("sonarqube") {
-            id = libs.plugins.realestateapp.sonarqube.get().pluginId
+            id = libs.plugins.estatia.sonarqube.get().pluginId
             implementationClass = "SonarQubeConventionPlugin"
         }
         register("androidPackaging") {
-            id = libs.plugins.realestateapp.android.packaging.get().pluginId
+            id = libs.plugins.estatia.android.packaging.get().pluginId
             implementationClass = "AndroidPackagingConventionPlugin"
         }
         register("androidTesting") {
-            id = libs.plugins.realestateapp.android.testing.get().pluginId
+            id = libs.plugins.estatia.android.testing.get().pluginId
             implementationClass = "TestingConventionPlugin"
         }
         register("androidConfig") {
-            id = libs.plugins.realestateapp.android.config.get().pluginId
+            id = libs.plugins.estatia.android.config.get().pluginId
             implementationClass = "AndroidCommonConfigPlugin"
         }
         register("androidCompose") {
-            id = libs.plugins.realestateapp.android.compose.get().pluginId
+            id = libs.plugins.estatia.android.compose.get().pluginId
             implementationClass = "ComposeConventionPlugin"
         }
         register("dynamicFeature") {
-            id = libs.plugins.realestateapp.android.dynamic.feature.get().pluginId
+            id = libs.plugins.estatia.android.dynamic.feature.get().pluginId
             implementationClass = "DynamicFeatureConventionPlugin"
         }
         register("androidApplication") {
-            id = libs.plugins.realestateapp.android.application.get().pluginId
+            id = libs.plugins.estatia.android.application.get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
         register("androidBenchmark") {
-            id = libs.plugins.realestateapp.android.benchmark.get().pluginId
+            id = libs.plugins.estatia.android.benchmark.get().pluginId
             implementationClass = "AndroidBenchmarkConventionPlugin"
         }
         register("androidFeature") {
-            id = libs.plugins.realestateapp.android.feature.get().pluginId
+            id = libs.plugins.estatia.android.feature.get().pluginId
             implementationClass = "AndroidFeatureConventionPlugin"
         }
     }

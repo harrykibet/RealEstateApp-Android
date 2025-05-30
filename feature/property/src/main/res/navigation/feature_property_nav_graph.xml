@@ -8,7 +8,7 @@
     <!-- Add Property Fragment -->
     <fragment
         android:id="@+id/addPropertyFragment"
-        android:name="com.application.real_estate_app.feature_property.ui.uploads.fragments.AddPropertyFragment"
+        android:name="com.estatia.realestate.apps.feature.property.ui.uploads.fragments.AddPropertyFragment"
         tools:layout="@layout/fragment_add_property">
 
         <deepLink
@@ -28,14 +28,14 @@
     <!-- Image Selection Fragment -->
     <fragment
         android:id="@+id/mediaSelectionFragment"
-        android:name="com.application.real_estate_app.feature_property.ui.uploads.fragments.MediaSelectionFragment"
+        android:name="com.estatia.realestate.apps.feature.property.ui.uploads.fragments.MediaSelectionFragment"
         tools:layout="@layout/fragment_media_selection">
     </fragment>
 
     <!-- Map Selection Fragment -->
     <fragment
         android:id="@+id/mapSelectionFragment"
-        android:name="com.application.real_estate_app.feature_property.ui.uploads.fragments.MapSelectionFragment"
+        android:name="com.estatia.realestate.apps.feature.property.ui.uploads.fragments.MapSelectionFragment"
         tools:layout="@layout/fragment_map_selection">
     </fragment>
 

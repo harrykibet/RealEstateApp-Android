@@ -29,7 +29,7 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "RealEstateApp"
+rootProject.name = "Estatia"
 
 include(":app")
 include(":benchmark")
