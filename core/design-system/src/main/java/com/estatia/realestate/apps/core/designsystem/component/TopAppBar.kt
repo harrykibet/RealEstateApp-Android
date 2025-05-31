@@ -53,7 +53,7 @@ fun EstatiaTopAppBar(
             }
         },
         colors = colors,
-        modifier = modifier.testTag("niaTopAppBar"),
+        modifier = modifier.testTag("EstatiaTopAppBar"),
     )
 }
 

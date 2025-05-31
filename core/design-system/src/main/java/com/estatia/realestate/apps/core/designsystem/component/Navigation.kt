@@ -27,7 +27,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
- * Now in Android navigation bar item with icon and label content slots. Wraps Material 3
+ * Estatia navigation bar item with icon and label content slots. Wraps Material 3
  * [NavigationBarItem].
  *
  * @param selected Whether this item is selected.
@@ -42,7 +42,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * only be shown when this item is selected.
  */
 @Composable
-fun RowScope.ReaNavigationBarItem(
+fun RowScope.EstatiaNavigationBarItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -61,37 +61,37 @@ fun RowScope.ReaNavigationBarItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = ReaNavigationDefaults.navigationContentColor(),
-            selectedTextColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = ReaNavigationDefaults.navigationContentColor(),
-            indicatorColor = ReaNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = EstatiaNavigationDefaults.navigationContentColor(),
+            selectedTextColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = EstatiaNavigationDefaults.navigationContentColor(),
+            indicatorColor = EstatiaNavigationDefaults.navigationIndicatorColor(),
         ),
     )
 }
 
 /**
- * Now in Android navigation bar with content slot. Wraps Material 3 [NavigationBar].
+ * Estatia navigation bar with content slot. Wraps Material 3 [NavigationBar].
  *
  * @param modifier Modifier to be applied to the navigation bar.
  * @param content Destinations inside the navigation bar. This should contain multiple
  * [NavigationBarItem]s.
  */
 @Composable
-fun ReaNavigationBar(
+fun EstatiaNavigationBar(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
     NavigationBar(
         modifier = modifier,
-        contentColor = ReaNavigationDefaults.navigationContentColor(),
+        contentColor = EstatiaNavigationDefaults.navigationContentColor(),
         tonalElevation = 0.dp,
         content = content,
     )
 }
 
 /**
- * Now in Android navigation rail item with icon and label content slots. Wraps Material 3
+ * Estatia navigation rail item with icon and label content slots. Wraps Material 3
  * [NavigationRailItem].
  *
  * @param selected Whether this item is selected.
@@ -106,7 +106,7 @@ fun ReaNavigationBar(
  * only be shown when this item is selected.
  */
 @Composable
-fun ReaNavigationRailItem(
+fun EstatiaNavigationRailItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -125,17 +125,17 @@ fun ReaNavigationRailItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationRailItemDefaults.colors(
-            selectedIconColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = ReaNavigationDefaults.navigationContentColor(),
-            selectedTextColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = ReaNavigationDefaults.navigationContentColor(),
-            indicatorColor = ReaNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = EstatiaNavigationDefaults.navigationContentColor(),
+            selectedTextColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = EstatiaNavigationDefaults.navigationContentColor(),
+            indicatorColor = EstatiaNavigationDefaults.navigationIndicatorColor(),
         ),
     )
 }
 
 /**
- * Now in Android navigation rail with header and content slots. Wraps Material 3 [NavigationRail].
+ * Estatia navigation rail with header and content slots. Wraps Material 3 [NavigationRail].
  *
  * @param modifier Modifier to be applied to the navigation rail.
  * @param header Optional header that may hold a floating action button or a logo.
@@ -143,7 +143,7 @@ fun ReaNavigationRailItem(
  * [NavigationRailItem]s.
  */
 @Composable
-fun ReaNavigationRail(
+fun EstatiaNavigationRail(
     modifier: Modifier = Modifier,
     header: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
@@ -151,24 +151,24 @@ fun ReaNavigationRail(
     NavigationRail(
         modifier = modifier,
         containerColor = Color.Transparent,
-        contentColor = ReaNavigationDefaults.navigationContentColor(),
+        contentColor = EstatiaNavigationDefaults.navigationContentColor(),
         header = header,
         content = content,
     )
 }
 
 /**
- * Now in Android navigation suite scaffold with item and content slots.
+ * Estatia navigation suite scaffold with item and content slots.
  * Wraps Material 3 [NavigationSuiteScaffold].
  *
  * @param modifier Modifier to be applied to the navigation suite scaffold.
- * @param navigationSuiteItems A slot to display multiple items via [ReaNavigationSuiteScope].
+ * @param navigationSuiteItems A slot to display multiple items via [EstatiaNavigationSuiteScope].
  * @param windowAdaptiveInfo The window adaptive info.
  * @param content The app content inside the scaffold.
  */
 @Composable
-fun ReaNavigationSuiteScaffold(
-    navigationSuiteItems: ReaNavigationSuiteScope.() -> Unit,
+fun EstatiaNavigationSuiteScaffold(
+    navigationSuiteItems: EstatiaNavigationSuiteScope.() -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
     content: @Composable () -> Unit,
@@ -177,30 +177,30 @@ fun ReaNavigationSuiteScaffold(
         .calculateFromAdaptiveInfo(windowAdaptiveInfo)
     val navigationSuiteItemColors = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
-            selectedIconColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = ReaNavigationDefaults.navigationContentColor(),
-            selectedTextColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = ReaNavigationDefaults.navigationContentColor(),
-            indicatorColor = ReaNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = EstatiaNavigationDefaults.navigationContentColor(),
+            selectedTextColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = EstatiaNavigationDefaults.navigationContentColor(),
+            indicatorColor = EstatiaNavigationDefaults.navigationIndicatorColor(),
         ),
         navigationRailItemColors = NavigationRailItemDefaults.colors(
-            selectedIconColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = ReaNavigationDefaults.navigationContentColor(),
-            selectedTextColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = ReaNavigationDefaults.navigationContentColor(),
-            indicatorColor = ReaNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = EstatiaNavigationDefaults.navigationContentColor(),
+            selectedTextColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = EstatiaNavigationDefaults.navigationContentColor(),
+            indicatorColor = EstatiaNavigationDefaults.navigationIndicatorColor(),
         ),
         navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-            selectedIconColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = ReaNavigationDefaults.navigationContentColor(),
-            selectedTextColor = ReaNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = ReaNavigationDefaults.navigationContentColor(),
+            selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = EstatiaNavigationDefaults.navigationContentColor(),
+            selectedTextColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = EstatiaNavigationDefaults.navigationContentColor(),
         ),
     )
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            ReaNavigationSuiteScope(
+            EstatiaNavigationSuiteScope(
                 navigationSuiteScope = this,
                 navigationSuiteItemColors = navigationSuiteItemColors,
             ).run(navigationSuiteItems)
@@ -208,7 +208,7 @@ fun ReaNavigationSuiteScaffold(
         layoutType = layoutType,
         containerColor = Color.Transparent,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
-            navigationBarContentColor = ReaNavigationDefaults.navigationContentColor(),
+            navigationBarContentColor = EstatiaNavigationDefaults.navigationContentColor(),
             navigationRailContainerColor = Color.Transparent,
         ),
         modifier = modifier,
@@ -220,7 +220,7 @@ fun ReaNavigationSuiteScaffold(
 /**
  * A wrapper around [NavigationSuiteScope] to declare navigation items.
  */
-class ReaNavigationSuiteScope internal constructor(
+class EstatiaNavigationSuiteScope internal constructor(
     private val navigationSuiteScope: NavigationSuiteScope,
     private val navigationSuiteItemColors: NavigationSuiteItemColors,
 ) {
@@ -249,7 +249,7 @@ class ReaNavigationSuiteScope internal constructor(
 
 @ThemePreviews
 @Composable
-fun ReaNavigationBarPreview() {
+fun EstatiaNavigationBarPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
         EstatiaIcons.HomeBorder,
@@ -267,9 +267,9 @@ fun ReaNavigationBarPreview() {
     )
 
     EstatiaTheme {
-        ReaNavigationBar {
+        EstatiaNavigationBar {
             items.forEachIndexed { index, item ->
-                ReaNavigationBarItem(
+                EstatiaNavigationBarItem(
                     icon = {
                         Icon(
                             imageVector = icons[index],
@@ -293,7 +293,7 @@ fun ReaNavigationBarPreview() {
 
 @ThemePreviews
 @Composable
-fun ReaNavigationRailPreview() {
+fun EstatiaNavigationRailPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
         EstatiaIcons.HomeBorder,
@@ -312,9 +312,9 @@ fun ReaNavigationRailPreview() {
     )
 
     EstatiaTheme {
-        ReaNavigationRail {
+        EstatiaNavigationRail {
             items.forEachIndexed { index, item ->
-                ReaNavigationRailItem(
+                EstatiaNavigationRailItem(
                     icon = {
                         Icon(
                             imageVector = icons[index],
@@ -337,9 +337,9 @@ fun ReaNavigationRailPreview() {
 }
 
 /**
- * Now in Android navigation default values.
+ * Estatia navigation default values.
  */
-object ReaNavigationDefaults {
+object EstatiaNavigationDefaults {
     @Composable
     fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
 

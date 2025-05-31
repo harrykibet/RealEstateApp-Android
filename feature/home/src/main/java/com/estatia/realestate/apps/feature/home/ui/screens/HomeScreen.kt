@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.estatia.realestate.apps.core.designsystem.component.PropertyCard
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaPropertyCard
 import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
@@ -61,7 +61,7 @@ internal fun HomeScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         items(state.properties) { property ->
-            PropertyCard(
+            EstatiaPropertyCard(
                 property = property,
                 onPropertyClick = onPropertyClick,
                 onLikeClick = onLikeClick,

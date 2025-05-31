@@ -18,7 +18,7 @@ object JankStatsModule {
         // Make sure to only log janky frames.
         if (frameData.isJank) {
             // We're currently logging this but would better report it to a backend.
-            Log.v("REA Jank", frameData.toString())
+            Log.v("Estatia Jank", frameData.toString())
         }
     }
 

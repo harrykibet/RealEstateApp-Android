@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.application.real_estate_app.core_ui.R
 
@@ -112,7 +112,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenLightPreview() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             ProfileScreen(
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",
@@ -131,7 +131,7 @@ fun ProfileScreenLightPreview() {
 @Composable
 fun ProfileScreenDarkPreview() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             ProfileScreen(
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",

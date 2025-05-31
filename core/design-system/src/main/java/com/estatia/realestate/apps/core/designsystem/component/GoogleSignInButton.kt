@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.application.real_estate_app.core_design_system.R
+import com.estatia.realestate.apps.core.designsystem.R
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
@@ -68,7 +68,7 @@ fun GoogleSignInButton(
 @Composable
 fun GoogleSignInButtonPreview() {
      EstatiaTheme {
-         ReaBackground(
+         EstatiaBackground(
              modifier = Modifier.size(180.dp, 50.dp)
          ) {
              GoogleSignInButton(onClick = {})

@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -233,7 +233,7 @@ fun UserTypeDropdownMenu(
 @Composable
 fun SignUpScreenLightPreview() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             SignUpScreen(
                 onSignUpClick = {},
                 onAlreadyHaveAccountClick = {}
@@ -253,7 +253,7 @@ fun SignUpScreenLightPreview() {
 @Composable
 fun SignUpScreenDarkPreview() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             SignUpScreen(
                 onSignUpClick = {},
                 onAlreadyHaveAccountClick = {}

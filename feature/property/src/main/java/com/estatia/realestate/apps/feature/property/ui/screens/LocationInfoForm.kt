@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
@@ -94,7 +94,7 @@ fun LocationInfoFormDarkPreview() {
 @Composable
 fun LocationInfoFormLightPreview() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             LocationInfoForm()
         }
     }

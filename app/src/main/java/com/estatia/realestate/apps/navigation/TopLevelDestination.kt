@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.application.real_estate_app.R
+import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.feature.home.navigation.HomeRoute
 import com.estatia.realestate.apps.feature.search.navigation.ExploreRoute
 import com.estatia.realestate.apps.feature.profile.navigation.ProfileRoute

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
-fun EstatiaCard(
+fun EstatiaSectionCard(
     title: String,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
@@ -54,13 +54,13 @@ fun EstatiaCard(
     widthDp = 400
 )
 @Composable
-fun EstatiaCardLightPreview() {
+fun EstatiaSectionCardLightPreview() {
     EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            EstatiaCard(title = "Basic Details") {
+            EstatiaSectionCard(title = "Basic Details") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     EstatiaTextField(
                         value = "",
@@ -95,13 +95,13 @@ fun EstatiaCardLightPreview() {
     widthDp = 400
 )
 @Composable
-fun EstatiaCardDarkPreview() {
+fun EstatiaSectionCardDarkPreview() {
     EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            EstatiaCard(title = "Basic Details") {
+            EstatiaSectionCard(title = "Basic Details") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     EstatiaTextField(
                         value = "",

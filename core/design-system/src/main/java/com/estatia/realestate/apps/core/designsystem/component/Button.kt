@@ -21,7 +21,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 
 /**
- * Now in Android filled button with generic content slot. Wraps Material 3 [Button].
+ * Estatia filled button with generic content slot. Wraps Material 3 [Button].
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -32,7 +32,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
  * @param content The button content.
  */
 @Composable
-fun ReaButton(
+fun EstatiaButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -52,7 +52,7 @@ fun ReaButton(
 }
 
 /**
- * Now in Android filled button with text and icon content slots.
+ * Estatia filled button with text and icon content slots.
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -62,14 +62,14 @@ fun ReaButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun ReaButton(
+fun EstatiaButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    ReaButton(
+    EstatiaButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -79,7 +79,7 @@ fun ReaButton(
             ButtonDefaults.ContentPadding
         },
     ) {
-        ReaButtonContent(
+        EstatiaButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -87,7 +87,7 @@ fun ReaButton(
 }
 
 /**
- * Now in Android outlined button with generic content slot. Wraps Material 3 [OutlinedButton].
+ * Estatia outlined button with generic content slot. Wraps Material 3 [OutlinedButton].
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -98,7 +98,7 @@ fun ReaButton(
  * @param content The button content.
  */
 @Composable
-fun ReaOutlinedButton(
+fun EstatiaOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -113,12 +113,12 @@ fun ReaOutlinedButton(
             contentColor = MaterialTheme.colorScheme.onBackground,
         ),
         border = BorderStroke(
-            width = NiaButtonDefaults.OutlinedButtonBorderWidth,
+            width = EstatiaButtonDefaults.OutlinedButtonBorderWidth,
             color = if (enabled) {
                 MaterialTheme.colorScheme.outline
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = NiaButtonDefaults.DISABLED_OUTLINED_BUTTON_BORDER_ALPHA,
+                    alpha = EstatiaButtonDefaults.DISABLED_OUTLINED_BUTTON_BORDER_ALPHA,
                 )
             },
         ),
@@ -128,7 +128,7 @@ fun ReaOutlinedButton(
 }
 
 /**
- * Now in Android outlined button with text and icon content slots.
+ * Estatia outlined button with text and icon content slots.
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -138,14 +138,14 @@ fun ReaOutlinedButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun ReaOutlinedButton(
+fun EstatiaOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    ReaOutlinedButton(
+    EstatiaOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -155,7 +155,7 @@ fun ReaOutlinedButton(
             ButtonDefaults.ContentPadding
         },
     ) {
-        ReaButtonContent(
+        EstatiaButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -163,7 +163,7 @@ fun ReaOutlinedButton(
 }
 
 /**
- * Now in Android text button with generic content slot. Wraps Material 3 [TextButton].
+ * Estatia text button with generic content slot. Wraps Material 3 [TextButton].
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -172,7 +172,7 @@ fun ReaOutlinedButton(
  * @param content The button content.
  */
 @Composable
-fun ReaTextButton(
+fun EstatiaTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -190,7 +190,7 @@ fun ReaTextButton(
 }
 
 /**
- * Now in Android text button with text and icon content slots.
+ * Estatia text button with text and icon content slots.
  *
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
@@ -200,19 +200,19 @@ fun ReaTextButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun ReaTextButton(
+fun EstatiaTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    ReaTextButton(
+    EstatiaTextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
     ) {
-        ReaButtonContent(
+        EstatiaButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -220,13 +220,13 @@ fun ReaTextButton(
 }
 
 /**
- * Internal Now in Android button content layout for arranging the text label and leading icon.
+ * Internal Estatia button content layout for arranging the text label and leading icon.
  *
  * @param text The button text label content.
  * @param leadingIcon The button leading icon content. Default is `null` for no leading icon.Ï
  */
 @Composable
-private fun ReaButtonContent(
+private fun EstatiaButtonContent(
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -251,30 +251,30 @@ private fun ReaButtonContent(
 
 @ThemePreviews
 @Composable
-fun NiaButtonPreview() {
+fun EstatiaButtonPreview() {
     EstatiaTheme {
-        ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            ReaButton(onClick = {}, text = { Text("Test button") })
+        EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            EstatiaButton(onClick = {}, text = { Text("Test button") })
         }
     }
 }
 
 @ThemePreviews
 @Composable
-fun NiaOutlinedButtonPreview() {
+fun EstatiaOutlinedButtonPreview() {
     EstatiaTheme {
-        ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            ReaOutlinedButton(onClick = {}, text = { Text("Test button") })
+        EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            EstatiaOutlinedButton(onClick = {}, text = { Text("Test button") })
         }
     }
 }
 
 @ThemePreviews
 @Composable
-fun NiaButtonLeadingIconPreview() {
+fun EstatiaButtonLeadingIconPreview() {
     EstatiaTheme {
-        ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            ReaButton(
+        EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            EstatiaButton(
                 onClick = {},
                 text = { Text("Test button") },
                 leadingIcon = { Icon(imageVector = EstatiaIcons.Add, contentDescription = null) },
@@ -284,9 +284,9 @@ fun NiaButtonLeadingIconPreview() {
 }
 
 /**
- * Now in Android button default values.
+ * Estatia button default values.
  */
-object NiaButtonDefaults {
+object EstatiaButtonDefaults {
     // TODO: File bug
     // OutlinedButton border color doesn't respect disabled state by default
     const val DISABLED_OUTLINED_BUTTON_BORDER_ALPHA = 0.12f

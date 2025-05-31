@@ -16,7 +16,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
- * Now in Android filter chip with included leading checked icon as well as text content slot.
+ * Estatia filter chip with included leading checked icon as well as text content slot.
  *
  * @param selected Whether the chip is currently checked.
  * @param onSelectedChange Called when the user clicks the chip and toggles checked.
@@ -26,7 +26,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * @param label The text label content.
  */
 @Composable
-fun ReaFilterChip(
+fun EstatiaFilterChip(
     selected: Boolean,
     onSelectedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -60,28 +60,28 @@ fun ReaFilterChip(
             borderColor = MaterialTheme.colorScheme.onBackground,
             selectedBorderColor = MaterialTheme.colorScheme.onBackground,
             disabledBorderColor = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
+                alpha = EstatiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
             disabledSelectedBorderColor = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
+                alpha = EstatiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
-            selectedBorderWidth = NiaChipDefaults.ChipBorderWidth,
+            selectedBorderWidth = EstatiaChipDefaults.ChipBorderWidth,
         ),
         colors = FilterChipDefaults.filterChipColors(
             labelColor = MaterialTheme.colorScheme.onBackground,
             iconColor = MaterialTheme.colorScheme.onBackground,
             disabledContainerColor = if (selected) {
                 MaterialTheme.colorScheme.onBackground.copy(
-                    alpha = NiaChipDefaults.DISABLED_CHIP_CONTAINER_ALPHA,
+                    alpha = EstatiaChipDefaults.DISABLED_CHIP_CONTAINER_ALPHA,
                 )
             } else {
                 Color.Transparent
             },
             disabledLabelColor = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
+                alpha = EstatiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
             disabledLeadingIconColor = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
+                alpha = EstatiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             selectedLabelColor = MaterialTheme.colorScheme.onBackground,
@@ -94,8 +94,8 @@ fun ReaFilterChip(
 @Composable
 fun ChipPreview() {
     EstatiaTheme {
-        ReaBackground(modifier = Modifier.size(80.dp, 20.dp)) {
-            ReaFilterChip(selected = true, onSelectedChange = {}) {
+        EstatiaBackground(modifier = Modifier.size(80.dp, 20.dp)) {
+            EstatiaFilterChip(selected = true, onSelectedChange = {}) {
                 Text("Chip")
             }
         }
@@ -103,9 +103,9 @@ fun ChipPreview() {
 }
 
 /**
- * Now in Android chip default values.
+ * Estatia chip default values.
  */
-object NiaChipDefaults {
+object EstatiaChipDefaults {
     // TODO: File bug
     // FilterChip default values aren't exposed via FilterChipDefaults
     const val DISABLED_CHIP_CONTAINER_ALPHA = 0.12f

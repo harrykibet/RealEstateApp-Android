@@ -48,10 +48,10 @@ import com.estatia.realestate.apps.navigation.TopLevelDestination
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.GradientColors
 import com.estatia.realestate.apps.core.designsystem.theme.LocalGradientColors
-import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.ReaGradientBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaGradientBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTopAppBar
-import com.estatia.realestate.apps.core.designsystem.component.ReaNavigationSuiteScaffold
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaNavigationSuiteScaffold
 import kotlin.reflect.KClass
 import com.estatia.realestate.apps.feature.settings.R as settingsR
 import com.estatia.realestate.apps.R
@@ -67,8 +67,8 @@ fun EstatiaApp(
         appState.currentTopLevelDestination == TopLevelDestination.HOME
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
-    ReaBackground(modifier = modifier) {
-        ReaGradientBackground(
+    EstatiaBackground(modifier = modifier) {
+        EstatiaGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
                 LocalGradientColors.current
             } else {
@@ -129,7 +129,7 @@ internal fun EstatiaApp(
         )
     }
 
-    ReaNavigationSuiteScaffold(
+    EstatiaNavigationSuiteScaffold(
         navigationSuiteItems = {
             appState.topLevelDestinations.forEach { destination ->
                 val hasUnread = unreadDestinations.contains(destination)
@@ -153,7 +153,7 @@ internal fun EstatiaApp(
                     label = { Text(stringResource(destination.iconTextId)) },
                     modifier =
                         Modifier
-                            .testTag("NiaNavItem")
+                            .testTag("EstatiaNavItem")
                             .then(if (hasUnread) Modifier.notificationDot() else Modifier),
                 )
             }

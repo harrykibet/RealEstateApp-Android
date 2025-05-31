@@ -32,7 +32,7 @@ import kotlin.math.tan
  * @param content The background content.
  */
 @Composable
-fun ReaBackground(
+fun EstatiaBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -58,7 +58,7 @@ fun ReaBackground(
  * @param content The background content.
  */
 @Composable
-fun ReaGradientBackground(
+fun EstatiaGradientBackground(
     modifier: Modifier = Modifier,
     gradientColors: GradientColors = LocalGradientColors.current,
     content: @Composable () -> Unit,
@@ -135,7 +135,7 @@ annotation class ThemePreviews
 @Composable
 fun BackgroundDefault() {
     EstatiaTheme(disableDynamicTheming = true) {
-        ReaBackground(Modifier.size(100.dp), content = {})
+        EstatiaBackground(Modifier.size(100.dp), content = {})
     }
 }
 
@@ -143,7 +143,7 @@ fun BackgroundDefault() {
 @Composable
 fun BackgroundDynamic() {
     EstatiaTheme(disableDynamicTheming = false) {
-        ReaBackground(Modifier.size(100.dp), content = {})
+        EstatiaBackground(Modifier.size(100.dp), content = {})
     }
 }
 
@@ -151,7 +151,7 @@ fun BackgroundDynamic() {
 @Composable
 fun BackgroundAndroid() {
     EstatiaTheme(androidTheme = true) {
-        ReaBackground(Modifier.size(100.dp), content = {})
+        EstatiaBackground(Modifier.size(100.dp), content = {})
     }
 }
 
@@ -159,7 +159,7 @@ fun BackgroundAndroid() {
 @Composable
 fun GradientBackgroundDefault() {
     EstatiaTheme(disableDynamicTheming = true) {
-        ReaGradientBackground(Modifier.size(100.dp), content = {})
+        EstatiaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
 
@@ -167,7 +167,7 @@ fun GradientBackgroundDefault() {
 @Composable
 fun GradientBackgroundDynamic() {
     EstatiaTheme(disableDynamicTheming = false) {
-        ReaGradientBackground(Modifier.size(100.dp), content = {})
+        EstatiaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
 
@@ -175,6 +175,6 @@ fun GradientBackgroundDynamic() {
 @Composable
 fun GradientBackgroundAndroid() {
     EstatiaTheme(androidTheme = true) {
-        ReaGradientBackground(Modifier.size(100.dp), content = {})
+        EstatiaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

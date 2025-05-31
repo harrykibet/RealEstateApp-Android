@@ -35,7 +35,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun ReaLoadingWheel(
+fun EstatiaLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -116,7 +116,7 @@ fun ReaLoadingWheel(
 }
 
 @Composable
-fun ReaOverlayLoadingWheel(
+fun EstatiaOverlayLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -127,7 +127,7 @@ fun ReaOverlayLoadingWheel(
         modifier = modifier
             .size(60.dp),
     ) {
-        ReaLoadingWheel(
+        EstatiaLoadingWheel(
             contentDesc = contentDesc,
         )
     }
@@ -135,20 +135,20 @@ fun ReaOverlayLoadingWheel(
 
 @ThemePreviews
 @Composable
-fun ReaLoadingWheelPreview() {
+fun EstatiaLoadingWheelPreview() {
     EstatiaTheme {
         Surface {
-            ReaLoadingWheel(contentDesc = "LoadingWheel")
+            EstatiaLoadingWheel(contentDesc = "LoadingWheel")
         }
     }
 }
 
 @ThemePreviews
 @Composable
-fun ReaOverlayLoadingWheelPreview() {
+fun EstatiaOverlayLoadingWheelPreview() {
     EstatiaTheme {
         Surface {
-            ReaOverlayLoadingWheel(contentDesc = "LoadingWheel")
+            EstatiaOverlayLoadingWheel(contentDesc = "LoadingWheel")
         }
     }
 }

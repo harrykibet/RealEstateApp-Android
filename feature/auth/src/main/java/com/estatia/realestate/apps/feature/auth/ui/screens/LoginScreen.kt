@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.component.GoogleSignInButton
-import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
@@ -176,7 +176,7 @@ fun LoginScreen(
 @Composable
 fun LoginScreenLight() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             LoginScreen(
                 email = "",
                 onEmailChange = {},
@@ -202,7 +202,7 @@ fun LoginScreenLight() {
 @Composable
 fun LoginScreenDark() {
     EstatiaTheme {
-        ReaBackground {
+        EstatiaBackground {
             LoginScreen(
                 email = "",
                 onEmailChange = {},

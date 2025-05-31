@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
- * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3
+ * Estatia toggle button with icon and checked icon content slots. Wraps Material 3
  * [IconButton].
  *
  * @param checked Whether the toggle button is currently checked.
@@ -24,7 +24,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * @param checkedIcon The icon content to show when checked.
  */
 @Composable
-fun ReaIconToggleButton(
+fun EstatiaIconToggleButton(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -44,7 +44,7 @@ fun ReaIconToggleButton(
             checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             disabledContainerColor = if (checked) {
                 MaterialTheme.colorScheme.onBackground.copy(
-                    alpha = NiaIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
+                    alpha = EstatiaIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
                 )
             } else {
                 Color.Transparent
@@ -59,7 +59,7 @@ fun ReaIconToggleButton(
 @Composable
 fun IconButtonPreview() {
     EstatiaTheme {
-        ReaIconToggleButton(
+        EstatiaIconToggleButton(
             checked = true,
             onCheckedChange = { },
             icon = {
@@ -82,7 +82,7 @@ fun IconButtonPreview() {
 @Composable
 fun IconButtonPreviewUnchecked() {
     EstatiaTheme {
-        ReaIconToggleButton(
+        EstatiaIconToggleButton(
             checked = false,
             onCheckedChange = { },
             icon = {
@@ -102,9 +102,9 @@ fun IconButtonPreviewUnchecked() {
 }
 
 /**
- * Now in Android icon button default values.
+ * Estatia icon button default values.
  */
-object NiaIconButtonDefaults {
+object EstatiaIconButtonDefaults {
     // TODO: File bug
     // IconToggleButton disabled container alpha not exposed by IconButtonDefaults
     const val DISABLED_ICON_BUTTON_CONTAINER_ALPHA = 0.12f

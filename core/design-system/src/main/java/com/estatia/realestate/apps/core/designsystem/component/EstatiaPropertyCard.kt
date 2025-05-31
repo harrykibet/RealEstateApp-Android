@@ -34,7 +34,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 
 
 @Composable
-fun PropertyCard(
+fun EstatiaPropertyCard(
     modifier: Modifier = Modifier,
     property: Property,
     onPropertyClick: (Property) -> Unit,

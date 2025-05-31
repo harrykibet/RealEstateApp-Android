@@ -23,7 +23,7 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter.State.Error
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
-import com.application.real_estate_app.core_design_system.R
+import com.estatia.realestate.apps.core.designsystem.R
 import com.estatia.realestate.apps.core.designsystem.theme.LocalTintTheme
 
 /**

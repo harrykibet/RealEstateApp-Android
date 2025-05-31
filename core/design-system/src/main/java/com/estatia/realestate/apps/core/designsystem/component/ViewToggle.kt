@@ -61,7 +61,7 @@ fun EstatiaViewToggleButton(
 }
 
 /**
- * Internal Now in Android view toggle button content layout for arranging the text label and
+ * Internal Estatia view toggle button content layout for arranging the text label and
  * trailing icon.
  *
  * @param text The button text label content.
@@ -124,7 +124,7 @@ fun ViewTogglePreviewCompact() {
 }
 
 /**
- * Now in Android view toggle default values.
+ * Estatia view toggle default values.
  */
 object EstatiaViewToggleDefaults {
     // TODO: File bug

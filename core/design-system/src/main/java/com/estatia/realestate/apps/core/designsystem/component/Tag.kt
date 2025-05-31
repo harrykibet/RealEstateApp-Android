@@ -56,7 +56,7 @@ fun TagPreview() {
 }
 
 /**
- * Now in Android tag default values.
+ * Estatia tag default values.
  */
 object EstatiaTagDefaults {
     const val UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA = 0.5f

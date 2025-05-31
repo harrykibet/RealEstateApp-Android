@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.estatia.realestate.apps.core.designsystem.component.ReaTextButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.theme.supportsDynamicTheming
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
@@ -122,7 +122,7 @@ fun SettingsDialog(
             TrackScreenViewEvent(screenName = "Settings")
         },
         confirmButton = {
-            ReaTextButton(
+            EstatiaTextButton(
                 onClick = onDismiss,
                 modifier = Modifier.padding(horizontal = 8.dp),
             ) {
@@ -241,19 +241,19 @@ private fun LinksPanel() {
         modifier = Modifier.fillMaxWidth(),
     ) {
         val uriHandler = LocalUriHandler.current
-        ReaTextButton(
+        EstatiaTextButton(
             onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
         ) {
             Text(text = stringResource(string.feature_settings_privacy_policy))
         }
         val context = LocalContext.current
 
-        ReaTextButton(
+        EstatiaTextButton(
             onClick = { uriHandler.openUri(BRAND_GUIDELINES_URL) },
         ) {
             Text(text = stringResource(string.feature_settings_brand_guidelines))
         }
-        ReaTextButton(
+        EstatiaTextButton(
             onClick = { uriHandler.openUri(FEEDBACK_URL) },
         ) {
             Text(text = stringResource(string.feature_settings_feedback))

@@ -30,7 +30,7 @@ class FirebaseConventionPlugin : Plugin<Project> {
                 val bom = libs.findLibrary("firebase.bom").get()
                 "implementation"(platform(bom))
 
-                // Apply Firebase dependencies only in the app module
+                // Apply these Firebase dependencies only in the app module
                 if (isAppModule) {
                     "implementation"(libs.findLibrary("firebase.analytics").get())
                     "implementation"(libs.findLibrary("firebase.perf").get())
