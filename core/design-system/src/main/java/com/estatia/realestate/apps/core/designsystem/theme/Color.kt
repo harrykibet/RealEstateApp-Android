@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Now in Android colors.
+ * Estatia colors.
  */
 internal val Blue10 = Color(0xFF001F28)
 internal val Blue20 = Color(0xFF003544)

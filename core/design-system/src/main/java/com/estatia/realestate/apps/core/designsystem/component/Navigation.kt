@@ -23,8 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
  * Now in Android navigation bar item with icon and label content slots. Wraps Material 3
@@ -252,21 +252,21 @@ class ReaNavigationSuiteScope internal constructor(
 fun ReaNavigationBarPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
-        ReaIcons.HomeBorder,
-        ReaIcons.ExploreBorder,
-        ReaIcons.AddCircleOutline,
-        ReaIcons.FavoriteBorder,
-        ReaIcons.ProfileBorder,
+        EstatiaIcons.HomeBorder,
+        EstatiaIcons.ExploreBorder,
+        EstatiaIcons.AddCircleOutline,
+        EstatiaIcons.FavoriteBorder,
+        EstatiaIcons.ProfileBorder,
     )
     val selectedIcons = listOf(
-        ReaIcons.Home,
-        ReaIcons.Explore,
-        ReaIcons.AddCircle,
-        ReaIcons.Favorites,
-        ReaIcons.Profile,
+        EstatiaIcons.Home,
+        EstatiaIcons.Explore,
+        EstatiaIcons.AddCircle,
+        EstatiaIcons.Favorites,
+        EstatiaIcons.Profile,
     )
 
-    ReaTheme {
+    EstatiaTheme {
         ReaNavigationBar {
             items.forEachIndexed { index, item ->
                 ReaNavigationBarItem(
@@ -296,22 +296,22 @@ fun ReaNavigationBarPreview() {
 fun ReaNavigationRailPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
-        ReaIcons.HomeBorder,
-        ReaIcons.ExploreBorder,
-        ReaIcons.AddCircleOutline,
-        ReaIcons.FavoriteBorder,
-        ReaIcons.ProfileBorder
+        EstatiaIcons.HomeBorder,
+        EstatiaIcons.ExploreBorder,
+        EstatiaIcons.AddCircleOutline,
+        EstatiaIcons.FavoriteBorder,
+        EstatiaIcons.ProfileBorder
     )
 
     val selectedIcons = listOf(
-        ReaIcons.Home,
-        ReaIcons.Explore,
-        ReaIcons.AddCircle,
-        ReaIcons.Favorites,
-        ReaIcons.Profile
+        EstatiaIcons.Home,
+        EstatiaIcons.Explore,
+        EstatiaIcons.AddCircle,
+        EstatiaIcons.Favorites,
+        EstatiaIcons.Profile
     )
 
-    ReaTheme {
+    EstatiaTheme {
         ReaNavigationRail {
             items.forEachIndexed { index, item ->
                 ReaNavigationRailItem(

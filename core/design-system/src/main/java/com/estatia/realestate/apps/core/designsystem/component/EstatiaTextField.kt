@@ -30,11 +30,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 
 @Composable
-fun RoundedElevatedTextField(
+fun EstatiaTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -107,8 +107,8 @@ fun RoundedElevatedTextField(
     widthDp = 400
 )
 @Composable
-fun RoundedElevatedTextFieldLightPreview() {
-    ReaTheme {
+fun EstatiaTextFieldLightPreview() {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -125,8 +125,8 @@ fun RoundedElevatedTextFieldLightPreview() {
     widthDp = 400
 )
 @Composable
-fun RoundedElevatedTextFieldDarkPreview() {
-    ReaTheme {
+fun EstatiaTextFieldDarkPreview() {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -146,7 +146,7 @@ private fun TextFieldPreviewContent() {
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = username,
             onValueChange = { username = it },
             label = "Username"
@@ -154,7 +154,7 @@ private fun TextFieldPreviewContent() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = password,
             onValueChange = { password = it },
             label = "Password",

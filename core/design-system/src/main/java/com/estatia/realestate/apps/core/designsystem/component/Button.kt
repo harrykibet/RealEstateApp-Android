@@ -17,8 +17,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 
 /**
  * Now in Android filled button with generic content slot. Wraps Material 3 [Button].
@@ -252,7 +252,7 @@ private fun ReaButtonContent(
 @ThemePreviews
 @Composable
 fun NiaButtonPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
             ReaButton(onClick = {}, text = { Text("Test button") })
         }
@@ -262,7 +262,7 @@ fun NiaButtonPreview() {
 @ThemePreviews
 @Composable
 fun NiaOutlinedButtonPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
             ReaOutlinedButton(onClick = {}, text = { Text("Test button") })
         }
@@ -272,12 +272,12 @@ fun NiaOutlinedButtonPreview() {
 @ThemePreviews
 @Composable
 fun NiaButtonLeadingIconPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
             ReaButton(
                 onClick = {},
                 text = { Text("Test button") },
-                leadingIcon = { Icon(imageVector = ReaIcons.Add, contentDescription = null) },
+                leadingIcon = { Icon(imageVector = EstatiaIcons.Add, contentDescription = null) },
             )
         }
     }

@@ -13,8 +13,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun ExtraDetailsForm() {
@@ -22,7 +22,7 @@ fun ExtraDetailsForm() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Bedrooms",
@@ -32,7 +32,7 @@ fun ExtraDetailsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Bathrooms",
@@ -42,7 +42,7 @@ fun ExtraDetailsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Area Size (sq ft)",
@@ -52,7 +52,7 @@ fun ExtraDetailsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Features",
@@ -72,7 +72,7 @@ fun ExtraDetailsForm() {
 
 @Composable
 fun ExtraDetailsFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             ExtraDetailsForm()
         }
@@ -88,7 +88,7 @@ fun ExtraDetailsFormDarkPreview() {
 
 @Composable
 fun ExtraDetailsFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             ExtraDetailsForm()
         }

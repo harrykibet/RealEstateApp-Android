@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -136,7 +136,7 @@ fun ReaOverlayLoadingWheel(
 @ThemePreviews
 @Composable
 fun ReaLoadingWheelPreview() {
-    ReaTheme {
+    EstatiaTheme {
         Surface {
             ReaLoadingWheel(contentDesc = "LoadingWheel")
         }
@@ -146,7 +146,7 @@ fun ReaLoadingWheelPreview() {
 @ThemePreviews
 @Composable
 fun ReaOverlayLoadingWheelPreview() {
-    ReaTheme {
+    EstatiaTheme {
         Surface {
             ReaOverlayLoadingWheel(contentDesc = "LoadingWheel")
         }

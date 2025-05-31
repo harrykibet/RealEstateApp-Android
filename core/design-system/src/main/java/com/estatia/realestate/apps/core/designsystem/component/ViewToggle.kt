@@ -15,11 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 
 /**
- * Now in Android view toggle button with included trailing icon as well as compact and expanded
+ * Estatia view toggle button with included trailing icon as well as compact and expanded
  * text label content slots.
  *
  * @param expanded Whether the view toggle is currently in expanded mode or compact mode.
@@ -31,7 +31,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
  * @param expandedText The text label content to show in compact mode.
  */
 @Composable
-fun ReaViewToggleButton(
+fun EstatiaViewToggleButton(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -46,13 +46,13 @@ fun ReaViewToggleButton(
         colors = ButtonDefaults.textButtonColors(
             contentColor = MaterialTheme.colorScheme.onBackground,
         ),
-        contentPadding = ReaViewToggleDefaults.ViewToggleButtonContentPadding,
+        contentPadding = EstatiaViewToggleDefaults.ViewToggleButtonContentPadding,
     ) {
-        ReaViewToggleButtonContent(
+        EstatiaViewToggleButtonContent(
             text = if (expanded) expandedText else compactText,
             trailingIcon = {
                 Icon(
-                    imageVector = if (expanded) ReaIcons.ViewDay else ReaIcons.ShortText,
+                    imageVector = if (expanded) EstatiaIcons.ViewDay else EstatiaIcons.ShortText,
                     contentDescription = null,
                 )
             },
@@ -68,7 +68,7 @@ fun ReaViewToggleButton(
  * @param trailingIcon The button trailing icon content. Default is `null` for no trailing icon.
  */
 @Composable
-private fun ReaViewToggleButtonContent(
+private fun EstatiaViewToggleButtonContent(
     text: @Composable () -> Unit,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -96,9 +96,9 @@ private fun ReaViewToggleButtonContent(
 @ThemePreviews
 @Composable
 fun ViewTogglePreviewExpanded() {
-    ReaTheme {
+    EstatiaTheme {
         Surface {
-            ReaViewToggleButton(
+            EstatiaViewToggleButton(
                 expanded = true,
                 onExpandedChange = { },
                 compactText = { Text(text = "Compact view") },
@@ -111,9 +111,9 @@ fun ViewTogglePreviewExpanded() {
 @Preview
 @Composable
 fun ViewTogglePreviewCompact() {
-    ReaTheme {
+    EstatiaTheme {
         Surface {
-            ReaViewToggleButton(
+            EstatiaViewToggleButton(
                 expanded = false,
                 onExpandedChange = { },
                 compactText = { Text(text = "Compact view") },
@@ -126,7 +126,7 @@ fun ViewTogglePreviewCompact() {
 /**
  * Now in Android view toggle default values.
  */
-object ReaViewToggleDefaults {
+object EstatiaViewToggleDefaults {
     // TODO: File bug
     // Various default button padding values aren't exposed via ButtonDefaults
     val ViewToggleButtonContentPadding =

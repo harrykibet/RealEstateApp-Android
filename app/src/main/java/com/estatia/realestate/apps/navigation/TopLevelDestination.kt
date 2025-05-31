@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.feature.search.navigation.ExploreRoute
 import com.estatia.realestate.apps.feature.profile.navigation.ProfileRoute
 import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesRoute
 import com.estatia.realestate.apps.feature.property.navigation.PropertyRoute
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesBaseRoute
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.profile.navigation.ProfileBaseRoute
@@ -28,40 +28,40 @@ enum class TopLevelDestination(
     val baseRoute: KClass<*> = route,
 ) {
     HOME(
-        selectedIcon = ReaIcons.Home,
-        unselectedIcon = ReaIcons.HomeBorder,
+        selectedIcon = EstatiaIcons.Home,
+        unselectedIcon = EstatiaIcons.HomeBorder,
         iconTextId = R.string.home,
         titleTextId = R.string.home,
         route = HomeRoute::class,
         baseRoute = HomeBaseRoute::class
     ),
     EXPLORE(
-        selectedIcon = ReaIcons.Explore,
-        unselectedIcon = ReaIcons.ExploreBorder,
+        selectedIcon = EstatiaIcons.Explore,
+        unselectedIcon = EstatiaIcons.ExploreBorder,
         iconTextId = R.string.explore,
         titleTextId = R.string.explore,
         route = ExploreRoute::class,
         baseRoute = ExploreBaseRoute::class
     ),
     ADD_PROPERTY(
-        selectedIcon = ReaIcons.AddCircle,
-        unselectedIcon = ReaIcons.AddCircleOutline,
+        selectedIcon = EstatiaIcons.AddCircle,
+        unselectedIcon = EstatiaIcons.AddCircleOutline,
         iconTextId = R.string.add_property,
         titleTextId = R.string.add_property,
         route = PropertyRoute::class,
         baseRoute = PropertyBaseRoute::class
     ),
     FAVORITES(
-        selectedIcon = ReaIcons.Favorites,
-        unselectedIcon = ReaIcons.FavoriteBorder,
+        selectedIcon = EstatiaIcons.Favorites,
+        unselectedIcon = EstatiaIcons.FavoriteBorder,
         iconTextId = R.string.favorites,
         titleTextId = R.string.favorites,
         route = FavoritesRoute::class,
         baseRoute = FavoritesBaseRoute::class
     ),
     PROFILE(
-        selectedIcon = ReaIcons.Profile,
-        unselectedIcon = ReaIcons.ProfileBorder,
+        selectedIcon = EstatiaIcons.Profile,
+        unselectedIcon = EstatiaIcons.ProfileBorder,
         iconTextId = R.string.profile,
         titleTextId = R.string.profile,
         route = ProfileRoute::class,

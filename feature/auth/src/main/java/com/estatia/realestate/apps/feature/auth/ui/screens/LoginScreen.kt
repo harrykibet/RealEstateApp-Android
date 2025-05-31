@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.component.GoogleSignInButton
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.application.real_estate_app.feature_auth.R
 import com.application.real_estate_app.core_ui.R.drawable.ic_launcher_round
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 
 @Composable
@@ -96,7 +96,7 @@ fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.height(40.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.email_or_phone_number),
@@ -106,7 +106,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = password,
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
@@ -175,7 +175,7 @@ fun LoginScreen(
 @DevicePreviews
 @Composable
 fun LoginScreenLight() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             LoginScreen(
                 email = "",
@@ -201,7 +201,7 @@ fun LoginScreenLight() {
 @DevicePreviews
 @Composable
 fun LoginScreenDark() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             LoginScreen(
                 email = "",

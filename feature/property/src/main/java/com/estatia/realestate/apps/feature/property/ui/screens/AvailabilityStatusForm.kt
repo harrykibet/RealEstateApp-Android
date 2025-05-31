@@ -17,8 +17,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun AvailabilityStatusForm() {
@@ -36,7 +36,7 @@ fun AvailabilityStatusForm() {
         }
         Spacer(Modifier.height(8.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Deposit Amount",
@@ -46,7 +46,7 @@ fun AvailabilityStatusForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Lease Terms",
@@ -66,7 +66,7 @@ fun AvailabilityStatusForm() {
 
 @Composable
 fun AvailabilityStatusFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             AvailabilityStatusForm()
         }
@@ -82,7 +82,7 @@ fun AvailabilityStatusFormDarkPreview() {
 
 @Composable
 fun AvailabilityStatusFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             AvailabilityStatusForm()
         }

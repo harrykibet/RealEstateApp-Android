@@ -174,7 +174,7 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
  *        supported. This parameter has no effect if [androidTheme] is `true`.
  */
 @Composable
-fun ReaTheme(
+fun EstatiaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     androidTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
@@ -224,7 +224,7 @@ fun ReaTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = ReaTypography,
+            typography = EstatiaTypography,
             content = content,
         )
     }

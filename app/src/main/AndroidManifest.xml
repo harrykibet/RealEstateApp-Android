@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove"/>
 
     <application
-        android:name="com.estatia.realestate.apps.EstatiaApplication"
+        android:name=".EstatiaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

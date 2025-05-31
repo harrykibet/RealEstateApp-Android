@@ -15,9 +15,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.component.SectionCard
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaCard
 import com.estatia.realestate.apps.core.designsystem.component.StepNavigation
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.component.MockAvailabilityStatusForm
 import com.estatia.realestate.apps.core.designsystem.component.MockBasicDetailsForm
 import com.estatia.realestate.apps.core.designsystem.component.MockContactOwnershipForm
@@ -43,7 +43,7 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
         Text("Add Property", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(16.dp))
 
-        SectionCard(title = sections[currentStep]) {
+        EstatiaCard(title = sections[currentStep]) {
             when (currentStep) {
                 0 -> if (isPreview) MockBasicDetailsForm() else BasicDetailsForm()
                 1 -> if (isPreview) MockLocationInfoForm() else LocationInfoForm()
@@ -73,7 +73,7 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
 )
 @Composable
 fun PropertyFormPreviewLight() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             PropertyFormScreen( isPreview = true)
         }
@@ -88,7 +88,7 @@ fun PropertyFormPreviewLight() {
 )
 @Composable
 fun PropertyFormPreviewDark() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             PropertyFormScreen(isPreview = true)
         }

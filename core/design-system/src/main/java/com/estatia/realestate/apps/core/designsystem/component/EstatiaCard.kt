@@ -20,10 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
-fun SectionCard(
+fun EstatiaCard(
     title: String,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
@@ -54,29 +54,29 @@ fun SectionCard(
     widthDp = 400
 )
 @Composable
-fun SectionCardLightPreview() {
-    ReaTheme {
+fun EstatiaCardLightPreview() {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            SectionCard(title = "Basic Details") {
+            EstatiaCard(title = "Basic Details") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Title",
                         modifier = Modifier.fillMaxWidth(0.9f)
                     )
                     Spacer(Modifier.height(16.dp))
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Description",
                         modifier = Modifier.fillMaxWidth(0.9f)
                     )
                     Spacer(Modifier.height(16.dp))
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Price",
@@ -95,29 +95,29 @@ fun SectionCardLightPreview() {
     widthDp = 400
 )
 @Composable
-fun SectionCardDarkPreview() {
-    ReaTheme {
+fun EstatiaCardDarkPreview() {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            SectionCard(title = "Basic Details") {
+            EstatiaCard(title = "Basic Details") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Title",
                         modifier = Modifier.fillMaxWidth(0.9f)
                     )
                     Spacer(Modifier.height(16.dp))
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Description",
                         modifier = Modifier.fillMaxWidth(0.9f)
                     )
                     Spacer(Modifier.height(16.dp))
-                    RoundedElevatedTextField(
+                    EstatiaTextField(
                         value = "",
                         onValueChange = {},
                         label = "Price",

@@ -9,10 +9,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
-fun ReaTopicTag(
+fun EstatiaTopicTag(
     modifier: Modifier = Modifier,
     followed: Boolean,
     onClick: () -> Unit,
@@ -24,7 +24,7 @@ fun ReaTopicTag(
             MaterialTheme.colorScheme.primaryContainer
         } else {
             MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = ReaTagDefaults.UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA,
+                alpha = EstatiaTagDefaults.UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA,
             )
         }
         TextButton(
@@ -34,7 +34,7 @@ fun ReaTopicTag(
                 containerColor = containerColor,
                 contentColor = contentColorFor(backgroundColor = containerColor),
                 disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = ReaTagDefaults.DISABLED_TOPIC_TAG_CONTAINER_ALPHA,
+                    alpha = EstatiaTagDefaults.DISABLED_TOPIC_TAG_CONTAINER_ALPHA,
                 ),
             ),
         ) {
@@ -48,8 +48,8 @@ fun ReaTopicTag(
 @ThemePreviews
 @Composable
 fun TagPreview() {
-    ReaTheme {
-        ReaTopicTag(followed = true, onClick = {}) {
+    EstatiaTheme {
+        EstatiaTopicTag(followed = true, onClick = {}) {
             Text("Topic".uppercase())
         }
     }
@@ -58,7 +58,7 @@ fun TagPreview() {
 /**
  * Now in Android tag default values.
  */
-object ReaTagDefaults {
+object EstatiaTagDefaults {
     const val UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA = 0.5f
 
     // TODO: File bug

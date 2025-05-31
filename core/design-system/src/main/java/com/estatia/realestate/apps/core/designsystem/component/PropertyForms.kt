@@ -9,26 +9,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
 
 @Composable
 fun MockBasicDetailsForm() {
     Column {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Nice Apartment",
             onValueChange = {},
             label = "Title",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Spacious and well-lit apartment in Nairobi.",
             onValueChange = {},
             label = "Description",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "45000",
             onValueChange = {},
             label = "Price",
@@ -40,14 +39,14 @@ fun MockBasicDetailsForm() {
 @Composable
 fun MockLocationInfoForm() {
     Column {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Nairobi",
             onValueChange = {},
             label = "County",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Westlands",
             onValueChange = {},
             label = "Address",
@@ -61,14 +60,14 @@ fun MockMediaUploadsForm() {
     Column {
         Text("Add photos and video links", style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "https://image1.jpg",
             onValueChange = {},
             label = "Image URL",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "https://video1.mp4",
             onValueChange = {},
             label = "Video URL",
@@ -80,21 +79,21 @@ fun MockMediaUploadsForm() {
 @Composable
 fun MockContactOwnershipForm() {
     Column {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Harry Kibet",
             onValueChange = {},
             label = "Owner Name",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "+254712345678",
             onValueChange = {},
             label = "Phone",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "owner@email.com",
             onValueChange = {},
             label = "Email",
@@ -106,14 +105,14 @@ fun MockContactOwnershipForm() {
 @Composable
 fun MockExtraDetailsForm() {
     Column {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "Swimming pool, Wi-Fi, Parking",
             onValueChange = {},
             label = "Amenities",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "2 bedrooms, 2 bathrooms, 120 sqm",
             onValueChange = {},
             label = "Features",
@@ -125,14 +124,14 @@ fun MockExtraDetailsForm() {
 @Composable
 fun MockAvailabilityStatusForm() {
     Column {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "2025-06-01",
             onValueChange = {},
             label = "Available From",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "12-month lease",
             onValueChange = {},
             label = "Lease Terms",

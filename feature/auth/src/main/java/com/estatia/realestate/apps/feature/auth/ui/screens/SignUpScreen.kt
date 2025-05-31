@@ -18,8 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.application.real_estate_app.feature_auth.R
 
@@ -50,7 +50,7 @@ fun SignUpScreen(
         )
 
         // Username Input
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = userName,
             onValueChange = { userName = it },
             label = stringResource(id = R.string.username),
@@ -58,7 +58,7 @@ fun SignUpScreen(
         )
 
         // Email Input
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.email_address),
@@ -66,7 +66,7 @@ fun SignUpScreen(
         )
 
         // Phone Input
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = phone,
             onValueChange = { phone = it },
             label = stringResource(id = R.string.phone_number),
@@ -74,7 +74,7 @@ fun SignUpScreen(
         )
 
         // Password Input
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.password2),
@@ -232,7 +232,7 @@ fun UserTypeDropdownMenu(
 @DevicePreviews
 @Composable
 fun SignUpScreenLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             SignUpScreen(
                 onSignUpClick = {},
@@ -252,7 +252,7 @@ fun SignUpScreenLightPreview() {
 @DevicePreviews
 @Composable
 fun SignUpScreenDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             SignUpScreen(
                 onSignUpClick = {},

@@ -13,8 +13,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun ContactOwnershipForm() {
@@ -22,7 +22,7 @@ fun ContactOwnershipForm() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Owner Name",
@@ -31,7 +31,7 @@ fun ContactOwnershipForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Contact Phone",
@@ -41,7 +41,7 @@ fun ContactOwnershipForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Contact Email",
@@ -62,7 +62,7 @@ fun ContactOwnershipForm() {
 
 @Composable
 fun ContactOwnershipFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             ContactOwnershipForm()
         }
@@ -78,7 +78,7 @@ fun ContactOwnershipFormDarkPreview() {
 
 @Composable
 fun ContactOwnershipFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             ContactOwnershipForm()
         }

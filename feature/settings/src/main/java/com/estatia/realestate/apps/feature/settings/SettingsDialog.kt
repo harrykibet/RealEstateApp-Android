@@ -38,7 +38,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.estatia.realestate.apps.core.designsystem.component.ReaTextButton
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.theme.supportsDynamicTheming
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
@@ -264,7 +264,7 @@ private fun LinksPanel() {
 @Preview
 @Composable
 private fun PreviewSettingsDialog() {
-    ReaTheme {
+    EstatiaTheme {
         SettingsDialog(
             onDismiss = {},
             settingsUiState = Success(
@@ -284,7 +284,7 @@ private fun PreviewSettingsDialog() {
 @Preview
 @Composable
 private fun PreviewSettingsDialogLoading() {
-    ReaTheme {
+    EstatiaTheme {
         SettingsDialog(
             onDismiss = {},
             settingsUiState = Loading,

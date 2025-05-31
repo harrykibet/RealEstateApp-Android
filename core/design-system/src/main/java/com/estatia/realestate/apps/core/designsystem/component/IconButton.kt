@@ -8,8 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
  * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3
@@ -58,19 +58,19 @@ fun ReaIconToggleButton(
 @ThemePreviews
 @Composable
 fun IconButtonPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaIconToggleButton(
             checked = true,
             onCheckedChange = { },
             icon = {
                 Icon(
-                    imageVector = ReaIcons.BookmarkBorder,
+                    imageVector = EstatiaIcons.BookmarkBorder,
                     contentDescription = null,
                 )
             },
             checkedIcon = {
                 Icon(
-                    imageVector = ReaIcons.Bookmark,
+                    imageVector = EstatiaIcons.Bookmark,
                     contentDescription = null,
                 )
             },
@@ -81,19 +81,19 @@ fun IconButtonPreview() {
 @ThemePreviews
 @Composable
 fun IconButtonPreviewUnchecked() {
-    ReaTheme {
+    EstatiaTheme {
         ReaIconToggleButton(
             checked = false,
             onCheckedChange = { },
             icon = {
                 Icon(
-                    imageVector = ReaIcons.BookmarkBorder,
+                    imageVector = EstatiaIcons.BookmarkBorder,
                     contentDescription = null,
                 )
             },
             checkedIcon = {
                 Icon(
-                    imageVector = ReaIcons.Bookmark,
+                    imageVector = EstatiaIcons.Bookmark,
                     contentDescription = null,
                 )
             },

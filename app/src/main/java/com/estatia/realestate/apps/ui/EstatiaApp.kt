@@ -45,16 +45,16 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.estatia.realestate.apps.navigation.EstatiaNavHost
 import com.estatia.realestate.apps.navigation.TopLevelDestination
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.GradientColors
 import com.estatia.realestate.apps.core.designsystem.theme.LocalGradientColors
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
 import com.estatia.realestate.apps.core.designsystem.component.ReaGradientBackground
-import com.estatia.realestate.apps.core.designsystem.component.ReaTopAppBar
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTopAppBar
 import com.estatia.realestate.apps.core.designsystem.component.ReaNavigationSuiteScaffold
 import kotlin.reflect.KClass
-import com.application.real_estate_app.feature_settings.R as settingsR
-import com.application.real_estate_app.R
+import com.estatia.realestate.apps.feature.settings.R as settingsR
+import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.feature.settings.SettingsDialog
 
 @Composable
@@ -191,13 +191,13 @@ internal fun EstatiaApp(
 
                 if (destination != null) {
                     shouldShowTopAppBar = true
-                    ReaTopAppBar(
+                    EstatiaTopAppBar(
                         titleRes = destination.titleTextId,
-                        navigationIcon = ReaIcons.Search,
+                        navigationIcon = EstatiaIcons.Search,
                         navigationIconContentDescription = stringResource(
                             id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                         ),
-                        actionIcon = ReaIcons.Settings,
+                        actionIcon = EstatiaIcons.Settings,
                         actionIconContentDescription = stringResource(
                             id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
                         ),

@@ -16,12 +16,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReaTopAppBar(
+fun EstatiaTopAppBar(
     @StringRes titleRes: Int,
     navigationIcon: ImageVector,
     navigationIconContentDescription: String,
@@ -61,12 +61,12 @@ fun ReaTopAppBar(
 @Preview("Top App Bar")
 @Composable
 private fun ReaTopAppBarPreview() {
-    ReaTheme {
-        ReaTopAppBar(
+    EstatiaTheme {
+        EstatiaTopAppBar(
             titleRes = untitled,
-            navigationIcon = ReaIcons.Search,
+            navigationIcon = EstatiaIcons.Search,
             navigationIconContentDescription = "Navigation icon",
-            actionIcon = ReaIcons.MoreVert,
+            actionIcon = EstatiaIcons.MoreVert,
             actionIconContentDescription = "Action icon",
         )
     }

@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun MediaUploadsForm() {
@@ -27,7 +27,7 @@ fun MediaUploadsForm() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Image URLs (comma separated)",
@@ -36,7 +36,7 @@ fun MediaUploadsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Video URLs (comma separated)",
@@ -66,7 +66,7 @@ fun MediaUploadsForm() {
 
 @Composable
 fun MediaUploadsFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -85,7 +85,7 @@ fun MediaUploadsFormDarkPreview() {
 
 @Composable
 fun MediaUploadsFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             MediaUploadsForm()
         }

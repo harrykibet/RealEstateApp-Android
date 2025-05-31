@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.theme.GradientColors
 import com.estatia.realestate.apps.core.designsystem.theme.LocalBackgroundTheme
 import com.estatia.realestate.apps.core.designsystem.theme.LocalGradientColors
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import kotlin.math.tan
 
 /**
@@ -134,7 +134,7 @@ annotation class ThemePreviews
 @ThemePreviews
 @Composable
 fun BackgroundDefault() {
-    ReaTheme(disableDynamicTheming = true) {
+    EstatiaTheme(disableDynamicTheming = true) {
         ReaBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -142,7 +142,7 @@ fun BackgroundDefault() {
 @ThemePreviews
 @Composable
 fun BackgroundDynamic() {
-    ReaTheme(disableDynamicTheming = false) {
+    EstatiaTheme(disableDynamicTheming = false) {
         ReaBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -150,7 +150,7 @@ fun BackgroundDynamic() {
 @ThemePreviews
 @Composable
 fun BackgroundAndroid() {
-    ReaTheme(androidTheme = true) {
+    EstatiaTheme(androidTheme = true) {
         ReaBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -158,7 +158,7 @@ fun BackgroundAndroid() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundDefault() {
-    ReaTheme(disableDynamicTheming = true) {
+    EstatiaTheme(disableDynamicTheming = true) {
         ReaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -166,7 +166,7 @@ fun GradientBackgroundDefault() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundDynamic() {
-    ReaTheme(disableDynamicTheming = false) {
+    EstatiaTheme(disableDynamicTheming = false) {
         ReaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -174,7 +174,7 @@ fun GradientBackgroundDynamic() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundAndroid() {
-    ReaTheme(androidTheme = true) {
+    EstatiaTheme(androidTheme = true) {
         ReaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

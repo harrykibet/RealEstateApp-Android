@@ -15,8 +15,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun BasicDetailsForm() {
@@ -30,7 +30,7 @@ fun BasicDetailsForm() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(0.9f)
         )
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Title",
@@ -44,7 +44,7 @@ fun BasicDetailsForm() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(0.9f)
         )
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Description",
@@ -59,7 +59,7 @@ fun BasicDetailsForm() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(0.9f)
         )
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Price",
@@ -78,7 +78,7 @@ fun BasicDetailsForm() {
 
 @Composable
 fun BasicDetailsFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             BasicDetailsForm()
         }
@@ -94,7 +94,7 @@ fun BasicDetailsFormDarkPreview() {
 
 @Composable
 fun BasicDetailsFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             BasicDetailsForm()
         }

@@ -21,7 +21,7 @@ import com.estatia.realestate.apps.core.ui.LocalTimeZone
 import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 import com.estatia.realestate.apps.ui.rememberEstatiaAppState
 import com.estatia.realestate.apps.ui.EstatiaApp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.data.util.NetworkMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.estatia.realestate.apps.MainActivityViewModel.MainActivityUiState.Loading
@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                 LocalAnalyticsHelper provides analyticsHelper,
                 LocalTimeZone provides currentTimeZone,
             ) {
-                ReaTheme(
+                EstatiaTheme(
                     darkTheme = themeSettings.darkTheme,
                     androidTheme = themeSettings.androidTheme,
                     disableDynamicTheming = themeSettings.disableDynamicTheming,

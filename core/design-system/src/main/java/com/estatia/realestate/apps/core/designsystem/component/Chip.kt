@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.icons.ReaIcons
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 /**
  * Now in Android filter chip with included leading checked icon as well as text content slot.
@@ -46,7 +46,7 @@ fun ReaFilterChip(
         leadingIcon = if (selected) {
             {
                 Icon(
-                    imageVector = ReaIcons.Check,
+                    imageVector = EstatiaIcons.Check,
                     contentDescription = null,
                 )
             }
@@ -93,7 +93,7 @@ fun ReaFilterChip(
 @ThemePreviews
 @Composable
 fun ChipPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground(modifier = Modifier.size(80.dp, 20.dp)) {
             ReaFilterChip(selected = true, onSelectedChange = {}) {
                 Text("Chip")

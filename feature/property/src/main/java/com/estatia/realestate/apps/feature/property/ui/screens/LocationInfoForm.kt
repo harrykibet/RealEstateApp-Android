@@ -16,8 +16,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.ReaBackground
-import com.estatia.realestate.apps.core.designsystem.component.RoundedElevatedTextField
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun LocationInfoForm() {
@@ -25,7 +25,7 @@ fun LocationInfoForm() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Latitude",
@@ -35,7 +35,7 @@ fun LocationInfoForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Longitude",
@@ -45,7 +45,7 @@ fun LocationInfoForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "County",
@@ -54,7 +54,7 @@ fun LocationInfoForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        RoundedElevatedTextField(
+        EstatiaTextField(
             value = "",
             onValueChange = {},
             label = "Address",
@@ -74,7 +74,7 @@ fun LocationInfoForm() {
 
 @Composable
 fun LocationInfoFormDarkPreview() {
-    ReaTheme {
+    EstatiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -93,7 +93,7 @@ fun LocationInfoFormDarkPreview() {
 
 @Composable
 fun LocationInfoFormLightPreview() {
-    ReaTheme {
+    EstatiaTheme {
         ReaBackground {
             LocationInfoForm()
         }

@@ -15,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 
 /**
- * Now in Android tab. Wraps Material 3 [Tab] and shifts text label down.
+ * Estatia tab. Wraps Material 3 [Tab] and shifts text label down.
  *
  * @param selected Whether this tab is selected or not.
  * @param onClick The callback to be invoked when this tab is selected.
@@ -29,7 +29,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.ReaTheme
  * @param text The text label content.
  */
 @Composable
-fun ReaTab(
+fun EstatiaTab(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -46,7 +46,7 @@ fun ReaTab(
             ProvideTextStyle(
                 value = style,
                 content = {
-                    Box(modifier = Modifier.padding(top = ReaTabDefaults.TabTopPadding)) {
+                    Box(modifier = Modifier.padding(top = EstatiaTabDefaults.TabTopPadding)) {
                         text()
                     }
                 },
@@ -56,15 +56,15 @@ fun ReaTab(
 }
 
 /**
- * Now in Android tab row. Wraps Material 3 [TabRow].
+ * Estatia tab row. Wraps Material 3 [TabRow].
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
- * @param tabs The tabs inside this tab row. Typically this will be multiple [ReaTab]s. Each element
+ * @param tabs The tabs inside this tab row. Typically this will be multiple [EstatiaTab]s. Each element
  * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
  */
 @Composable
-fun ReaTabRow(
+fun EstatiaTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
@@ -88,11 +88,11 @@ fun ReaTabRow(
 @ThemePreviews
 @Composable
 fun TabsPreview() {
-    ReaTheme {
+    EstatiaTheme {
         val titles = listOf("home", "profile")
-        ReaTabRow(selectedTabIndex = 0) {
+        EstatiaTabRow(selectedTabIndex = 0) {
             titles.forEachIndexed { index, title ->
-                ReaTab(
+                EstatiaTab(
                     selected = index == 0,
                     onClick = { },
                     text = { Text(text = title) },
@@ -102,6 +102,6 @@ fun TabsPreview() {
     }
 }
 
-object ReaTabDefaults {
+object EstatiaTabDefaults {
     val TabTopPadding = 7.dp
 }
