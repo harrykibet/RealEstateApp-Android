@@ -147,7 +147,7 @@ class EstatiaAppState(
 
             when (topLevelDestination) {
                 TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
-                TopLevelDestination.EXPLORE -> navController.navigateToSearch(topLevelNavOptions)
+                TopLevelDestination.SEARCH -> navController.navigateToSearch(topLevelNavOptions)
                 TopLevelDestination.ADD_PROPERTY -> navController.navigateToPropertyForm(topLevelNavOptions)
                 TopLevelDestination.FAVORITES -> navController.navigateToFavorites(topLevelNavOptions)
                 TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)

@@ -253,14 +253,14 @@ fun EstatiaNavigationBarPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
         EstatiaIcons.HomeBorder,
-        EstatiaIcons.ExploreBorder,
+        EstatiaIcons.SearchBorder,
         EstatiaIcons.AddCircleOutline,
         EstatiaIcons.FavoriteBorder,
         EstatiaIcons.ProfileBorder,
     )
     val selectedIcons = listOf(
         EstatiaIcons.Home,
-        EstatiaIcons.Explore,
+        EstatiaIcons.Search,
         EstatiaIcons.AddCircle,
         EstatiaIcons.Favorites,
         EstatiaIcons.Profile,
@@ -297,7 +297,7 @@ fun EstatiaNavigationRailPreview() {
     val items = listOf("home", "search", "add", "favorites", "profile")
     val icons = listOf(
         EstatiaIcons.HomeBorder,
-        EstatiaIcons.ExploreBorder,
+        EstatiaIcons.SearchBorder,
         EstatiaIcons.AddCircleOutline,
         EstatiaIcons.FavoriteBorder,
         EstatiaIcons.ProfileBorder
@@ -305,7 +305,7 @@ fun EstatiaNavigationRailPreview() {
 
     val selectedIcons = listOf(
         EstatiaIcons.Home,
-        EstatiaIcons.Explore,
+        EstatiaIcons.Search,
         EstatiaIcons.AddCircle,
         EstatiaIcons.Favorites,
         EstatiaIcons.Profile

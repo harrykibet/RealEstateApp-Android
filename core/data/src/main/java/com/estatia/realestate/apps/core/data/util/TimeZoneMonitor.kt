@@ -7,9 +7,9 @@ import android.content.IntentFilter
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.tracing.trace
-import com.estatia.realestate.apps.core.network.di.ApplicationScope
-import com.estatia.realestate.apps.core.network.utils.Dispatcher
-import com.estatia.realestate.apps.core.network.utils.ReaDispatchers
+import com.estatia.realestate.apps.core.common.di.ApplicationScope
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +40,7 @@ interface TimeZoneMonitor {
 internal class TimeZoneBroadcastMonitor @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope appScope: CoroutineScope,
-    @Dispatcher(ReaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : TimeZoneMonitor {
 
     override val currentTimeZone: SharedFlow<TimeZone> =

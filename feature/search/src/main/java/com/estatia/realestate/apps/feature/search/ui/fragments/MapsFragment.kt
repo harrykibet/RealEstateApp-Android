@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.application.real_estate_app.feature_search.R
+import com.estatia.realestate.apps.feature.search.R
 import com.estatia.realestate.apps.feature.search.ui.viewmodels.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices

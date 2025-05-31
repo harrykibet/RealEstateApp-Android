@@ -27,7 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import com.application.real_estate_app.feature_search.R
+import com.estatia.realestate.apps.feature.search.R
 import com.google.android.libraries.places.api.Places
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.LocationServices

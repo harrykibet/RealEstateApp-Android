@@ -1,7 +1,7 @@
-package com.estatia.realestate.apps.core.network.di
+package com.estatia.realestate.apps.core.common.di
 
-import com.estatia.realestate.apps.core.network.utils.Dispatcher
-import com.estatia.realestate.apps.core.network.utils.ReaDispatchers
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,10 +14,10 @@ import kotlinx.coroutines.Dispatchers
 object DispatcherModule {
 
     @Provides
-    @Dispatcher(ReaDispatchers.IO)
+    @Dispatcher(EstatiaDispatchers.IO)
     fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
-    @Dispatcher(ReaDispatchers.Default)
+    @Dispatcher(EstatiaDispatchers.Default)
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }

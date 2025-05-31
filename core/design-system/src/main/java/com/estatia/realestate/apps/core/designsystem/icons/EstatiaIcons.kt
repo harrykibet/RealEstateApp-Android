@@ -39,8 +39,9 @@ object EstatiaIcons {
 
     val Check : ImageVector = Icons.Rounded.Check
 
-    val Explore: ImageVector = Icons.Filled.Search
-    val ExploreBorder: ImageVector = Icons.Outlined.Search
+    val Search: ImageVector = Icons.Filled.Search
+    val SearchRounded: ImageVector = Icons.Rounded.Search
+    val SearchBorder: ImageVector = Icons.Outlined.Search
 
     val Add: ImageVector = Icons.Filled.Add
     val AddCircle: ImageVector = Icons.Filled.AddCircle
@@ -59,7 +60,6 @@ object EstatiaIcons {
     val Grid3x3 = Icons.Rounded.Grid3x3
     val MoreVert = Icons.Default.MoreVert
     val Person = Icons.Rounded.Person
-    val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
     val ShortText = Icons.AutoMirrored.Rounded.ShortText
     val Upcoming = Icons.Rounded.Upcoming

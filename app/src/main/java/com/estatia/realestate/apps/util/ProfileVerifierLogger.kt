@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.util
 
 import android.util.Log
 import androidx.profileinstaller.ProfileVerifier
-import com.estatia.realestate.apps.core.network.di.ApplicationScope
+import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
-class ReaPreferencesDataSource @Inject constructor(
+class EstatiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
     val userData = userPreferences.data
@@ -53,7 +53,7 @@ class ReaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("ReaPreferences", "Failed to update user preferences", ioException)
+            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
         }
     }
 
@@ -70,7 +70,7 @@ class ReaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("ReaPreferences", "Failed to update user preferences", ioException)
+            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
         }
     }
 
@@ -116,7 +116,7 @@ class ReaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("ReaPreferences", "Failed to update user preferences", ioException)
+            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
         }
     }
 
@@ -166,7 +166,7 @@ class ReaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("ReaPreferences", "Failed to update user preferences", ioException)
+            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
         }
     }
 

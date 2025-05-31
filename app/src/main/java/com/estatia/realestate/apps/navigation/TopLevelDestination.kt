@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.feature.home.navigation.HomeRoute
-import com.estatia.realestate.apps.feature.search.navigation.ExploreRoute
+import com.estatia.realestate.apps.feature.search.navigation.SearchRoute
 import com.estatia.realestate.apps.feature.profile.navigation.ProfileRoute
 import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesRoute
 import com.estatia.realestate.apps.feature.property.navigation.PropertyRoute
@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesBaseRou
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.profile.navigation.ProfileBaseRoute
 import com.estatia.realestate.apps.feature.property.navigation.PropertyBaseRoute
-import com.estatia.realestate.apps.feature.search.navigation.ExploreBaseRoute
+import com.estatia.realestate.apps.feature.search.navigation.SearchBaseRoute
 import kotlin.reflect.KClass
 
 /**
@@ -35,13 +35,13 @@ enum class TopLevelDestination(
         route = HomeRoute::class,
         baseRoute = HomeBaseRoute::class
     ),
-    EXPLORE(
-        selectedIcon = EstatiaIcons.Explore,
-        unselectedIcon = EstatiaIcons.ExploreBorder,
-        iconTextId = R.string.explore,
-        titleTextId = R.string.explore,
-        route = ExploreRoute::class,
-        baseRoute = ExploreBaseRoute::class
+    SEARCH(
+        selectedIcon = EstatiaIcons.Search,
+        unselectedIcon = EstatiaIcons.SearchBorder,
+        iconTextId = R.string.search,
+        titleTextId = R.string.search,
+        route = SearchRoute::class,
+        baseRoute = SearchBaseRoute::class
     ),
     ADD_PROPERTY(
         selectedIcon = EstatiaIcons.AddCircle,

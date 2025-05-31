@@ -9,8 +9,8 @@ import android.net.NetworkRequest
 import android.net.NetworkRequest.Builder
 import androidx.core.content.getSystemService
 import androidx.tracing.trace
-import com.estatia.realestate.apps.core.network.utils.Dispatcher
-import com.estatia.realestate.apps.core.network.utils.ReaDispatchers
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 internal class ConnectivityManagerNetworkMonitor @Inject constructor(
     @ApplicationContext private val context: Context,
-    @Dispatcher(ReaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
         trace("NetworkMonitor.callbackFlow") {

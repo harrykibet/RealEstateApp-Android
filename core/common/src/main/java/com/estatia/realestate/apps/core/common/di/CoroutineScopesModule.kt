@@ -1,7 +1,7 @@
-package com.estatia.realestate.apps.core.network.di
+package com.estatia.realestate.apps.core.common.di
 
-import com.estatia.realestate.apps.core.network.utils.Dispatcher
-import com.estatia.realestate.apps.core.network.utils.ReaDispatchers
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +23,6 @@ internal object CoroutineScopesModule {
     @Singleton
     @ApplicationScope
     fun providesCoroutineScope(
-        @Dispatcher(ReaDispatchers.Default) dispatcher: CoroutineDispatcher,
+        @Dispatcher(EstatiaDispatchers.Default) dispatcher: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 }
