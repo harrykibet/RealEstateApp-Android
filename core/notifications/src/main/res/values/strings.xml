@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_notifications_properties_notification_channel_name">Property updates</string>
+    <string name="core_notifications_properties_notification_channel_description">The latest updates about trending properties</string>
+    <string name="core_notifications_properties_notification_group_summary">%1$d property updates</string>
+</resources>

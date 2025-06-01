@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.designsystem.component
+package com.estatia.realestate.apps.core.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,10 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
@@ -29,12 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
+import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 
 
 @Composable
-fun EstatiaPropertyCard(
+fun PropertyCard(
     modifier: Modifier = Modifier,
     property: Property,
     onPropertyClick: (Property) -> Unit,
@@ -188,11 +187,10 @@ fun ImagePager(imageUrls: List<String>) {
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
-        AsyncImage(
-            model = imageUrls[page],
+        DynamicAsyncImage(
+            imageUrl = imageUrls[page],
             contentDescription = "Property Image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

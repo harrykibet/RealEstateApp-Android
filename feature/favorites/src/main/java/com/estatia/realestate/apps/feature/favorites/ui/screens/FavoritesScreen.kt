@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.estatia.realestate.apps.core.designsystem.component.EstatiaPropertyCard
+import com.estatia.realestate.apps.core.ui.PropertyCard
 import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 import com.estatia.realestate.apps.core.model.property.Property
 
@@ -22,7 +22,7 @@ fun FavoritesScreen() {
             .background(MaterialTheme.colorScheme.background)
     ) {
         items(likedProperties) { property ->
-            EstatiaPropertyCard(
+            PropertyCard(
                 property = property,
                 onLikeClick = { /* handle like */ },
                 onCommentClick = { /* handle comment */ },
