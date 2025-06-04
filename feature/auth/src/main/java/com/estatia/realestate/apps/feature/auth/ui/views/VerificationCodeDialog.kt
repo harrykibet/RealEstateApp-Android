@@ -10,7 +10,7 @@ import android.os.Looper
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.application.real_estate_app.feature_auth.R
+import com.estatia.realestate.apps.feature.auth.R
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential

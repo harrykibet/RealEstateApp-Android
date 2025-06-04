@@ -13,9 +13,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.application.real_estate_app.feature_property.databinding.FragmentAddPropertyBinding
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel
-import com.application.real_estate_app.feature_property.R
+import com.estatia.realestate.apps.feature.property.R
+import com.estatia.realestate.apps.feature.property.databinding.FragmentAddPropertyBinding
 import com.estatia.realestate.apps.feature.property.utils.PropertyData
 import com.estatia.realestate.apps.feature.property.utils.PropertyStrings
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyField

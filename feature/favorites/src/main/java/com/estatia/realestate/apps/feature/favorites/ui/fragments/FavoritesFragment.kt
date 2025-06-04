@@ -15,12 +15,12 @@ import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.core.ui.adapters.PropertyAdapter
 import com.estatia.realestate.apps.core.ui.navigation.DeepLinks
 import com.estatia.realestate.apps.core.ui.viewmodels.PropertyViewModel
-import com.application.real_estate_app.feature_favorites.R
-import com.application.real_estate_app.feature_favorites.databinding.FragmentFavoritesBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.feature.favorites.R
+import com.estatia.realestate.apps.feature.favorites.databinding.FragmentFavoritesBinding
 
 
 @AndroidEntryPoint

@@ -16,8 +16,8 @@ import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 import com.estatia.realestate.apps.core.ui.adapters.PropertyAdapter
 import com.estatia.realestate.apps.core.ui.navigation.DeepLinks
 import com.estatia.realestate.apps.core.ui.viewmodels.LikeStatus
-import com.application.real_estate_app.feature_home.R
-import com.application.real_estate_app.feature_home.databinding.FragmentHomeBinding
+import com.estatia.realestate.apps.feature.home.R
+import com.estatia.realestate.apps.feature.home.databinding.FragmentHomeBinding
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import com.estatia.realestate.apps.core.ui.viewmodels.PropertyViewModel
 import dagger.hilt.android.AndroidEntryPoint

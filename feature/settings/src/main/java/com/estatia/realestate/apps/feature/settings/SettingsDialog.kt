@@ -50,7 +50,7 @@ import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig.LIGHT
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand.ANDROID
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand.DEFAULT
 import com.estatia.realestate.apps.core.ui.TrackScreenViewEvent
-import com.application.real_estate_app.feature_settings.R.string
+import com.estatia.realestate.apps.feature.settings.R.string
 
 @Composable
 fun SettingsDialog(

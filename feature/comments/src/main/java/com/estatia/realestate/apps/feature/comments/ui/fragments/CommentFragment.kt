@@ -10,8 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.estatia.realestate.apps.core.model.feature.Comment
-import com.application.real_estate_app.feature_comments.R
-import com.application.real_estate_app.feature_comments.databinding.FragmentCommentBinding
+import com.estatia.realestate.apps.feature.comments.R
+import com.estatia.realestate.apps.feature.comments.databinding.FragmentCommentBinding
 import com.estatia.realestate.apps.feature.comments.ui.adapters.CommentAdapter
 import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior

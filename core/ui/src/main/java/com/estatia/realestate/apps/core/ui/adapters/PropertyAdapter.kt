@@ -13,8 +13,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.application.real_estate_app.core_ui.R
-import com.application.real_estate_app.core_ui.databinding.PropertyItemBinding
+import com.estatia.realestate.apps.core.ui.R
+import com.estatia.realestate.apps.core.ui.databinding.PropertyItemBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer

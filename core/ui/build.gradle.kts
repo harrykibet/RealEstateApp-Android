@@ -26,6 +26,7 @@ dependencies {
 
     implementation(libs.media3.common)
     implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer)
 
     implementation(projects.core.model)
     implementation(projects.core.domain)

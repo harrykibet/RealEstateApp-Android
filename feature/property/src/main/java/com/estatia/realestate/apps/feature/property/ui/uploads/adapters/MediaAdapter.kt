@@ -10,7 +10,7 @@ import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
 import com.estatia.realestate.apps.core.common.media.MediaFileUtils
 import com.bumptech.glide.Glide
-import com.application.real_estate_app.feature_property.R
+import com.estatia.realestate.apps.feature.property.R
 
 class MediaAdapter(
     private val mediaList: List<Uri>,

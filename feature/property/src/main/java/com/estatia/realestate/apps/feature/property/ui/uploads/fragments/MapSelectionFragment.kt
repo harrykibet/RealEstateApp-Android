@@ -11,9 +11,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.application.real_estate_app.feature_property.R
+import com.estatia.realestate.apps.feature.property.R
 import com.estatia.realestate.apps.feature.property.utils.MapStrings
-import com.application.real_estate_app.feature_property.databinding.FragmentMapSelectionBinding
+import com.estatia.realestate.apps.feature.property.databinding.FragmentMapSelectionBinding
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyField
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient

@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import com.application.real_estate_app.feature_player.R
+import com.estatia.realestate.apps.feature.player.R
 
 // Play/pause, seekbar
 @Suppress("Unused")

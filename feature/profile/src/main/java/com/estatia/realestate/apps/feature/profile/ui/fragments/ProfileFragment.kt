@@ -9,8 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.estatia.realestate.apps.core.common.events.LogoutEvent
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.application.real_estate_app.feature_profile.R
-import com.application.real_estate_app.feature_profile.databinding.FragmentProfileBinding
+import com.estatia.realestate.apps.feature.profile.R
+import com.estatia.realestate.apps.feature.profile.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject

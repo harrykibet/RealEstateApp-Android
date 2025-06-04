@@ -17,8 +17,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.estatia.realestate.apps.core.common.events.LoginEvent
 import com.estatia.realestate.apps.core.model.user.UserType
-import com.application.real_estate_app.feature_auth.R
-import com.application.real_estate_app.feature_auth.databinding.FragmentSignUpBinding
+import com.estatia.realestate.apps.feature.auth.R
+import com.estatia.realestate.apps.feature.auth.databinding.FragmentSignUpBinding
 import com.estatia.realestate.apps.feature.auth.ui.viewModels.AuthViewModel
 import com.estatia.realestate.apps.feature.auth.ui.views.VerificationCodeDialog
 import com.google.firebase.FirebaseException

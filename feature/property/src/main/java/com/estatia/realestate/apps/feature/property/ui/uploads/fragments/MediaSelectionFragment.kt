@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.common.media.MediaFileUtils
-import com.application.real_estate_app.feature_property.R
-import com.application.real_estate_app.feature_property.databinding.FragmentMediaSelectionBinding
+import com.estatia.realestate.apps.feature.property.R
+import com.estatia.realestate.apps.feature.property.databinding.FragmentMediaSelectionBinding
 import com.estatia.realestate.apps.feature.property.ui.uploads.adapters.MediaAdapter
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyField
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel

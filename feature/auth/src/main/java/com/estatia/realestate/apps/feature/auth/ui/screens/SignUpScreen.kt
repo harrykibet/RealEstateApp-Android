@@ -21,7 +21,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
-import com.application.real_estate_app.feature_auth.R
+import com.estatia.realestate.apps.feature.auth.R
 
 @Composable
 fun SignUpScreen(

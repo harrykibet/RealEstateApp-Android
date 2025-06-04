@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.application.real_estate_app.core_ui.R
+import com.estatia.realestate.apps.core.ui.R
 
 @Composable
 fun ProfileScreen(

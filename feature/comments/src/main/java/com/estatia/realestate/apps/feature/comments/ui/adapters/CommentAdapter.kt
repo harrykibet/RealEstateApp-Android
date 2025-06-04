@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.estatia.realestate.apps.core.common.misc.Consts
 import com.estatia.realestate.apps.core.model.feature.Comment
 import com.estatia.realestate.apps.core.model.user.User
-import com.application.real_estate_app.core_ui.R
-import com.application.real_estate_app.feature_comments.databinding.ItemCommentBinding
+import com.estatia.realestate.apps.core.ui.R
+import com.estatia.realestate.apps.feature.comments.databinding.ItemCommentBinding
 import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
