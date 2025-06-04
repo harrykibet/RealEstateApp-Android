@@ -1,24 +1,27 @@
+#!/bin/bash
+
 # Define remotes and branch
-$repos = ("gitlab", "github")
-$branch = "main"
+repos=("gitlab" "github")
+branch="main"
 
 # Function to update a repository
-function Update-Repo {
-    param ([string]$remote)
+update_repo() {
+    local remote=$1
 
-    Write-Host "Updating repository: $remote" -ForegroundColor Cyan
+    echo -e "\033[0;36mUpdating repository: $remote\033[0m"
 
     # Pull latest changes with rebase
-    git pull --rebase $remote $branch
+    git pull --rebase "$remote" "$branch"
 
     # Push updates
-    git push $remote $branch
+    git push "$remote" "$branch"
 
-    Write-Host "âœ… Successfully updated $remote" -ForegroundColor Green
-    Write-Host "---------------------------------"
+    echo -e "\033[0;32m✅ Successfully updated $remote\033[0m"
+    echo "---------------------------------"
 }
 
 # Loop through remotes and update each
-foreach ($remote in $repos) {
-    Update-Repo -remote $remote
-}
+for remote in "${repos[@]}"; do
+    update_repo "$remote"
+done
+
