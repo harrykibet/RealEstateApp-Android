@@ -60,26 +60,42 @@ class PropertyViewModel @Inject constructor(
 
     // Toggle like/unlike status for a property
     fun toggleLikeProperty(propertyId: String, onFailure: (Exception) -> Unit) {
-        var isLiked = false  //Default value
-        if (currentUserId != null) {
-            viewModelScope.launch {
-                try {
-                    isLiked = _likedProperties.value?.any { it.id == propertyId } ?: false
-                    val success = api.toggleLikeProperty(currentUserId, propertyId, onFailure)
+        val userId = currentUserId ?: return
 
-                    if (success) {
-                        _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_SUCCESS else LikeStatus.LIKE_SUCCESS
-                        loadLikedProperties(onFailure) // Refresh the liked properties list
-                    } else {
-                        _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
-                    }
-                } catch (e: Exception) {
-                    _likedStatus.value = if (isLiked) LikeStatus.UNLIKE_ERROR else LikeStatus.LIKE_ERROR
-                    log("Error toggling like property: ${e.message}")
+        viewModelScope.launch {
+            val isCurrentlyLiked =
+                _likedProperties.value?.any { it.id == propertyId } == true
+
+            try {
+                val success = if (isCurrentlyLiked) {
+                    api.unlikeProperty(userId, propertyId, onFailure)
+                } else {
+                    api.likeProperty(userId, propertyId, onFailure)
                 }
+
+                if (success) {
+                    _likedStatus.value =
+                        if (isCurrentlyLiked) LikeStatus.UNLIKE_SUCCESS
+                        else LikeStatus.LIKE_SUCCESS
+
+                    // Refresh source of truth
+                    loadLikedProperties(onFailure)
+                } else {
+                    _likedStatus.value =
+                        if (isCurrentlyLiked) LikeStatus.UNLIKE_ERROR
+                        else LikeStatus.LIKE_ERROR
+                }
+
+            } catch (e: Exception) {
+                _likedStatus.value =
+                    if (isCurrentlyLiked) LikeStatus.UNLIKE_ERROR
+                    else LikeStatus.LIKE_ERROR
+
+                log("Error updating like state: ${e.message}")
             }
         }
     }
+
 
     // Fetch a single property by its ID
     fun fetchPropertyById(propertyId: String, onFailure: (Exception) -> Unit) {

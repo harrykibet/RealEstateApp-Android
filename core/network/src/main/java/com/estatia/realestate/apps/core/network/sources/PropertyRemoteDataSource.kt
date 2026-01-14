@@ -52,12 +52,16 @@ class PropertyRemoteDataSource @Inject constructor(
                 // 1. **Create the FireStore document first** with an initial state
                 db.collection(PROPERTIES)
                     .document(propertyId)
-                    .set(property.toEntityModel().copy(id = propertyId)) // Make sure to store the ID as well
+                    .set(
+                        property.toEntityModel().copy(id = propertyId)
+                    ) // Make sure to store the ID as well
                     .await()
 
                 // 2. Upload images and videos, updating their URLs
-                val imageUrls = uploadMedia(propertyId, imageUris, MediaFormat.MEDIA_TYPE_IMAGES, onFailure)
-                val videoUrls = uploadMedia(propertyId, videoUris, MediaFormat.MEDIA_TYPE_VIDEOS, onFailure)
+                val imageUrls =
+                    uploadMedia(propertyId, imageUris, MediaFormat.MEDIA_TYPE_IMAGES, onFailure)
+                val videoUrls =
+                    uploadMedia(propertyId, videoUris, MediaFormat.MEDIA_TYPE_VIDEOS, onFailure)
 
                 // 3. Update the FireStore document with media URLs
                 val updatedPropertyEntity = property.toEntityModel().copy(
@@ -91,9 +95,12 @@ class PropertyRemoteDataSource @Inject constructor(
             apiCall = {
                 val urls = mutableListOf<String>()
                 uris.forEachIndexed { index, uri ->
-                    val filePath = "${PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
-                    val fileRef = storageRef.reference.child(filePath) // Use DI-injected FirebaseStorage
-                    val downloadUrl = fileRef.putFile(uri).await().storage.downloadUrl.await().toString()
+                    val filePath =
+                        "${PROPERTIES}/$propertyId/$mediaType/${System.currentTimeMillis()}_$index"
+                    val fileRef =
+                        storageRef.reference.child(filePath) // Use DI-injected FirebaseStorage
+                    val downloadUrl =
+                        fileRef.putFile(uri).await().storage.downloadUrl.await().toString()
                     urls.add(downloadUrl)
                 }
                 urls
@@ -104,7 +111,11 @@ class PropertyRemoteDataSource @Inject constructor(
             }) ?: emptyList()
     }
 
-    override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean {
+    override suspend fun updateProperty(
+        propertyId: String,
+        updates: Map<String, Any>,
+        onFailure: (Exception) -> Unit
+    ): Boolean {
         return network.safeApiCallSuspend(
             apiCall = {
                 db.collection(PROPERTIES).document(propertyId).update(updates).await()
@@ -116,7 +127,10 @@ class PropertyRemoteDataSource @Inject constructor(
             }) ?: false
     }
 
-    override suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean {
+    override suspend fun deleteProperty(
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): Boolean {
         return network.safeApiCallSuspend(
             apiCall = {
                 db.collection(PROPERTIES).document(propertyId).delete().await()
@@ -128,7 +142,10 @@ class PropertyRemoteDataSource @Inject constructor(
             }) ?: false
     }
 
-    override suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property? {
+    override suspend fun getPropertyById(
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): Property? {
         return network.safeApiCallSuspend(
             apiCall = {
                 val doc = db.collection(PROPERTIES).document(propertyId).get().await()
@@ -141,7 +158,10 @@ class PropertyRemoteDataSource @Inject constructor(
             })
     }
 
-    override suspend fun fetchLikedProperties(userId: String, onFailure: (Exception) -> Unit): List<Property>? {
+    override suspend fun fetchLikedProperties(
+        userId: String,
+        onFailure: (Exception) -> Unit
+    ): List<Property>? {
         return network.safeApiCallSuspend(
             apiCall = {
                 val likedPropertyIds = db.collection(USERS)
@@ -157,7 +177,9 @@ class PropertyRemoteDataSource @Inject constructor(
                         .get()
                         .await()
 
-                    propertiesSnapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
+                    propertiesSnapshot.documents.map {
+                        it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                    }
                 } else {
                     emptyList()
                 }
@@ -229,35 +251,6 @@ class PropertyRemoteDataSource @Inject constructor(
     ) ?: false
 
 
-
-    override suspend fun toggleLikeProperty(userId: String, propertyId: String, onFailure: (Exception) -> Unit): Boolean {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                val likesRef = db.collection(PROPERTIES).document(propertyId)
-                    .collection(LIKES).document(userId)
-                val likedPropertiesRef = db.collection(USERS).document(userId)
-                    .collection(LIKED_PROPERTIES).document(propertyId)
-
-                val isLiked = likedPropertiesRef.get().await().exists()
-
-                db.runBatch { batch ->
-                    if (isLiked) {
-                        batch.delete(likesRef)
-                        batch.delete(likedPropertiesRef)
-                    } else {
-                        val likeData = Likes(userId, Date())
-                        batch.set(likesRef, LikesEntity.fromDomainModel(likeData))
-                        batch.set(likedPropertiesRef, LikesEntity.fromDomainModel(likeData))
-                    }
-                }.await()
-                true
-            },
-            onFailure = { exception ->
-                onFailure(exception)
-                log(exception.message)
-            }) ?: false
-    }
-
     // Updated implementation of fetchPropertiesPaginated
     override suspend fun fetchPropertiesPaginated(
         lastVisible: String?,  // Use String instead of DocumentSnapshot
@@ -279,7 +272,9 @@ class PropertyRemoteDataSource @Inject constructor(
 
                 val snapshot = query.get().await()
 
-                val properties = snapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
+                val properties = snapshot.documents.map {
+                    it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                }
 
                 val newLastVisible = snapshot.documents.lastOrNull()?.id
 
@@ -304,7 +299,9 @@ class PropertyRemoteDataSource @Inject constructor(
                     .get()
                     .await()
 
-                propertiesSnapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
+                propertiesSnapshot.documents.map {
+                    it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                }
             },
             onFailure = { e ->
                 log(e.message)

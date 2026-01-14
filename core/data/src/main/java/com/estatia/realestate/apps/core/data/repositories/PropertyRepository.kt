@@ -73,13 +73,22 @@ class PropertyRepository @Inject constructor(
         return remoteDataSource.fetchLikedProperties(userId, onFailure)
     }
 
-    override suspend fun toggleLikeProperty(
+    override suspend fun likeProperty(
         userId: String,
         propertyId: String,
         onFailure: (Exception) -> Unit
     ): Boolean {
-        return remoteDataSource.toggleLikeProperty(userId, propertyId, onFailure)
+        return remoteDataSource.likeProperty(userId, propertyId, onFailure)
     }
+
+    override suspend fun unlikeProperty(
+        userId: String,
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): Boolean {
+        return remoteDataSource.likeProperty(userId, propertyId, onFailure)
+    }
+
 
     override suspend fun fetchPropertiesPaginated(
         lastVisible: String?,

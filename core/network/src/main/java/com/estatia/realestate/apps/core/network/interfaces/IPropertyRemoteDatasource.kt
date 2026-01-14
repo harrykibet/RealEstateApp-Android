@@ -30,12 +30,6 @@ interface IPropertyRemoteDatasource {
         onFailure: (Exception) -> Unit
     ): List<Property>?
 
-    suspend fun toggleLikeProperty(
-        userId: String,
-        propertyId: String,
-        onFailure: (Exception) -> Unit
-    ): Boolean
-
     // Fetch Properties Paginated
     suspend fun fetchPropertiesPaginated(
         lastVisible: String?,

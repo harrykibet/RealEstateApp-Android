@@ -37,7 +37,13 @@ interface IPropertyRepository {
         onFailure: (Exception) -> Unit
     ): List<Property>?
 
-    suspend fun toggleLikeProperty(
+    suspend fun likeProperty(
+        userId: String,
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): Boolean
+
+    suspend fun unlikeProperty(
         userId: String,
         propertyId: String,
         onFailure: (Exception) -> Unit
