@@ -21,4 +21,5 @@ dependencies {
     implementation(libs.eventbus)
 
     implementation(projects.core.model)
+    implementation(projects.core.common)
 }

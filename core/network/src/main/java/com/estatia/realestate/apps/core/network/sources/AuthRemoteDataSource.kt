@@ -1,21 +1,31 @@
 package com.estatia.realestate.apps.core.network.sources
 
+import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
+import com.estatia.realestate.apps.core.common.errors.Result
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class AuthRemoteDataSource @Inject constructor(
     private val db: FirebaseFirestore, // Injected via DI
@@ -83,6 +93,97 @@ class AuthRemoteDataSource @Inject constructor(
                 onFailure(exception)
                 log(exception.message)
             })
+    }
+
+    private suspend fun signInWithCredentialSuspend(
+        credential: PhoneAuthCredential
+    ): Unit = suspendCancellableCoroutine { cont ->
+        firebaseAuth.signInWithCredential(credential)
+            .addOnSuccessListener {
+                if (cont.isActive) cont.resume(Unit)
+            }
+            .addOnFailureListener { exception ->
+                if (cont.isActive) cont.resumeWithException(exception)
+            }
+    }
+
+    override suspend fun signInWithPhoneAuthCredential(
+        credential: PhoneAuthCredential
+    ): Result<Unit> {
+
+        val result = network.safeApiCallSuspend(
+            apiCall = {
+                signInWithCredentialSuspend(credential)
+            },
+            onFailure = { /* logging already handled globally */ }
+        )
+
+        return if (result != null) {
+            Result.Success(Unit)
+        } else {
+            Result.Error(IllegalStateException("Phone auth failed"))
+        }
+    }
+
+    private suspend fun resendCodeSuspend(
+        phoneNumber: String,
+        activity: Activity,
+        resendingToken: PhoneAuthProvider.ForceResendingToken
+    ): String = suspendCancellableCoroutine { cont ->
+
+        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setForceResendingToken(resendingToken)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    // We DO NOT auto-sign in here — verificationId is what we want
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    if (cont.isActive) cont.resumeWithException(e)
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    if (cont.isActive) cont.resume(verificationId)
+                }
+            })
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    override suspend fun resendVerificationCode(
+        phoneNumber: String,
+        activity: Activity,
+        resendingToken: PhoneAuthProvider.ForceResendingToken
+    ): Result<String> {
+
+        val verificationId = network.safeApiCallSuspend(
+            apiCall = {
+                resendCodeSuspend(
+                    phoneNumber = phoneNumber,
+                    activity = activity,
+                    resendingToken = resendingToken
+                )
+            },
+            onFailure = { exception ->
+                logger.e("AuthRepository: resend failed - ${exception.message}")
+            }
+        )
+
+        return if (verificationId != null) {
+            Result.Success(verificationId)
+        } else {
+            Result.Error(
+                IllegalStateException("Failed to resend verification code")
+            )
+        }
     }
 
     override fun signOut(

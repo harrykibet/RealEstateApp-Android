@@ -18,7 +18,7 @@ import com.estatia.realestate.apps.core.common.events.LoginEvent
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.feature.auth.R
 import com.estatia.realestate.apps.feature.auth.databinding.FragmentLogInBinding
-import com.estatia.realestate.apps.feature.auth.ui.viewModels.AuthViewModel
+import com.estatia.realestate.apps.feature.auth.viewModels.AuthViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint

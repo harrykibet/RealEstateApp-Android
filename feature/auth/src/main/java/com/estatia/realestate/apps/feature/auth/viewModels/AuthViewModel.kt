@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.feature.auth.ui.viewModels
+package com.estatia.realestate.apps.feature.auth.viewModels
 
 import android.app.Activity
 import android.content.Intent

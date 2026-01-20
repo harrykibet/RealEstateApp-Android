@@ -56,6 +56,10 @@
     <string name="password_reset_success_log">Password reset email sent!</string>
     <string name="password_reset_error_log">Error sending password reset email: %1$s</string>
     <string name="registration_failed">Registration failed: %1$s</string>
+    <string name="verify">Verify</string>
+    <string name="resend">Resend</string>
+    <string name="resend_code">Resend Code</string>
+    <string name="verification_code">Verification Code</string>
     <string-array name="user_types">
         <item>Property Owner</item>
         <item>Tenant</item>

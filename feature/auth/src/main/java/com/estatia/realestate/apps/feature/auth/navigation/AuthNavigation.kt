@@ -15,6 +15,9 @@ data object AuthBaseRoute // route to base navigation graph
 data object LoginRoute // route to login screen
 
 @Serializable
+data object VerificationRoute // route to verification screen
+
+@Serializable
 data object SignUpRoute // route to sign up screen
 
 @Serializable

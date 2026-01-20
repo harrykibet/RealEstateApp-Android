@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
-import com.estatia.realestate.apps.feature.auth.ui.viewModels.AuthViewModel
+import com.estatia.realestate.apps.feature.auth.viewModels.AuthViewModel
 import android.widget.Toast
 import androidx.compose.runtime.livedata.observeAsState
 

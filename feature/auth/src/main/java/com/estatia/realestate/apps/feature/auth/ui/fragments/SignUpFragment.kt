@@ -19,7 +19,7 @@ import com.estatia.realestate.apps.core.common.events.LoginEvent
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.feature.auth.R
 import com.estatia.realestate.apps.feature.auth.databinding.FragmentSignUpBinding
-import com.estatia.realestate.apps.feature.auth.ui.viewModels.AuthViewModel
+import com.estatia.realestate.apps.feature.auth.viewModels.AuthViewModel
 import com.estatia.realestate.apps.feature.auth.ui.views.VerificationCodeDialog
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
