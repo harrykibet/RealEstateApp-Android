@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.repositories.AuthRepository
-import com.estatia.realestate.apps.feature.auth.state.VerificationUiState
+import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.google.firebase.auth.PhoneAuthProvider
 import android.app.Activity
@@ -20,36 +20,48 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class VerificationViewModel @Inject constructor(
+class PhoneVerificationViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _uiState =
-        MutableStateFlow<VerificationUiState>(
-            VerificationUiState.Countdown(120)
+        MutableStateFlow<PhoneVerificationUiState>(
+            PhoneVerificationUiState.Countdown(120)
         )
-    val uiState: StateFlow<VerificationUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<PhoneVerificationUiState> = _uiState.asStateFlow()
 
     private var countdownJob: Job? = null
 
+    private var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
+
+    private var activity: Activity? = null
+
     init {
         startCountdown()
+    }
+
+    fun attachActivity(activity: Activity) {
+        this.activity = activity
+    }
+
+    fun setResendingToken(token: PhoneAuthProvider.ForceResendingToken) {
+        resendingToken = token
     }
 
     private fun startCountdown() {
         countdownJob?.cancel()
         countdownJob = viewModelScope.launch {
             for (second in 120 downTo 1) {
-                _uiState.value = VerificationUiState.Countdown(second)
+                _uiState.value = PhoneVerificationUiState.Countdown(second)
                 delay(1_000)
             }
-            _uiState.value = VerificationUiState.Expired
+            _uiState.value = PhoneVerificationUiState.Expired
         }
     }
 
     fun verifyCode(verificationId: String, code: String) {
-        _uiState.value = VerificationUiState.Verifying
+        _uiState.value = PhoneVerificationUiState.Verifying
 
         viewModelScope.launch(ioDispatcher) {
             val credential =
@@ -61,11 +73,11 @@ class VerificationViewModel @Inject constructor(
             ) {
                 is Result.Success -> {
                     countdownJob?.cancel()
-                    _uiState.value = VerificationUiState.Success
+                    _uiState.value = PhoneVerificationUiState.Success
                 }
 
                 is Result.Error -> {
-                    _uiState.value = VerificationUiState.Error(
+                    _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Verification failed"
                     )
                 }
@@ -74,28 +86,30 @@ class VerificationViewModel @Inject constructor(
     }
 
     fun resendCode(
-        phoneNumber: String,
-        activity: Activity,
-        resendingToken: PhoneAuthProvider.ForceResendingToken
+        phoneNumber: String
     ) {
-        _uiState.value = VerificationUiState.Verifying
+        _uiState.value = PhoneVerificationUiState.Verifying
+
+        val act = activity ?: return
+
+        val token = resendingToken ?: return
 
         viewModelScope.launch(ioDispatcher) {
             when (
                 val result =
                     authRepository.resendVerificationCode(
                         phoneNumber,
-                        activity,
-                        resendingToken
+                        act,
+                        token
                     )
             ) {
                 is Result.Success -> {
                     startCountdown()
-                    _uiState.value = VerificationUiState.Countdown(120)
+                    _uiState.value = PhoneVerificationUiState.Countdown(120)
                 }
 
                 is Result.Error -> {
-                    _uiState.value = VerificationUiState.Error(
+                    _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Failed to resend code"
                     )
                 }

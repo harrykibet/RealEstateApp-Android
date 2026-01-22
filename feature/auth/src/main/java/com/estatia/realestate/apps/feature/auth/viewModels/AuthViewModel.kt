@@ -9,6 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.model.user.UserType
+import com.estatia.realestate.apps.feature.auth.state.AuthState
+import com.estatia.realestate.apps.feature.auth.state.AuthState.Authenticated
+import com.estatia.realestate.apps.feature.auth.state.AuthState.EmailVerificationRequired
+import com.estatia.realestate.apps.feature.auth.state.AuthState.PhoneVerificationRequired
+import com.estatia.realestate.apps.feature.auth.state.AuthState.Unauthenticated
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
@@ -63,6 +68,15 @@ class AuthViewModel @Inject constructor(
         _isAuthCheckComplete = true
     }
 
+    fun determineAuthState(user: FirebaseUser?): AuthState {
+        if (user == null) return Unauthenticated
+        if (!user.phoneNumber.isNullOrEmpty() && !user.isEmailVerified)
+            return EmailVerificationRequired
+        if (user.phoneNumber.isNullOrEmpty())
+            return PhoneVerificationRequired
+        return Authenticated
+    }
+
 
     fun isEmailVerified(): Boolean {
         return getCurrentUser()?.isEmailVerified ?: false
@@ -86,9 +100,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun resetPassword(email: String, onFailure: (Exception) -> Unit){
+    suspend fun resetPassword(email: String){
         try {
-            authRepository.sendPasswordResetEmail(email, onFailure)
+            authRepository.sendPasswordResetEmail(email)
             _resetPasswordStatus.emit(Result.success(true))
         } catch (e: Exception) {
             _resetPasswordStatus.emit(Result.failure(e))
@@ -131,36 +145,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-
-    fun registerUser(
-        email: String,
-        password: String,
-        userName: String,
-        phoneNumber: String,
-        userType: UserType,
-        onFailure: (Exception) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                val result: AuthResult? =
-                    authRepository.signUpWithEmail(email, password, onFailure)?.await()
-                val user = User(
-                    userId = result?.user?.uid.orEmpty(),
-                    name = userName,
-                    email = email,
-                    phoneNumber = phoneNumber,
-                    profilePictureUrl = null,
-                    userType = userType,
-                    verified = false,
-                    likedProperties = emptyList()
-                )
-                authRepository.createUserIfNotExists(user.userId, user, onFailure)
-            } catch (e: Exception) {
-                _phoneVerificationState.value =
-                    VerificationState.Error("Sign-up failed: ${e.message}")
-            }
-        }
-    }
 
 
     private fun sendEmailVerification() {

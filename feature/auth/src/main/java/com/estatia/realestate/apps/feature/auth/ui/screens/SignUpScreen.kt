@@ -22,16 +22,15 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.R
+import com.estatia.realestate.apps.feature.auth.state.SignUpAction
+import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 
 @Composable
 fun SignUpScreen(
-    onSignUpClick: () -> Unit, onAlreadyHaveAccountClick: () -> Unit
+    state: SignUpFormState,
+    onAction: (SignUpAction) -> Unit,
+    onAlreadyHaveAccountClick: () -> Unit
 ) {
-    var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var userType by remember { mutableStateOf("") }
     var expandedDropdown by remember { mutableStateOf(false) }
 
     Column(
@@ -41,92 +40,99 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // App Name
+
         Text(
             text = stringResource(id = R.string.create_new_account),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.headlineMedium
         )
 
-        // Username Input
         EstatiaTextField(
-            value = userName,
-            onValueChange = { userName = it },
+            value = state.userName,
+            onValueChange = {
+                onAction(SignUpAction.UserNameChanged(it))
+            },
             label = stringResource(id = R.string.username),
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Email Input
         EstatiaTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = state.email,
+            onValueChange = {
+                onAction(SignUpAction.EmailChanged(it))
+            },
             label = stringResource(id = R.string.email_address),
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Phone Input
         EstatiaTextField(
-            value = phone,
-            onValueChange = { phone = it },
+            value = state.phone,
+            onValueChange = {
+                onAction(SignUpAction.PhoneChanged(it))
+            },
             label = stringResource(id = R.string.phone_number),
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Password Input
         EstatiaTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = state.password,
+            onValueChange = {
+                onAction(SignUpAction.PasswordChanged(it))
+            },
             label = stringResource(id = R.string.password2),
             isPassword = true,
             modifier = Modifier.fillMaxWidth()
         )
 
-        // User Type Dropdown (Spinner Replacement)
         Text(
-            text = userType.ifEmpty { stringResource(id = R.string.select_user_type) },
+            text = state.userType.ifEmpty {
+                stringResource(id = R.string.select_user_type)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expandedDropdown = true }
-                .padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium)
+                .padding(16.dp)
+        )
 
         UserTypeDropdownMenu(
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
-            onSelectUserType = { selectedType ->
-                userType = selectedType
+            onSelectUserType = {
+                onAction(SignUpAction.UserTypeChanged(it))
                 expandedDropdown = false
-            })
+            }
+        )
 
-        // Sign-Up Button
-        Button(
-            onClick = onSignUpClick,
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(52.dp)
-                .padding(top = 16.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
+        if (state.error != null) {
             Text(
-                text = stringResource(id = R.string.sign_up),
-                color = MaterialTheme.colorScheme.onPrimary
+                text = state.error,
+                color = MaterialTheme.colorScheme.error
             )
         }
 
-        // Already have an account text
-        TextButton(
-            onClick = onAlreadyHaveAccountClick, modifier = Modifier.padding(top = 16.dp)
+        Button(
+            onClick = { onAction(SignUpAction.Submit) },
+            enabled = !state.isLoading,
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(52.dp),
+            shape = RoundedCornerShape(24.dp)
         ) {
-            Text(
-                text = stringResource(id = R.string.already_have_an_account_log_in),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text(stringResource(id = R.string.sign_up))
+            }
+        }
+
+        TextButton(onClick = onAlreadyHaveAccountClick) {
+            Text(stringResource(id = R.string.already_have_an_account_log_in))
         }
     }
 }
+
 
 @Composable
 fun UserTypeDropdownMenu(
@@ -235,7 +241,8 @@ fun SignUpScreenLightPreview() {
     EstatiaTheme {
         EstatiaBackground {
             SignUpScreen(
-                onSignUpClick = {},
+                state = SignUpFormState(),
+                onAction = {},
                 onAlreadyHaveAccountClick = {}
             )
         }
@@ -255,7 +262,8 @@ fun SignUpScreenDarkPreview() {
     EstatiaTheme {
         EstatiaBackground {
             SignUpScreen(
-                onSignUpClick = {},
+                state = SignUpFormState(),
+                onAction = {},
                 onAlreadyHaveAccountClick = {}
             )
         }

@@ -20,21 +20,17 @@ interface IAuthRepository {
     fun getCurrentUser(): FirebaseUser?
     fun getFirebaseAuth(): FirebaseAuth
 
-    fun sendPasswordResetEmail(
-        email: String,
-        onFailure: (Exception) -> Unit
-    ): Task<Void>?
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 
     fun firebaseAuthWithGoogle(
         idToken: String,
         onFailure: (Exception) -> Unit
     ): Task<AuthResult>?
 
-    fun signUpWithEmail(
+    suspend fun signUpWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit
-    ): Task<AuthResult>?
+        password: String
+    ): Result<AuthResult>
 
     fun signInWithEmail(
         email: String,
@@ -44,8 +40,7 @@ interface IAuthRepository {
 
     fun createUserIfNotExists(
         userId: String?,
-        user: User,
-        onFailure: (Exception) -> Unit
+        user: User
     )
 
     suspend fun signInWithPhoneAuthCredential(
@@ -57,5 +52,8 @@ interface IAuthRepository {
         activity: Activity,
         resendingToken: PhoneAuthProvider.ForceResendingToken
     ): Result<String> // returns new verificationId
+
+    suspend fun sendEmailVerification(): Result<Unit>
+    suspend fun isEmailVerified(): Result<Boolean>
 
 }

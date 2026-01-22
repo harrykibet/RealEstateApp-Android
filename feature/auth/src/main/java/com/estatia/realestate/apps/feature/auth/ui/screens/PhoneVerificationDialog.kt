@@ -27,15 +27,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.R
-import com.estatia.realestate.apps.feature.auth.state.VerificationUiState
+import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 
 @Composable
-fun VerificationCodeDialog(
+fun PhoneVerificationDialog(
     phoneNumber: String,
-    uiState: VerificationUiState,
+    uiState: PhoneVerificationUiState,
     onVerify: (String) -> Unit,
     onResend: () -> Unit,
     onDismiss: () -> Unit
@@ -59,7 +61,6 @@ fun VerificationCodeDialog(
                     ),
                     style = MaterialTheme.typography.bodyMedium
                 )
-
                 OutlinedTextField(
                     value = code,
                     onValueChange = { code = it },
@@ -72,7 +73,7 @@ fun VerificationCodeDialog(
 
                 when (uiState) {
 
-                    is VerificationUiState.Countdown -> {
+                    is PhoneVerificationUiState.Countdown -> {
                         Text(
                             text = stringResource(
                                 R.string.code_expires_in,
@@ -83,14 +84,14 @@ fun VerificationCodeDialog(
                         )
                     }
 
-                    VerificationUiState.Expired -> {
+                    PhoneVerificationUiState.Expired -> {
                         Text(
                             text = stringResource(R.string.code_expired),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
 
-                    is VerificationUiState.Error -> {
+                    is PhoneVerificationUiState.Error -> {
                         Text(
                             text = uiState.message,
                             color = MaterialTheme.colorScheme.error
@@ -100,13 +101,13 @@ fun VerificationCodeDialog(
                     else -> Unit
                 }
 
-                Button(
+                EstatiaButton(
                     onClick = { onVerify(code) },
                     enabled = code.length == 6 &&
-                            uiState !is VerificationUiState.Verifying,
+                            uiState !is PhoneVerificationUiState.Verifying,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (uiState is VerificationUiState.Verifying) {
+                    if (uiState is PhoneVerificationUiState.Verifying) {
                         CircularProgressIndicator(
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(18.dp)
@@ -116,8 +117,8 @@ fun VerificationCodeDialog(
                     }
                 }
 
-                if (uiState is VerificationUiState.Expired) {
-                    TextButton(
+                if (uiState is PhoneVerificationUiState.Expired) {
+                    EstatiaTextButton(
                         onClick = onResend,
                         modifier = Modifier.align(Alignment.End)
                     ) {
@@ -138,12 +139,12 @@ fun VerificationCodeDialog(
 
 @DevicePreviews
 @Composable
-fun VerificationCodeDialogLightPreview(){
+fun PhoneVerificationDialogLightPreview(){
     EstatiaTheme {
         EstatiaBackground {
-            VerificationCodeDialog(
+            PhoneVerificationDialog(
                 phoneNumber = "1234567890",
-                uiState = VerificationUiState.Countdown(120),
+                uiState = PhoneVerificationUiState.Countdown(120),
                 onVerify = {},
                 onResend = {},
                 onDismiss = {}
@@ -161,12 +162,12 @@ fun VerificationCodeDialogLightPreview(){
 
 @DevicePreviews
 @Composable
-fun VerificationCodeDialogDarkPreview(){
+fun PhoneVerificationDialogDarkPreview(){
     EstatiaTheme {
         EstatiaBackground {
-            VerificationCodeDialog(
+            PhoneVerificationDialog(
                 phoneNumber = "1234567890",
-                uiState = VerificationUiState.Countdown(120),
+                uiState = PhoneVerificationUiState.Countdown(120),
                 onVerify = {},
                 onResend = {},
                 onDismiss = {}

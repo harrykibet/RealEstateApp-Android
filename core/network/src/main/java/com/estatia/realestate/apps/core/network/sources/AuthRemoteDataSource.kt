@@ -22,6 +22,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -36,8 +37,7 @@ class AuthRemoteDataSource @Inject constructor(
 
     override fun createUserIfNotExists(
         userId: String?,
-        user: User,
-        onFailure: (Exception) -> Unit, ) {
+        user: User) {
         network.safeApiCall(
             apiCall = {
                 val userRef = db.collection(FirestoreCollections.USERS).document(userId!!)
@@ -46,17 +46,14 @@ class AuthRemoteDataSource @Inject constructor(
                         userRef.set(user).addOnSuccessListener {
                             // User successfully created
                         }.addOnFailureListener { exception ->
-                            onFailure(exception)
                             log(exception.message)
                         }
                     }
                 }.addOnFailureListener { exception ->
-                    onFailure(exception)
                     log(exception.message)
                 }
             },
             onFailure = { exception ->
-                onFailure(exception)
                 log(exception.message)
             })
     }
@@ -78,22 +75,23 @@ class AuthRemoteDataSource @Inject constructor(
             })
     }
 
-    override fun signUpWithEmail(
+    override suspend fun signUpWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return network.safeApiCall(
+        password: String
+    ): Result<AuthResult> {
+        return network.safeApiCallSuspend(
             apiCall = {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnFailureListener{ exception ->
-                        onFailure(exception)
-                        log(exception.message)
-                    }},
+                    .await() // <-- suspends until Firebase finishes
+            },
             onFailure = { exception ->
-                onFailure(exception)
                 log(exception.message)
-            })
+            }
+        )?.let { Result.Success(it) }
+            ?: Result.Error(Exception("Failed to sign up"))
     }
+
+
 
     private suspend fun signInWithCredentialSuspend(
         credential: PhoneAuthCredential
@@ -222,22 +220,48 @@ class AuthRemoteDataSource @Inject constructor(
             })
     }
 
-    override fun sendPasswordResetEmail(
-        email: String,
-        onFailure: (Exception) -> Unit): Task<Void>? {
-        return network.safeApiCall(
+    override suspend fun sendPasswordResetEmail(
+        email: String
+    ): Result<Unit> {
+        return network.safeApiCallSuspend(
             apiCall = {
-                firebaseAuth.sendPasswordResetEmail(email)
-                    .addOnFailureListener { exception ->
-                        onFailure(exception)
-                        log(exception.message)
-                    }
+                firebaseAuth.sendPasswordResetEmail(email).await()
+                Unit
             },
-            onFailure = { exception ->
-                onFailure(exception)
-                log(exception.message)
-            })
+            onFailure = { }
+        )?.let {
+            Result.Success(Unit)
+        } ?: Result.Error(Exception("Failed to send reset email"))
     }
+
+
+    override suspend fun sendEmailVerification(): Result<Unit> =
+        try {
+            val user = firebaseAuth.currentUser
+                ?: return Result.Error(IllegalStateException("User not logged in"))
+
+            user.sendEmailVerification().await()
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+
+
+    override suspend fun isEmailVerified(): Result<Boolean> =
+        network.safeApiCallSuspend(
+            apiCall = {
+                firebaseAuth.currentUser
+                    ?.reload()
+                    ?.await()
+
+                firebaseAuth.currentUser?.isEmailVerified == true
+            },
+            onFailure = { }
+        )?.let {
+            Result.Success(it)
+        } ?: Result.Error(Exception("Failed to check verification status"))
+
+
 
     override fun isUserAuthenticated(): Flow<Boolean> = callbackFlow {
         val authListener = FirebaseAuth.AuthStateListener { auth ->

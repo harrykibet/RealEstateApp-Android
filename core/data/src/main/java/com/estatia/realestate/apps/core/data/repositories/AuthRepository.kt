@@ -20,9 +20,8 @@ class AuthRepository @Inject constructor(
 
     override fun createUserIfNotExists(
         userId: String?,
-        user: User,
-        onFailure: (Exception) -> Unit, ) {
-        return remoteDataSource.createUserIfNotExists(userId, user, onFailure)
+        user: User) {
+        return remoteDataSource.createUserIfNotExists(userId, user)
     }
 
     override fun signInWithEmail(
@@ -32,11 +31,11 @@ class AuthRepository @Inject constructor(
         return remoteDataSource.signInWithEmail(email, password, onFailure)
     }
 
-    override fun signUpWithEmail(
+    override suspend fun signUpWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return remoteDataSource.signUpWithEmail(email, password, onFailure)
+        password: String
+    ): Result<AuthResult> {
+        return remoteDataSource.signUpWithEmail(email, password)
     }
 
     override fun signOut(
@@ -58,11 +57,10 @@ class AuthRepository @Inject constructor(
         return remoteDataSource.firebaseAuthWithGoogle(idToken, onFailure)
     }
 
-    override fun sendPasswordResetEmail(
-        email: String,
-        onFailure: (Exception) -> Unit): Task<Void>? {
-        return remoteDataSource.sendPasswordResetEmail(email, onFailure)
-    }
+   override suspend fun sendPasswordResetEmail(
+       email: String): Result<Unit> {
+       return remoteDataSource.sendPasswordResetEmail(email)
+   }
 
     override fun isUserAuthenticated(): Flow<Boolean> {
         return remoteDataSource.isUserAuthenticated()
@@ -88,5 +86,13 @@ class AuthRepository @Inject constructor(
         resendingToken: PhoneAuthProvider.ForceResendingToken
     ): Result<String> {
         return remoteDataSource.resendVerificationCode(phoneNumber, activity, resendingToken)
+    }
+
+    override suspend fun sendEmailVerification(): Result<Unit> {
+        return remoteDataSource.sendEmailVerification()
+    }
+
+    override suspend fun isEmailVerified(): Result<Boolean> {
+        return remoteDataSource.isEmailVerified()
     }
 }

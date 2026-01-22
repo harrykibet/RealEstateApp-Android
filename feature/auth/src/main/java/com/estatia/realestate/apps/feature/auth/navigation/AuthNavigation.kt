@@ -2,58 +2,74 @@ package com.estatia.realestate.apps.feature.auth.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
+import com.estatia.realestate.apps.feature.auth.ui.routes.EmailVerificationRoute
+import com.estatia.realestate.apps.feature.auth.ui.routes.ForgotPasswordRoute
 import com.estatia.realestate.apps.feature.auth.ui.routes.LoginRoute
-import kotlinx.serialization.Serializable
-
-@Serializable
-data object AuthBaseRoute // route to base navigation graph
-
-@Serializable
-data object LoginRoute // route to login screen
-
-@Serializable
-data object VerificationRoute // route to verification screen
-
-@Serializable
-data object SignUpRoute // route to sign up screen
-
-@Serializable
-data object ForgotPasswordRoute // route to forgot password screen
-
-@Serializable
-data class VerifyEmailRoute(val email: String) // route to verify email screen
-
-fun NavController.navigateToLogin(navOptions: NavOptions? = null) = navigate(route = LoginRoute, navOptions)
+import com.estatia.realestate.apps.feature.auth.ui.routes.PhoneVerificationRoute
+import com.estatia.realestate.apps.feature.auth.ui.routes.SignUpRoute
 
 fun NavGraphBuilder.authGraph(
+    navController: NavController,
     onAuthenticated: () -> Unit
 ) {
-    navigation<AuthBaseRoute>(startDestination = LoginRoute) {
-        composable<LoginRoute> {
+    navigation(
+        route = AuthRoutes.GRAPH,
+        startDestination = AuthRoutes.LOGIN
+    ) {
+
+        composable(AuthRoutes.LOGIN) {
             LoginRoute(
                 onNavigateToHome = onAuthenticated,
-                onNavigateToSignUp = { /*navigateToSignUp()*/ },
-                onNavigateToForgotPassword = { /*navigateToForgotPassword()*/ }
+                onNavigateToSignUp = {
+                    navController.navigate(AuthRoutes.SIGN_UP)
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(AuthRoutes.FORGOT_PASSWORD)
+                }
             )
         }
-        /*composable<SignUpRoute> {
-            SignUpRoute (
-                onNavigateToLogin = { navigateToLogin() }
+
+        composable(AuthRoutes.SIGN_UP) {
+            SignUpRoute(
+                onSignUpSuccess = {
+                    navController.navigate(AuthRoutes.EMAIL_VERIFICATION) {
+                        popUpTo(AuthRoutes.SIGN_UP) { inclusive = true }
+                    }
+                },
+                onAlreadyHaveAccount = {
+                    navController.popBackStack()
+                }
             )
         }
-        composable<ForgotPasswordRoute> {
+
+        composable(AuthRoutes.FORGOT_PASSWORD) {
             ForgotPasswordRoute(
-                onNavigateToLogin = { navigateToLogin() }
+                onBack = { navController.popBackStack() }
             )
         }
-        composable<VerifyEmailRoute> { backStackEntry ->
-            VerifyEmailRoute(
-                email = backStackEntry.arguments?.getString("email") ?: "",
-                onNavigateToLogin = { navigateToLogin() }
+
+        composable(AuthRoutes.EMAIL_VERIFICATION) {
+            EmailVerificationRoute(
+                onVerified = onAuthenticated
             )
-        }*/
+        }
+
+        composable(
+            route = AuthRoutes.PHONE_VERIFICATION,
+            arguments = listOf(
+                navArgument("verificationId") { type = NavType.StringType },
+                navArgument("phoneNumber") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            PhoneVerificationRoute(
+                verificationId = backStackEntry.arguments!!.getString("verificationId")!!,
+                phoneNumber = backStackEntry.arguments!!.getString("phoneNumber")!!,
+                onDismiss = onAuthenticated
+            )
+        }
     }
 }
