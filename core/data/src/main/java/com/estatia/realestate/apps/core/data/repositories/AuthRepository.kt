@@ -52,9 +52,8 @@ class AuthRepository @Inject constructor(
     }
 
     override fun firebaseAuthWithGoogle(
-        idToken: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return remoteDataSource.firebaseAuthWithGoogle(idToken, onFailure)
+        idToken: String): Task<AuthResult>? {
+        return remoteDataSource.firebaseAuthWithGoogle(idToken)
     }
 
    override suspend fun sendPasswordResetEmail(

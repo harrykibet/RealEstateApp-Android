@@ -23,8 +23,7 @@ interface IAuthRepository {
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 
     fun firebaseAuthWithGoogle(
-        idToken: String,
-        onFailure: (Exception) -> Unit
+        idToken: String
     ): Task<AuthResult>?
 
     suspend fun signUpWithEmail(

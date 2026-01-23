@@ -2,6 +2,12 @@ package com.estatia.realestate.apps.feature.auth.state
 
 sealed interface PhoneVerificationUiState {
 
+    object Idle : PhoneVerificationUiState
+
+    object SendingCode : PhoneVerificationUiState
+
+    data class CodeSent(val verificationId: String) : PhoneVerificationUiState
+
     data class Countdown(
         val secondsLeft: Int
     ) : PhoneVerificationUiState

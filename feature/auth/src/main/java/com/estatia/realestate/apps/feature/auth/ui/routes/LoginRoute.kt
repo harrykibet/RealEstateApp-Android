@@ -7,13 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
-import com.estatia.realestate.apps.feature.auth.viewModels.AuthViewModel
+import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
 import android.widget.Toast
 import androidx.compose.runtime.livedata.observeAsState
 
 @Composable
 fun LoginRoute(
-    viewModel: AuthViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit

@@ -205,17 +205,14 @@ class AuthRemoteDataSource @Inject constructor(
     }
 
     override fun firebaseAuthWithGoogle(
-        idToken: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
+        idToken: String): Task<AuthResult>? {
         return network.safeApiCall(
             apiCall = {
                 val credential = GoogleAuthProvider.getCredential(idToken, null)
                 firebaseAuth.signInWithCredential(credential).addOnFailureListener{ exception ->
-                    onFailure(exception)
                     log(exception.message)
                 }},
             onFailure = { exception ->
-                onFailure(exception)
                 log(exception.message)
             })
     }

@@ -7,8 +7,7 @@ import com.estatia.realestate.apps.feature.home.navigation.homeGraph
 import com.estatia.realestate.apps.feature.profile.navigation.profileGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import com.estatia.realestate.apps.feature.auth.navigation.AuthBaseRoute
-import com.estatia.realestate.apps.feature.auth.navigation.LoginRoute
+import com.estatia.realestate.apps.feature.auth.navigation.AuthRoutes
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
@@ -25,7 +24,8 @@ fun EstatiaNavHost(
     val navController = appState.navController
 
     // Determine the dynamic start destination
-    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthBaseRoute
+    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthRoutes.LOGIN
+
 
     NavHost(
         navController = navController,
@@ -37,9 +37,10 @@ fun EstatiaNavHost(
             onAuthenticated = {
                 // Navigate to the home graph after successful login
                 navController.navigateToHome(
-                    navOptions = navOptions { popUpTo(LoginRoute) { inclusive = true } }
+                    navOptions = navOptions { popUpTo(AuthRoutes.LOGIN) { inclusive = true } }
                 )
-            }
+            },
+            navController = navController
         )
 
         homeGraph(

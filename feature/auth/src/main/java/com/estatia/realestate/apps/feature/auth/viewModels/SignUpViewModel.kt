@@ -10,7 +10,6 @@ import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.model.user.UserType
-import com.estatia.realestate.apps.feature.auth.viewModels.AuthViewModel.VerificationState
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel

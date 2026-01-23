@@ -2,9 +2,7 @@ package com.estatia.realestate.apps.feature.auth.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.estatia.realestate.apps.feature.auth.ui.routes.EmailVerificationRoute
 import com.estatia.realestate.apps.feature.auth.ui.routes.ForgotPasswordRoute
@@ -58,16 +56,8 @@ fun NavGraphBuilder.authGraph(
             )
         }
 
-        composable(
-            route = AuthRoutes.PHONE_VERIFICATION,
-            arguments = listOf(
-                navArgument("verificationId") { type = NavType.StringType },
-                navArgument("phoneNumber") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
+        composable(route = AuthRoutes.PHONE_VERIFICATION) {
             PhoneVerificationRoute(
-                verificationId = backStackEntry.arguments!!.getString("verificationId")!!,
-                phoneNumber = backStackEntry.arguments!!.getString("phoneNumber")!!,
                 onDismiss = onAuthenticated
             )
         }

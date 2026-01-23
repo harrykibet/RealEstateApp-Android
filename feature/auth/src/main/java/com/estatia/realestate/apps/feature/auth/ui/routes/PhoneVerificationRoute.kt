@@ -13,8 +13,6 @@ import com.estatia.realestate.apps.feature.auth.viewModels.PhoneVerificationView
 
 @Composable
 fun PhoneVerificationRoute(
-    verificationId: String,
-    phoneNumber: String,
     onDismiss: () -> Unit,
     viewModel: PhoneVerificationViewModel = hiltViewModel()
 ) {
@@ -23,6 +21,7 @@ fun PhoneVerificationRoute(
 
     LaunchedEffect(Unit) {
         viewModel.attachActivity(activity)
+        viewModel.startPhoneNumberVerification()
     }
 
     if (uiState is PhoneVerificationUiState.Success) {
@@ -30,15 +29,19 @@ fun PhoneVerificationRoute(
     }
 
     PhoneVerificationDialog(
-        phoneNumber = phoneNumber,
+        phoneNumber = viewModel.phoneNumber,
         uiState = uiState,
         onVerify = { code ->
-            viewModel.verifyCode(verificationId, code)
+            val state = uiState
+            if (state is PhoneVerificationUiState.CodeSent) {
+                viewModel.verifyCode(state.verificationId, code)
+            }
         },
         onResend = {
-            viewModel.resendCode(phoneNumber)
+            viewModel.resendCode()
         },
         onDismiss = onDismiss
     )
 }
+
 

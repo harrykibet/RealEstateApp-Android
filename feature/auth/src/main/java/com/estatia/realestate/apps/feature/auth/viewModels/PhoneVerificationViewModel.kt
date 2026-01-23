@@ -9,6 +9,10 @@ import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.google.firebase.auth.PhoneAuthProvider
 import android.app.Activity
+import androidx.lifecycle.SavedStateHandle
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -17,13 +21,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class PhoneVerificationViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val authRepository: AuthRepository,
     @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+
+    // navController.currentBackStackEntry
+    //    ?.savedStateHandle
+    //    ?.set("phoneNumber", phoneNumber)
+    //
+    //navController.navigate(PHONE_VERIFICATION)
+    val phoneNumber: String = checkNotNull(savedStateHandle["phoneNumber"])
 
     private val _uiState =
         MutableStateFlow<PhoneVerificationUiState>(
@@ -60,34 +73,44 @@ class PhoneVerificationViewModel @Inject constructor(
         }
     }
 
-    fun verifyCode(verificationId: String, code: String) {
-        _uiState.value = PhoneVerificationUiState.Verifying
+    fun startPhoneNumberVerification() {
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-        viewModelScope.launch(ioDispatcher) {
-            val credential =
-                PhoneAuthProvider.getCredential(verificationId, code)
-
-            when (
-                val result =
-                    authRepository.signInWithPhoneAuthCredential(credential)
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
             ) {
-                is Result.Success -> {
-                    countdownJob?.cancel()
-                    _uiState.value = PhoneVerificationUiState.Success
-                }
+                resendingToken = token
+                _uiState.value = PhoneVerificationUiState.CodeSent(verificationId)
+                startCountdown()
+            }
 
-                is Result.Error -> {
-                    _uiState.value = PhoneVerificationUiState.Error(
-                        result.exception.message ?: "Verification failed"
-                    )
-                }
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                signInWithCredential(credential)
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                _uiState.value = PhoneVerificationUiState.Error(e.message ?: "Verification failed")
             }
         }
+
+        val options = PhoneAuthOptions.newBuilder(authRepository.getFirebaseAuth())
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(120L, TimeUnit.SECONDS) // 2 Minutes
+            .setActivity(activity!!)
+            .setCallbacks(callbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-    fun resendCode(
-        phoneNumber: String
-    ) {
+
+    fun verifyCode(verificationId: String, code: String) {
+        val credential = PhoneAuthProvider.getCredential(verificationId, code)
+        signInWithCredential(credential)
+    }
+
+    fun resendCode() {
         _uiState.value = PhoneVerificationUiState.Verifying
 
         val act = activity ?: return
@@ -116,6 +139,28 @@ class PhoneVerificationViewModel @Inject constructor(
             }
         }
     }
+
+    private fun signInWithCredential(credential: PhoneAuthCredential) {
+        _uiState.value = PhoneVerificationUiState.Verifying
+
+        viewModelScope.launch(ioDispatcher) {
+            when (
+                val result = authRepository.signInWithPhoneAuthCredential(credential)
+            ) {
+                is Result.Success -> {
+                    countdownJob?.cancel()
+                    _uiState.value = PhoneVerificationUiState.Success
+                }
+
+                is Result.Error -> {
+                    _uiState.value = PhoneVerificationUiState.Error(
+                        result.exception.message ?: "Verification failed"
+                    )
+                }
+            }
+        }
+    }
+
 
     fun restartCountdown() {
         startCountdown()

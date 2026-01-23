@@ -21,8 +21,7 @@ interface IAuthRemoteDataSource {
     fun getFirebaseAuth(): FirebaseAuth
 
     fun firebaseAuthWithGoogle(
-        idToken: String,
-        onFailure: (Exception) -> Unit
+        idToken: String
     ): Task<AuthResult>?
 
     suspend fun signUpWithEmail(

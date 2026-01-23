@@ -7,6 +7,5 @@ object AuthRoutes {
     const val SIGN_UP = "sign_up"
     const val FORGOT_PASSWORD = "forgot_password"
     const val EMAIL_VERIFICATION = "email_verification"
-    const val PHONE_VERIFICATION =
-        "phone_verification/{verificationId}/{phoneNumber}"
+    const val PHONE_VERIFICATION = "phone_verification"
 }
