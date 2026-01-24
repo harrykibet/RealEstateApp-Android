@@ -2,18 +2,9 @@ package com.estatia.realestate.apps.core.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,15 +19,17 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @Composable
 fun GoogleSignInButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    isLoading: Boolean = false
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth(0.6f)
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        color = Color.White,
+            .clickable(enabled = enabled && !isLoading) { onClick() }, // disable while loading
+        color = Color.White.copy(alpha = if (enabled) 1f else 0.5f),
         border = BorderStroke(1.dp, Color.Gray),
         shadowElevation = 4.dp
     ) {
@@ -45,21 +38,31 @@ fun GoogleSignInButton(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Icon(
-                painter = painterResource(R.drawable.google),
-                contentDescription = "Google Logo",
-                modifier = Modifier.size(20.dp),
-                tint = Color.Unspecified
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Sign in with Google",
-                fontSize = 14.sp,
-                color = Color.Black
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = Color.Black
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.google),
+                    contentDescription = "Google Logo",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Sign in with Google",
+                    fontSize = 14.sp,
+                    color = Color.Black.copy(alpha = if (enabled) 1f else 0.5f)
+                )
+            }
         }
     }
 }
+
 
 @Preview(
     name = "Google Sign-In Button",

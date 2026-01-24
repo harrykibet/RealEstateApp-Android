@@ -31,6 +31,7 @@ caffeine = "3.2.0"
 compose-bom =  "2025.04.01"
 conscrypt-openjdk-uber = "2.5.2"
 converter-gson = "2.11.0"
+credentialManager = "1.3.0"
 dokka = "2.0.0"
 firebase-bom = "33.13.0"
 firebaseCrashlyticsPlugin = "3.0.3"
@@ -44,6 +45,7 @@ google-android-play-services-maps = "19.2.0"
 google-android-play-services-mlkit-image-labeling = "16.0.8"
 google-android-play-services-mlkit-text-recognition = "19.0.1"
 google-cloud-bom = "26.55.0"
+googleId = "1.1.0"
 google-dagger = "2.56"
 google-mlkit-barcode-scanning = "17.3.0"
 google-mlkit-face-detection = "16.1.7"
@@ -79,6 +81,7 @@ coil = "2.7.0"
 androidx-tracing = "1.3.0"
 kotlinxCoroutines = "1.10.1"
 androidxDataStore = "1.1.6"
+playServicesAuth = "21.0.1"
 protobufPlugin = "0.9.4"
 protobuf = "4.29.2"
 
@@ -451,6 +454,15 @@ media3-exoplayer-workmanager = { group = "androidx.media3", name = "media3-exopl
 security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "androidx-security-crypto" }
 bcprov-jdk18on = {group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncy"}
 bcpkix-jdk18on = {group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncy"}
+androidx-credential-manager = { group = "androidx.credentials",name = "credentials", version.ref = "credentialManager" }
+androidx-credential-manager-play-services = {group = "androidx.credentials",name = "credentials-play-services-auth", version.ref = "credentialManager"}
+google-id = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleId" }
+
+
+
+
+
+
 
 # BenchMark and BaselineProfile
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
@@ -464,6 +476,8 @@ google-cloud-secretmanager = { module = "com.google.cloud:google-cloud-secretman
 
 # Caching
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
+
+
 
 
 # Analytics and Perfomance

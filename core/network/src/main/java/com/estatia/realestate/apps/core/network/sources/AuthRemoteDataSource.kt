@@ -60,17 +60,14 @@ class AuthRemoteDataSource @Inject constructor(
 
     override fun signInWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
+        password: String): Task<AuthResult>? {
         return network.safeApiCall(
             apiCall = {
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnFailureListener{ exception ->
-                        onFailure(exception)
                         log(exception.message)
                     } },
             onFailure = { exception ->
-                onFailure(exception)
                 log(exception.message)
             })
     }

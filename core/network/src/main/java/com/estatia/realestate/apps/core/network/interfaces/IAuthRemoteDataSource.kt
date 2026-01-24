@@ -31,8 +31,7 @@ interface IAuthRemoteDataSource {
 
     fun signInWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit
+        password: String
     ): Task<AuthResult>?
 
     fun createUserIfNotExists(

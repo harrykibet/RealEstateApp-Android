@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,7 +52,8 @@ fun LoginScreen(
     onLoginClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
-    onGoogleSignInClick: () -> Unit = {}
+    onGoogleSignInClick: () -> Unit = {},
+    isLoading: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -102,7 +105,8 @@ fun LoginScreen(
             label = stringResource(R.string.email_or_phone_number),
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .padding(vertical = 4.dp))
+                .padding(vertical = 4.dp)
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -111,58 +115,72 @@ fun LoginScreen(
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
             modifier = Modifier.fillMaxWidth(0.9f),
-            isPassword = true)
+            isPassword = true
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onLoginClick,
+            enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
             elevation = ButtonDefaults.buttonElevation(6.dp)
         ) {
-            Text(
-                text = stringResource(R.string.login),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = Color.White
+                )
+            } else {
+                Text("Login")
+            }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        GoogleSignInButton(onClick = onGoogleSignInClick)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedButton(
-            onClick = onSignUpClick,
-            modifier = Modifier.fillMaxWidth(0.6f),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-        ) {
-            Text(
-                text = stringResource(R.string.sign_up),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
         Text(
-            text = stringResource(R.string.forgot_password),
-            fontWeight = FontWeight.Bold,
+            text = stringResource(R.string.login),
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .clickable(onClick = onForgotPasswordClick)
-                .padding(vertical = 8.dp)
+            fontWeight = FontWeight.Bold
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
     }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    GoogleSignInButton(
+        isLoading = isLoading,
+        enabled = !isLoading,
+        onClick = onGoogleSignInClick)
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    OutlinedButton(
+        onClick = onSignUpClick,
+        modifier = Modifier.fillMaxWidth(0.6f),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+    ) {
+        Text(
+            text = stringResource(R.string.sign_up),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+
+    Spacer(modifier = Modifier.height(32.dp))
+
+    Text(
+        text = stringResource(R.string.forgot_password),
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .clickable(onClick = onForgotPasswordClick)
+            .padding(vertical = 8.dp)
+    )
+
+    Spacer(modifier = Modifier.height(10.dp))
 }
 
 @Preview(

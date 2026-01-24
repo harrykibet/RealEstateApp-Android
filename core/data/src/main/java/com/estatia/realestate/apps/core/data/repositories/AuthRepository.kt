@@ -26,9 +26,8 @@ class AuthRepository @Inject constructor(
 
     override fun signInWithEmail(
         email: String,
-        password: String,
-        onFailure: (Exception) -> Unit): Task<AuthResult>? {
-        return remoteDataSource.signInWithEmail(email, password, onFailure)
+        password: String): Task<AuthResult>? {
+        return remoteDataSource.signInWithEmail(email, password)
     }
 
     override suspend fun signUpWithEmail(

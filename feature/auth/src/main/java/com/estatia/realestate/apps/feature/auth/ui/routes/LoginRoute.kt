@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
-import android.app.Activity
+import android.content.Context
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -9,7 +9,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
 import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
 import android.widget.Toast
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import com.estatia.realestate.apps.feature.auth.state.AuthState
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.estatia.realestate.apps.feature.auth.R
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun LoginRoute(
@@ -21,53 +30,108 @@ fun LoginRoute(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
-    val googleSignInResult by viewModel.googleSignInResult.observeAsState()
-    val isUserLoggedIn by viewModel.isUserLoggedIn.observeAsState()
+    val authState by viewModel.authState.collectAsState()
 
-    // Handle Google Sign-in result
-    LaunchedEffect(googleSignInResult) {
-        googleSignInResult?.let {
-            it.onSuccess {
+    /* -----------------------------------------
+     * React to AuthState (single source of truth)
+     * ----------------------------------------- */
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
                 onNavigateToHome()
-            }.onFailure { error ->
-                Toast.makeText(context, error.message ?: "Google sign-in failed", Toast.LENGTH_LONG).show()
             }
-        }
-    }
 
-    // Check if user is already logged in
-    LaunchedEffect(isUserLoggedIn) {
-        if (isUserLoggedIn == true) {
-            onNavigateToHome()
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState as AuthState.Error).message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            else -> Unit
         }
     }
 
     LoginScreen(
+        email = email,
+        onEmailChange = { email = it },
+
+        password = password,
+        onPasswordChange = { password = it },
+
         onLoginClick = {
             if (email.isBlank() || password.isBlank()) {
                 Toast.makeText(context, "Fill all fields", Toast.LENGTH_SHORT).show()
                 return@LoginScreen
             }
+            viewModel.loginWithEmail(email, password)
+        },
 
-            viewModel.loginUser(email, password) { e ->
-                Toast.makeText(context, e.message ?: "Login failed", Toast.LENGTH_SHORT).show()
-            }?.addOnSuccessListener {
-                onNavigateToHome()
-            }?.addOnFailureListener {
-                Toast.makeText(context, it.message ?: "Login failed", Toast.LENGTH_SHORT).show()
+        onGoogleSignInClick = {
+            scope.launch {
+                signInWithGoogleCredentialManager(
+                    context = context,
+                    onSuccess = { idToken ->
+                        viewModel.loginWithGoogleIdToken(idToken)
+                    },
+                    onError = { throwable ->
+                        Toast.makeText(
+                            context,
+                            throwable.message ?: "Google sign-in failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                )
             }
         },
+
         onSignUpClick = onNavigateToSignUp,
         onForgotPasswordClick = onNavigateToForgotPassword,
-        onGoogleSignInClick = {
-            viewModel.signInWithGoogle(context as? Activity ?: return@LoginScreen)
-        },
-        email = email,
-        onEmailChange = { email = it },
-        password = password,
-        onPasswordChange = { password = it }
+
+        isLoading = authState is AuthState.Loading
     )
 }
+
+suspend fun signInWithGoogleCredentialManager(
+    context: Context,
+    onSuccess: (String) -> Unit,
+    onError: (Throwable) -> Unit
+) {
+    try {
+        val credentialManager = CredentialManager.create(context)
+
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(
+                context.getString(R.string.default_web_client_id)
+            )
+            .setAutoSelectEnabled(true)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        val result = credentialManager.getCredential(context, request)
+        val credential = result.credential
+
+        if (
+            credential is CustomCredential &&
+            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+        ) {
+            val googleIdTokenCredential =
+                GoogleIdTokenCredential.createFrom(credential.data)
+
+            onSuccess(googleIdTokenCredential.idToken)
+        } else {
+            onError(IllegalStateException("Unexpected credential type"))
+        }
+    } catch (e: Exception) {
+        onError(e)
+    }
+}
+

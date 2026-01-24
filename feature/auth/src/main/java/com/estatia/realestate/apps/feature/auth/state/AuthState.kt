@@ -7,6 +7,9 @@ sealed interface AuthState {
     /** App just launched / auth check in progress */
     data object Loading : AuthState
 
+    /** App is idle */
+    data object Idle : AuthState
+
     /** No authenticated Firebase user */
     data object Unauthenticated : AuthState
 

@@ -18,6 +18,11 @@ dependencies {
 
     implementation(libs.bundles.navigation)
 
+    implementation(libs.androidx.credential.manager)
+    implementation(libs.androidx.credential.manager.play.services)
+    implementation(libs.google.id)
+    implementation(libs.play.services.auth)
+
     implementation(libs.eventbus)
 
     implementation(projects.core.model)
