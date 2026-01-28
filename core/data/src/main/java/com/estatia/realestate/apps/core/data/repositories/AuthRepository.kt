@@ -18,9 +18,10 @@ class AuthRepository @Inject constructor(
     private val remoteDataSource: IAuthRemoteDataSource
 ) : IAuthRepository {
 
-    override fun createUserIfNotExists(
-        userId: String?,
-        user: User) {
+    override suspend fun createUserIfNotExists(
+        userId: String,
+        user: User
+    ): Result<Unit> {
         return remoteDataSource.createUserIfNotExists(userId, user)
     }
 

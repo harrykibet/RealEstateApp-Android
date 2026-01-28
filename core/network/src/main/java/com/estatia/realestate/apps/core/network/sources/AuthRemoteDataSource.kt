@@ -35,28 +35,28 @@ class AuthRemoteDataSource @Inject constructor(
     private val network: INetworkHandler  // Injected via DI
 ) : IAuthRemoteDataSource {
 
-    override fun createUserIfNotExists(
-        userId: String?,
-        user: User) {
-        network.safeApiCall(
-            apiCall = {
-                val userRef = db.collection(FirestoreCollections.USERS).document(userId!!)
-                userRef.get().addOnSuccessListener { document ->
-                    if (!document.exists()) {
-                        userRef.set(user).addOnSuccessListener {
-                            // User successfully created
-                        }.addOnFailureListener { exception ->
-                            log(exception.message)
-                        }
-                    }
-                }.addOnFailureListener { exception ->
-                    log(exception.message)
-                }
-            },
-            onFailure = { exception ->
-                log(exception.message)
-            })
+    override suspend fun createUserIfNotExists(
+        userId: String,
+        user: User
+    ): Result<Unit> {
+        return try {
+            val userRef = db
+                .collection(FirestoreCollections.USERS)
+                .document(userId)
+
+            val snapshot = userRef.get().await()
+
+            if (!snapshot.exists()) {
+                userRef.set(user).await()
+            }
+
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
     }
+
+
 
     override fun signInWithEmail(
         email: String,

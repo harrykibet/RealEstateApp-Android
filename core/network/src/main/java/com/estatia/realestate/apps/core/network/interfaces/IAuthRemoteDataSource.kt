@@ -34,10 +34,11 @@ interface IAuthRemoteDataSource {
         password: String
     ): Task<AuthResult>?
 
-    fun createUserIfNotExists(
-        userId: String?,
+    suspend fun createUserIfNotExists(
+        userId: String,
         user: User
-    )
+    ): Result<Unit>
+
 
     suspend fun signInWithPhoneAuthCredential(
         credential: PhoneAuthCredential

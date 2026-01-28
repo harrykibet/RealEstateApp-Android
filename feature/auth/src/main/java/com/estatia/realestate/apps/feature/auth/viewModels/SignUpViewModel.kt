@@ -10,11 +10,14 @@ import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.model.user.UserType
+import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +30,9 @@ class SignUpViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(SignUpFormState())
     val state: StateFlow<SignUpFormState> = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<SignUpEvent>()
+    val events = _events.asSharedFlow()
 
     fun onAction(action: SignUpAction) {
         when (action) {
@@ -53,7 +59,6 @@ class SignUpViewModel @Inject constructor(
     private fun signUp() {
         val current = state.value
 
-        // Basic validation (expand later)
         if (
             current.email.isBlank() ||
             current.password.isBlank() ||
@@ -66,49 +71,77 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             update { copy(isLoading = true, error = null) }
 
-            when(val result = authRepository.signUpWithEmail(
-                current.email,
-                current.password))
-            {
+            when (
+                val authResult = authRepository.signUpWithEmail(
+                    current.email,
+                    current.password
+                )
+            ) {
                 is Result.Success -> {
-                    registerUser(
-                        authResult = result.data,
-                        email = current.email,
-                        userName = current.userName,
-                        phoneNumber = current.phone,
-                        userType = UserType.valueOf(current.userType)
+                    handleUserRegistration(
+                        authResult = authResult.data,
+                        current = current
                     )
-                    update { copy(isLoading = false) }
                 }
+
                 is Result.Error -> {
-                    update { copy(isLoading = false, error = result.exception.message) }
+                    update {
+                        copy(
+                            isLoading = false,
+                            error = authResult.exception.message
+                        )
+                    }
                 }
             }
         }
     }
 
-    private suspend fun registerUser(
+    private suspend fun handleUserRegistration(
         authResult: AuthResult,
-        email: String,
-        userName: String,
-        phoneNumber: String,
-        userType: UserType
+        current: SignUpFormState
     ) {
         val user = User(
             userId = authResult.user!!.uid,
-            name = userName,
-            email = email,
-            phoneNumber = phoneNumber,
+            name = current.userName,
+            email = current.email,
+            phoneNumber = current.phone,
             profilePictureUrl = null,
-            userType = userType,
+            userType = UserType.valueOf(current.userType),
             verified = false,
             likedProperties = emptyList()
         )
 
-        authRepository.createUserIfNotExists(user.userId, user)
+        when (
+            val result = authRepository.createUserIfNotExists(
+                user.userId!!,
+                user
+            )
+        ) {
+            is Result.Success -> {
+                onSignUpSuccess()
+                update { copy(isLoading = false) }
+            }
+
+            is Result.Error -> {
+                update {
+                    copy(
+                        isLoading = false,
+                        error = result.exception.message
+                            ?: "Failed to create user profile"
+                    )
+                }
+            }
+        }
     }
 
-    private inline fun update(block: SignUpFormState.() -> SignUpFormState) {
+    private inline fun update(
+        block: SignUpFormState.() -> SignUpFormState
+    ) {
         _state.value = _state.value.block()
     }
+
+    private suspend fun onSignUpSuccess() {
+        _events.emit(SignUpEvent.Success)
+    }
 }
+
