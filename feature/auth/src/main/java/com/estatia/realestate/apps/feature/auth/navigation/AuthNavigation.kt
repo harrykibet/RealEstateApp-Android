@@ -33,10 +33,16 @@ fun NavGraphBuilder.authGraph(
 
         composable(AuthRoutes.SIGN_UP) {
             SignUpRoute(
-                onSignUpSuccess = {
+                onEmailVerification = {
                     navController.navigate(AuthRoutes.EMAIL_VERIFICATION) {
                         popUpTo(AuthRoutes.SIGN_UP) { inclusive = true }
                     }
+                },
+                onPhoneVerification = { phoneNumber ->
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "phoneNumber", phoneNumber
+                    )
+                    navController.navigate(AuthRoutes.PHONE_VERIFICATION)
                 },
                 onAlreadyHaveAccount = {
                     navController.popBackStack()

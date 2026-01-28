@@ -28,7 +28,7 @@ import javax.inject.Inject
 class PhoneVerificationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val authRepository: AuthRepository,
-    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
+    @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     // navController.currentBackStackEntry
@@ -159,11 +159,6 @@ class PhoneVerificationViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    fun restartCountdown() {
-        startCountdown()
     }
 
     override fun onCleared() {

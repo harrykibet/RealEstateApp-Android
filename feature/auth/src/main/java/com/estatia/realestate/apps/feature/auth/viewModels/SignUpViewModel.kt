@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
+    @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignUpFormState())
@@ -118,7 +118,7 @@ class SignUpViewModel @Inject constructor(
             )
         ) {
             is Result.Success -> {
-                onSignUpSuccess()
+                emitNextAuthStep(current)
                 update { copy(isLoading = false) }
             }
 
@@ -140,8 +140,16 @@ class SignUpViewModel @Inject constructor(
         _state.value = _state.value.block()
     }
 
-    private suspend fun onSignUpSuccess() {
-        _events.emit(SignUpEvent.Success)
+    private suspend fun emitNextAuthStep(current: SignUpFormState) {
+        if (current.phone.isNotBlank()) {
+            _events.emit(SignUpEvent.RequirePhoneVerification(
+                phone = current.phone
+            ))
+        } else {
+            _events.emit(SignUpEvent.RequireEmailVerification(
+                email = current.email
+            ))
+        }
     }
 }
 

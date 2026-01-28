@@ -20,4 +20,8 @@ object DispatcherModule {
     @Provides
     @Dispatcher(EstatiaDispatchers.Default)
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
+    @Dispatcher(EstatiaDispatchers.Main)
+    fun providesMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 }

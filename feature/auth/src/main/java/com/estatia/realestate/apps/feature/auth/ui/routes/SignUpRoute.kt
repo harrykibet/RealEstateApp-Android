@@ -11,7 +11,8 @@ import com.estatia.realestate.apps.feature.auth.viewModels.SignUpViewModel
 
 @Composable
 fun SignUpRoute(
-    onSignUpSuccess: () -> Unit,
+    onEmailVerification: () -> Unit,
+    onPhoneVerification: (String) -> Unit,
     onAlreadyHaveAccount: () -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
@@ -20,7 +21,13 @@ fun SignUpRoute(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                SignUpEvent.Success -> onSignUpSuccess()
+                is SignUpEvent.RequireEmailVerification -> {
+                    onEmailVerification()
+                }
+
+                is SignUpEvent.RequirePhoneVerification -> {
+                    onPhoneVerification(event.phone)
+                }
             }
         }
     }

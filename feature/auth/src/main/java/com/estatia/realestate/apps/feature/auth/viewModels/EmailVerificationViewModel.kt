@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EmailVerificationViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
+    @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _uiState =

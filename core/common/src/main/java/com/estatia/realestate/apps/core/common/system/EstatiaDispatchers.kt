@@ -10,4 +10,5 @@ annotation class Dispatcher(val estatiaDispatcher: EstatiaDispatchers)
 enum class EstatiaDispatchers {
     Default,
     IO,
+    Main
 }
