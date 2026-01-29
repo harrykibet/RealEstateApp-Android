@@ -1,10 +1,10 @@
 package com.estatia.realestate.apps.core.model.feature
 
-import java.util.Date
-
 data class Comment(
     val id: String?,
-    val userId: String?,
-    val commentText: String?,
-    val timeStamp: Date?
+    val propertyId: String,
+    val authorId: String,
+    val authorName: String,
+    val message: String,
+    val timestamp: Long
 )

@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.feature.auth.state
+package com.estatia.realestate.apps.feature.auth.actions
 
 sealed interface SignUpAction {
     data class UserNameChanged(val value: String) : SignUpAction

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.repositories.AuthRepository
-import com.estatia.realestate.apps.feature.auth.state.SignUpAction
+import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.user.User

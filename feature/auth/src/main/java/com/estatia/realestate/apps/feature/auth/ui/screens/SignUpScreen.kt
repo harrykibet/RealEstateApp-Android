@@ -22,7 +22,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.R
-import com.estatia.realestate.apps.feature.auth.state.SignUpAction
+import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 
 @Composable

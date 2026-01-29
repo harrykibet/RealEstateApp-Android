@@ -1,105 +1,135 @@
 package com.estatia.realestate.apps.feature.comments.ui.viewmodels
 
-
-import android.view.View
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
-import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
+import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
+import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
+import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
+import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
+import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.data.repositories.AuthRepository
+import com.estatia.realestate.apps.core.data.repositories.UserRepository
 import com.estatia.realestate.apps.core.model.feature.Comment
-import com.estatia.realestate.apps.core.model.user.User
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val api: ICommentsRepository,
-    private val userRepo: IUserRepository,
-    private val logger: LoggerInterface
+    private val commentsRepository: CommentsRepository,
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository,
+    @param:Dispatcher(EstatiaDispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _comments = MutableLiveData<List<Comment?>>()
-    val comments: LiveData<List<Comment?>> get() = _comments
+    private val _state = MutableStateFlow(CommentsUiState())
+    val state: StateFlow<CommentsUiState> = _state.asStateFlow()
 
-    private val _commentSubmitStatus = MutableLiveData<Boolean>()
-    val commentSubmitStatus: LiveData<Boolean> get() = _commentSubmitStatus
+    private val _events = MutableSharedFlow<CommentsEvent>()
+    val events = _events.asSharedFlow()
 
-    private val _noCommentsPlaceholderVisibility = MutableLiveData<Int>()
-    val noCommentsPlaceholderVisibility: LiveData<Int> get() = _noCommentsPlaceholderVisibility
+    private var currentPropertyId: String? = null
 
-    private val userCache = mutableMapOf<String, User?>()
+    private var observeJob: Job? = null
 
-    // Start listening for comments on a specific property
-    fun startListeningForComments(
-        propertyId: String,
-        onFailure: (Exception) -> Unit
-    ) {
-        viewModelScope.launch {
-            api.listenForComments(
-                propertyId,
-                onFailure = { exception ->
-                    log("Error listening for comments: ${exception.message}")
-                    onFailure(exception)
+
+    fun onAction(action: CommentsAction) {
+        when (action) {
+
+            is CommentsAction.InputChanged ->
+                update { copy(input = action.value) }
+
+            CommentsAction.SendComment ->
+                submitComment()
+
+            is CommentsAction.Load ->
+                startObservingComments(action.propertyId)
+
+            CommentsAction.Refresh ->
+                currentPropertyId?.let { startObservingComments(it) }
+        }
+    }
+
+
+    fun startObservingComments(propertyId: String) {
+        if (currentPropertyId == propertyId) return
+        currentPropertyId = propertyId
+
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch(ioDispatcher) {
+            update { copy(isLoading = true, error = null) }
+
+            commentsRepository.observeComments(propertyId).collect { comments ->
+                update {
+                    copy(
+                        isLoading = false,
+                        comments = comments,
+                        error = null
+                    )
                 }
-            ).catch { exception ->
-                log("Error in flow listening for comments: ${exception.message}")
-                onFailure(exception as Exception)
-            }.collect { commentsList ->
-                _comments.postValue(commentsList)
-                _noCommentsPlaceholderVisibility.value =
-                    if (commentsList.isEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
 
-    // Submit a comment for a property
-    fun submitComment(
-        propertyId: String,
-        comment: Comment,
-        onFailure: (Exception) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                val success = api.submitComment(
-                    propertyId,
-                    comment,
-                    onFailure = { exception ->
-                        log("Error submitting comment: ${exception.message}")
-                        onFailure(exception)
+    private fun submitComment() {
+        val current = state.value
+        val propertyId = currentPropertyId ?: return
+        if (current.input.isBlank()) return
+
+        viewModelScope.launch(ioDispatcher) {
+            val userId = authRepository.getCurrentUserId()
+                ?: return@launch
+
+            val user = userRepository.getUserById(userId)
+                ?: return@launch
+
+            val comment = Comment(
+                id = null,
+                propertyId = propertyId,
+                authorId = userId,
+                authorName = user.name.orEmpty(),
+                message = current.input,
+                timestamp = System.currentTimeMillis()
+            )
+
+            when (val result = commentsRepository.submitComment(propertyId, comment)) {
+                is Result.Success -> {
+                    update {
+                        copy(
+                            input = "",
+                            comments = listOf(comment) + comments
+                        )
                     }
-                )
-                _commentSubmitStatus.value = success ?: false
-                if (success == true) {
-                    logger.d("CommentsViewModel: Comment submitted successfully")
-                } else {
-                    log("Failed to submit comment")
+                    _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
-            } catch (e: Exception) {
-                _commentSubmitStatus.value = false
-                log("Error submitting comment: ${e.message}")
-                onFailure(e)
+
+                is Result.Error -> {
+                    _events.emit(
+                        CommentsEvent.ShowMessage(
+                            result.exception.message ?: "Failed to post comment"
+                        )
+                    )
+                }
             }
         }
     }
 
-    fun getUser(userId: String, onResult: (User?) -> Unit) {
-        if (userCache.containsKey(userId)) {
-            onResult(userCache[userId])
-        } else {
-            viewModelScope.launch {
-                val user = userRepo.getUserById(userId)
-                userCache[userId] = user
-                onResult(user)
-            }
-        }
-    }
 
-    private fun log(message: String?) {
-        logger.e("CommentsViewModel: $message")
+
+    private inline fun update(
+        block: CommentsUiState.() -> CommentsUiState
+    ) {
+        _state.value = _state.value.block()
     }
 }
+
