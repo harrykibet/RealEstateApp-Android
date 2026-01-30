@@ -11,6 +11,6 @@ interface ICommentsRepository {
 
     suspend fun submitComment(
         propertyId: String,
-        comment: Comment
+        message: String
     ): Result<Unit>
 }

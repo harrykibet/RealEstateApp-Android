@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CommentsRepository @Inject constructor(
-    private val remoteDataSource: ICommentsRemoteDataSource
+    private val remoteDataSource: ICommentsRemoteDataSource,
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository
 ) : ICommentsRepository {
 
     override fun observeComments(
@@ -17,10 +19,27 @@ class CommentsRepository @Inject constructor(
         return remoteDataSource.observeComments(propertyId)
     }
 
+
     override suspend fun submitComment(
         propertyId: String,
-        comment: Comment
+        message: String
     ): Result<Unit> {
-        return remoteDataSource.submitComment(propertyId, comment)
+
+        val userId = authRepository.getCurrentUserId()
+            ?: return Result.Error(IllegalStateException("User not authenticated"))
+
+        val user = userRepository.getUserById(userId)
+            ?: return Result.Error(IllegalStateException("User not found"))
+
+        val comment = Comment(
+            id = null,
+            propertyId = propertyId,
+            authorId = userId,
+            authorName = user.name.orEmpty(),
+            message = message,
+            timeStamp = System.currentTimeMillis()
+        )
+
+        return remoteDataSource.submitComment(comment)
     }
 }

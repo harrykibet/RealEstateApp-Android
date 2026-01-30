@@ -6,5 +6,5 @@ data class Comment(
     val authorId: String,
     val authorName: String,
     val message: String,
-    val timestamp: Long
+    val timeStamp: Long
 )

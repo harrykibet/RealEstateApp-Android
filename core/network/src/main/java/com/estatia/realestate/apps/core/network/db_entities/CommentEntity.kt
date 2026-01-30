@@ -16,7 +16,7 @@ data class CommentEntity(
         id = id,
         authorId = authorId,
         message = message,
-        timestamp = timeStamp,
+        timeStamp = timeStamp,
         propertyId = propertyId,
         authorName = authorName
     )
@@ -27,7 +27,7 @@ data class CommentEntity(
             id = comment.id,
             authorId = comment.authorId,
             message = comment.message,
-            timeStamp = comment.timestamp,
+            timeStamp = comment.timeStamp,
             propertyId = comment.propertyId,
             authorName = comment.authorName
         )

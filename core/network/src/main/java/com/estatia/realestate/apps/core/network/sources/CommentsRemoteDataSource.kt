@@ -51,12 +51,11 @@ class CommentsRemoteDataSource @Inject constructor(
 
 
     override suspend fun submitComment(
-        propertyId: String,
         comment: Comment
     ): Result<Unit> {
         return try {
             val commentsRef = db.collection(FirestoreCollections.PROPERTIES)
-                .document(propertyId)
+                .document(comment.propertyId)
                 .collection(FirestoreCollections.SubCollections.COMMENTS)
                 .document()
 

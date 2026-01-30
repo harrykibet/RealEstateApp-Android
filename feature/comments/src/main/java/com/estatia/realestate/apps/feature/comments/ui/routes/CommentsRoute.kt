@@ -15,6 +15,7 @@ import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewMo
 @Composable
 fun CommentsRoute(
     propertyId: String,
+    onBack: () -> Unit,
     viewModel: CommentsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -41,6 +42,7 @@ fun CommentsRoute(
     CommentsScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        onBack = onBack
     )
 }

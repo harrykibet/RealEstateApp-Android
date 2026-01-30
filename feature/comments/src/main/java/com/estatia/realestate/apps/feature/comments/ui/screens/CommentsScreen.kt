@@ -36,6 +36,7 @@ import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 @Composable
 fun CommentsScreen(
     state: CommentsUiState,
+    onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onAction: (CommentsAction) -> Unit
 ) {
@@ -118,7 +119,8 @@ fun CommentsScreenLightPreview() {
             CommentsScreen(
                 state = CommentsUiState(),
                 snackbarHostState = SnackbarHostState(),
-                onAction = {}
+                onAction = {},
+                onBack = {}
             )
         }
     }
@@ -139,7 +141,8 @@ fun CommentsScreenDarkPreview() {
             CommentsScreen(
                 state = CommentsUiState(),
                 snackbarHostState = SnackbarHostState(),
-                onAction = {}
+                onAction = {},
+                onBack = {}
             )
         }
     }

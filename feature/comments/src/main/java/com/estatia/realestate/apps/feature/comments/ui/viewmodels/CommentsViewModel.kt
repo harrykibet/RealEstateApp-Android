@@ -9,9 +9,6 @@ import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.data.repositories.AuthRepository
-import com.estatia.realestate.apps.core.data.repositories.UserRepository
-import com.estatia.realestate.apps.core.model.feature.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -26,8 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
     private val commentsRepository: CommentsRepository,
-    private val userRepository: UserRepository,
-    private val authRepository: AuthRepository,
     @param:Dispatcher(EstatiaDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -82,34 +77,14 @@ class CommentsViewModel @Inject constructor(
     }
 
     private fun submitComment() {
-        val current = state.value
         val propertyId = currentPropertyId ?: return
-        if (current.input.isBlank()) return
+        val message = state.value.input.trim()
+        if (message.isBlank()) return
 
         viewModelScope.launch(ioDispatcher) {
-            val userId = authRepository.getCurrentUserId()
-                ?: return@launch
-
-            val user = userRepository.getUserById(userId)
-                ?: return@launch
-
-            val comment = Comment(
-                id = null,
-                propertyId = propertyId,
-                authorId = userId,
-                authorName = user.name.orEmpty(),
-                message = current.input,
-                timestamp = System.currentTimeMillis()
-            )
-
-            when (val result = commentsRepository.submitComment(propertyId, comment)) {
+            when (val result = commentsRepository.submitComment(propertyId, message)) {
                 is Result.Success -> {
-                    update {
-                        copy(
-                            input = "",
-                            comments = listOf(comment) + comments
-                        )
-                    }
+                    update { copy(input = "") }
                     _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
 
@@ -123,6 +98,7 @@ class CommentsViewModel @Inject constructor(
             }
         }
     }
+
 
 
 

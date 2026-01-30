@@ -1,9 +1,5 @@
 package com.estatia.realestate.apps.core.data.di
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsRepository
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
@@ -26,7 +22,6 @@ import com.estatia.realestate.apps.core.data.util.TimeZoneBroadcastMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -34,20 +29,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
-
-    companion object {
-        @Provides
-        @Singleton
-        fun provideEncryptedPreferences(context: Context): SharedPreferences {
-            return EncryptedSharedPreferences.create(
-                context,
-                "secure_prefs",
-                MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        }
-    }
 
     @Binds
     @Singleton

@@ -10,7 +10,6 @@ interface ICommentsRemoteDataSource {
     ): Flow<List<Comment>>
 
     suspend fun submitComment(
-        propertyId: String,
         comment: Comment
     ): Result<Unit>
 }
