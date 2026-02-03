@@ -54,8 +54,8 @@ fun PropertyCard(
                     .fillMaxWidth()
                     .height(250.dp)
             ) {
-                if (property.videosAvailable) {
-                    // Placeholder for ExoPlayer
+                if (property.videosAvailable && property.videoUrls.isNotEmpty()) {
+                    val mediaUrl = property.videoUrls.first()
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -68,26 +68,20 @@ fun PropertyCard(
                             tint = Color.White,
                             modifier = Modifier.size(48.dp)
                         )
-                        // Create the PlayerView outside of the remember block
                         val context = LocalContext.current
                         val playerView = remember { PlayerView(context) }
 
-                        // Acquire the player and attach it to the view when the media is available
-                        LaunchedEffect(property.id) {
-                            // Acquire the player for the specific video ID
-                            val player = exoPlayer.acquirePlayer(property.id ?: "")
-                            exoPlayer.attachPlayerToView(playerView, property.id ?: "")
-                            player.playWhenReady = true // Automatically start playing
+                        LaunchedEffect(mediaUrl) {
+                            exoPlayer.attachPlayerToView(playerView, mediaUrl)
                         }
 
-                        // Clean up the player when the composable is disposed of
-                        DisposableEffect(property.id) {
+                        DisposableEffect(mediaUrl) {
                             onDispose {
-                                exoPlayer.releasePlayer(property.id ?: "")
+                                exoPlayer.detachPlayer()
+                                exoPlayer.releasePlayer(mediaUrl)
                             }
                         }
 
-                        // Use the PlayerView in the UI
                         AndroidView(
                             factory = { playerView },
                             modifier = Modifier.fillMaxSize()

@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val api: IPropertyRepository
+    private val api: IPropertyRepository,
+    val exoPlayer: IExoplayer
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -30,11 +31,6 @@ class HomeViewModel @Inject constructor(
 
     private val isLoadingMutable = MutableLiveData<Boolean>()
     //val isLoading: LiveData<Boolean> get() = isLoadingMutable
-
-    val exoPlayer: IExoplayer
-        get() {
-            TODO()
-        }
 
     private var lastVisibleDocument: String? = null
     private var canLoadMore = true

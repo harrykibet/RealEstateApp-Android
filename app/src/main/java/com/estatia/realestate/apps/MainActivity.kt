@@ -27,6 +27,8 @@ import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.estatia.realestate.apps.MainActivityViewModel.MainActivityUiState.Loading
 import com.estatia.realestate.apps.core.analytics.AnalyticsHelper
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
+import com.estatia.realestate.apps.core.ui.LocalIExoplayer
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -56,6 +58,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authRepository: IAuthRepository
+
+    @Inject
+    lateinit var exoPlayer: IExoplayer
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -128,6 +133,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalAnalyticsHelper provides analyticsHelper,
                 LocalTimeZone provides currentTimeZone,
+                LocalIExoplayer provides exoPlayer,
             ) {
                 EstatiaTheme(
                     darkTheme = themeSettings.darkTheme,

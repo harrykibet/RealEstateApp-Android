@@ -25,8 +25,8 @@ class PlayerControls @JvmOverloads constructor(
 
     fun setPlayPauseListener(listener: (Boolean) -> Unit) {
         playButton.setOnClickListener {
-            listener(it.isSelected)
             it.isSelected = !it.isSelected
+            listener(it.isSelected) // Pass new state: true = playing, false = paused
         }
     }
 }

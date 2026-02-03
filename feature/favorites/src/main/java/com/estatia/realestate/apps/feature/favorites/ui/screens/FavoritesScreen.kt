@@ -7,15 +7,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.estatia.realestate.apps.core.ui.LocalIExoplayer
 import com.estatia.realestate.apps.core.ui.PropertyCard
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 import com.estatia.realestate.apps.core.model.property.Property
 
 @Composable
 fun FavoritesScreen() {
     val likedProperties: List<Property> = emptyList() // Replace with actual data
-    val exoPlayer: IExoplayer = hiltViewModel()  // Get ExoPlayer instance
+    val exoPlayer = LocalIExoplayer.current
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()

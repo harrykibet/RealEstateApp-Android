@@ -230,7 +230,8 @@ class PropertyAdapter (
         }
 
         fun releaseExoPlayer() {
-            exoPlayer.detachPlayer() // Let ExoPlayerManager handle the release
+            property?.videoUrls?.firstOrNull()?.let { exoPlayer.releasePlayer(it) }
+            exoPlayer.detachPlayer()
             isVideoPlaying = false
         }
 
