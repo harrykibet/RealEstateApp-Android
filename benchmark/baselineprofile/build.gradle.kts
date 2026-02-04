@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.espresso.core)
     implementation(libs.uiautomator)
     implementation(libs.androidx.benchmark.macro.junit4)
+    implementation(libs.junit.junit)
 }
 
 androidComponents {
