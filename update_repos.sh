@@ -16,7 +16,7 @@ update_repo() {
     # Push updates
     git push "$remote" "$branch"
 
-    echo -e "\033[0;32m✅ Successfully updated $remote\033[0m"
+    echo -e "\033[0;32m Successfully updated $remote\033[0m"
     echo "---------------------------------"
 }
 

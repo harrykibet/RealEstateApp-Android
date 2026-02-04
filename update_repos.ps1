@@ -16,7 +16,7 @@ function Update-Repo {
     # Push updates
     git push $remote $branch
 
-    Write-Host "✅ Successfully updated $remote" -ForegroundColor Green
+    Write-Host "Successfully updated $remote" -ForegroundColor Green
     Write-Host "---------------------------------"
 }
 
