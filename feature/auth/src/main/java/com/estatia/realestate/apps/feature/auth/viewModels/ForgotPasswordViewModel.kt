@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.data.repositories.AuthRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.ForgotPasswordAction
 import com.estatia.realestate.apps.feature.auth.state.ForgotPasswordUiState
 import com.estatia.realestate.apps.core.common.errors.Result
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val authRepository: IAuthRepository,
     @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 

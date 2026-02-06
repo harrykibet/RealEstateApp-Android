@@ -1,14 +1,10 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
+import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
+import com.estatia.realestate.apps.core.model.user.User
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthRemoteDataSource {
@@ -17,22 +13,20 @@ interface IAuthRemoteDataSource {
     fun getCurrentUserEmail(): String?
     fun signOut(onFailure: (Exception) -> Unit)
 
-    fun getCurrentUser(): FirebaseUser?
-    fun getFirebaseAuth(): FirebaseAuth
-
-    fun firebaseAuthWithGoogle(
-        idToken: String
-    ): Task<AuthResult>?
-
+    fun getCurrentUser(): AuthUser?
     suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthResult>
+    ): Result<AuthUser>
 
-    fun signInWithEmail(
+    suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Task<AuthResult>?
+    ): Result<AuthUser>
+
+    suspend fun signInWithGoogle(
+        idToken: String
+    ): Result<AuthUser>
 
     suspend fun createUserIfNotExists(
         userId: String,
@@ -40,14 +34,19 @@ interface IAuthRemoteDataSource {
     ): Result<Unit>
 
 
-    suspend fun signInWithPhoneAuthCredential(
-        credential: PhoneAuthCredential
+    fun startPhoneNumberVerification(
+        phoneNumber: String,
+        activity: Activity
+    ): Flow<PhoneVerificationState>
+
+    suspend fun verifyPhoneCode(
+        verificationId: String,
+        code: String
     ): Result<Unit>
 
     suspend fun resendVerificationCode(
         phoneNumber: String,
-        activity: Activity,
-        resendingToken: PhoneAuthProvider.ForceResendingToken
+        activity: Activity
     ): Result<String> // returns new verificationId
 
     suspend fun sendEmailVerification(): Result<Unit>

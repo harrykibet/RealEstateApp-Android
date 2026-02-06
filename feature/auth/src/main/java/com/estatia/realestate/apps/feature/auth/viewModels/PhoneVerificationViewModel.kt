@@ -4,15 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.data.repositories.AuthRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.google.firebase.auth.PhoneAuthProvider
 import android.app.Activity
 import androidx.lifecycle.SavedStateHandle
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -21,13 +17,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 
 @HiltViewModel
 class PhoneVerificationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val authRepository: AuthRepository,
+    private val authRepository: IAuthRepository,
     @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -46,8 +42,6 @@ class PhoneVerificationViewModel @Inject constructor(
 
     private var countdownJob: Job? = null
 
-    private var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
-
     private var activity: Activity? = null
 
     init {
@@ -56,10 +50,6 @@ class PhoneVerificationViewModel @Inject constructor(
 
     fun attachActivity(activity: Activity) {
         this.activity = activity
-    }
-
-    fun setResendingToken(token: PhoneAuthProvider.ForceResendingToken) {
-        resendingToken = token
     }
 
     private fun startCountdown() {
@@ -74,40 +64,37 @@ class PhoneVerificationViewModel @Inject constructor(
     }
 
     fun startPhoneNumberVerification() {
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        val act = activity ?: return
 
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                resendingToken = token
-                _uiState.value = PhoneVerificationUiState.CodeSent(verificationId)
-                startCountdown()
-            }
+        _uiState.value = PhoneVerificationUiState.SendingCode
 
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                signInWithCredential(credential)
-            }
+        viewModelScope.launch(ioDispatcher) {
+            authRepository.startPhoneNumberVerification(phoneNumber, act)
+                .collect { state ->
+                    when (state) {
+                        is PhoneVerificationState.CodeSent -> {
+                            _uiState.value = PhoneVerificationUiState.CodeSent(state.verificationId)
+                            startCountdown()
+                        }
 
-            override fun onVerificationFailed(e: FirebaseException) {
-                _uiState.value = PhoneVerificationUiState.Error(e.message ?: "Verification failed")
-            }
+                        PhoneVerificationState.Verified -> {
+                            countdownJob?.cancel()
+                            _uiState.value = PhoneVerificationUiState.Success
+                        }
+
+                        is PhoneVerificationState.Error -> {
+                            _uiState.value = PhoneVerificationUiState.Error(state.message)
+                        }
+
+                        PhoneVerificationState.Idle -> Unit
+                    }
+                }
         }
-
-        val options = PhoneAuthOptions.newBuilder(authRepository.getFirebaseAuth())
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(120L, TimeUnit.SECONDS) // 2 Minutes
-            .setActivity(activity!!)
-            .setCallbacks(callbacks)
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
 
     fun verifyCode(verificationId: String, code: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
-        signInWithCredential(credential)
+        signInWithCode(verificationId, code)
     }
 
     fun resendCode() {
@@ -115,20 +102,17 @@ class PhoneVerificationViewModel @Inject constructor(
 
         val act = activity ?: return
 
-        val token = resendingToken ?: return
-
         viewModelScope.launch(ioDispatcher) {
             when (
                 val result =
                     authRepository.resendVerificationCode(
                         phoneNumber,
-                        act,
-                        token
+                        act
                     )
             ) {
                 is Result.Success -> {
                     startCountdown()
-                    _uiState.value = PhoneVerificationUiState.Countdown(120)
+                    _uiState.value = PhoneVerificationUiState.CodeSent(result.data)
                 }
 
                 is Result.Error -> {
@@ -140,12 +124,15 @@ class PhoneVerificationViewModel @Inject constructor(
         }
     }
 
-    private fun signInWithCredential(credential: PhoneAuthCredential) {
+    private fun signInWithCode(
+        verificationId: String,
+        code: String
+    ) {
         _uiState.value = PhoneVerificationUiState.Verifying
 
         viewModelScope.launch(ioDispatcher) {
             when (
-                val result = authRepository.signInWithPhoneAuthCredential(credential)
+                val result = authRepository.verifyPhoneCode(verificationId, code)
             ) {
                 is Result.Success -> {
                     countdownJob?.cancel()
@@ -165,4 +152,3 @@ class PhoneVerificationViewModel @Inject constructor(
         countdownJob?.cancel()
     }
 }
-

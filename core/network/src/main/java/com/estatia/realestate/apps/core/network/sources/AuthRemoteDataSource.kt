@@ -2,15 +2,15 @@ package com.estatia.realestate.apps.core.network.sources
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Errors
+import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
-import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
-import com.estatia.realestate.apps.core.common.errors.Result
-import com.google.android.gms.tasks.Task
+import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
@@ -34,6 +35,7 @@ class AuthRemoteDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth, // Injected via DI
     private val network: INetworkHandler  // Injected via DI
 ) : IAuthRemoteDataSource {
+    private var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
 
     override suspend fun createUserIfNotExists(
         userId: String,
@@ -58,36 +60,59 @@ class AuthRemoteDataSource @Inject constructor(
 
 
 
-    override fun signInWithEmail(
-        email: String,
-        password: String): Task<AuthResult>? {
-        return network.safeApiCall(
-            apiCall = {
-                firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .addOnFailureListener{ exception ->
-                        log(exception.message)
-                    } },
-            onFailure = { exception ->
-                log(exception.message)
-            })
-    }
-
     override suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthResult> {
+    ): Result<AuthUser> {
         return network.safeApiCallSuspend(
             apiCall = {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .await() // <-- suspends until Firebase finishes
+                    .await()
+                    .user
             },
             onFailure = { exception ->
                 log(exception.message)
             }
-        )?.let { Result.Success(it) }
-            ?: Result.Error(Exception("Failed to sign up"))
+        )?.let { user ->
+            Result.Success(user.toAuthUser())
+        } ?: Result.Error(Exception("Failed to sign up"))
     }
 
+    override suspend fun signInWithEmail(
+        email: String,
+        password: String
+    ): Result<AuthUser> {
+        return network.safeApiCallSuspend(
+            apiCall = {
+                firebaseAuth.signInWithEmailAndPassword(email, password)
+                    .await()
+                    .user
+            },
+            onFailure = { exception ->
+                log(exception.message)
+            }
+        )?.let { user ->
+            Result.Success(user.toAuthUser())
+        } ?: Result.Error(Exception("Failed to sign in"))
+    }
+
+    override suspend fun signInWithGoogle(
+        idToken: String
+    ): Result<AuthUser> {
+        return network.safeApiCallSuspend(
+            apiCall = {
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                firebaseAuth.signInWithCredential(credential)
+                    .await()
+                    .user
+            },
+            onFailure = { exception ->
+                log(exception.message)
+            }
+        )?.let { user ->
+            Result.Success(user.toAuthUser())
+        } ?: Result.Error(Exception("Failed to sign in with Google"))
+    }
 
 
     private suspend fun signInWithCredentialSuspend(
@@ -102,15 +127,64 @@ class AuthRemoteDataSource @Inject constructor(
             }
     }
 
-    override suspend fun signInWithPhoneAuthCredential(
-        credential: PhoneAuthCredential
+    override fun startPhoneNumberVerification(
+        phoneNumber: String,
+        activity: Activity
+    ): Flow<PhoneVerificationState> = callbackFlow {
+        trySend(PhoneVerificationState.Idle)
+
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
+                resendingToken = token
+                trySend(PhoneVerificationState.CodeSent(verificationId))
+            }
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                launch {
+                    try {
+                        signInWithCredentialSuspend(credential)
+                        trySend(PhoneVerificationState.Verified)
+                    } catch (e: Exception) {
+                        trySend(
+                            PhoneVerificationState.Error(
+                                e.message ?: "Verification failed"
+                            )
+                        )
+                    }
+                }
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                trySend(PhoneVerificationState.Error(e.message ?: "Verification failed"))
+            }
+        }
+
+        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(120L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(callbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+
+        awaitClose { }
+    }
+
+    override suspend fun verifyPhoneCode(
+        verificationId: String,
+        code: String
     ): Result<Unit> {
+        val credential = PhoneAuthProvider.getCredential(verificationId, code)
 
         val result = network.safeApiCallSuspend(
             apiCall = {
                 signInWithCredentialSuspend(credential)
             },
-            onFailure = { /* logging already handled globally */ }
+            onFailure = { }
         )
 
         return if (result != null) {
@@ -145,6 +219,7 @@ class AuthRemoteDataSource @Inject constructor(
                     verificationId: String,
                     token: PhoneAuthProvider.ForceResendingToken
                 ) {
+                    resendingToken = token
                     if (cont.isActive) cont.resume(verificationId)
                 }
             })
@@ -155,16 +230,17 @@ class AuthRemoteDataSource @Inject constructor(
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
-        activity: Activity,
-        resendingToken: PhoneAuthProvider.ForceResendingToken
+        activity: Activity
     ): Result<String> {
+        val token = resendingToken
+            ?: return Result.Error(IllegalStateException("No resending token available"))
 
         val verificationId = network.safeApiCallSuspend(
             apiCall = {
                 resendCodeSuspend(
                     phoneNumber = phoneNumber,
                     activity = activity,
-                    resendingToken = resendingToken
+                    resendingToken = token
                 )
             },
             onFailure = { exception ->
@@ -193,25 +269,8 @@ class AuthRemoteDataSource @Inject constructor(
             })
     }
 
-    override fun getFirebaseAuth(): FirebaseAuth {
-        return firebaseAuth
-    }
-
-    override fun getCurrentUser(): FirebaseUser? {
-        return firebaseAuth.currentUser
-    }
-
-    override fun firebaseAuthWithGoogle(
-        idToken: String): Task<AuthResult>? {
-        return network.safeApiCall(
-            apiCall = {
-                val credential = GoogleAuthProvider.getCredential(idToken, null)
-                firebaseAuth.signInWithCredential(credential).addOnFailureListener{ exception ->
-                    log(exception.message)
-                }},
-            onFailure = { exception ->
-                log(exception.message)
-            })
+    override fun getCurrentUser(): AuthUser? {
+        return firebaseAuth.currentUser?.toAuthUser()
     }
 
     override suspend fun sendPasswordResetEmail(
@@ -279,6 +338,17 @@ class AuthRemoteDataSource @Inject constructor(
 
     override fun getCurrentUserEmail(): String? {
         return firebaseAuth.currentUser?.email
+    }
+
+    private fun FirebaseUser.toAuthUser(): AuthUser {
+        return AuthUser(
+            userId = uid,
+            displayName = displayName,
+            email = email,
+            phoneNumber = phoneNumber,
+            photoUrl = photoUrl?.toString(),
+            isEmailVerified = isEmailVerified
+        )
     }
 
     private fun log(message: String?) {

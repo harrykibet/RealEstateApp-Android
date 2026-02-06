@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.data.repositories.AuthRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.user.User
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
-import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val authRepository: IAuthRepository,
     @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -97,11 +97,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     private suspend fun handleUserRegistration(
-        authResult: AuthResult,
+        authResult: AuthUser,
         current: SignUpFormState
     ) {
         val user = User(
-            userId = authResult.user!!.uid,
+            userId = authResult.userId,
             name = current.userName,
             email = current.email,
             phoneNumber = current.phone,
@@ -152,4 +152,3 @@ class SignUpViewModel @Inject constructor(
         }
     }
 }
-
