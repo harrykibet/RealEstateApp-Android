@@ -14,9 +14,6 @@ dependencies {
 
     implementation(libs.gson)
 
-    implementation(libs.glide)
-    ksp(libs.glide.compiler)
-
     implementation(projects.core.model)
     implementation(projects.core.testing)
 

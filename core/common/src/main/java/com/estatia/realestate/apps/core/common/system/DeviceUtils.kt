@@ -98,10 +98,11 @@ class DeviceUtils @Inject constructor(
 
 
     override fun isLowRamDevice(): Boolean {
-        return ActivityManagerCompat.isLowRamDevice(
+        val activityManager =
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        )
+        return activityManager.isLowRamDevice
     }
+
 
     override fun getRefreshRate(): Float {
         return displayManager.getDisplay(Display.DEFAULT_DISPLAY).refreshRate

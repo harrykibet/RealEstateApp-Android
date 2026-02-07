@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.estatia.android.feature)
-    alias(libs.plugins.estatia.firebase)
 }
 
 android {

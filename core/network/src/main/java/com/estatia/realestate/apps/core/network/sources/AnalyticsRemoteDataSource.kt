@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataS
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -67,21 +67,28 @@ class AnalyticsRemoteDataSource @Inject constructor(
         return logEvent(analyticsEvent!!, onFailure)
     }
 
-    override suspend fun getEventsForUser(userId: String, onFailure: (Exception) -> Unit): List<AnalyticsEvent> {
+    override suspend fun getEventsForUser(
+        userId: String,
+        onFailure: (Exception) -> Unit
+    ): List<AnalyticsEvent> {
         return network.safeApiCallSuspend(
             apiCall = {
-                // Query FireStore for events related to the specified user
                 val querySnapshot = analyticsCollection
                     .whereEqualTo(FirestoreFields.USER_ID, userId)
-                    .get().await()
-                querySnapshot.documents.mapNotNull { it.toObject<AnalyticsEvent>() }
+                    .get()
+                    .await()
+
+                querySnapshot.documents.mapNotNull { document ->
+                    document.toObject<AnalyticsEvent>()
+                }
             },
             onFailure = { exception ->
                 onFailure(exception)
                 exception.message?.let { log(it) }
             }
-        ) ?: emptyList() // Return an empty list if an error occurs
+        ) ?: emptyList()
     }
+
 
     override suspend fun getEventById(eventId: String, onFailure: (Exception) -> Unit): AnalyticsEvent? {
         return network.safeApiCallSuspend(

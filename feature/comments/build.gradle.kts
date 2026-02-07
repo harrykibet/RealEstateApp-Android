@@ -11,9 +11,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(libs.glide)
-    ksp(libs.glide.compiler)
-
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)
