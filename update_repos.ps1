@@ -10,6 +10,20 @@ function Update-Repo {
 
     Write-Host "Updating repository: $remote" -ForegroundColor Cyan
 
+    # Stage changes
+    git add .
+
+    # Commit only if there are changes
+    if (git status --porcelain) {
+        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        $commitMessage = "chore: auto sync $timestamp"
+
+        git commit -m $commitMessage
+        Write-Host "Committed changes: $commitMessage" -ForegroundColor Yellow
+    } else {
+        Write-Host "No local changes to commit." -ForegroundColor DarkGray
+    }
+
     # Pull latest changes with rebase
     git pull --rebase $remote $branch
 
