@@ -196,15 +196,14 @@ class AuthRemoteDataSource @Inject constructor(
 
     private suspend fun resendCodeSuspend(
         phoneNumber: String,
-        activity: Activity,
-        resendingToken: PhoneAuthProvider.ForceResendingToken
+        activity: Activity
     ): String = suspendCancellableCoroutine { cont ->
 
         val options = PhoneAuthOptions.newBuilder(firebaseAuth)
             .setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
-            .setForceResendingToken(resendingToken)
+            .setForceResendingToken(resendingToken!!)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -232,15 +231,12 @@ class AuthRemoteDataSource @Inject constructor(
         phoneNumber: String,
         activity: Activity
     ): Result<String> {
-        val token = resendingToken
-            ?: return Result.Error(IllegalStateException("No resending token available"))
 
         val verificationId = network.safeApiCallSuspend(
             apiCall = {
                 resendCodeSuspend(
                     phoneNumber = phoneNumber,
-                    activity = activity,
-                    resendingToken = token
+                    activity = activity
                 )
             },
             onFailure = { exception ->

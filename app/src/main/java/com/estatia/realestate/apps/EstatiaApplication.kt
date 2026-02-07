@@ -2,8 +2,6 @@ package com.estatia.realestate.apps
 
 import android.app.Application
 import com.google.firebase.FirebaseApp
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -22,18 +20,12 @@ class EstatiaApplication : Application()  {
 
 
     private fun initializeFirebase() {
-        runCatching {
-            FirebaseApp.initializeApp(this)
-                ?: throw IllegalStateException("Firebase initialization failed. Check your google-services.json configuration.")
+        FirebaseApp.initializeApp(this)
+            ?: error("Firebase initialization failed")
 
-            // Configure Firebase App Check with Debug Provider
-            FirebaseAppCheck.getInstance().apply {
-                installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
-            }
-        }.onFailure { exception ->
-            "Failed to initialize Firebase or App Check.".handleCriticalError(exception)
-        }
+        FirebaseAppCheckInitializer.init()
     }
+
 
     private fun initializeBouncyCastle() {
         if (Security.getProvider("BC") == null) {
@@ -61,10 +53,5 @@ class EstatiaApplication : Application()  {
             log("[CRITICAL] $errorMessage")
             recordException(throwable)
         }
-    }
-
-
-    private fun String.handleCriticalError(throwable: Throwable) {
-        FirebaseCrashlytics.getInstance().recordException(throwable)
     }
 }
