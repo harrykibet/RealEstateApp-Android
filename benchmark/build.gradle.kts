@@ -1,9 +1,13 @@
 plugins {
-   alias(libs.plugins.estatia.android.benchmark)
+    alias(libs.plugins.estatia.android.benchmark)
 }
 
 android {
     namespace = "com.estatia.realestate.apps.benchmark"
+
+    defaultConfig {
+        missingDimensionStrategy("env", "prod")
+    }
 
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your

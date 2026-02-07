@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.exclude
-import utils.libs
+import com.estatia.realestate.apps.libs
 
 class FirebaseConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

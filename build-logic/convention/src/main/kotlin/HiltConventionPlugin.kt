@@ -2,7 +2,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
-import utils.libs
+import com.estatia.realestate.apps.libs
 
 class HiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

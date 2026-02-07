@@ -89,5 +89,13 @@ gradlePlugin {
             id = libs.plugins.estatia.android.feature.get().pluginId
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("androidFlavors") {
+            id = libs.plugins.estatia.android.flavors.get().pluginId
+            implementationClass = "AndroidFlavorsConventionPlugin"
+        }
+        register("androidCore") {
+            id = libs.plugins.estatia.android.core.get().pluginId
+            implementationClass = "AndroidCoreConventionPlugin"
+        }
     }
 }

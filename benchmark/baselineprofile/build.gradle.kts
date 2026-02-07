@@ -8,6 +8,10 @@ plugins {
 android {
     namespace = "com.estatia.realestate.apps.baselineprofile"
 
+    defaultConfig {
+        missingDimensionStrategy("env", "prod")
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

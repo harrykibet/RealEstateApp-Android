@@ -1,4 +1,6 @@
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.AppExtension
+import com.estatia.realestate.apps.configureFlavors
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

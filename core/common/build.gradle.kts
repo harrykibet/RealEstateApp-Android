@@ -1,7 +1,5 @@
 plugins {
-    alias(libs.plugins.estatia.android.config)
-    alias(libs.plugins.estatia.android.testing)
-    alias(libs.plugins.estatia.hilt)
+    alias(libs.plugins.estatia.android.core)
 }
 
 android {

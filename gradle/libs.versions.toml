@@ -152,6 +152,8 @@ estatia-android-benchmark = { id = "com.estatia.realestate.apps.android.benchmar
 estatia-android-feature = { id = "com.estatia.realestate.apps.android.feature"}
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "androidGradlePlugin" }
+estatia-android-flavors = { id = "com.estatia.realestate.apps.android.flavors"}
+estatia-android-core = { id = "com.estatia.realestate.apps.android.core"}
 
 
 [bundles]
