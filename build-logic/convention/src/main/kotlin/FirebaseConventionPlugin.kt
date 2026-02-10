@@ -26,11 +26,11 @@ class FirebaseConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                // Apply Firebase BOM for all modules
+                // Apply Firebase BOM for all modules -> only for prod variant
                 val bom = libs.findLibrary("firebase.bom").get()
                 "implementation"(platform(bom))
 
-                // Apply these Firebase dependencies only in the app module
+                // Apply these Firebase dependencies only in the app module -> only for prod variant
                 if (isAppModule) {
                     "implementation"(libs.findLibrary("firebase.analytics").get())
                     "implementation"(libs.findLibrary("firebase.perf").get())
@@ -41,9 +41,11 @@ class FirebaseConventionPlugin : Plugin<Project> {
             // Configure Crashlytics only in the app module
             if (isAppModule) {
                 extensions.configure<ApplicationExtension> {
-                    buildTypes.configureEach {
-                        configure<CrashlyticsExtension> {
-                            mappingFileUploadEnabled = true
+                    buildTypes {
+                        getByName("release") {
+                            configure<CrashlyticsExtension> {
+                                mappingFileUploadEnabled = true
+                            }
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.estatia.android.application)
-    alias(libs.plugins.estatia.android.flavors)
 }
 
 android {

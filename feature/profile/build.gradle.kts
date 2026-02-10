@@ -11,8 +11,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(libs.firebase.auth)
-
     implementation(libs.bundles.navigation)
 
     implementation(libs.eventbus)

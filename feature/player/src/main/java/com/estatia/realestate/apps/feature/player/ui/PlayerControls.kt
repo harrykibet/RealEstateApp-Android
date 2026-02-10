@@ -17,6 +17,7 @@ class PlayerControls @JvmOverloads constructor(
     private val playButton: ImageButton
     private val seekBar: SeekBar
 
+    //TODO: Replace with composables
     init {
         inflate(context, R.layout.player_controls, this)
         playButton = findViewById(R.id.btnPlayPause)

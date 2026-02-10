@@ -11,6 +11,9 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
+    implementation(libs.androidx.credential.manager)
+    implementation(libs.google.id)
+
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)

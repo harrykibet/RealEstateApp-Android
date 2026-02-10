@@ -148,23 +148,37 @@ private suspend fun searchForLocation(
     onLocationFound: (LatLng) -> Unit,
     onError: (String) -> Unit
 ) {
-    val predictionResponse = placesClient
-        .findAutocompletePredictions(
-            FindAutocompletePredictionsRequest.builder()
-                .setQuery(query)
-                .build()
-        ).await()
+    try {
+        val predictionResponse = placesClient
+            .findAutocompletePredictions(
+                FindAutocompletePredictionsRequest.builder()
+                    .setQuery(query)
+                    .build()
+            ).await()
 
-    val prediction = predictionResponse.autocompletePredictions.firstOrNull()
-    if (prediction != null) {
-        val placeId = prediction.placeId
-        val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, listOf(Place.Field.LAT_LNG))
-        val place = placesClient.fetchPlace(fetchPlaceRequest).await()
-        place.place.latLng?.let(onLocationFound) ?: onError("No coordinates found")
-    } else {
-        onError("No results found")
+        val prediction = predictionResponse.autocompletePredictions.firstOrNull()
+        if (prediction != null) {
+            val placeId = prediction.placeId
+            val fetchPlaceRequest = FetchPlaceRequest.newInstance(
+                placeId,
+                listOf(Place.Field.LOCATION)
+            )
+            val placeResponse = placesClient.fetchPlace(fetchPlaceRequest).await()
+            val latLng = placeResponse.place.location
+
+            if (latLng != null) {
+                onLocationFound(latLng)
+            } else {
+                onError("No coordinates found")
+            }
+        } else {
+            onError("No results found")
+        }
+    } catch (e: Exception) {
+        onError(e.message ?: "Unknown error")
     }
 }
+
 
 
 private fun handleNoNearbyProperties(

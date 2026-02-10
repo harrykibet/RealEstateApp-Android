@@ -7,7 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidCommonConfigPlugin : Plugin<Project> {
@@ -51,7 +51,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 jvmToolchain(17) // Sets JVM target
             }
 
-            tasks.withType<DokkaTask>().configureEach {
+            tasks.withType<DokkaGenerateTask>().configureEach {
                 outputDirectory.set(layout.buildDirectory.dir("dokka"))
             }
         }
@@ -59,7 +59,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
 
     // ✅ Extract common Android configurations
     private fun <T> T.configureAndroidCommon() where T : CommonExtension<*, *, *, *, *, *> {
-        compileSdk = 35
+        compileSdk = 36
 
         defaultConfig.apply {
             minSdk = 26

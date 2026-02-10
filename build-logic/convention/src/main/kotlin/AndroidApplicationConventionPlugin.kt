@@ -1,28 +1,30 @@
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByType
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
+        pluginManager.apply("com.estatia.realestate.apps.hilt")
         pluginManager.apply("com.estatia.realestate.apps.android.config")
+        pluginManager.apply("com.estatia.realestate.apps.android.flavors")
+        pluginManager.apply("com.estatia.realestate.apps.android.application.firebase")
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.android.compose")
-        pluginManager.apply("com.estatia.realestate.apps.hilt")
         pluginManager.apply("androidx.baselineprofile")
         pluginManager.apply("com.estatia.realestate.apps.sonarqube")
         pluginManager.apply("com.estatia.realestate.apps.android.packaging")
         pluginManager.apply( "com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-        pluginManager.apply("com.estatia.realestate.apps.android.application.firebase")
-
 
         extensions.configure<AppExtension>("android") {
-            compileSdkVersion(35)
+            compileSdkVersion(36)
 
             defaultConfig {
                 applicationId = "com.estatia.realestate.apps"
                 minSdk = 26
-                targetSdk = 35
+                targetSdk = 36
                 versionCode = 1
                 versionName = "1.0"
             }
