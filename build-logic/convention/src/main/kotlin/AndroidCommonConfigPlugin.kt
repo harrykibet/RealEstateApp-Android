@@ -44,7 +44,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
 
             pluginManager.apply("org.jetbrains.kotlin.android")
             pluginManager.apply("org.jetbrains.dokka")
-            pluginManager.apply("com.google.devtools.ksp")
 
             // ✅ Configure KotlinOptions properly
             extensions.configure<KotlinAndroidProjectExtension> {
@@ -66,8 +65,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             vectorDrawables.useSupportLibrary = true
         }
-
-        buildFeatures.viewBinding = true
 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
