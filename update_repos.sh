@@ -105,7 +105,7 @@ update_repo() {
     ensure_clean_state
 
     echo -e "${GRAY}→ Staging changes...${NC}"
-    git add -A
+    git add --all
 
     if [[ -n "$(git status --porcelain)" ]]; then
 

@@ -96,32 +96,41 @@ function Update-Repo {
 
     Ensure-CleanState
 
+    # Stage first
+    Write-Host "→ Staging changes..." -ForegroundColor DarkGray
+    git add --all
+
+    $status = git status --porcelain
+
+    if (-not [string]::IsNullOrWhiteSpace($status)) {
+
+        Check-BlockedFiles
+
+        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        $commitMessage = "chore(sync): auto update $timestamp"
+
+        Show-CommitSummary
+
+        if ($DryRun) {
+            Write-Host "🧪 DRY RUN MODE — No commit performed." -ForegroundColor Yellow
+        }
+        else {
+            git commit -m $commitMessage
+            Write-Host "✔ Committed." -ForegroundColor Yellow
+        }
+    }
+    else {
+        Write-Host "No local changes to commit." -ForegroundColor DarkGray
+    }
+
+    # Now pull AFTER commit
     Write-Host "→ Pulling (rebase)..." -ForegroundColor DarkGray
     git pull --rebase $remote $branch
 
-    Write-Host "→ Staging changes..." -ForegroundColor DarkGray
-    git add -A
-
-    $status = git status --porcelain
-    if ([string]::IsNullOrWhiteSpace($status)) {
-        Write-Host "No changes detected." -ForegroundColor DarkGray
-        return
-    }
-
-    Check-BlockedFiles
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $commitMessage = "chore(sync): auto update $timestamp"
-
-    Show-CommitSummary
-
     if ($DryRun) {
-        Write-Host "🧪 DRY RUN MODE — No commit or push performed." -ForegroundColor Yellow
+        Write-Host "🧪 DRY RUN MODE — No push performed." -ForegroundColor Yellow
         return
     }
-
-    git commit -m $commitMessage
-    Write-Host "✔ Committed." -ForegroundColor Yellow
 
     Write-Host "→ Pushing to $remote..." -ForegroundColor DarkGray
     git push $remote $branch
