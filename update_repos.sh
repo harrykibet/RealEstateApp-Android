@@ -6,7 +6,7 @@ set -e
 repos=("gitlab" "github")
 branch="main"
 MAX_SIZE=$((50 * 1024 * 1024)) # 50MB
-BLOCKED_EXTENSIONS=("apk" "aab" "hprof")
+BLOCKED_EXTENSIONS=("apk" "aab" "hprof" "log")
 BLOCKED_DIRECTORIES=("build/")
 DRY_RUN=false
 # ----------------------------------------
@@ -39,6 +39,10 @@ check_blocked_files() {
     FILES=$(git diff --cached --name-only)
 
     for FILE in $FILES; do
+      # Skip if the file is deleted
+              if [ ! -f "$FILE" ]; then
+                  continue
+              fi
 
         # Block build folders
         for DIR in "${BLOCKED_DIRECTORIES[@]}"; do

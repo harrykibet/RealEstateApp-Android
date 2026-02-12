@@ -46,5 +46,7 @@ dependency_tree.txt
 java_pid4268.hprof
 *.apk
 *.mp4
+*.hprof
+*.log
 large_assets/
 
