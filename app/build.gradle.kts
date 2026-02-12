@@ -19,6 +19,22 @@ android {
         }
     }
 
+    dokka {
+        moduleName.set("RealEstateApp")
+
+        dokkaSourceSets {
+            configureEach {
+                suppress.set(true)
+                skipEmptyPackages.set(true)
+                reportUndocumented.set(false)
+            }
+
+            named("release") {
+                suppress.set(false)
+            }
+        }
+    }
+
     hilt {
         enableAggregatingTask = true
     }

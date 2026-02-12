@@ -1,8 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
-import org.gradle.api.JavaVersion
+import com.estatia.realestate.apps.configureAndroidCommon
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -27,7 +26,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 }
                 isDynamicFeatureModule -> {
                     extensions.configure<DynamicFeatureExtension> {
-                        configureAndroidCommon()
+                        configureAndroidCommon(isDynamicFeatureModule)
                     }
                 }
                 else -> {
@@ -52,35 +51,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
 
             tasks.withType<DokkaGenerateTask>().configureEach {
                 outputDirectory.set(layout.buildDirectory.dir("dokka"))
-            }
-        }
-    }
-
-    // ✅ Extract common Android configurations
-    private fun <T> T.configureAndroidCommon() where T : CommonExtension<*, *, *, *, *, *> {
-        compileSdk = 36
-
-        defaultConfig.apply {
-            minSdk = 26
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            vectorDrawables.useSupportLibrary = true
-        }
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-        }
-
-        buildTypes {
-            getByName("release") {
-                isMinifyEnabled = false
-                // ✅ Dynamic feature modules will inherit from app module
-                if (!isDynamicFeatureModule) {
-                    proguardFiles(
-                        getDefaultProguardFile("proguard-android-optimize.txt"),
-                        "proguard-rules.pro"
-                    )
-                }
             }
         }
     }
