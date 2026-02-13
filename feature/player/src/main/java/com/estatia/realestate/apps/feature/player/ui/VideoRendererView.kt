@@ -4,9 +4,7 @@ package com.estatia.realestate.apps.feature.player.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
@@ -58,21 +56,7 @@ class VideoRendererView @JvmOverloads constructor(
 
 
     private fun SurfaceView.setFormatCompat() {
-        holder.let { holder ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Use official constant for API 26+
-                holder.setFormat(PixelFormat.RGBA_1010102)
-            } else {
-                // Use raw format value with fallback
-                try {
-                    holder.setFormat(8) // RGBA_1010102 = 0x8
-                } catch (e: Exception) {
-                    Log.e("VideoRendererView",
-                        "HDR format not supported", e)
-                    holder.setFormat(PixelFormat.RGB_565)
-                }
-            }
-        }
+        holder.setFormat(PixelFormat.RGBA_1010102)
     }
 
     private fun createFallbackSurface() {

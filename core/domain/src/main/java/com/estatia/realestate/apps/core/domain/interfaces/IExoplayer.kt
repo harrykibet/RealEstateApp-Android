@@ -11,4 +11,5 @@ interface IExoplayer {
     fun detachPlayer()
     fun resume()
     fun pause()
+    fun getCurrentPlayer(): ExoPlayer?
 }

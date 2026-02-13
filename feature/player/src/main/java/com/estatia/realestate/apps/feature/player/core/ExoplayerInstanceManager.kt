@@ -2,9 +2,7 @@ package com.estatia.realestate.apps.feature.player.core
 
 import android.content.Context
 import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.upstream.BandwidthMeter
@@ -20,7 +18,6 @@ import javax.inject.Singleton
  * Supports one active player attached to a view; [resume]/[pause] operate on that player.
  * For playback to start, [attachPlayerToView] must be called with a valid media URL (string starting with "http").
  */
-@OptIn(UnstableApi::class)
 @Singleton
 class ExoPlayerInstanceManager
 @Inject constructor(
@@ -104,6 +101,10 @@ class ExoPlayerInstanceManager
         currentPlayer?.pause()
         currentPlayer = null
         currentKey = null
+    }
+
+    override fun getCurrentPlayer(): ExoPlayer? {
+        return currentPlayer
     }
 
     override fun resume() {
