@@ -61,8 +61,6 @@ fun EstatiaNavHost(
         commentsGraph(onBackClick = navController::popBackStack)
 
         propertyAdditionGraph(onBackClick = navController::popBackStack)
-
-        playerGraph(onBackClick = navController::popBackStack, exoplayer = exoplayer)
     }
 }
 
