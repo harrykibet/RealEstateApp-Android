@@ -96,10 +96,11 @@ ensure_clean_state() {
 }
 
 show_commit_summary() {
-    echo -e "${CYAN}📋 Commit Summary:${NC}"
-    git diff --cached --stat
+    echo "${CYAN}📋 Commit Summary:${NC}"
+    git --no-pager diff --cached --stat
     echo ""
 }
+
 
 update_repo() {
     local remote="$1"
