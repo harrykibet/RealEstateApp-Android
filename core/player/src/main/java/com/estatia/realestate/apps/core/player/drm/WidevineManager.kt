@@ -14,7 +14,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // DRM license handling
-@Suppress("Unused")
 @Singleton
 @UnstableApi
 class WidevineManager @Inject constructor(

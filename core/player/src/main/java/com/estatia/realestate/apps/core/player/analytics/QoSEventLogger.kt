@@ -7,7 +7,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // Real-time error logging
-@Suppress("Unused")
 @Singleton
 class QoSEventLogger @Inject constructor(
     private val analyticsClient: IAnalyticsRepository,

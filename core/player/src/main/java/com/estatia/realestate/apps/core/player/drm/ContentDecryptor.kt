@@ -12,7 +12,6 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Suppress("Unused")
 @Singleton
 @UnstableApi
 class ContentDecryptor @Inject constructor(

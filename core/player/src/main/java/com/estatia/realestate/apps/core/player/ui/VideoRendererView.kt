@@ -14,7 +14,6 @@ import com.estatia.realestate.apps.core.common.system.DeviceUtils
 import com.estatia.realestate.apps.core.player.streaming.HdrConfiguration
 import javax.inject.Inject
 
-@Suppress("Unused")
 @UnstableApi
 class VideoRendererView @JvmOverloads constructor(
     context: Context,

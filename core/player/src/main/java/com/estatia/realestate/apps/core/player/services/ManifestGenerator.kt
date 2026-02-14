@@ -4,7 +4,6 @@ import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import javax.inject.Inject
 
 // Dynamic manifest adjustments
-@Suppress("Unused")
 class ManifestGenerator @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {

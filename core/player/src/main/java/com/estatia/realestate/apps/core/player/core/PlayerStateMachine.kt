@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 // Playback state handling
-@Suppress("Unused")
 class PlayerStateMachine {
     sealed class State {
         data object Idle : State()

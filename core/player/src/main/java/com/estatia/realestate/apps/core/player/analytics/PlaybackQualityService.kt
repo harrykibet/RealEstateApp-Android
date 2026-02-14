@@ -17,7 +17,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // QoS metrics (rebuffering, startup time)
-@Suppress("Unused")
 @Singleton
 @UnstableApi
 class PlaybackQualityService @Inject constructor(

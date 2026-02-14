@@ -14,7 +14,6 @@ import java.lang.Long.min
 import javax.inject.Inject
 
 // Adaptive bitrate logic
-@Suppress("Unused")
 @UnstableApi
 class ABRStrategy @Inject constructor(
     private val networkUtils: INetworkUtils,

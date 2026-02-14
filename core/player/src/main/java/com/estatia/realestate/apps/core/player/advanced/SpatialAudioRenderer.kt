@@ -11,7 +11,6 @@ import java.lang.Exception
 import javax.inject.Inject
 
 // 3D Audio Support
-@Suppress("Unused")
 @UnstableApi
 class SpatialAudioRenderer @Inject constructor(
     context: Context,

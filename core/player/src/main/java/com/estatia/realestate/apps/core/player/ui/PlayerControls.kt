@@ -8,7 +8,6 @@ import android.widget.SeekBar
 import com.estatia.realestate.apps.core.player.R
 
 // Play/pause, seekbar
-@Suppress("Unused")
 class PlayerControls @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null

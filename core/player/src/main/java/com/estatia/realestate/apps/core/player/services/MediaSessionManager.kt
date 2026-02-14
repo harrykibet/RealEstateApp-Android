@@ -8,7 +8,6 @@ import androidx.media3.session.MediaSession
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Suppress("Unused")
 @Singleton
 @UnstableApi
 class MediaSessionManager @Inject constructor(
