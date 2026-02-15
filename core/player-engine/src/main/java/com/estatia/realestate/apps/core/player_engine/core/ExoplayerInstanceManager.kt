@@ -14,7 +14,9 @@ import com.estatia.realestate.apps.core.player_engine.streaming.CacheManager
 import com.estatia.realestate.apps.core.player_engine.streaming.ContentPreloader
 import javax.inject.Inject
 import javax.inject.Singleton
-import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.player_engine.advanced.LowLatencyStreamer
+import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
+import com.estatia.realestate.apps.core.player_engine.perfomance.PlayerPerformanceOptimizer
 
 @UnstableApi
 @Singleton
@@ -23,6 +25,9 @@ class ExoPlayerInstanceManager
     private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
     private val contentPreloader: ContentPreloader,
+    private val lowLatencyStreamer: LowLatencyStreamer,
+    private val performanceOptimizer: PlayerPerformanceOptimizer,
+    private val playbackAnalyticsListener: PlaybackAnalyticsListener,
     cacheManager: CacheManager
 ) : IPlayer {
 
@@ -46,10 +51,10 @@ class ExoPlayerInstanceManager
 
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                1500, // minBufferMs
-                3000, // maxBufferMs
-                500,  // bufferForPlaybackMs
-                1000  // bufferAfterRebufferMs
+                1500,
+                3000,
+                500,
+                1000
             )
             .build()
 
@@ -58,14 +63,21 @@ class ExoPlayerInstanceManager
             .setFallbackMaxPlaybackSpeed(1.03f)
             .build()
 
-        return ExoPlayer.Builder(context)
+        val builder = ExoPlayer.Builder(context)
             .setBandwidthMeter(bandwidthMeter)
             .setMediaSourceFactory(mediaSourceFactory)
             .setLoadControl(loadControl)
             .setLivePlaybackSpeedControl(liveSpeedControl)
-            .build()
-            .also { playerPool.add(it) }
+
+        // 🔋 Apply performance optimization here
+        performanceOptimizer.optimize(builder)
+
+        return builder.build().also { player ->
+            player.addAnalyticsListener(playbackAnalyticsListener)
+            playerPool.add(player)
+        }
     }
+
 
     // ------------------------------------
     // Player Pool
@@ -105,6 +117,7 @@ class ExoPlayerInstanceManager
 
     override fun attachPlayerToView(
         playerView: PlayerView,
+        isLive: Boolean,
         mediaId: String
     ) {
         detachPlayer()
@@ -113,7 +126,13 @@ class ExoPlayerInstanceManager
 
         if (isValidMediaUrl(mediaId)) {
 
-            val mediaItem = buildMediaItem(mediaId)
+            val mediaItem = buildMediaItem(
+                url = mediaId,
+                isLive = isLive
+            )
+
+            // 📊 Mark playback start BEFORE prepare
+            playbackAnalyticsListener.markPlaybackStart()
 
             player.setMediaItem(mediaItem)
             player.prepare()
@@ -127,21 +146,16 @@ class ExoPlayerInstanceManager
         currentKey = mediaId
     }
 
-    private fun buildMediaItem(url: String): MediaItem {
+    private fun buildMediaItem(
+        url: String,
+        isLive: Boolean
+    ): MediaItem {
 
-        val uri = url.toUri()
-
-        // Live config applied only for live streams
-        val liveConfig = MediaItem.LiveConfiguration.Builder()
-            .setTargetOffsetMs(1000L)
-            .setMinPlaybackSpeed(0.97f)
-            .setMaxPlaybackSpeed(1.03f)
-            .build()
-
-        return MediaItem.Builder()
-            .setUri(uri)
-            .setLiveConfiguration(liveConfig)
-            .build()
+        return if (isLive) {
+            lowLatencyStreamer.createLowLatencyMediaItem(url)
+        } else {
+            MediaItem.fromUri(url)
+        }
     }
 
     override fun preloadMedia(mediaId: String) {
