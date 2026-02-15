@@ -6,7 +6,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 import com.estatia.realestate.apps.core.player_engine.core.ABRStrategy
+import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +19,7 @@ import javax.inject.Singleton
 @Module
 @UnstableApi
 @InstallIn(SingletonComponent::class)
-object PlayerModule {
-
+abstract class PlayerModule {
     @Provides
     @Singleton
     fun provideBandwidthMeter(context: Context): BandwidthMeter {
@@ -36,4 +38,8 @@ object PlayerModule {
             .setBandwidthMeter(bandwidthMeter)
             .build()
     }
+
+    @Binds
+    @Singleton
+    abstract fun bindExoplayer(exoplayer: PlayerManager): IPlayer
 }
