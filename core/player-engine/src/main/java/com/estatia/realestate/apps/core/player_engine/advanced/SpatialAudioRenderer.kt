@@ -7,57 +7,71 @@ import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioSink
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import java.lang.Exception
 import javax.inject.Inject
 
-// 3D Audio Support
+/**
+ * Handles Spatial / 3D audio capability detection.
+ *
+ * NOTE:
+ * Android does not allow apps to force-enable or disable spatial audio.
+ * It is controlled by the system and output device (e.g. headphones).
+ */
 @UnstableApi
 class SpatialAudioRenderer @Inject constructor(
     context: Context,
     private val logger: LoggerInterface
 ) : AudioSink.Listener {
 
-    private var spatializer: Spatializer? = null
+    private val audioManager =
+        context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    init {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val spatializer: Spatializer? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-            spatializer = audioManager.spatializer.takeIf {
-                it.isAvailable
-            }
+            audioManager.spatializer
+        } else null
+
+    fun isSpatialAudioSupported(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            spatializer?.isAvailable == true
+        } else {
+            false
         }
     }
 
-    // Method to attempt enabling or disabling spatial audio features based on device support
-    fun enable3DAudio(enable: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-            spatializer?.let {
-                // Check if spatializer is available
-                if (it.isAvailable) {
-                    // No direct way to enable/disable immersive audio, but can check availability
-                    // Optionally, you can query the current level, but it's not a must here
-                    // Enable/disable feature based on availability
-                    // At this stage, we can only inform about spatial audio being supported
-                    if (enable) {
-                        // Inform that spatial audio is enabled if available
-                        // You can add additional logic based on your needs here
-                        logger.i("3D Audio supported by device")
-                    } else {
-                        // Inform that spatial audio is disabled
-                        // Add any additional cleanup logic here
-                        logger.i("3D Audio not supported by device")
-                    }
-                }
-            }
+    fun isSpatialAudioEnabled(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            spatializer?.isEnabled == true
+        } else {
+            false
         }
     }
 
-    // Updated AudioSink.Listener methods (kept empty for now)
-    override fun onAudioSinkError(audioSinkError: Exception) {}
+    fun logSpatialAudioStatus() {
+        logger.i(
+            "Spatial Audio -> supported=${isSpatialAudioSupported()}, " +
+                    "enabled=${isSpatialAudioEnabled()}"
+        )
+    }
+
+    override fun onAudioSinkError(audioSinkError: Exception) {
+        logger.e("AudioSink error: ${audioSinkError.message}")
+    }
+
     override fun onOffloadBufferEmptying() {}
     override fun onOffloadBufferFull() {}
     override fun onPositionDiscontinuity() {}
     override fun onPositionAdvancing(playoutStartSystemTimeMs: Long) {}
-    override fun onUnderrun(bufferSize: Int, bufferSizeMs: Long, elapsedSinceLastFeedMs: Long) {}
+
+    override fun onUnderrun(
+        bufferSize: Int,
+        bufferSizeMs: Long,
+        elapsedSinceLastFeedMs: Long
+    ) {
+        logger.w(
+            "Audio underrun: bufferSize=$bufferSize, " +
+                    "bufferSizeMs=$bufferSizeMs, elapsed=$elapsedSinceLastFeedMs"
+        )
+    }
+
     override fun onSkipSilenceEnabledChanged(skipSilenceEnabled: Boolean) {}
 }

@@ -29,7 +29,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.model.property.Property
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
+import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 
 
 @Composable
@@ -40,7 +40,7 @@ fun PropertyCard(
     onLikeClick: (Property) -> Unit,
     onCommentClick: (Property) -> Unit,
     onShareClick: (Property) -> Unit,
-    exoPlayer: IExoplayer // Pass the ExoPlayer interface
+    exoPlayer: IPlayer // Pass the ExoPlayer interface
 ) {
     Box(
         modifier = modifier

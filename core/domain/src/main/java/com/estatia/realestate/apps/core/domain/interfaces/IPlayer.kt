@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.domain.interfaces
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
-interface IExoplayer {
+interface IPlayer {
     fun acquirePlayer(mediaId: String): ExoPlayer
     fun releasePlayer(mediaId: String)
     fun preloadMedia(mediaId: String)

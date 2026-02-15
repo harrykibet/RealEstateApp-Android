@@ -7,14 +7,11 @@ import com.estatia.realestate.apps.feature.home.navigation.homeGraph
 import com.estatia.realestate.apps.feature.profile.navigation.profileGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
 import com.estatia.realestate.apps.feature.auth.navigation.AuthRoutes
 import com.estatia.realestate.apps.feature.comments.navigation.commentsGraph
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
-import com.estatia.realestate.apps.feature.player.core.ExoPlayerInstanceManager
-import com.estatia.realestate.apps.feature.player.navigation.playerGraph
 import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionGraph
 import com.estatia.realestate.apps.feature.search.navigation.searchGraph
 import com.estatia.realestate.apps.ui.EstatiaAppState

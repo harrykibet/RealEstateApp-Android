@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.estatia.realestate.apps.core.ui.PropertyCard
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
+import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
@@ -53,7 +53,7 @@ internal fun HomeScreen(
     onLikeClick: (Property) -> Unit,
     onCommentClick: (Property) -> Unit,
     onShareClick: (Property) -> Unit,
-    exoPlayer: IExoplayer
+    exoPlayer: IPlayer
 ) {
     LazyColumn(
         modifier = Modifier

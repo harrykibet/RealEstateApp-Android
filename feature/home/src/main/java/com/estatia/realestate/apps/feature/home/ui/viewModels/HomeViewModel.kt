@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
+import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,
-    val exoPlayer: IExoplayer
+    val exoPlayer: IPlayer
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())

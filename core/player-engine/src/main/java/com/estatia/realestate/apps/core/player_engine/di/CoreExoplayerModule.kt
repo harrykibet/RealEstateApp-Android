@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.di
 
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.domain.interfaces.IExoplayer
+import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 import com.estatia.realestate.apps.core.player_engine.core.ExoPlayerInstanceManager
 import dagger.Binds
 import dagger.Module
@@ -15,5 +15,5 @@ import javax.inject.Singleton
 abstract class CoreExoplayerModule {
     @Binds
     @Singleton
-    abstract fun bindExoplayer(exoplayer: ExoPlayerInstanceManager): IExoplayer
+    abstract fun bindExoplayer(exoplayer: ExoPlayerInstanceManager): IPlayer
 }
