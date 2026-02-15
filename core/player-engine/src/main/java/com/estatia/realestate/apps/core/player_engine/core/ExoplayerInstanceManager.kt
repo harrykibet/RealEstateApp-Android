@@ -1,40 +1,28 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.content.Context
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.DefaultLivePlaybackSpeedControl
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.ui.PlayerView
 import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
-import com.estatia.realestate.apps.core.player_engine.streaming.CacheManager
+import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.streaming.ContentPreloader
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.player_engine.advanced.LowLatencyStreamer
-import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
-import com.estatia.realestate.apps.core.player_engine.perfomance.PlayerPerformanceOptimizer
 
+
+
+/**
+ * Manages ExoPlayer instances for feed-style playback.
+ * Feature modules just specify MediaType; strategy details are hidden.
+ */
 @UnstableApi
 @Singleton
-class ExoPlayerInstanceManager
-@Inject constructor(
-    private val context: Context,
-    private val bandwidthMeter: BandwidthMeter,
+class ExoPlayerInstanceManager @Inject constructor(
     private val contentPreloader: ContentPreloader,
-    private val lowLatencyStreamer: LowLatencyStreamer,
-    private val performanceOptimizer: PlayerPerformanceOptimizer,
     private val playbackAnalyticsListener: PlaybackAnalyticsListener,
-    cacheManager: CacheManager
+    private val exoPlayerFactory: ExoPlayerFactory
 ) : IPlayer {
-
-    private val mediaSourceFactory =
-        ProgressiveMediaSource.Factory(
-            cacheManager.createCacheDataSourceFactory()
-        )
 
     private val playerPool = mutableListOf<ExoPlayer>()
     private val activePlayers = mutableMapOf<String, ExoPlayer>()
@@ -44,54 +32,22 @@ class ExoPlayerInstanceManager
     @Volatile private var currentKey: String? = null
 
     // ------------------------------------
-    // Player Builder (Single Source)
-    // ------------------------------------
-
-    private fun createConfiguredPlayer(): ExoPlayer {
-
-        val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(
-                1500,
-                3000,
-                500,
-                1000
-            )
-            .build()
-
-        val liveSpeedControl = DefaultLivePlaybackSpeedControl.Builder()
-            .setFallbackMinPlaybackSpeed(0.97f)
-            .setFallbackMaxPlaybackSpeed(1.03f)
-            .build()
-
-        val builder = ExoPlayer.Builder(context)
-            .setBandwidthMeter(bandwidthMeter)
-            .setMediaSourceFactory(mediaSourceFactory)
-            .setLoadControl(loadControl)
-            .setLivePlaybackSpeedControl(liveSpeedControl)
-
-        // 🔋 Apply performance optimization here
-        performanceOptimizer.optimize(builder)
-
-        return builder.build().also { player ->
-            player.addAnalyticsListener(playbackAnalyticsListener)
-            playerPool.add(player)
-        }
-    }
-
-
-    // ------------------------------------
     // Player Pool
     // ------------------------------------
 
-    override fun acquirePlayer(mediaId: String): ExoPlayer {
+    override fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer {
         activePlayers[mediaId]?.let { return it }
 
         val reusable = playerPool.firstOrNull { !it.isPlaying }
 
+        val strategy = mapMediaTypeToStrategy(mediaType)
+
         val player = reusable?.also {
             it.stop()
             it.clearMediaItems()
-        } ?: createConfiguredPlayer()
+        } ?: exoPlayerFactory.create(strategy).also {
+            playerPool.add(it)
+        }
 
         activePlayers[mediaId] = player
         return player
@@ -99,14 +55,12 @@ class ExoPlayerInstanceManager
 
     override fun releasePlayer(mediaId: String) {
         val player = activePlayers.remove(mediaId) ?: return
-
         if (currentPlayer == player) {
             currentView?.player = null
             currentView = null
             currentPlayer = null
             currentKey = null
         }
-
         player.stop()
         player.clearMediaItems()
     }
@@ -117,21 +71,18 @@ class ExoPlayerInstanceManager
 
     override fun attachPlayerToView(
         playerView: PlayerView,
-        isLive: Boolean,
-        mediaId: String
+        mediaId: String,
+        mediaType: MediaType
     ) {
         detachPlayer()
 
-        val player = acquirePlayer(mediaId)
+        val player = acquirePlayer(mediaId, mediaType)
 
         if (isValidMediaUrl(mediaId)) {
+            val strategy = mapMediaTypeToStrategy(mediaType)
+            val mediaItem = strategy.createMediaItem(mediaId)
 
-            val mediaItem = buildMediaItem(
-                url = mediaId,
-                isLive = isLive
-            )
-
-            // 📊 Mark playback start BEFORE prepare
+            // Mark playback start before prepare
             playbackAnalyticsListener.markPlaybackStart()
 
             player.setMediaItem(mediaItem)
@@ -140,22 +91,9 @@ class ExoPlayerInstanceManager
         }
 
         playerView.player = player
-
         currentPlayer = player
         currentView = playerView
         currentKey = mediaId
-    }
-
-    private fun buildMediaItem(
-        url: String,
-        isLive: Boolean
-    ): MediaItem {
-
-        return if (isLive) {
-            lowLatencyStreamer.createLowLatencyMediaItem(url)
-        } else {
-            MediaItem.fromUri(url)
-        }
     }
 
     override fun preloadMedia(mediaId: String) {
@@ -184,8 +122,15 @@ class ExoPlayerInstanceManager
 
     override fun getCurrentPlayer(): ExoPlayer? = currentPlayer
 
-    private fun isValidMediaUrl(value: String): Boolean {
-        return value.startsWith("http://", true) ||
-                value.startsWith("https://", true)
-    }
+    private fun isValidMediaUrl(value: String): Boolean =
+        value.startsWith("http://", true) || value.startsWith("https://", true)
+
+    // ------------------------------------
+    // Internal: Map MediaType to strategy
+    // ------------------------------------
+    private fun mapMediaTypeToStrategy(mediaType: MediaType) =
+        when (mediaType) {
+            MediaType.LIVE -> exoPlayerFactory.liveStrategy
+            MediaType.VOD -> exoPlayerFactory.vodStrategy
+        }
 }
