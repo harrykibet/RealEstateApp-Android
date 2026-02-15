@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.core.player_engine.strategies.VodPlayerConfig
 import javax.inject.Inject
 
 @UnstableApi
-class ExoPlayerFactory @Inject constructor(
+class PlayerFactory @Inject constructor(
     private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
     private val mediaSourceFactory: ProgressiveMediaSource.Factory,
