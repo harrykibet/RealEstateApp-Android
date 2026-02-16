@@ -8,14 +8,12 @@ import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.streaming.ContentPreloader
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-
-/**
- * Manages Player instances for feed-style playback.
- * Feature modules just specify MediaType; strategy details are hidden.
- */
-
 
 @UnstableApi
 @Singleton
@@ -23,36 +21,39 @@ class PlayerManager @Inject constructor(
     private val contentPreloader: ContentPreloader,
     private val playbackAnalyticsListener: PlaybackAnalyticsListener,
     private val playerFactory: PlayerFactory,
-    private val maxPoolSize: Int = 4 // configurable max number of players in memory
+    private val engineScope: CoroutineScope,          // long-lived engineScope
+    private val playerDispatcher: CoroutineDispatcher, // single-threaded dispatcher
+    private val maxPoolSize: Int = 4
 ) : IPlayer {
 
     private val playerPool = mutableListOf<ExoPlayer>()
     private val activePlayers = mutableMapOf<String, ExoPlayer>()
-
-    private val lock = Any()
+    private val playerJobs = mutableMapOf<ExoPlayer, Job>()
 
     @Volatile private var _currentPlayer: ExoPlayer? = null
     @Volatile private var _currentView: PlayerView? = null
     @Volatile private var _currentKey: String? = null
 
-    private val currentPlayer: ExoPlayer? get() = synchronized(lock) { _currentPlayer }
+    // ------------------------
+    // Acquire player (LRU eviction + reuse)
+    // ------------------------
+    override suspend fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer {
+        var player: ExoPlayer? = null
 
-    // ------------------------------------
-    // Acquire Player with LRU Eviction
-    // ------------------------------------
-    override fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer {
-        synchronized(lock) {
-            activePlayers[mediaId]?.let { return it }
-
-            // Try to find a reusable player not in activePlayers
-            val reusable = playerPool.firstOrNull { player ->
-                !player.isPlaying && !activePlayers.containsValue(player)
+        val job = engineScope.launch(playerDispatcher) {
+            // Already active?
+            activePlayers[mediaId]?.let {
+                player = it
+                return@launch
             }
 
-            // Evict least recently used player if pool is full
+            // Reusable player
+            val reusable = playerPool.firstOrNull { it !in activePlayers.values && !it.isPlaying }
+
+            // Evict LRU if needed
             if (reusable == null && playerPool.size >= maxPoolSize) {
-                val lruPlayer = playerPool.firstOrNull { !activePlayers.containsValue(it) }
-                lruPlayer?.let {
+                val lru = playerPool.firstOrNull { it !in activePlayers.values }
+                lru?.let {
                     it.stop()
                     it.clearMediaItems()
                     it.release()
@@ -61,46 +62,43 @@ class PlayerManager @Inject constructor(
             }
 
             val strategy = mapMediaTypeToStrategy(mediaType)
-
-            val player = reusable ?: playerFactory.create(strategy).also {
-                playerPool.add(it)
-            }
-
+            player = reusable ?: playerFactory.create(strategy).also { playerPool.add(it) }
             activePlayers[mediaId] = player
-            return player
         }
+
+        job.join()
+        return player!!
     }
 
-    // ------------------------------------
-    // Release Player
-    // ------------------------------------
+    // ------------------------
+    // Release player
+    // ------------------------
     override fun releasePlayer(mediaId: String) {
-        synchronized(lock) {
-            val player = activePlayers.remove(mediaId) ?: return
+        engineScope.launch(playerDispatcher) {
+            val player = activePlayers.remove(mediaId) ?: return@launch
+            playerJobs.remove(player)?.cancel()
+
             if (_currentPlayer == player) {
                 _currentView?.player = null
                 _currentView = null
                 _currentPlayer = null
                 _currentKey = null
             }
+
             player.stop()
             player.clearMediaItems()
+            player.release()
         }
     }
 
-    // ------------------------------------
-    // Attach/Detach Player
-    // ------------------------------------
-    override fun attachPlayerToView(
-        playerView: PlayerView,
-        mediaId: String,
-        mediaType: MediaType
-    ) {
-        synchronized(lock) {
+    // ------------------------
+    // Attach / detach
+    // ------------------------
+    override suspend fun attachPlayerToView(playerView: PlayerView, mediaId: String, mediaType: MediaType) {
+        engineScope.launch(playerDispatcher) {
             detachPlayer()
 
             val player = acquirePlayer(mediaId, mediaType)
-
             if (isValidMediaUrl(mediaId)) {
                 val strategy = mapMediaTypeToStrategy(mediaType)
                 val mediaItem = strategy.createMediaItem(mediaId)
@@ -112,15 +110,15 @@ class PlayerManager @Inject constructor(
                 player.playWhenReady = true
             }
 
-            playerView.player = player
             _currentPlayer = player
             _currentView = playerView
             _currentKey = mediaId
+            playerView.player = player
         }
     }
 
     override fun detachPlayer() {
-        synchronized(lock) {
+        engineScope.launch(playerDispatcher) {
             _currentView?.player = null
             _currentView = null
             _currentPlayer?.pause()
@@ -130,13 +128,28 @@ class PlayerManager @Inject constructor(
     }
 
     override fun preloadMedia(mediaId: String) {
-        contentPreloader.schedulePreload(mediaId)
+        engineScope.launch(playerDispatcher) {
+            contentPreloader.schedulePreload(mediaId)
+        }
     }
 
-    override fun resume() { synchronized(lock) { _currentPlayer?.play() } }
-    override fun pause() { synchronized(lock) { _currentPlayer?.pause() } }
-    override fun getCurrentPlayer(): ExoPlayer? = currentPlayer
+    override suspend fun resume() {
+        engineScope.launch(playerDispatcher) {
+            _currentPlayer?.play()
+        }
+    }
 
+    override suspend fun pause() {
+        engineScope.launch(playerDispatcher) {
+            _currentPlayer?.pause()
+        }
+    }
+
+    override fun getCurrentPlayer(): ExoPlayer? = _currentPlayer
+
+    // ------------------------
+    // Helpers
+    // ------------------------
     private fun isValidMediaUrl(value: String): Boolean =
         value.isNotBlank() && (
                 value.startsWith("http://", true) ||
@@ -151,5 +164,3 @@ class PlayerManager @Inject constructor(
             MediaType.VOD -> playerFactory.vodStrategy
         }
 }
-
-

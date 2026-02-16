@@ -14,21 +14,23 @@ class DynamicBitratePolicy @Inject constructor(
 
     fun calculateMaxVideoBitrate(mediaType: MediaType): Int {
 
-        val deviceCap = deviceUtils.getMaxSupportedBitrate()
-        val networkCap = networkUtils.estimatedThroughputbps()
+        val deviceCap = deviceUtils.getMaxSupportedBitrate() // probably Int
+        val networkCap = networkUtils.estimatedThroughputbps() // Long
 
         val base = minOf(deviceCap, networkCap)
 
+        val baseDouble = base.toDouble()
+
         val environmentAdjusted = when {
-            batteryManager.shouldThrottlePerformance() -> base * 0.6
-            deviceUtils.isLowRamDevice() -> base * 0.7
-            networkUtils.isNetworkMetered() -> base * 0.8
-            else -> base
+            batteryManager.shouldThrottlePerformance() -> baseDouble * 0.6
+            deviceUtils.isLowRamDevice() -> baseDouble * 0.7
+            networkUtils.isNetworkMetered() -> baseDouble * 0.8
+            else -> baseDouble
         }
 
         return when (mediaType) {
-            MediaType.LIVE -> (environmentAdjusted * 0.85).toInt() // safer for rebuffer
-            MediaType.VOD -> environmentAdjusted.toInt() // more aggressive quality
+            MediaType.LIVE -> (environmentAdjusted * 0.85).toInt()
+            MediaType.VOD -> environmentAdjusted.toInt()
         }
     }
 }

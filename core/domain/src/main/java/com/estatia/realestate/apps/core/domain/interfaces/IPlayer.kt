@@ -7,14 +7,14 @@ interface IPlayer {
     fun releasePlayer(mediaId: String)
     fun preloadMedia(mediaId: String)
     fun detachPlayer()
-    fun resume()
-    fun pause()
+    suspend fun resume()
+    suspend fun pause()
     fun getCurrentPlayer(): ExoPlayer?
-    fun attachPlayerToView(
+    suspend fun attachPlayerToView(
         playerView: PlayerView,
         mediaId: String,
         mediaType: MediaType
     )
 
-    fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer
+    suspend fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer
 }
