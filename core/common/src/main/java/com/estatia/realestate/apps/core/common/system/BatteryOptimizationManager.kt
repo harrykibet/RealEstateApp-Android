@@ -5,17 +5,36 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import androidx.core.content.ContextCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+
+sealed class BatteryState {
+    data class Normal(
+        val level: Int,
+        val isCharging: Boolean
+    ) : BatteryState()
+
+    data class Throttled(
+        val level: Int,
+        val isCharging: Boolean,
+        val thermalStatus: Int
+    ) : BatteryState()
+}
+
 
 @Singleton
 class BatteryOptimizationManager @Inject constructor(
@@ -75,6 +94,60 @@ class BatteryOptimizationManager @Inject constructor(
                     .build())
         } else {
             Handler(Looper.getMainLooper()).postDelayed(task, delay)
+        }
+    }
+
+    private fun getCurrentBatteryState(): BatteryState {
+        return if (shouldThrottlePerformance()) {
+            BatteryState.Throttled(
+                level = currentBatteryLevel,
+                isCharging = isCharging,
+                thermalStatus = thermalStatus
+            )
+        } else {
+            BatteryState.Normal(
+                level = currentBatteryLevel,
+                isCharging = isCharging
+            )
+        }
+    }
+
+    override fun observeBatteryState(): Flow<BatteryState> = callbackFlow {
+
+        val batteryReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                updateBatteryStatus(intent)
+                trySend(getCurrentBatteryState())
+            }
+        }
+
+        val thermalListener =
+            PowerManager.OnThermalStatusChangedListener { status ->
+                thermalStatus = status
+                trySend(getCurrentBatteryState())
+            }
+
+        // Register listeners
+        context.registerReceiver(
+            batteryReceiver,
+            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            powerManager.addThermalStatusListener(
+                ContextCompat.getMainExecutor(context),
+                thermalListener
+            )
+        }
+
+        // Emit initial state
+        trySend(getCurrentBatteryState())
+
+        awaitClose {
+            context.unregisterReceiver(batteryReceiver)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                powerManager.removeThermalStatusListener(thermalListener)
+            }
         }
     }
 

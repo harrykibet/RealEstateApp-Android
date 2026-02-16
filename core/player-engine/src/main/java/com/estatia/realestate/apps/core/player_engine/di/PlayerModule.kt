@@ -7,7 +7,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
-import com.estatia.realestate.apps.core.player_engine.core.ABRStrategy
+import com.estatia.realestate.apps.core.player_engine.strategies.ABRStrategy
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
 import dagger.Binds
 import dagger.Module
@@ -31,7 +31,7 @@ abstract class PlayerModule {
     fun provideExoPlayer(
         context: Context,
         bandwidthMeter: BandwidthMeter,
-        abrStrategy: ABRStrategy
+        abrStrategy: com.estatia.realestate.apps.core.player_engine.strategies.ABRStrategy
     ): ExoPlayer {
         return ExoPlayer.Builder(context)
             .setTrackSelector(DefaultTrackSelector(context, abrStrategy))

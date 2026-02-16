@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.common.interfaces
 
 import android.net.ConnectivityManager
 import com.estatia.realestate.apps.core.common.system.NetworkUtils.NetworkStatusResult
+import kotlinx.coroutines.flow.Flow
 
 interface INetworkUtils {
     fun hasInternetAccess(): Boolean
@@ -15,4 +16,5 @@ interface INetworkUtils {
     fun registerNetworkCallback(callback: ConnectivityManager.NetworkCallback)
     fun unregisterNetworkCallback(callback: ConnectivityManager.NetworkCallback)
     fun getNetworkStatus(): NetworkStatusResult
+    fun observeNetworkStatus(): Flow<NetworkStatusResult>
 }

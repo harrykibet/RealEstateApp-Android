@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.perfomance
 
 import androidx.media3.common.C
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
@@ -13,6 +14,7 @@ import javax.inject.Singleton
  *
  */
 @Singleton
+@UnstableApi
 class PlayerPerformanceOptimizer @Inject constructor(
     private val batteryManager: IBatteryManager
 ) {
