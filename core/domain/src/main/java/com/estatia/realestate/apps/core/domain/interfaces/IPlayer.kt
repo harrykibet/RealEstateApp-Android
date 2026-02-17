@@ -4,11 +4,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
 interface IPlayer {
-    fun releasePlayer(mediaId: String)
-    fun preloadMedia(mediaId: String)
-    fun detachPlayer()
-    suspend fun resume()
-    suspend fun pause()
+    suspend fun releasePlayer(mediaId: String)
     fun getCurrentPlayer(): ExoPlayer?
     suspend fun attachPlayerToView(
         playerView: PlayerView,
@@ -17,4 +13,8 @@ interface IPlayer {
     )
 
     suspend fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer
+    suspend fun preloadMedia(mediaId: String)
+    suspend fun pause()
+    suspend fun resume()
+    suspend fun detachPlayer()
 }

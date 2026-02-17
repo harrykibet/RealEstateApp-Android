@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -9,9 +11,8 @@ import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalytic
 import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.streaming.ContentPreloader
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,135 +22,209 @@ class PlayerManager @Inject constructor(
     private val contentPreloader: ContentPreloader,
     private val playbackAnalyticsListener: PlaybackAnalyticsListener,
     private val playerFactory: PlayerFactory,
-    private val engineScope: CoroutineScope,          // long-lived engineScope
-    private val playerDispatcher: CoroutineDispatcher, // single-threaded dispatcher
+    private val playerDispatcher: CoroutineDispatcher,     // single-threaded dispatcher
     private val maxPoolSize: Int = 4
 ) : IPlayer {
 
     private val playerPool = mutableListOf<ExoPlayer>()
     private val activePlayers = mutableMapOf<String, ExoPlayer>()
-    private val playerJobs = mutableMapOf<ExoPlayer, Job>()
+    private val stateMachines = mutableMapOf<ExoPlayer, PlayerStateMachine>()
 
-    @Volatile private var _currentPlayer: ExoPlayer? = null
-    @Volatile private var _currentView: PlayerView? = null
-    @Volatile private var _currentKey: String? = null
+    private var currentPlayer: ExoPlayer? = null
+    private var currentView: PlayerView? = null
+    private var currentKey: String? = null
 
-    // ------------------------
-    // Acquire player (LRU eviction + reuse)
-    // ------------------------
-    override suspend fun acquirePlayer(mediaId: String, mediaType: MediaType): ExoPlayer {
-        var player: ExoPlayer? = null
+    // ----------------------------------------------------------------
+    // Acquire Player (Single-thread safe via dispatcher serialization)
+    // ----------------------------------------------------------------
+    override suspend fun acquirePlayer(
+        mediaId: String,
+        mediaType: MediaType
+    ): ExoPlayer = withContext(playerDispatcher) {
 
-        val job = engineScope.launch(playerDispatcher) {
-            // Already active?
-            activePlayers[mediaId]?.let {
-                player = it
-                return@launch
-            }
+        activePlayers[mediaId]?.let { return@withContext it }
 
-            // Reusable player
-            val reusable = playerPool.firstOrNull { it !in activePlayers.values && !it.isPlaying }
-
-            // Evict LRU if needed
-            if (reusable == null && playerPool.size >= maxPoolSize) {
-                val lru = playerPool.firstOrNull { it !in activePlayers.values }
-                lru?.let {
-                    it.stop()
-                    it.clearMediaItems()
-                    it.release()
-                    playerPool.remove(it)
-                }
-            }
-
-            val strategy = mapMediaTypeToStrategy(mediaType)
-            player = reusable ?: playerFactory.create(strategy).also { playerPool.add(it) }
-            activePlayers[mediaId] = player
+        val reusable = playerPool.firstOrNull {
+            it !in activePlayers.values && !it.isPlaying
         }
 
-        job.join()
-        return player!!
+        if (reusable == null && playerPool.size >= maxPoolSize) {
+            evictLeastRecentlyUsed()
+        }
+
+        val strategy = mapMediaTypeToStrategy(mediaType)
+
+        val player = reusable ?: createNewPlayer(strategy)
+
+        activePlayers[mediaId] = player
+        player
     }
 
-    // ------------------------
-    // Release player
-    // ------------------------
-    override fun releasePlayer(mediaId: String) {
-        engineScope.launch(playerDispatcher) {
-            val player = activePlayers.remove(mediaId) ?: return@launch
-            playerJobs.remove(player)?.cancel()
+    // ----------------------------------------------------------------
+    // Release Player
+    // ----------------------------------------------------------------
+    override suspend fun releasePlayer(mediaId: String) =
+        withContext(playerDispatcher) {
 
-            if (_currentPlayer == player) {
-                _currentView?.player = null
-                _currentView = null
-                _currentPlayer = null
-                _currentKey = null
+            val player = activePlayers.remove(mediaId) ?: return@withContext
+
+            if (currentPlayer == player) {
+                detachInternal()
             }
+
+            stateMachines.remove(player)
+            playerPool.remove(player)
 
             player.stop()
             player.clearMediaItems()
             player.release()
         }
-    }
 
-    // ------------------------
-    // Attach / detach
-    // ------------------------
-    override suspend fun attachPlayerToView(playerView: PlayerView, mediaId: String, mediaType: MediaType) {
-        engineScope.launch(playerDispatcher) {
-            detachPlayer()
+    // ----------------------------------------------------------------
+    // Attach Player
+    // ----------------------------------------------------------------
+    override suspend fun attachPlayerToView(
+        playerView: PlayerView,
+        mediaId: String,
+        mediaType: MediaType
+    ) = withContext(playerDispatcher) {
 
-            val player = acquirePlayer(mediaId, mediaType)
-            if (isValidMediaUrl(mediaId)) {
-                val strategy = mapMediaTypeToStrategy(mediaType)
-                val mediaItem = strategy.createMediaItem(mediaId)
+        detachInternal()
 
-                playbackAnalyticsListener.markPlaybackStart()
+        val player = acquirePlayer(mediaId, mediaType)
 
-                player.setMediaItem(mediaItem)
-                player.prepare()
-                player.playWhenReady = true
-            }
+        if (isValidMediaUrl(mediaId)) {
+            val strategy = mapMediaTypeToStrategy(mediaType)
+            val mediaItem = strategy.createMediaItem(mediaId)
 
-            _currentPlayer = player
-            _currentView = playerView
-            _currentKey = mediaId
-            playerView.player = player
+            playbackAnalyticsListener.markPlaybackStart()
+
+            player.setMediaItem(mediaItem)
+            player.prepare()
+            player.playWhenReady = true
         }
+
+        currentPlayer = player
+        currentView = playerView
+        currentKey = mediaId
+
+        playerView.player = player
     }
 
-    override fun detachPlayer() {
-        engineScope.launch(playerDispatcher) {
-            _currentView?.player = null
-            _currentView = null
-            _currentPlayer?.pause()
-            _currentPlayer = null
-            _currentKey = null
+    // ----------------------------------------------------------------
+    // Detach
+    // ----------------------------------------------------------------
+    override suspend fun detachPlayer() =
+        withContext(playerDispatcher) {
+            detachInternal()
         }
+
+    private fun detachInternal() {
+        currentView?.player = null
+        currentView = null
+        currentPlayer?.pause()
+        currentPlayer = null
+        currentKey = null
     }
 
-    override fun preloadMedia(mediaId: String) {
-        engineScope.launch(playerDispatcher) {
+    // ----------------------------------------------------------------
+    // Playback Controls
+    // ----------------------------------------------------------------
+    override suspend fun resume(): Unit =
+        withContext(playerDispatcher) {
+            currentPlayer?.play()
+        }
+
+    override suspend fun pause(): Unit =
+        withContext(playerDispatcher) {
+            currentPlayer?.pause()
+        }
+
+    override fun getCurrentPlayer(): ExoPlayer? = currentPlayer
+
+    // ----------------------------------------------------------------
+    // Preloading
+    // ----------------------------------------------------------------
+    override suspend fun preloadMedia(mediaId: String) =
+        withContext(playerDispatcher) {
             contentPreloader.schedulePreload(mediaId)
         }
+
+    // ----------------------------------------------------------------
+    // Observe State
+    // ----------------------------------------------------------------
+    fun observePlayerState(player: ExoPlayer): StateFlow<PlayerStateMachine.State>? {
+        return stateMachines[player]?.state
     }
 
-    override suspend fun resume() {
-        engineScope.launch(playerDispatcher) {
-            _currentPlayer?.play()
-        }
+    // ----------------------------------------------------------------
+    // Internal Helpers
+    // ----------------------------------------------------------------
+    private fun createNewPlayer(
+        strategy: PlayerConfigurationStrategy
+    ): ExoPlayer {
+
+        val player = playerFactory.create(strategy)
+        playerPool.add(player)
+
+        val stateMachine = PlayerStateMachine()
+        stateMachines[player] = stateMachine
+
+        attachListener(player, stateMachine)
+
+        return player
     }
 
-    override suspend fun pause() {
-        engineScope.launch(playerDispatcher) {
-            _currentPlayer?.pause()
-        }
+    private fun evictLeastRecentlyUsed() {
+        val lru = playerPool.firstOrNull { it !in activePlayers.values }
+            ?: return
+
+        stateMachines.remove(lru)
+        playerPool.remove(lru)
+
+        lru.stop()
+        lru.clearMediaItems()
+        lru.release()
     }
 
-    override fun getCurrentPlayer(): ExoPlayer? = _currentPlayer
+    private fun attachListener(
+        player: ExoPlayer,
+        stateMachine: PlayerStateMachine
+    ) {
+        player.addListener(object : Player.Listener {
 
-    // ------------------------
-    // Helpers
-    // ------------------------
+            override fun onPlaybackStateChanged(state: Int) {
+                when (state) {
+                    Player.STATE_IDLE ->
+                        stateMachine.transition(PlayerStateMachine.Event.Reset)
+
+                    Player.STATE_BUFFERING ->
+                        stateMachine.transition(PlayerStateMachine.Event.BufferingStarted)
+
+                    Player.STATE_READY ->
+                        stateMachine.transition(PlayerStateMachine.Event.BufferingCompleted)
+
+                    Player.STATE_ENDED ->
+                        stateMachine.transition(PlayerStateMachine.Event.PlaybackEnded)
+                }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (isPlaying) {
+                    stateMachine.transition(PlayerStateMachine.Event.Play)
+                } else {
+                    stateMachine.transition(PlayerStateMachine.Event.Pause)
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                stateMachine.transition(
+                    PlayerStateMachine.Event.PlaybackError(error)
+                )
+            }
+        })
+    }
+
     private fun isValidMediaUrl(value: String): Boolean =
         value.isNotBlank() && (
                 value.startsWith("http://", true) ||
@@ -158,7 +233,9 @@ class PlayerManager @Inject constructor(
                         value.startsWith("file://")
                 )
 
-    private fun mapMediaTypeToStrategy(mediaType: MediaType): PlayerConfigurationStrategy =
+    private fun mapMediaTypeToStrategy(
+        mediaType: MediaType
+    ): PlayerConfigurationStrategy =
         when (mediaType) {
             MediaType.LIVE -> playerFactory.liveStrategy
             MediaType.VOD -> playerFactory.vodStrategy
