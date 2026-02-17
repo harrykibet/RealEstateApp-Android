@@ -15,8 +15,6 @@ import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigura
 import com.estatia.realestate.apps.core.player_engine.strategies.VodPlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,9 +23,6 @@ import javax.inject.Singleton
 class PlayerFactory @Inject constructor(
     private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
-    private val networkUtils: INetworkUtils,
-    private val batteryManager: IBatteryManager,
-    private val engineScope: CoroutineScope, // long-lived engineScope
     private val mediaSourceFactory: ProgressiveMediaSource.Factory,
     val liveStrategy: LivePlayerConfigurationStrategy,
     val vodStrategy: VodPlayerConfigurationStrategy,
@@ -58,18 +53,6 @@ class PlayerFactory @Inject constructor(
 
         // Initial dynamic bitrate attachment
         dynamicBitrateController.attach(player, mediaType)
-
-        // Observe battery and network changes for dynamic ABR
-        engineScope.launch {
-            combine(
-                networkUtils.observeNetworkStatus(),
-                batteryManager.observeBatteryState()
-            ) { network, battery ->
-                network to battery
-            }.collect {
-                dynamicBitrateController.onEnvironmentChanged(player, mediaType)
-            }
-        }
 
         return player
     }

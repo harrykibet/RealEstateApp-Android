@@ -5,16 +5,23 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
+import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
 import com.estatia.realestate.apps.core.domain.interfaces.IPlayer
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.streaming.ContentPreloader
+import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @UnstableApi
 @Singleton
@@ -22,30 +29,79 @@ class PlayerManager @Inject constructor(
     private val contentPreloader: ContentPreloader,
     private val playbackAnalyticsListener: PlaybackAnalyticsListener,
     private val playerFactory: PlayerFactory,
-    private val playerDispatcher: CoroutineDispatcher,     // single-threaded dispatcher
+    private val engineScope: CoroutineScope,
+    private val dynamicBitrateController: DynamicBitrateController,
+    private val networkUtils: INetworkUtils,
+    private val batteryManager: IBatteryManager,
+    private val playerDispatcher: CoroutineDispatcher,
     private val maxPoolSize: Int = 4
 ) : IPlayer {
 
+    // ------------------------------------------------------------
+    // Holder for player + mediaType
+    // ------------------------------------------------------------
+    private data class PlayerHolder(
+        val player: ExoPlayer,
+        val mediaType: MediaType
+    )
+
     private val playerPool = mutableListOf<ExoPlayer>()
-    private val activePlayers = mutableMapOf<String, ExoPlayer>()
+    private val activePlayers = mutableMapOf<String, PlayerHolder>()
     private val stateMachines = mutableMapOf<ExoPlayer, PlayerStateMachine>()
 
-    private var currentPlayer: ExoPlayer? = null
+    private var currentHolder: PlayerHolder? = null
     private var currentView: PlayerView? = null
     private var currentKey: String? = null
 
-    // ----------------------------------------------------------------
-    // Acquire Player (Single-thread safe via dispatcher serialization)
-    // ----------------------------------------------------------------
+    private var lastEnvironment: Pair<Any, Any>? = null // replace Any with your actual types
+
+    init {
+        observeEnvironment()
+    }
+
+    // ------------------------------------------------------------
+    // Global Environment Observer
+    // ------------------------------------------------------------
+    private fun observeEnvironment() {
+        engineScope.launch(playerDispatcher) {
+            combine(
+                networkUtils.observeNetworkStatus(),
+                batteryManager.observeBatteryState()
+            ) { network, battery ->
+                network to battery
+            }.collect { (network, battery) ->
+
+                lastEnvironment = network to battery
+
+                activePlayers.values.forEach { holder ->
+                    dynamicBitrateController.onEnvironmentChanged(
+                        holder.player,
+                        holder.mediaType
+                    )
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Acquire Player
+    // ------------------------------------------------------------
     override suspend fun acquirePlayer(
         mediaId: String,
         mediaType: MediaType
     ): ExoPlayer = withContext(playerDispatcher) {
+        acquirePlayerInternal(mediaId, mediaType).player
+    }
 
-        activePlayers[mediaId]?.let { return@withContext it }
+    private fun acquirePlayerInternal(
+        mediaId: String,
+        mediaType: MediaType
+    ): PlayerHolder {
+
+        activePlayers[mediaId]?.let { return it }
 
         val reusable = playerPool.firstOrNull {
-            it !in activePlayers.values && !it.isPlaying
+            it !in activePlayers.values.map { holder -> holder.player } && !it.isPlaying
         }
 
         if (reusable == null && playerPool.size >= maxPoolSize) {
@@ -54,21 +110,29 @@ class PlayerManager @Inject constructor(
 
         val strategy = mapMediaTypeToStrategy(mediaType)
 
-        val player = reusable ?: createNewPlayer(strategy)
+        val player = reusable ?: createNewPlayer(strategy, mediaType)
 
-        activePlayers[mediaId] = player
-        player
+        val holder = PlayerHolder(player, mediaType)
+        activePlayers[mediaId] = holder
+
+        // Apply latest environment immediately if available
+        lastEnvironment?.let {
+            dynamicBitrateController.onEnvironmentChanged(player, mediaType)
+        }
+
+        return holder
     }
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Release Player
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     override suspend fun releasePlayer(mediaId: String) =
         withContext(playerDispatcher) {
 
-            val player = activePlayers.remove(mediaId) ?: return@withContext
+            val holder = activePlayers.remove(mediaId) ?: return@withContext
+            val player = holder.player
 
-            if (currentPlayer == player) {
+            if (currentHolder?.player == player) {
                 detachInternal()
             }
 
@@ -80,9 +144,9 @@ class PlayerManager @Inject constructor(
             player.release()
         }
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Attach Player
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     override suspend fun attachPlayerToView(
         playerView: PlayerView,
         mediaId: String,
@@ -91,7 +155,8 @@ class PlayerManager @Inject constructor(
 
         detachInternal()
 
-        val player = acquirePlayer(mediaId, mediaType)
+        val holder = acquirePlayerInternal(mediaId, mediaType)
+        val player = holder.player
 
         if (isValidMediaUrl(mediaId)) {
             val strategy = mapMediaTypeToStrategy(mediaType)
@@ -104,16 +169,16 @@ class PlayerManager @Inject constructor(
             player.playWhenReady = true
         }
 
-        currentPlayer = player
+        currentHolder = holder
         currentView = playerView
         currentKey = mediaId
 
         playerView.player = player
     }
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Detach
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     override suspend fun detachPlayer() =
         withContext(playerDispatcher) {
             detachInternal()
@@ -122,46 +187,52 @@ class PlayerManager @Inject constructor(
     private fun detachInternal() {
         currentView?.player = null
         currentView = null
-        currentPlayer?.pause()
-        currentPlayer = null
+        currentHolder?.player?.pause()
+        currentHolder = null
         currentKey = null
     }
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Playback Controls
-    // ----------------------------------------------------------------
-    override suspend fun resume(): Unit =
+    // ------------------------------------------------------------
+    override suspend fun resume() {
         withContext(playerDispatcher) {
-            currentPlayer?.play()
+            currentHolder?.player?.play()
+        }
+    }
+
+    override suspend fun pause() {
+        withContext(playerDispatcher) {
+            currentHolder?.player?.pause()
+        }
+    }
+
+    override suspend fun getCurrentPlayer(): ExoPlayer? =
+        withContext(playerDispatcher) {
+            currentHolder?.player
         }
 
-    override suspend fun pause(): Unit =
-        withContext(playerDispatcher) {
-            currentPlayer?.pause()
-        }
-
-    override fun getCurrentPlayer(): ExoPlayer? = currentPlayer
-
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Preloading
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     override suspend fun preloadMedia(mediaId: String) =
         withContext(playerDispatcher) {
             contentPreloader.schedulePreload(mediaId)
         }
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Observe State
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     fun observePlayerState(player: ExoPlayer): StateFlow<PlayerStateMachine.State>? {
         return stateMachines[player]?.state
     }
 
-    // ----------------------------------------------------------------
-    // Internal Helpers
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
+    // Player Creation
+    // ------------------------------------------------------------
     private fun createNewPlayer(
-        strategy: PlayerConfigurationStrategy
+        strategy: PlayerConfigurationStrategy,
+        mediaType: MediaType
     ): ExoPlayer {
 
         val player = playerFactory.create(strategy)
@@ -172,12 +243,16 @@ class PlayerManager @Inject constructor(
 
         attachListener(player, stateMachine)
 
+        // Initial ABR attach
+        dynamicBitrateController.attach(player, mediaType)
+
         return player
     }
 
     private fun evictLeastRecentlyUsed() {
-        val lru = playerPool.firstOrNull { it !in activePlayers.values }
-            ?: return
+        val activeSet = activePlayers.values.map { it.player }.toSet()
+
+        val lru = playerPool.firstOrNull { it !in activeSet } ?: return
 
         stateMachines.remove(lru)
         playerPool.remove(lru)
@@ -197,13 +272,10 @@ class PlayerManager @Inject constructor(
                 when (state) {
                     Player.STATE_IDLE ->
                         stateMachine.transition(PlayerStateMachine.Event.Reset)
-
                     Player.STATE_BUFFERING ->
                         stateMachine.transition(PlayerStateMachine.Event.BufferingStarted)
-
                     Player.STATE_READY ->
                         stateMachine.transition(PlayerStateMachine.Event.BufferingCompleted)
-
                     Player.STATE_ENDED ->
                         stateMachine.transition(PlayerStateMachine.Event.PlaybackEnded)
                 }

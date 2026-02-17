@@ -5,7 +5,7 @@ import androidx.media3.ui.PlayerView
 
 interface IPlayer {
     suspend fun releasePlayer(mediaId: String)
-    fun getCurrentPlayer(): ExoPlayer?
+    suspend fun getCurrentPlayer(): ExoPlayer?
     suspend fun attachPlayerToView(
         playerView: PlayerView,
         mediaId: String,
