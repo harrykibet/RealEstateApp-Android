@@ -2,10 +2,13 @@ package com.estatia.realestate.apps.core.player_ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.feature.VideoItem
 import com.estatia.realestate.apps.core.player_engine.core.ISharedPlayerController
 
 @Composable
