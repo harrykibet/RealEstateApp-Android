@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.domain.interfaces
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import kotlinx.coroutines.flow.StateFlow
 
 interface IPlayer {
     suspend fun releasePlayer(mediaId: String)

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.atomic.AtomicReference
 
-class PlayerStateMachine {
+class PlaybackState {
 
     // ----------------------------
     // States
