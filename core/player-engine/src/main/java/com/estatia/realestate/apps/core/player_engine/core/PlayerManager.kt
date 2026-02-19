@@ -9,15 +9,11 @@ import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-
 
 @UnstableApi
 @Singleton
@@ -31,28 +27,25 @@ class PlayerManager @Inject constructor(
     private val playerDispatcher: CoroutineDispatcher
 ) : ISharedPlayerController {
 
-    // ------------------------------------------------------------
-    // Core shared state
-    // ------------------------------------------------------------
-
-    private val player: ExoPlayer =
-        playerFactory.create(playerFactory.vodStrategy).apply {
-            addAnalyticsListener(playbackAnalyticsListener)
-        }
-
-    private var currentMediaId: String? = null
-    private var currentMediaType: MediaType? = null
-
     private val playbackState = PlaybackState()
 
+    // ---------------------------------------
+    // Player Pool (max 3)
+    // ---------------------------------------
+
+    private val playerPool = LinkedHashMap<String, ExoPlayer>()
+    private val maxPoolSize = 3
+
+    private var activeMediaId: String? = null
+    private var activeMediaType: MediaType? = null
+
     init {
-        attachPlayerListener()
         observeEnvironment()
     }
 
-    // ------------------------------------------------------------
-    // Environment Observer (GLOBAL, SAFE)
-    // ------------------------------------------------------------
+    // ---------------------------------------
+    // Environment Observer
+    // ---------------------------------------
 
     private fun observeEnvironment() {
         engineScope.launch(playerDispatcher) {
@@ -62,100 +55,141 @@ class PlayerManager @Inject constructor(
             ) { network, battery ->
                 network to battery
             }.collect {
-                currentMediaType?.let { type ->
-                    dynamicBitrateController.onEnvironmentChanged(player, type)
+                activeMediaId?.let { mediaId ->
+                    playerPool[mediaId]?.let { player ->
+                        activeMediaType?.let { type ->
+                            dynamicBitrateController.onEnvironmentChanged(player, type)
+                        }
+                    }
                 }
             }
         }
     }
 
-    // ------------------------------------------------------------
-    // Play / Switch Media
-    // ------------------------------------------------------------
+    // ---------------------------------------
+    // Play
+    // ---------------------------------------
 
     override suspend fun play(
         mediaId: String,
         mediaType: MediaType
     ) = withContext(playerDispatcher) {
 
-        if (mediaId == currentMediaId) {
-            player.play()
-            return@withContext
+        val player = getOrCreatePlayer(mediaId, mediaType)
+
+        // Pause currently active player
+        activeMediaId?.let { currentId ->
+            if (currentId != mediaId) {
+                playerPool[currentId]?.pause()
+            }
         }
 
-        val strategy = when (mediaType) {
-            MediaType.LIVE -> playerFactory.liveStrategy
-            MediaType.VOD -> playerFactory.vodStrategy
-        }
-
-        val mediaItem = strategy.createMediaItem(mediaId)
-
-        playbackAnalyticsListener.markPlaybackStart()
-
-        player.apply {
-            stop()
-            clearMediaItems()
-            setMediaItem(mediaItem)
-            prepare()
-            play()
-        }
-
-        currentMediaId = mediaId
-        currentMediaType = mediaType
+        player.play()
+        activeMediaId = mediaId
+        activeMediaType = mediaType
 
         dynamicBitrateController.attach(player, mediaType)
     }
 
-    // ------------------------------------------------------------
-    // Pause (GLOBAL)
-    // ------------------------------------------------------------
-
-    override suspend fun pause() =
-        withContext(playerDispatcher) {
-            player.pause()
-        }
-
-    // ------------------------------------------------------------
-    // Preload (Adjacent Items)
-    // ------------------------------------------------------------
+    // ---------------------------------------
+    // Preload (prepare only)
+    // ---------------------------------------
 
     override suspend fun preload(
         mediaId: String,
         mediaType: MediaType
     ) = withContext(playerDispatcher) {
 
-        if (mediaId == currentMediaId) return@withContext
+        if (playerPool.containsKey(mediaId)) return@withContext
+
+        getOrCreatePlayer(mediaId, mediaType)
+    }
+
+    // ---------------------------------------
+    // Pause Active
+    // ---------------------------------------
+
+    override suspend fun pause() {
+        withContext(playerDispatcher) {
+            activeMediaId?.let {
+                playerPool[it]?.pause()
+            }
+        }
+    }
+
+    // ---------------------------------------
+    // Get Player for Surface Attachment
+    // ---------------------------------------
+
+    override suspend fun getPlayer(
+        mediaId: String
+    ): Player = withContext(playerDispatcher) {
+
+        playerPool[mediaId]
+            ?: getOrCreatePlayer(mediaId, activeMediaType ?: MediaType.VOD)
+    }
+
+    // ---------------------------------------
+    // Observe Playback State
+    // ---------------------------------------
+
+    override fun observeState(): StateFlow<PlaybackState.State> =
+        playbackState.state
+
+    // ---------------------------------------
+    // Internal: Player Creation
+    // ---------------------------------------
+
+    private fun getOrCreatePlayer(
+        mediaId: String,
+        mediaType: MediaType
+    ): ExoPlayer {
+
+        playerPool[mediaId]?.let { return it }
 
         val strategy = when (mediaType) {
             MediaType.LIVE -> playerFactory.liveStrategy
             MediaType.VOD -> playerFactory.vodStrategy
         }
 
-        player.addMediaItem(strategy.createMediaItem(mediaId))
-        player.prepare()
-    }
-
-    // ------------------------------------------------------------
-    // Observe Playback State (GLOBAL)
-    // ------------------------------------------------------------
-
-    override fun observeState(): StateFlow<PlaybackState.State> =
-        playbackState.state
-
-    // ------------------------------------------------------------
-    // Surface Attachment
-    // ------------------------------------------------------------
-
-    override suspend fun getPlayer(): Player =
-        withContext(playerDispatcher) {
-            player
+        val player = playerFactory.create(strategy).apply {
+            val mediaItem = strategy.createMediaItem(mediaId)
+            setMediaItem(mediaItem)
+            prepare()
+            addAnalyticsListener(playbackAnalyticsListener)
+            attachListener(this)
         }
 
-    // ------------------------------------------------------------
-    // Internal Listener
-    // ------------------------------------------------------------
+        playerPool[mediaId] = player
+        trimPoolIfNeeded()
 
-    private fun attachPlayerListener() {
+        return player
+    }
+
+    // ---------------------------------------
+    // Eviction Strategy (LRU)
+    // ---------------------------------------
+
+    private fun trimPoolIfNeeded() {
+        if (playerPool.size <= maxPoolSize) return
+
+        val iterator = playerPool.entries.iterator()
+        while (iterator.hasNext() && playerPool.size > maxPoolSize) {
+            val entry = iterator.next()
+
+            // Do not remove active player
+            if (entry.key == activeMediaId) continue
+
+            entry.value.release()
+            iterator.remove()
+        }
+    }
+
+    // ---------------------------------------
+    // Attach Player Listener
+    // ---------------------------------------
+
+    private fun attachListener(player: ExoPlayer) {
         player.addListener(object : Player.Listener {
 
             override fun onPlaybackStateChanged(state: Int) {

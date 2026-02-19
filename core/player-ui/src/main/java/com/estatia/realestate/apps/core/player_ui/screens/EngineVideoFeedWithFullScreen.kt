@@ -1,38 +1,34 @@
-package com.estatia.realestate.apps.core.player_ui
+package com.estatia.realestate.apps.core.player_ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.feature.VideoItem
-import com.estatia.realestate.apps.core.player_engine.core.ISharedPlayerController
+import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
 
 @Composable
 fun EngineVideoFeedWithFullScreen(
     videos: List<VideoItem>,
-    controller: ISharedPlayerController
+    viewModel: VideoPlaybackViewModel = viewModel() // Injected Hilt ViewModel
 ) {
     var fullScreenVideo by remember { mutableStateOf<VideoItem?>(null) }
 
+    // Feed with shared ViewModel
     EngineVideoFeed(
         videos = videos,
-        controller = controller,
+        viewModel = viewModel,
         modifier = Modifier.fillMaxSize()
-    ) { clickedVideo ->
-        // Trigger full-screen
-        fullScreenVideo = clickedVideo
-    }
+    )
 
+    // Fullscreen overlay
     fullScreenVideo?.let { video ->
         EngineVideoFullScreen(
             mediaId = video.mediaId,
             mediaType = MediaType.VOD,
-            controller = controller,
-            onExitFullScreen = { fullScreenVideo = null }
+            onExitFullScreen = { fullScreenVideo = null },
+            viewModel = viewModel
         )
     }
 }

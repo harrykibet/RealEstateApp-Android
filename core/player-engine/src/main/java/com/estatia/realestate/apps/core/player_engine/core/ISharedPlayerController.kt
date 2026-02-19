@@ -14,5 +14,5 @@ interface ISharedPlayerController {
 
     fun observeState(): StateFlow<PlaybackState.State>
 
-    suspend fun getPlayer(): Player
+    suspend fun getPlayer(mediaId: String): Player
 }
