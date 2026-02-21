@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.core.model.property
 import java.util.Date
 
 data class Property(
-    val id: String?,
-    val title: String?,
+    val id: String,
+    val title: String,
     val description: String?,
     val price: Double?,
     val imageUrls: List<String>,
@@ -19,10 +19,10 @@ data class Property(
     val contactEmail: String?,
     val county: String?,
     val active: Boolean,
-    val viewsCount: Int?,
-    val likesCount: Int?,
-    val commentsCount: Int?,
-    val sharesCount: Int?,
+    val viewsCount: Int,
+    val likesCount: Int,
+    val commentsCount: Int,
+    val sharesCount: Int,
     val propertyType: String?,
     val bedrooms: Int?,
     val bathrooms: Int?,
