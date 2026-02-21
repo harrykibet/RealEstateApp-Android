@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.ui
+package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

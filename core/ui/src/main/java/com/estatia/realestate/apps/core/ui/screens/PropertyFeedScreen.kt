@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.ui
+package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.VerticalPager
