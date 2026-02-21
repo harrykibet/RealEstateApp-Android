@@ -55,7 +55,8 @@ fun PropertyFeedScreen(
             viewModel = viewModel,
             onLikeClick = onLikeClick,
             onCommentClick = onCommentClick,
-            onShareClick = onShareClick
+            onShareClick = onShareClick,
+            isActive = pagerState.currentPage == page
         )
     }
 }
