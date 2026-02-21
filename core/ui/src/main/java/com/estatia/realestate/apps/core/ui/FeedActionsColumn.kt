@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.estatia.realestate.apps.core.designsystem.component.FeedActionButton
 import com.estatia.realestate.apps.core.model.property.Property
 
 @Composable

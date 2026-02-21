@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.ui
+package com.estatia.realestate.apps.core.designsystem.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size

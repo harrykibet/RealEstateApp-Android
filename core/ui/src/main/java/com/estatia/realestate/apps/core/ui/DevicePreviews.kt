@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.ui
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
- * Multipreview annotation that represents various device sizes. Add this annotation to a composable
+ * Multi preview annotation that represents various device sizes. Add this annotation to a composable
  * to render various devices.
  */
 @Preview(name = "phone", device = "spec:width=400dp,height=841dp,dpi=480")

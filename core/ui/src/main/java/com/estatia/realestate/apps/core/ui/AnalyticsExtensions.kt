@@ -23,19 +23,19 @@ suspend fun AnalyticsHelper.logScreenView(screenName: String) {
     )
 }
 
-suspend fun AnalyticsHelper.logNewsResourceOpened(newsResourceId: String) {
+suspend fun AnalyticsHelper.logPropertyScreenOpened(propertyId: String) {
     logEvent(
         event = AnalyticsEvent(
-            type = "news_resource_opened",
+            type = "property_screen_opened",
             extras = listOf(
-                Param("opened_news_resource", newsResourceId),
+                Param("opened_property_screen", propertyId),
             ),
         ),
     )
 }
 
 /**
- * A side-effect which records a screen view event.
+ * A side effect which records a screen view event.
  */
 @Composable
 fun TrackScreenViewEvent(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.property.Property
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -13,7 +14,7 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 @Composable
 fun PropertyFeedScreen(
     properties: List<Property>,
-    viewModel: VideoPlaybackViewModel,
+    viewModel: VideoPlaybackViewModel = hiltViewModel(),
     onLikeClick: (Property) -> Unit,
     onCommentClick: (Property) -> Unit,
     onShareClick: (Property) -> Unit

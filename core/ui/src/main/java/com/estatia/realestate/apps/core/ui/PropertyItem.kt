@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.property.Property
@@ -26,13 +27,12 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 
 @Composable
 private fun PropertyItem(
+    modifier: Modifier = Modifier,
     property: Property,
-    viewModel: VideoPlaybackViewModel,
+    viewModel: VideoPlaybackViewModel = hiltViewModel(),
     onLikeClick: (Property) -> Unit,
     onCommentClick: (Property) -> Unit,
-    onShareClick: (Property) -> Unit,
-    modifier: Modifier = Modifier
-
+    onShareClick: (Property) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize()
