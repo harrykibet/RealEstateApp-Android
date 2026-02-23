@@ -5,7 +5,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
-import com.estatia.realestate.apps.core.player_engine.perfomance.PlayerPerformanceOptimizer
 import com.estatia.realestate.apps.core.player_engine.strategies.LivePlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigurationStrategy
 import com.estatia.realestate.apps.core.player_engine.strategies.VodPlayerConfigurationStrategy
@@ -19,7 +18,6 @@ class PlayerFactory @Inject constructor(
     private val bandwidthMeter: BandwidthMeter,
     val liveStrategy: LivePlayerConfigurationStrategy,
     val vodStrategy: VodPlayerConfigurationStrategy,
-    private val performanceOptimizer: PlayerPerformanceOptimizer,
     private val analyticsListener: PlaybackAnalyticsListener
 ) {
 
@@ -31,7 +29,6 @@ class PlayerFactory @Inject constructor(
             .setBandwidthMeter(bandwidthMeter)
 
         val configuredBuilder = strategy.configure(context, baseBuilder)
-        performanceOptimizer.optimize(configuredBuilder)
 
         val player = configuredBuilder.build()
         player.addAnalyticsListener(analyticsListener)

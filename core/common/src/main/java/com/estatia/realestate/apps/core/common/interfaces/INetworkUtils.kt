@@ -5,7 +5,6 @@ import com.estatia.realestate.apps.core.common.system.NetworkUtils.NetworkStatus
 import kotlinx.coroutines.flow.Flow
 
 interface INetworkUtils {
-    fun hasInternetAccess(): Boolean
     fun checkInternetWithPing(): Boolean
     fun isVpnConnected(): Boolean
     fun getNetworkBandwidth(): Pair<Long, Long>

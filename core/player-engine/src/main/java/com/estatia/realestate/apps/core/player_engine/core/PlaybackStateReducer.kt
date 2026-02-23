@@ -30,10 +30,10 @@ class PlaybackStateReducer {
     val state: StateFlow<State> = _state
 
     fun dispatch(event: Event) {
-        _state.value = reduce(_state.value, event)
+        _state.value = reduce(event)
     }
 
-    private fun reduce(current: State, event: Event): State {
+    private fun reduce(event: Event): State {
         return when (event) {
             Event.Reset -> State.Idle
             Event.BufferingStarted -> State.Buffering

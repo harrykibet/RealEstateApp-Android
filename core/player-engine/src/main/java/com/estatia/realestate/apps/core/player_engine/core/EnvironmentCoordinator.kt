@@ -1,53 +1,75 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
+import com.estatia.realestate.apps.core.common.system.BatteryState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@UnstableApi
 @Singleton
+@UnstableApi
 class EnvironmentCoordinator @Inject constructor(
     private val networkUtils: INetworkUtils,
     private val batteryManager: IBatteryManager,
-    private val dynamicBitrateController: DynamicBitrateController
+    private val bandwidthMeter: BandwidthMeter
 ) {
 
-    fun observe(
-        scope: CoroutineScope,
-        activePlayerProvider: () -> Pair<ExoPlayer, MediaType>?
-    ) {
+    private val _environment = MutableStateFlow(
+        EnvironmentState(
+            isMetered = false,
+            shouldThrottlePerformance = false,
+            estimatedThroughputBps = bandwidthMeter.bitrateEstimate
+        )
+    )
+
+    val environment: StateFlow<EnvironmentState> = _environment.asStateFlow()
+
+    fun start(scope: CoroutineScope) {
         scope.launch {
             combine(
-                networkUtils.observeNetworkStatus(),
+                networkUtils.observeNetworkStatus()
+                    .map { it.isMetered}
+                    .distinctUntilChanged(),
+
                 batteryManager.observeBatteryState()
-            ) { network, battery ->
-                network to battery
+                    .map { it is BatteryState.Throttled }
+                    .distinctUntilChanged(),
+
+                observeBandwidth()
+                    .distinctUntilChanged()
+            ) { isMetered, shouldThrottle, bandwidth ->
+                EnvironmentState(
+                    isMetered = isMetered,
+                    shouldThrottlePerformance = shouldThrottle,
+                    estimatedThroughputBps = bandwidth
+                )
             }
                 .distinctUntilChanged()
-                .collect {
-                    val active = activePlayerProvider() ?: return@collect
-                    dynamicBitrateController.onEnvironmentChanged(
-                        active.first,
-                        active.second
-                    )
-                }
+                .collect { _environment.value = it }
         }
     }
 
-    fun attach(player: ExoPlayer, mediaType: MediaType) {
-        dynamicBitrateController.attach(player, mediaType)
-    }
+    private fun observeBandwidth(): Flow<Long> = callbackFlow {
+        val listener = BandwidthMeter.EventListener { _, _, _ ->
+            trySend(bandwidthMeter.bitrateEstimate)
+        }
 
-    fun detach(player: ExoPlayer) {
-        dynamicBitrateController.detach(player)
+        bandwidthMeter.addEventListener(
+            /* eventHandler = */ null,
+            listener
+        )
+
+        // Emit initial value
+        trySend(bandwidthMeter.bitrateEstimate)
+
+        awaitClose {
+            bandwidthMeter.removeEventListener(listener)
+        }
     }
 }

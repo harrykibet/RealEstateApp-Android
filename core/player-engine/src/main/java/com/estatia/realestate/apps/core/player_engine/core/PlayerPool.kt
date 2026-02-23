@@ -9,10 +9,11 @@ import javax.inject.Singleton
 @UnstableApi
 @Singleton
 class PlayerPool @Inject constructor(
-    private val playerFactory: PlayerFactory
+    private val playerFactory: PlayerFactory,
+    poolSizingPolicy: PlayerPoolSizingPolicy
 ) {
 
-    private val maxPoolSize = 3
+    private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize()
 
     // accessOrder = true → TRUE LRU
     private val players =
@@ -55,6 +56,12 @@ class PlayerPool @Inject constructor(
         return managed
     }
 
+    fun forEachPlayer(block: (ExoPlayer, MediaType) -> Unit) {
+        players.values.forEach {
+            block(it.player, it.mediaType)
+        }
+    }
+
     fun markAccessed(mediaId: String) {
         players[mediaId] // access updates order
     }
@@ -66,6 +73,19 @@ class PlayerPool @Inject constructor(
     fun releaseAll() {
         players.values.forEach { it.player.release() }
         players.clear()
+    }
+
+    fun updateMaxPoolSize(newSize: Int, activeMediaId: String?) {
+        if (newSize == maxPoolSize) return
+
+        // Only shrink immediately.
+        // Grow lazily on demand to avoid churn.
+        if (newSize < maxPoolSize) {
+            maxPoolSize = newSize
+            trimIfNeeded(excludeMediaId = activeMediaId)
+        } else {
+            maxPoolSize = newSize
+        }
     }
 
     fun trimIfNeeded(excludeMediaId: String?) {

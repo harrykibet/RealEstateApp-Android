@@ -3,35 +3,39 @@ package com.estatia.realestate.apps.core.player_engine.utils
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.player_engine.core.EnvironmentState
 import javax.inject.Inject
-
 @UnstableApi
 class DynamicBitrateController @Inject constructor(
     private val bitratePolicy: DynamicBitratePolicy
 ) {
 
-    fun attach(player: ExoPlayer, mediaType: MediaType) {
-        apply(player, mediaType)
-    }
+    /**
+     * Applies adaptive bitrate constraints based on
+     * media type and current environment.
+     *
+     * Safe to call repeatedly. Idempotent.
+     */
+    fun apply(
+        player: ExoPlayer,
+        mediaType: MediaType,
+        environment: EnvironmentState
+    ) {
+        val targetBitrate =
+            bitratePolicy.calculateMaxVideoBitrate(
+                mediaType = mediaType,
+                environment = environment
+            )
 
-    fun detach(player: ExoPlayer) {
-        // no-op for now
-    }
+        val currentBitrate =
+            player.trackSelectionParameters.maxVideoBitrate
 
-    fun onEnvironmentChanged(player: ExoPlayer, mediaType: MediaType) {
-        apply(player, mediaType)
-    }
-
-    private fun apply(player: ExoPlayer, mediaType: MediaType) {
-        val maxBitrate = bitratePolicy.calculateMaxVideoBitrate(mediaType)
-
-        val current = player.trackSelectionParameters.maxVideoBitrate
-        if (current == maxBitrate) return
+        if (currentBitrate == targetBitrate) return
 
         player.trackSelectionParameters =
             player.trackSelectionParameters
                 .buildUpon()
-                .setMaxVideoBitrate(maxBitrate)
+                .setMaxVideoBitrate(targetBitrate)
                 .build()
     }
 }

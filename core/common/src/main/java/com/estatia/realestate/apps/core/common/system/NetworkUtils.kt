@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.InetAddress
@@ -23,15 +24,19 @@ class NetworkUtils @Inject constructor(
         WIFI, CELLULAR, NONE
     }
 
-    private val BANDWIDTH_THRESHOLD_KBPS = 50 // 50 kilobits per second
-    private val GOOGLE_DNS_ADDRESS = "8.8.8.8"
-    private val GOOGLE_DNS_PORT = 53
-    private val HTTP_PORT = 80
+    private val bandwidth = 50 // 50 kilobits per second
+    private val dnsAddress = "8.8.8.8"
+    private val port = 80
 
-    sealed class NetworkStatusResult {
-        data object Connected : NetworkStatusResult()
-        data object PoorConnection : NetworkStatusResult()
-        data object NoInternet : NetworkStatusResult()
+    data class NetworkStatusResult(
+        val state: State,
+        val isMetered: Boolean
+    ) {
+        enum class State {
+            CONNECTED,
+            POOR_CONNECTION,
+            NO_INTERNET
+        }
     }
 
 
@@ -47,10 +52,6 @@ class NetworkUtils @Inject constructor(
         }
     }
 
-    private fun isConnected(): Boolean {
-        return getConnectionType() != ConnectionType.NONE
-    }
-
     private fun isPoorConnection(): Boolean {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
@@ -58,27 +59,15 @@ class NetworkUtils @Inject constructor(
         val linkDownstreamBandwidthKbps = networkCapabilities?.linkDownstreamBandwidthKbps ?: 0
         val linkUpstreamBandwidthKbps = networkCapabilities?.linkUpstreamBandwidthKbps ?: 0
 
-        return linkDownstreamBandwidthKbps < BANDWIDTH_THRESHOLD_KBPS || linkUpstreamBandwidthKbps < BANDWIDTH_THRESHOLD_KBPS
-    }
-
-
-    override fun hasInternetAccess(): Boolean {
-        return try {
-            Socket().use { socket ->
-                socket.connect(InetSocketAddress(GOOGLE_DNS_ADDRESS, GOOGLE_DNS_PORT), 1500)
-                true
-            }
-        } catch (e: IOException) {
-            false
-        }
+        return linkDownstreamBandwidthKbps < bandwidth || linkUpstreamBandwidthKbps < bandwidth
     }
 
 
     override fun checkInternetWithPing(): Boolean {
         return try {
-            val address = InetAddress.getByName(GOOGLE_DNS_ADDRESS)
+            val address = InetAddress.getByName(dnsAddress)
             address.isReachable(3000) // Timeout in ms
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -104,13 +93,13 @@ class NetworkUtils @Inject constructor(
             val start = System.currentTimeMillis()
             val socket = Socket()
             withContext(Dispatchers.IO) {
-                socket.connect(InetSocketAddress(host, HTTP_PORT), 1000)
+                socket.connect(InetSocketAddress(host, port), 1000)
             }
             withContext(Dispatchers.IO) {
                 socket.close()
             }
             System.currentTimeMillis() - start
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             -1L
         }
     }
@@ -124,11 +113,12 @@ class NetworkUtils @Inject constructor(
             }
 
             override fun onLost(network: android.net.Network) {
-                trySend(NetworkStatusResult.NoInternet)
+                trySend(getNetworkStatus())
             }
 
             override fun onCapabilitiesChanged(
-                network: android.net.Network, networkCapabilities: NetworkCapabilities
+                network: android.net.Network,
+                networkCapabilities: NetworkCapabilities
             ) {
                 trySend(getNetworkStatus())
             }
@@ -136,13 +126,13 @@ class NetworkUtils @Inject constructor(
 
         registerNetworkCallback(callback)
 
-        // Emit initial state immediately
+        // Emit initial state
         trySend(getNetworkStatus())
 
         awaitClose {
             unregisterNetworkCallback(callback)
         }
-    }
+    }.distinctUntilChanged()
 
     private fun getEstimatedThroughput(): Long {
         val network = connectivityManager.activeNetwork
@@ -211,11 +201,24 @@ class NetworkUtils @Inject constructor(
 
 
     override fun getNetworkStatus(): NetworkStatusResult {
-        return when {
-            !isConnected() -> NetworkStatusResult.NoInternet
-            !hasInternetAccess() -> NetworkStatusResult.NoInternet
-            isPoorConnection() -> NetworkStatusResult.PoorConnection
-            else -> NetworkStatusResult.Connected
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        val isMetered = connectivityManager.isActiveNetworkMetered
+
+        val state = when {
+            capabilities == null -> NetworkStatusResult.State.NO_INTERNET
+            !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ->
+                NetworkStatusResult.State.NO_INTERNET
+            isPoorConnection() ->
+                NetworkStatusResult.State.POOR_CONNECTION
+            else ->
+                NetworkStatusResult.State.CONNECTED
         }
+
+        return NetworkStatusResult(
+            state = state,
+            isMetered = isMetered
+        )
     }
 }

@@ -5,6 +5,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -15,6 +16,8 @@ import javax.inject.Singleton
 class PlayerManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,
+    private val sizingPolicy: PlayerPoolSizingPolicy,
+    private val dynamicBitrateController: DynamicBitrateController,
     engineScope: CoroutineScope,
     private val playerDispatcher: CoroutineDispatcher
 ) : ISharedPlayerController {
@@ -28,10 +31,24 @@ class PlayerManager @Inject constructor(
             "PlayerDispatcher must be single-threaded"
         }
 
-        environmentCoordinator.observe(engineScope) {
-            activeMediaId?.let { id ->
-                pool.get(id)?.let {
-                    it.player to it.mediaType
+        // Start environment monitoring
+        environmentCoordinator.start(engineScope)
+
+        // React to environment changes
+        engineScope.launch(playerDispatcher) {
+            environmentCoordinator.environment.collect { env ->
+
+                // 1️⃣ Update adaptive pool size
+                val newSize = sizingPolicy.calculateMaxPoolSize()
+                pool.updateMaxPoolSize(newSize, activeMediaId)
+
+                // 2️⃣ Apply environment to all pooled players
+                pool.forEachPlayer { player, mediaType ->
+                    dynamicBitrateController.apply(
+                        player,
+                        mediaType,
+                        env
+                    )
                 }
             }
         }
@@ -47,17 +64,12 @@ class PlayerManager @Inject constructor(
         if (activeMediaId != mediaId) {
             activeMediaId?.let { previous ->
                 pool.get(previous)?.player?.pause()
-                pool.get(previous)?.player?.let {
-                    environmentCoordinator.detach(it)
-                }
             }
         }
 
+        attachListenerIfNeeded(managed.player)
+
         managed.player.play()
-        attachListener(managed.player)
-
-        environmentCoordinator.attach(managed.player, mediaType)
-
         activeMediaId = mediaId
 
         pool.trimIfNeeded(excludeMediaId = mediaId)
@@ -72,9 +84,7 @@ class PlayerManager @Inject constructor(
 
     override suspend fun pause() {
         withContext(playerDispatcher) {
-            activeMediaId?.let {
-                pool.get(it)?.player?.pause()
-            }
+            activeMediaId?.let { pool.get(it)?.player?.pause() }
         }
     }
 
@@ -93,7 +103,15 @@ class PlayerManager @Inject constructor(
         (playerDispatcher as ExecutorCoroutineDispatcher).close()
     }
 
-    private fun attachListener(player: ExoPlayer) {
+    // ---------------------------------------------------
+    // Listener Management
+    // ---------------------------------------------------
+
+    private val attachedPlayers = mutableSetOf<ExoPlayer>()
+
+    private fun attachListenerIfNeeded(player: ExoPlayer) {
+        if (!attachedPlayers.add(player)) return
+
         player.addListener(object : Player.Listener {
 
             override fun onPlaybackStateChanged(state: Int) {
