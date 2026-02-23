@@ -6,5 +6,6 @@ sealed class PlayerUiState {
     object Playing : PlayerUiState()
     object Paused : PlayerUiState()
     object Ended : PlayerUiState()
+    object Ready : PlayerUiState()
     data class Error(val message: String?) : PlayerUiState()
 }

@@ -30,7 +30,7 @@ fun EngineVideoPlayer(
 
     // Obtain the correct player for this mediaId
     LaunchedEffect(mediaId) {
-        player = viewModel.getPlayer(mediaId)
+        player = viewModel.getPlayer(mediaId, mediaType)
 
         if (autoPlay) {
             viewModel.play(mediaId, mediaType)

@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.ISharedPlayerController
-import com.estatia.realestate.apps.core.player_engine.core.PlaybackState
+import com.estatia.realestate.apps.core.player_engine.core.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,62 +23,62 @@ class VideoPlaybackViewModel @Inject constructor(
     // ---------------------------------------
 
     private var currentMediaId: String? = null
+    private var playJob: Job? = null
+    private var preloadJob: Job? = null
 
     // ---------------------------------------
-    // UI State (exposed to UI layer only)
+    // UI State
     // ---------------------------------------
 
-    private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
-    val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
+    private val _uiState =
+        MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
+
+    val uiState: StateFlow<PlayerUiState> =
+        _uiState.asStateFlow()
 
     init {
         observeEngineState()
     }
 
     // ---------------------------------------
-    // Observe Engine State Internally
+    // Engine → UI Mapping
     // ---------------------------------------
 
     private fun observeEngineState() {
         viewModelScope.launch {
-            playerController.observeState().collect { engineState ->
-                _uiState.value = mapToUiState(engineState)
-            }
+            playerController
+                .observeState()
+                .collectLatest { engineState ->
+                    _uiState.value = mapToUiState(engineState)
+                }
         }
     }
 
-    // ---------------------------------------
-    // Engine → UI State Mapper
-    // ---------------------------------------
-
     private fun mapToUiState(
-        state: PlaybackState.State
+        state: PlaybackStateReducer.State
     ): PlayerUiState {
         return when (state) {
 
-            PlaybackState.State.Idle ->
+            PlaybackStateReducer.State.Idle ->
                 PlayerUiState.Idle
 
-            PlaybackState.State.Buffering ->
+            PlaybackStateReducer.State.Buffering ->
                 PlayerUiState.Buffering
 
-            PlaybackState.State.Ready ->
-                PlayerUiState.Playing   // Ready implies playable
+            PlaybackStateReducer.State.Ready ->
+                PlayerUiState.Ready
 
-            PlaybackState.State.Playing ->
+            PlaybackStateReducer.State.Playing ->
                 PlayerUiState.Playing
 
-            PlaybackState.State.Paused ->
+            PlaybackStateReducer.State.Paused ->
                 PlayerUiState.Paused
 
-            PlaybackState.State.Ended ->
+            PlaybackStateReducer.State.Ended ->
                 PlayerUiState.Ended
 
-            is PlaybackState.State.Error ->
-                PlayerUiState.Error(state.throwable.message)
-
-            PlaybackState.State.Released ->
-                PlayerUiState.Idle
+            is PlaybackStateReducer.State.Error ->
+                PlayerUiState.Error(state.error.message)
         }
     }
 
@@ -92,7 +91,8 @@ class VideoPlaybackViewModel @Inject constructor(
 
         currentMediaId = mediaId
 
-        viewModelScope.launch {
+        playJob?.cancel()
+        playJob = viewModelScope.launch {
             playerController.play(mediaId, mediaType)
         }
     }
@@ -103,12 +103,15 @@ class VideoPlaybackViewModel @Inject constructor(
         }
     }
 
-    suspend fun getPlayer(mediaId: String): Player {
-        return playerController.getPlayer(mediaId)
+    suspend fun getPlayer(
+        mediaId: String,
+        mediaType: MediaType
+    ): Player {
+        return playerController.getPlayer(mediaId, mediaType)
     }
 
     // ------------------------------------------------------------
-    // Feed-Oriented Playback
+    // Feed-Oriented Playback (TikTok-style)
     // ------------------------------------------------------------
 
     fun onPageVisible(
@@ -117,14 +120,18 @@ class VideoPlaybackViewModel @Inject constructor(
         previousMediaId: String?,
         nextMediaId: String?
     ) {
+
         currentMediaId = mediaId
 
-        viewModelScope.launch {
+        playJob?.cancel()
+        preloadJob?.cancel()
 
-            // Play current
+        playJob = viewModelScope.launch {
             playerController.play(mediaId, mediaType)
+        }
 
-            // Preload adjacent
+        preloadJob = viewModelScope.launch {
+
             previousMediaId?.let {
                 playerController.preload(it, mediaType)
             }

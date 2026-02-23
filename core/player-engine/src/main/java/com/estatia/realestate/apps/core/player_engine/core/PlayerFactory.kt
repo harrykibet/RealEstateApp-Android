@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.player_engine.core
 import android.content.Context
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.perfomance.PlayerPerformanceOptimizer
@@ -20,7 +19,6 @@ class PlayerFactory @Inject constructor(
     private val bandwidthMeter: BandwidthMeter,
     val liveStrategy: LivePlayerConfigurationStrategy,
     val vodStrategy: VodPlayerConfigurationStrategy,
-    private val mediaSourceFactory: ProgressiveMediaSource.Factory,
     private val performanceOptimizer: PlayerPerformanceOptimizer,
     private val analyticsListener: PlaybackAnalyticsListener
 ) {
@@ -31,7 +29,6 @@ class PlayerFactory @Inject constructor(
     fun create(strategy: PlayerConfigurationStrategy): ExoPlayer {
         val baseBuilder = ExoPlayer.Builder(context)
             .setBandwidthMeter(bandwidthMeter)
-            .setMediaSourceFactory(mediaSourceFactory)
 
         val configuredBuilder = strategy.configure(context, baseBuilder)
         performanceOptimizer.optimize(configuredBuilder)

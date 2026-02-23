@@ -5,10 +5,13 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import javax.inject.Inject
 
 @UnstableApi
-class VodPlayerConfigurationStrategy @Inject constructor()
+class VodPlayerConfigurationStrategy @Inject constructor(
+    private val mediaSourceFactory: ProgressiveMediaSource.Factory
+)
     : PlayerConfigurationStrategy {
 
     override fun configure(
@@ -27,6 +30,7 @@ class VodPlayerConfigurationStrategy @Inject constructor()
 
         return builder
             .setLoadControl(loadControl)
+            .setMediaSourceFactory(mediaSourceFactory)
     }
 
     override fun createMediaItem(url: String): MediaItem {
