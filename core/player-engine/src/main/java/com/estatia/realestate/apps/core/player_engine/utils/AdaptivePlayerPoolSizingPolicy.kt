@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.player_engine.core
+package com.estatia.realestate.apps.core.player_engine.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
@@ -9,7 +9,7 @@ import jakarta.inject.Singleton
 class AdaptivePlayerPoolSizingPolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
     private val batteryManager: IBatteryManager
-) : PlayerPoolSizingPolicy {
+) : IPlayerPoolSizingPolicy {
 
     override fun calculateMaxPoolSize(): Int {
 

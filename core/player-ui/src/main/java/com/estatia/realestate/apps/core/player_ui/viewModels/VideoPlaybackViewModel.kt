@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.player_engine.core.ISharedPlayerController
-import com.estatia.realestate.apps.core.player_engine.core.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
+import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoPlaybackViewModel @Inject constructor(
-    private val playerController: ISharedPlayerController
+    private val playerController: IPlayerManager
 ) : ViewModel() {
 
     // ---------------------------------------

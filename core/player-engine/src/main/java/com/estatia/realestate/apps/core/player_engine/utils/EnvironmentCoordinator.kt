@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.player_engine.core
+package com.estatia.realestate.apps.core.player_engine.utils
 
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter

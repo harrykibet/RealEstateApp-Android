@@ -5,32 +5,39 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
-import com.estatia.realestate.apps.core.player_engine.strategies.LivePlayerConfigurationStrategy
-import com.estatia.realestate.apps.core.player_engine.strategies.PlayerConfigurationStrategy
-import com.estatia.realestate.apps.core.player_engine.strategies.VodPlayerConfigurationStrategy
+import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfiguration
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
 class PlayerFactory @Inject constructor(
-    private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
-    val liveStrategy: LivePlayerConfigurationStrategy,
-    val vodStrategy: VodPlayerConfigurationStrategy,
     private val analyticsListener: PlaybackAnalyticsListener
 ) {
 
     /**
-     * Create a configured ExoPlayer instance
+     * Creates a fully configured ExoPlayer instance from an immutable
+     * PlayerConfiguration snapshot.
+     *
+     * No mutation. No branching. No strategy pattern.
      */
-    fun create(strategy: PlayerConfigurationStrategy): ExoPlayer {
-        val baseBuilder = ExoPlayer.Builder(context)
+    fun create(configuration: PlayerConfiguration): ExoPlayer {
+
+        val builder = ExoPlayer.Builder(context)
             .setBandwidthMeter(bandwidthMeter)
+            .setMediaSourceFactory(configuration.mediaSourceFactory)
+            .setLoadControl(configuration.loadControl)
 
-        val configuredBuilder = strategy.configure(context, baseBuilder)
+        configuration.livePlaybackSpeedControl?.let {
+            builder.setLivePlaybackSpeedControl(it)
+        }
 
-        val player = configuredBuilder.build()
+        val player = builder.build()
+
+        player.setMediaItem(configuration.mediaItem)
         player.addAnalyticsListener(analyticsListener)
 
         return player

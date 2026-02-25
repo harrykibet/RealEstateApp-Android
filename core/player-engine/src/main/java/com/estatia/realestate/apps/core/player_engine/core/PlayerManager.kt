@@ -5,7 +5,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitrateController
+import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
+import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
+import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -16,11 +20,11 @@ import javax.inject.Singleton
 class PlayerManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,
-    private val sizingPolicy: PlayerPoolSizingPolicy,
+    private val sizingPolicy: IPlayerPoolSizingPolicy,
     private val dynamicBitrateController: DynamicBitrateController,
     engineScope: CoroutineScope,
     private val playerDispatcher: CoroutineDispatcher
-) : ISharedPlayerController {
+) : IPlayerManager {
 
     private val reducer = PlaybackStateReducer()
 

@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.player_engine.core
+package com.estatia.realestate.apps.core.player_engine.state
 
 import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.flow.MutableStateFlow
