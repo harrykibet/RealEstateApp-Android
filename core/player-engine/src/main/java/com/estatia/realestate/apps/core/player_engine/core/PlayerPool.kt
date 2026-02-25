@@ -20,7 +20,10 @@ class PlayerPool @Inject constructor(
     private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize()
 
     // accessOrder = true → LRU behavior
-    private val players = LinkedHashMap<String, ManagedPlayer>(16, 0.75f, true)
+    private val players =
+        LinkedHashMap<String, ManagedPlayer>(
+            16, 0.75f, true
+        )
 
     data class ManagedPlayer(
         val mediaId: String,
