@@ -37,11 +37,4 @@ interface IStreamingPipeline {
      * Feature layer may call this.
      */
     fun prefetch(uri: Uri)
-
-    /**
-     * Observability.
-     */
-    suspend fun cacheSizeBytes(): Long
-
-    suspend fun isFullyCached(cacheKey: String): Boolean
 }

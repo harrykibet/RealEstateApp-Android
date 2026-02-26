@@ -15,7 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class StreamingDispatcher
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,10 +36,16 @@ object PlayerManagerModule {
 
     @Provides
     @Singleton
+    @StreamingDispatcher
+    fun provideStreamingDispatcher(): CoroutineDispatcher =
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+
+    @Provides
+    @Singleton
     fun provideEngineScope(): CoroutineScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    @OptIn(UnstableApi::class)
+    @UnstableApi
     @Provides
     @Singleton
     fun provideBandwidthMeter(context: Context): BandwidthMeter {

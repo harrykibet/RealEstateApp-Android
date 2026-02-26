@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.player_engine.streaming
+package com.estatia.realestate.apps.core.player_engine.utils
 
 import android.graphics.PixelFormat
 import android.os.Build
