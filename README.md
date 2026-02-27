@@ -1,56 +1,122 @@
-# RealEstateApp Android
+# Estatia
 
-**RealEstateApp** is a modern Android application designed to simplify property listing, discovery, and management across Kenya. It provides a platform for tenants to easily find places to rent, and for landlords or agents to manage and showcase their properties.
+> Rental infrastructure for emerging markets.
 
----
-
-## 🚀 Features
-
-- 🔍 **Property Search & Explore**
-  - Filter properties by type, price, location, and amenities
-  - Map-based search with interactive pins
-
-- 🏠 **Add & Manage Listings**
-  - Multi-step property listing form with image & location upload
-  - Dynamic property types support: apartments, single rooms, etc.
-
-- ❤️ **User Engagement**
-  - Likes, comments, and favorites
-  - User profiles and authentication
-
-- 📊 **Owner Dashboard**
-  - Analytics on views, likes, and engagement
-  - Edit and delete listings
-
-- 🔐 **Security & Verification**
-  - Admin panel with custom Firebase claims
-  - Strict owner verification process
-
-- 💰 **Payments**
-  - Integrated Safaricom Daraja API for service fees and premium features
+Estatia is a scalable digital platform powering trusted property discovery, landlord tooling, and monetized listing distribution. Built for national scale. Architected for long-term evolution.
 
 ---
 
-## 🧱 Architecture
+## The Opportunity
 
-This app is built using **Clean Architecture** and fully modularized:
+Rental markets in emerging economies remain fragmented, offline-heavy, and trust-constrained. Discovery is inefficient. Visibility is uneven. Monetization is underdeveloped.
 
-
-Each feature is a **dynamic module** and follows **MVVM** with **Hilt**, **Jetpack Compose**, **Navigation**, and **ViewModel** patterns.
+Estatia digitizes and structures this ecosystem.
 
 ---
 
-## 🛠️ Tech Stack
+## What Estatia Delivers
 
-- **Language**: Kotlin
-- **UI**: Jetpack Compose, Material3
-- **Navigation**: Jetpack Navigation Compose
-- **Dependency Injection**: Hilt
-- **Database**: Firebase Firestore
-- **Image Loading**: Coil / Glide
-- **Maps**: Google Maps SDK + Places API
-- **Payments**: Safaricom Daraja API
-- **Authentication**: Firebase Auth
-- **Modularization**: Gradle Convention Plugins + Version Catalogs
-- **Testing**: JUnit, Espresso, UI Testing Libraries
-- **Benchmarking**: Baseline Profile + Benchmark modules
+### Discovery Engine
+
+* Location-aware property search
+* Map-based exploration
+* Media-rich vertical feed (image + video)
+* Structured filtering (price, type, amenities)
+
+### Listing Infrastructure
+
+* Multi-stage listing workflow
+* Media upload pipeline
+* Ownership validation
+* Full lifecycle management
+
+### Engagement & Analytics
+
+* Likes, saves, comments
+* Owner performance dashboard
+* Exposure tracking
+
+### Monetization Layer
+
+* Integrated service fee processing
+* Foundation for premium visibility tiers
+* Monetization-first architecture
+
+### Trust Framework
+
+* Role-based access control
+* Admin moderation pipeline
+* Owner verification workflows
+
+---
+
+## Architecture
+
+Estatia is built with strict modular boundaries and production-grade discipline.
+
+**Principles**
+
+* Clean Architecture
+* Dependency inversion
+* Interface-driven design
+* Unidirectional data flow
+* Immutable state modeling
+* Lifecycle-safe concurrency
+* Zero business logic in UI
+
+**Module Structure**
+
+```
+:app
+:core-domain
+:core-data
+:core-ui
+:core-utils
+:core-player
+:feature-auth
+:feature-home
+:feature-profile
+:feature-property
+```
+
+---
+
+## Technology
+
+* Kotlin
+* Jetpack Compose (Material 3)
+* MVVM
+* Hilt
+* Coroutines + Flow
+* Firebase (Auth, Firestore, Storage)
+* Google Maps SDK
+* ExoPlayer
+* Gradle Convention Plugins + Version Catalogs
+* Baseline Profiles + Benchmarking
+
+---
+
+## Scalability
+
+Engineered for:
+
+* High-throughput media feeds
+* Optimized Firestore query patterns
+* Memory-efficient media handling
+* Deterministic state management
+* Cross-platform expansion (Android, iOS, Web)
+
+---
+
+## Security
+
+* Server-enforced ownership rules
+* Role-based access control
+* Defensive validation
+* Clear client/server boundaries
+
+---
+
+## Vision
+
+Estatia is building the foundational rental infrastructure layer for emerging markets — enabling scalable, transparent, and monetizable property ecosystems across platforms.
