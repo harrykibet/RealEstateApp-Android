@@ -1,6 +1,6 @@
-# ARCHITECTURE.md
+# Estatia_ARCHITECTURE.md
 
-# Estatia — Architecture Overview
+# Estatia — Architecture Deep Dive (Full Module Diagrams)
 
 ```mermaid
 flowchart TD
@@ -9,83 +9,85 @@ flowchart TD
     Repos --> Storage[":core:datastore, :core:datastore-proto"]
     VM --> Player[":core:player-engine"]
     Player --> PlayerUI[":core:player-ui"]
+    Security[":core:security"] --> Repos
 ```
 
 ## Core Principles
 
 * Clean Architecture: separation of UI, domain, and data layers
-* Unidirectional data flow: deterministic state updates, immutable exposure
-* Dependency inversion: features depend on domain interfaces
-* Module isolation: strict boundaries, no cross-feature direct access
-* Lifecycle-aware design: safe state handling across process death and recomposition
+* Unidirectional Data Flow: deterministic state updates, immutable exposure
+* Dependency Inversion: features depend on domain interfaces
+* Module Isolation: strict boundaries; no cross-feature direct access
+* Lifecycle Safety: state handling across recomposition, process death, concurrency
+* Actor-style Concurrency: for media-heavy and async workflows
 
-## Module Structure
+## Module Responsibilities
 
-```
-:app
-:benchmark
-:localization
-:lint
-:core:analytics
-:core:network
-:core:ui
-:core:common
-:core:notifications
-:core:data
-:core:domain
-:core:model
-:core:database
-:core:security
-:core:datastore
-:core:player-engine
-:core:player-ui
-:core:design-system
-:core:testing
-:core:datastore-proto
-:feature:home
-:feature:auth
-:feature:profile
-:feature:search
-:feature:property
-:feature:intelligence
-:feature:payments
-:feature:market
-:feature:chats
-:feature:favorites
-:feature:comments
-:feature:settings
-:feature:service
+| Module              | Responsibility                                                           |
+| ------------------- | ------------------------------------------------------------------------ |
+| :core:domain        | Use cases, business rules, repository interfaces                         |
+| :core:data          | Repository implementations, Firebase/network orchestration               |
+| :core:ui            | Shared Compose components, theming, UI primitives                        |
+| :core:design-system | Design tokens, typography, colors, component library                     |
+| :core:player-engine | ExoPlayer orchestration, prefetch, lifecycle handling, actor-style state |
+| :core:player-ui     | Player UI, minimal business logic                                        |
+| :core:security      | Role-based access, server-boundary enforcement, verification workflows   |
+| Feature modules     | Own ViewModels, navigation, UI logic; depend only on domain interfaces   |
+
+## Feature Module Architecture Examples
+
+### :feature:home
+
+```mermaid
+flowchart TD
+    HomeUI --> HomeVM --> HomeDomainUseCases --> Repos
+    Repos --> Database
+    Repos --> Storage
+    HomeVM --> PlayerEngine
 ```
 
-### Responsibilities
+### :feature:property
 
-* **:core:domain** — Business logic, use cases, repository interfaces, no Android dependencies
-* **:core:data** — Repository implementations, Firestore, network orchestration
-* **:core:ui & :core:design-system** — Reusable Compose components, themes, UI primitives
-* **:core:player-engine & :core:player-ui** — Media playback and UI orchestration, lifecycle-safe, isolated
-* **Feature modules** — Own ViewModels, navigation, UI; depend only on domain interfaces
+```mermaid
+flowchart TD
+    PropertyUI --> PropertyVM --> PropertyDomainUseCases --> PropertyRepos
+    PropertyRepos --> FirestoreDB
+    PropertyVM --> PlayerEngine
+```
+
+### :feature:profile
+
+```mermaid
+flowchart TD
+    ProfileUI --> ProfileVM --> ProfileDomainUseCases --> ProfileRepos
+    ProfileRepos --> Database
+    ProfileVM --> Analytics
+```
+
+### :feature:search
+
+```mermaid
+flowchart TD
+    SearchUI --> SearchVM --> SearchDomainUseCases --> SearchRepos
+    SearchRepos --> FirestoreDB
+    SearchVM --> PlayerEngine
+```
 
 ## Data Flow
 
-1. UI → ViewModel (immutable state via StateFlow/LiveData)
-2. ViewModel → Domain (use cases)
-3. Use cases → Repositories (data layer)
-4. Repositories → Services (network, analytics) / Storage / Database
-5. Responses → Domain → UI
-
-* Async via Coroutines + Flow
-* Errors wrapped in Result/Resource for predictable UI states
+1. UI → ViewModel → Domain → Repositories → External Services
+2. Immutable state returned to ViewModel → UI
 
 ## Concurrency & Lifecycle
 
-* Thread-confined state reducers
-* Immutable external state exposure
-* Actor-style media playback for race-condition safety
+* Actor-style state for media
+* Thread-safe singletons
 * Lifecycle-aware Compose scopes
+* Mutable state confined to domain/actor scopes
 
-## Scalability Considerations
+## Scalability
 
-* Firestore batch queries and read optimization
-* Media-heavy feed prefetching and caching
-* Module-level isolation prevents architectural drift
-* Thread-safe singletons for global services
+* Batched Firestore queries, optimized indexes
+* Prefetching and caching for media-heavy feeds
+* Modular isolation for independent deployment
+* Global services thread-safe
