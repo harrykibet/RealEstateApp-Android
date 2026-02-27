@@ -68,15 +68,38 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 
 ```
 :app
-:core-domain
-:core-data
-:core-ui
-:core-utils
-:core-player
-:feature-auth
-:feature-home
-:feature-profile
-:feature-property
+:benchmark
+:localization
+:lint
+:core:analytics
+:core:network
+:core:ui
+:core:common
+:core:notifications
+:core:data
+:core:domain
+:core:model
+:core:database
+:core:security
+:core:datastore
+:core:player-engine
+:core:player-ui
+:core:design-system
+:core:testing
+:core:datastore-proto
+:feature:home
+:feature:auth
+:feature:profile
+:feature:search
+:feature:property
+:feature:intelligence
+:feature:payments
+:feature:market
+:feature:chats
+:feature:favorites
+:feature:comments
+:feature:settings
+:feature:service
 ```
 
 ---
@@ -114,6 +137,15 @@ Engineered for:
 * Role-based access control
 * Defensive validation
 * Clear client/server boundaries
+
+---
+
+## Developer Resources
+
+For contributors and engineers seeking deeper technical insights:
+
+* [ARCHITECTURE.md](./docs/ARCHITECTURE.md) — Full system architecture, module responsibilities, data flow, concurrency, and scalability.
+* [ENGINEERING.md](./docs/ENGINEERING.md) — Coding standards, testing, performance, security, CI/CD, and developer guidelines.
 
 ---
 
