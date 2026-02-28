@@ -5,6 +5,17 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import com.estatia.realestate.apps.core.player_engine.configuration.IPlaybackConfigurationProvider
+import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
+import com.estatia.realestate.apps.core.player_engine.configuration.PlaybackConfigurationProvider
+import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfigurationFactory
+import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
+import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
+import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.streaming.StreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,9 +33,10 @@ import javax.inject.Singleton
 @Retention(AnnotationRetention.BINARY)
 annotation class StreamingDispatcher
 
+@UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)
-object PlayerManagerModule {
+abstract class PlayerManagerModule {
 
     @Provides
     @Singleton
@@ -45,10 +57,39 @@ object PlayerManagerModule {
     fun provideEngineScope(): CoroutineScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    @UnstableApi
     @Provides
     @Singleton
     fun provideBandwidthMeter(context: Context): BandwidthMeter {
         return DefaultBandwidthMeter.Builder(context).build()
     }
+
+    @Binds
+    @Singleton
+    abstract fun bindPlayerManager(playerManager: PlayerManager): IPlayerManager
+
+    @Binds
+    @Singleton
+    abstract fun bindPlayerPoolSizingPolicy(
+        playerPoolSizingPolicy: AdaptivePlayerPoolSizingPolicy
+    ): IPlayerPoolSizingPolicy
+
+    @Binds
+    @Singleton
+    abstract fun bindStreamingPipeline(
+        streamingPipeline: StreamingPipeline
+    ): IStreamingPipeline
+
+    @Binds
+    @Singleton
+    abstract fun bindPlayerConfigurationFactory(
+        playerConfigurationFactory:
+        PlayerConfigurationFactory
+    ): IPlayerConfigurationFactory
+
+    @Binds
+    @Singleton
+    abstract fun bindPlaybackConfigurationProvider(
+        playbackConfigurationProvider:
+        PlaybackConfigurationProvider
+    ): IPlaybackConfigurationProvider
 }
