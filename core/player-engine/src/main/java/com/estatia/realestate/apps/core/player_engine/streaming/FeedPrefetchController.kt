@@ -5,73 +5,92 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @UnstableApi
 class FeedPrefetchController(
     private val playbackDataSourceFactory: DataSource.Factory,
-    dispatcher: CoroutineDispatcher
-) {
+    dispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher
+) : AutoCloseable {
 
     private val scope = CoroutineScope(
         SupervisorJob() + dispatcher.limitedParallelism(1)
     )
 
-    private sealed interface Msg {
-        data class Prefetch(val uri: Uri) : Msg
-        data class CancelAll(val reply: CompletableDeferred<Unit>) : Msg
+    @Volatile
+    private var queue = createChannel()
+
+    private var currentJob: Job? = null
+
+    init {
+        startConsumer()
     }
 
-    @ObsoleteCoroutinesApi
-    private val actor = scope.actor<Msg>(capacity = 32) {
-        for (msg in channel) {
-            when (msg) {
-                is Msg.Prefetch -> prefetchInternal(msg.uri)
-                is Msg.CancelAll -> {
-                    coroutineContext.cancelChildren()
-                    msg.reply.complete(Unit)
+    private fun createChannel() =
+        Channel<Uri>(
+            capacity = 32,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+
+    private fun startConsumer() {
+        scope.launch {
+            for (uri in queue) {
+                currentJob = launch {
+                    prefetchInternal(uri)
                 }
+                currentJob?.join()
             }
         }
     }
 
-    @ObsoleteCoroutinesApi
     fun prefetch(uri: Uri) {
-        actor.trySend(Msg.Prefetch(uri))
+        queue.trySend(uri)
     }
 
-    @ObsoleteCoroutinesApi
     suspend fun cancelAll() {
-        val deferred = CompletableDeferred<Unit>()
-        actor.send(Msg.CancelAll(deferred))
-        deferred.await()
+        currentJob?.cancelAndJoin()
+
+        // Replace queue entirely (clean slate)
+        val oldQueue = queue
+        queue = createChannel()
+        oldQueue.close()
+
+        startConsumer()
     }
 
     private suspend fun prefetchInternal(
         uri: Uri,
         maxBytes: Long = 3 * 1024 * 1024
-    ) {
-        withContext(Dispatchers.IO) {
-            val dataSpec = DataSpec(uri)
-            val dataSource = playbackDataSourceFactory.createDataSource()
+    ) = withContext(ioDispatcher) {
 
-            DataSourceInputStream(dataSource, dataSpec).use { input ->
-                val buffer = ByteArray(32 * 1024)
-                var total = 0L
-                while (total < maxBytes) {
-                    val read = input.read(buffer)
-                    if (read == -1) break
-                    total += read
-                }
+        val dataSpec = DataSpec(uri)
+        val dataSource = playbackDataSourceFactory.createDataSource()
+
+        DataSourceInputStream(dataSource, dataSpec).use { input ->
+            val buffer = ByteArray(32 * 1024)
+            var total = 0L
+
+            while (total < maxBytes && currentCoroutineContext().isActive) {
+                val read = input.read(buffer)
+                if (read == -1) break
+                total += read
             }
         }
+    }
+
+    override fun close() {
+        scope.cancel()
     }
 }

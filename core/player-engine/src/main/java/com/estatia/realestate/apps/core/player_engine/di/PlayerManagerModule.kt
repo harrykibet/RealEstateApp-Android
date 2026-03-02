@@ -10,6 +10,8 @@ import com.estatia.realestate.apps.core.player_engine.configuration.PlaybackConf
 import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
+import com.estatia.realestate.apps.core.player_engine.streaming.CdnPolicy
+import com.estatia.realestate.apps.core.player_engine.streaming.ICdnPolicy
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.StreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
@@ -77,6 +79,12 @@ abstract class PlayerManagerModule {
     abstract fun bindStreamingPipeline(
         streamingPipeline: StreamingPipeline
     ): IStreamingPipeline
+
+    @Binds
+    @Singleton
+    abstract fun bindCdnPolicy(
+        cdnPolicy: CdnPolicy
+    ) : ICdnPolicy
 
     @Binds
     @Singleton

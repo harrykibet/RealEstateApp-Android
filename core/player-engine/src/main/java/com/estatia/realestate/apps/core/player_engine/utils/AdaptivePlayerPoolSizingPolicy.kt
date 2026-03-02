@@ -2,8 +2,8 @@ package com.estatia.realestate.apps.core.player_engine.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class AdaptivePlayerPoolSizingPolicy @Inject constructor(
