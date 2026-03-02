@@ -5,74 +5,118 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
+import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
+import com.estatia.realestate.apps.core.player_engine.di.EngineScope
+import com.estatia.realestate.apps.core.player_engine.di.PrefetchIODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @UnstableApi
-class FeedPrefetchController(
+@Singleton
+class FeedPrefetchController @Inject constructor(
     private val playbackDataSourceFactory: DataSource.Factory,
-    dispatcher: CoroutineDispatcher,
-    private val ioDispatcher: CoroutineDispatcher
+    private val networkUtils: INetworkUtils,
+    @param:EngineScope private val scope: CoroutineScope,
+    @param:PrefetchIODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AutoCloseable {
 
-    private val scope = CoroutineScope(
-        SupervisorJob() + dispatcher.limitedParallelism(1)
+
+    private val requests = MutableSharedFlow<PrefetchRequest>(
+        extraBufferCapacity = 16,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     @Volatile
-    private var queue = createChannel()
+    private var visibleJob: Job? = null
 
-    private var currentJob: Job? = null
+    @Volatile
+    private var nextJob: Job? = null
+
+    @Volatile
+    private var buffering = false
 
     init {
-        startConsumer()
-    }
-
-    private fun createChannel() =
-        Channel<Uri>(
-            capacity = 32,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
-        )
-
-    private fun startConsumer() {
         scope.launch {
-            for (uri in queue) {
-                currentJob = launch {
-                    prefetchInternal(uri)
+            requests.collect { request ->
+                when (request.priority) {
+                    PrefetchPriority.VISIBLE -> handleVisible(request)
+                    PrefetchPriority.NEXT -> handleNext(request)
                 }
-                currentJob?.join()
             }
         }
     }
 
-    fun prefetch(uri: Uri) {
-        queue.trySend(uri)
+    fun prefetch(uri: Uri, priority: PrefetchPriority) {
+        requests.tryEmit(PrefetchRequest(uri, priority))
     }
 
-    suspend fun cancelAll() {
-        currentJob?.cancelAndJoin()
+    fun onBufferingStarted() {
+        scope.launch {
+            buffering = true
+            nextJob?.cancel()
+            nextJob = null
+        }
+    }
 
-        // Replace queue entirely (clean slate)
-        val oldQueue = queue
-        queue = createChannel()
-        oldQueue.close()
+    fun onBufferingEnded() {
+        buffering = false
+    }
 
-        startConsumer()
+    private fun handleVisible(request: PrefetchRequest) {
+        visibleJob?.cancel()
+
+        visibleJob = scope.launch {
+            prefetchInternal(
+                uri = request.uri,
+                maxBytes = adaptivePrefetchSize(
+                    visible = true
+                )
+            )
+        }
+    }
+
+    private fun handleNext(request: PrefetchRequest) {
+        if (buffering) return
+
+        nextJob?.cancel()
+
+        nextJob = scope.launch {
+            prefetchInternal(
+                uri = request.uri,
+                maxBytes = adaptivePrefetchSize(
+                    visible = false
+                )
+            )
+        }
+    }
+
+    private fun adaptivePrefetchSize(visible: Boolean): Long {
+        return when {
+            networkUtils.isLowLatencyNetwork() -> {
+                if (visible) 5L * 1024 * 1024 else 3L * 1024 * 1024
+            }
+            networkUtils.isNetworkMetered() -> {
+                if (visible) 2L * 1024 * 1024 else 1L * 1024 * 1024
+            }
+            else -> {
+                if (visible) 3L * 1024 * 1024 else 2L * 1024 * 1024
+            }
+        }
     }
 
     private suspend fun prefetchInternal(
         uri: Uri,
-        maxBytes: Long = 3 * 1024 * 1024
+        maxBytes: Long
     ) = withContext(ioDispatcher) {
 
         val dataSpec = DataSpec(uri)
@@ -90,7 +134,15 @@ class FeedPrefetchController(
         }
     }
 
+    suspend fun cancelAll() {
+        visibleJob?.cancelAndJoin()
+        nextJob?.cancelAndJoin()
+        visibleJob = null
+        nextJob = null
+    }
+
     override fun close() {
-        scope.cancel()
+        visibleJob?.cancel()
+        nextJob?.cancel()
     }
 }

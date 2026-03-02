@@ -34,6 +34,14 @@ import javax.inject.Singleton
 @Retention(AnnotationRetention.BINARY)
 annotation class StreamingDispatcher
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PrefetchIODispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class EngineScope
+
 @UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)
@@ -49,14 +57,24 @@ abstract class PlayerManagerModule {
 
     @Provides
     @Singleton
+    @PrefetchIODispatcher
+    fun providePrefetchIODispatcher(): CoroutineDispatcher =
+        Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+
+    @Provides
+    @Singleton
     @StreamingDispatcher
     fun provideStreamingDispatcher(): CoroutineDispatcher =
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     @Provides
     @Singleton
-    fun provideEngineScope(): CoroutineScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    @EngineScope
+    fun provideEngineScope(
+        @StreamingDispatcher dispatcher: CoroutineDispatcher
+    ): CoroutineScope {
+        return CoroutineScope(SupervisorJob() + dispatcher)
+    }
 
     @Provides
     @Singleton

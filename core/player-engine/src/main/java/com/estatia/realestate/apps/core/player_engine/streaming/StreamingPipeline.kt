@@ -1,14 +1,10 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
-import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.player_engine.di.StreamingDispatcher
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,25 +12,15 @@ import javax.inject.Singleton
 @UnstableApi
 @Singleton
 class StreamingPipeline @Inject constructor(
-    @ApplicationContext context: Context,
-    @StreamingDispatcher dispatcher: CoroutineDispatcher
+    private val feedPrefetchController: FeedPrefetchController,
+    private val mediaSourceFactory: MediaSource.Factory,
+    private val offlineDownloadController: OfflineDownloadController
 ) : IStreamingPipeline {
 
-    private val infrastructure = StreamingInfrastructure(context)
 
-    private val feedPrefetchController =
-        FeedPrefetchController(
-            infrastructure.playbackDataSourceFactory,
-            dispatcher
-        )
-
-    private val offlineController =
-        OfflineDownloadController(
-            infrastructure.downloadManager
-        )
-
-    override fun mediaSourceFactory(): MediaSource.Factory =
-        infrastructure.mediaSourceFactory
+    override fun mediaSourceFactory(): MediaSource.Factory {
+        return mediaSourceFactory
+    }
 
     override fun createMediaItem(
         uri: Uri,
@@ -56,12 +42,12 @@ class StreamingPipeline @Inject constructor(
             .build()
     }
 
-    override fun prefetch(uri: Uri) =
-        feedPrefetchController.prefetch(uri)
+    override fun prefetch(uri: Uri, priority: PrefetchPriority) =
+        feedPrefetchController.prefetch(uri, priority)
 
     fun downloadOffline(mediaId: String, uri: Uri) =
-        offlineController.download(mediaId, uri)
+        offlineDownloadController.download(mediaId, uri)
 
     fun removeOffline(mediaId: String) =
-        offlineController.remove(mediaId)
+        offlineDownloadController.remove(mediaId)
 }

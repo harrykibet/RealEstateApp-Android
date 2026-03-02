@@ -9,9 +9,12 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.Exception
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @UnstableApi
-class OfflineDownloadController(
+@Singleton
+class OfflineDownloadController @Inject constructor(
     private val downloadManager: DownloadManager
 ) {
 
