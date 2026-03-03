@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
+import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import kotlinx.coroutines.*
@@ -23,7 +24,7 @@ class PlayerManager @Inject constructor(
     private val sizingPolicy: IPlayerPoolSizingPolicy,
     private val dynamicBitrateController: DynamicBitrateController,
     @param:EngineScope private val engineScope: CoroutineScope,
-    private val playerDispatcher: CoroutineDispatcher
+    @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) : IPlayerManager {
 
     private val reducer = PlaybackStateReducer()

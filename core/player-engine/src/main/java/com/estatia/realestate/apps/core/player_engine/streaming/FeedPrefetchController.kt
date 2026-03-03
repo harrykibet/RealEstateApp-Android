@@ -7,7 +7,7 @@ import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
 import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
-import com.estatia.realestate.apps.core.player_engine.di.PrefetchIODispatcher
+import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -27,7 +27,7 @@ class FeedPrefetchController @Inject constructor(
     private val playbackDataSourceFactory: DataSource.Factory,
     private val networkUtils: INetworkUtils,
     @param:EngineScope private val scope: CoroutineScope,
-    @param:PrefetchIODispatcher private val ioDispatcher: CoroutineDispatcher
+    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AutoCloseable {
 
 

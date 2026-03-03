@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
+import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -12,7 +13,7 @@ import kotlin.time.Duration.Companion.seconds
 @Singleton
 class CdnHealthMonitor @Inject constructor(
     private val networkUtils: INetworkUtils,
-    private val ioDispatcher: CoroutineDispatcher,
+    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val ttl: Duration = 30.seconds,
     private val timeout: Duration = 3.seconds,
     private val failureThreshold: Int = 3,
@@ -61,7 +62,7 @@ class CdnHealthMonitor @Inject constructor(
                 circuitOpenUntil = null
             )
 
-        } catch (t: Throwable) {
+        } catch (_: Throwable) {
 
             val failures = (previous?.failureCount ?: 0) + 1
 

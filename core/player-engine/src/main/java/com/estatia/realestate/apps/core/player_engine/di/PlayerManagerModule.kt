@@ -23,7 +23,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -36,7 +35,11 @@ annotation class StreamingDispatcher
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class PrefetchIODispatcher
+annotation class IODispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PlayerDispatcher
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -49,6 +52,7 @@ abstract class PlayerManagerModule {
 
     @Provides
     @Singleton
+    @PlayerDispatcher
     fun providesPlayerDispatcher(): CoroutineDispatcher {
         return Executors.newSingleThreadExecutor { r ->
             Thread(r, "PlayerManagerThread")
@@ -57,21 +61,23 @@ abstract class PlayerManagerModule {
 
     @Provides
     @Singleton
-    @PrefetchIODispatcher
-    fun providePrefetchIODispatcher(): CoroutineDispatcher =
+    @IODispatcher
+    fun provideIODispatcher(): CoroutineDispatcher =
         Executors.newFixedThreadPool(2).asCoroutineDispatcher()
 
     @Provides
     @Singleton
     @StreamingDispatcher
     fun provideStreamingDispatcher(): CoroutineDispatcher =
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        Executors.newSingleThreadExecutor{ r ->
+            Thread(r, "StreamingThread")
+        }.asCoroutineDispatcher()
 
     @Provides
     @Singleton
     @EngineScope
     fun provideEngineScope(
-        @StreamingDispatcher dispatcher: CoroutineDispatcher
+        @IODispatcher dispatcher: CoroutineDispatcher
     ): CoroutineScope {
         return CoroutineScope(SupervisorJob() + dispatcher)
     }
