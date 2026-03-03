@@ -1,11 +1,14 @@
 package com.estatia.realestate.apps.core.player_ui.viewModels
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -15,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoPlaybackViewModel @Inject constructor(
-    private val playerController: IPlayerManager
+    private val playerController: IPlayerManager,
+    private val streamingPipeline: IStreamingPipeline
 ) : ViewModel() {
 
     // ---------------------------------------
@@ -25,6 +29,9 @@ class VideoPlaybackViewModel @Inject constructor(
     private var currentMediaId: String? = null
     private var playJob: Job? = null
     private var preloadJob: Job? = null
+
+    // Track what we’ve already warmed to avoid redundant warm calls
+    private val warmedMedia = mutableSetOf<String>()
 
     // ---------------------------------------
     // UI State
@@ -49,6 +56,19 @@ class VideoPlaybackViewModel @Inject constructor(
             playerController
                 .observeState()
                 .collectLatest { engineState ->
+
+                    // Forward buffering state to cache warmer
+                    when (engineState) {
+                        PlaybackStateReducer.State.Buffering ->
+                            streamingPipeline.onBufferingStarted()
+
+                        PlaybackStateReducer.State.Ready,
+                        PlaybackStateReducer.State.Playing ->
+                            streamingPipeline.onBufferingEnded()
+
+                        else -> Unit
+                    }
+
                     _uiState.value = mapToUiState(engineState)
                 }
         }
@@ -86,7 +106,11 @@ class VideoPlaybackViewModel @Inject constructor(
     // Single Video Playback
     // ------------------------------------------------------------
 
-    fun play(mediaId: String, mediaType: MediaType) {
+    fun play(
+        mediaId: String,
+        mediaType: MediaType,
+        mediaUri: Uri
+    ) {
         if (currentMediaId == mediaId) return
 
         currentMediaId = mediaId
@@ -95,6 +119,8 @@ class VideoPlaybackViewModel @Inject constructor(
         playJob = viewModelScope.launch {
             playerController.play(mediaId, mediaType)
         }
+
+        warmVisible(mediaId, mediaUri)
     }
 
     fun pause() {
@@ -117,9 +143,12 @@ class VideoPlaybackViewModel @Inject constructor(
     fun onPageVisible(
         mediaId: String,
         mediaType: MediaType,
-        previousMediaId: String?,
-        nextMediaId: String?
+        mediaUri: Uri,
+        previous: Pair<String, Uri>?,
+        next: Pair<String, Uri>?
     ) {
+
+        if (currentMediaId == mediaId) return
 
         currentMediaId = mediaId
 
@@ -130,15 +159,51 @@ class VideoPlaybackViewModel @Inject constructor(
             playerController.play(mediaId, mediaType)
         }
 
+        // Warm visible immediately
+        warmVisible(mediaId, mediaUri)
+
         preloadJob = viewModelScope.launch {
 
-            previousMediaId?.let {
-                playerController.preload(it, mediaType)
+            // Preload players (player-level)
+            previous?.let {
+                playerController.preload(it.first, mediaType)
             }
 
-            nextMediaId?.let {
-                playerController.preload(it, mediaType)
+            next?.let {
+                playerController.preload(it.first, mediaType)
+            }
+
+            // Warm cache (network-level)
+            next?.let {
+                warmNext(it.first, it.second)
             }
         }
+    }
+
+    // ------------------------------------------------------------
+    // Cache Warming
+    // ------------------------------------------------------------
+
+    private fun warmVisible(
+        mediaId: String,
+        uri: Uri
+    ) {
+        if (warmedMedia.add(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.VISIBLE)
+        }
+    }
+
+    private fun warmNext(
+        mediaId: String,
+        uri: Uri
+    ) {
+        if (warmedMedia.add(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.NEXT)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        warmedMedia.clear()
     }
 }

@@ -2,12 +2,12 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
 
-enum class PrefetchPriority {
+enum class WarmPriority {
     VISIBLE,
     NEXT
 }
 
-data class PrefetchRequest(
+data class WarmRequest(
     val uri: Uri,
-    val priority: PrefetchPriority
+    val priority: WarmPriority
 )

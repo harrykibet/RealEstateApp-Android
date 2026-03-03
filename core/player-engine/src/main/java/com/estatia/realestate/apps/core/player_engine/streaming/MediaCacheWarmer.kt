@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class FeedPrefetchController @Inject constructor(
+class MediaCacheWarmer @Inject constructor(
     private val playbackDataSourceFactory: DataSource.Factory,
     private val networkUtils: INetworkUtils,
     @param:EngineScope private val scope: CoroutineScope,
@@ -31,7 +31,7 @@ class FeedPrefetchController @Inject constructor(
 ) : AutoCloseable {
 
 
-    private val requests = MutableSharedFlow<PrefetchRequest>(
+    private val requests = MutableSharedFlow<WarmRequest>(
         extraBufferCapacity = 16,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -49,15 +49,15 @@ class FeedPrefetchController @Inject constructor(
         scope.launch {
             requests.collect { request ->
                 when (request.priority) {
-                    PrefetchPriority.VISIBLE -> handleVisible(request)
-                    PrefetchPriority.NEXT -> handleNext(request)
+                    WarmPriority.VISIBLE -> handleVisible(request)
+                    WarmPriority.NEXT -> handleNext(request)
                 }
             }
         }
     }
 
-    fun prefetch(uri: Uri, priority: PrefetchPriority) {
-        requests.tryEmit(PrefetchRequest(uri, priority))
+    fun prefetch(uri: Uri, priority: WarmPriority) {
+        requests.tryEmit(WarmRequest(uri, priority))
     }
 
     fun onBufferingStarted() {
@@ -72,7 +72,7 @@ class FeedPrefetchController @Inject constructor(
         buffering = false
     }
 
-    private fun handleVisible(request: PrefetchRequest) {
+    private fun handleVisible(request: WarmRequest) {
         visibleJob?.cancel()
 
         visibleJob = scope.launch {
@@ -85,7 +85,7 @@ class FeedPrefetchController @Inject constructor(
         }
     }
 
-    private fun handleNext(request: PrefetchRequest) {
+    private fun handleNext(request: WarmRequest) {
         if (buffering) return
 
         nextJob?.cancel()

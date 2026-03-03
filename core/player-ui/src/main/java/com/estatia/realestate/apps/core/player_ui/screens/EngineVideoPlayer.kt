@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
@@ -10,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.Player
-import androidx.media3.ui.PlayerView
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
 
@@ -19,7 +19,6 @@ fun EngineVideoPlayer(
     mediaId: String,
     mediaType: MediaType,
     modifier: Modifier = Modifier,
-    autoPlay: Boolean = true,
     viewModel: VideoPlaybackViewModel,
     onClick: (() -> Unit)? = null
 ) {
@@ -28,52 +27,52 @@ fun EngineVideoPlayer(
 
     var player by remember(mediaId) { mutableStateOf<Player?>(null) }
 
-    // Obtain the correct player for this mediaId
+    // Acquire player instance
     LaunchedEffect(mediaId) {
         player = viewModel.getPlayer(mediaId, mediaType)
+    }
 
-        if (autoPlay) {
-            viewModel.play(mediaId, mediaType)
+    // Remember SurfaceView so it's not recreated on recomposition
+    val surfaceView = remember {
+        SurfaceView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         }
     }
 
-    // Lifecycle handling
-    DisposableEffect(lifecycleOwner, mediaId) {
+    // Attach / detach surface from player
+    DisposableEffect(player) {
+        val currentPlayer = player
+
+        currentPlayer?.setVideoSurfaceView(surfaceView)
+
+        onDispose {
+            currentPlayer?.clearVideoSurfaceView(surfaceView)
+        }
+    }
+
+    // Lifecycle handling (pause only)
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> viewModel.play(mediaId, mediaType)
                 Lifecycle.Event.ON_PAUSE -> viewModel.pause()
                 else -> Unit
             }
         }
 
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
-    // Render PlayerView
-    player?.let { attachedPlayer ->
-        AndroidView(
-            modifier = modifier.then(
-                if (onClick != null) Modifier.clickable { onClick() } else Modifier
-            ),
-            factory = {
-                PlayerView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    player = attachedPlayer
-                    useController = false
-                }
-            },
-            update = { view ->
-                if (view.player != attachedPlayer) {
-                    view.player = attachedPlayer
-                }
-            }
-        )
-    }
+    AndroidView(
+        modifier = modifier.then(
+            if (onClick != null) Modifier.clickable { onClick() } else Modifier
+        ),
+        factory = { surfaceView }
+    )
 }

@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @UnstableApi
 @Singleton
 class StreamingPipeline @Inject constructor(
-    private val feedPrefetchController: FeedPrefetchController,
+    private val cacheWarmer: MediaCacheWarmer,
     private val mediaSourceFactory: MediaSource.Factory,
     private val offlineDownloadController: OfflineDownloadController
 ) : IStreamingPipeline {
@@ -42,8 +42,14 @@ class StreamingPipeline @Inject constructor(
             .build()
     }
 
-    override fun prefetch(uri: Uri, priority: PrefetchPriority) =
-        feedPrefetchController.prefetch(uri, priority)
+    override fun warm(uri: Uri, priority: WarmPriority) =
+        cacheWarmer.prefetch(uri, priority)
+
+    override fun onBufferingStarted() =
+        cacheWarmer.onBufferingStarted()
+
+    override fun onBufferingEnded() =
+        cacheWarmer.onBufferingEnded()
 
     fun downloadOffline(mediaId: String, uri: Uri) =
         offlineDownloadController.download(mediaId, uri)

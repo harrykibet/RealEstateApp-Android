@@ -36,5 +36,7 @@ interface IStreamingPipeline {
      * Asynchronous prefetch entry point.
      * Feature layer may call this.
      */
-    fun prefetch(uri: Uri, priority: PrefetchPriority)
+    fun warm(uri: Uri, priority: WarmPriority)
+    fun onBufferingStarted()
+    fun onBufferingEnded()
 }
