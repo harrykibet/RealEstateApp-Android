@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network
 
-import com.estatia.realestate.apps.core.network.interfaces.IRemoteConfigManager
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ServiceNames
@@ -14,19 +14,19 @@ import org.junit.jupiter.api.Assertions.assertThrows
 class ApiKeyValidatorTest {
 
     private lateinit var logger: LoggerInterface
-    private lateinit var remoteConfigManager: IRemoteConfigManager
+    private lateinit var config: ConfigRepository
     private lateinit var apiKeyValidator: IApiKeyValidator
 
     @BeforeAll
     fun setup() {
         logger = mockk(relaxed = true)  // Mock logger, allow relaxed mode to avoid unnecessary stubs
-        remoteConfigManager = mockk()
+        config = mockk()
 
-        every { remoteConfigManager.getGoogleKeyPattern() } returns "^AIza[0-9A-Za-z_-]{35}\$"
-        every { remoteConfigManager.getGenericKeyPattern() } returns "^[A-Za-z0-9]{32}\$"
-        every { remoteConfigManager.getPaymentsKeyPattern() } returns "^[0-9A-Za-z]{40}\$"
+        every { config.googleKeyPattern } returns Regex("^AIza[0-9A-Za-z_-]{35}\$")
+        every { config.genericKeyPattern } returns Regex("^[A-Za-z0-9]{32}\$")
+        every { config.paymentsKeyPattern } returns Regex("^[0-9A-Za-z]{40}\$")
 
-        apiKeyValidator = ApiKeyValidator(logger, remoteConfigManager)
+        apiKeyValidator = ApiKeyValidator(logger, config)
     }
 
     @Test

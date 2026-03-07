@@ -134,7 +134,7 @@ class MediaCacheWarmer @Inject constructor(
         }
     }
 
-    suspend fun cancelAll() {
+    suspend fun cancelAllJobs() {
         visibleJob?.cancelAndJoin()
         nextJob?.cancelAndJoin()
         visibleJob = null

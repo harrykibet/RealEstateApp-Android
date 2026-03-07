@@ -1,10 +1,5 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
-data class CdnEndpoint(
-    val name: String,
-    val baseUrl: String
-)
-
 data class CdnHealth(
     val latencyMs: Long?,
     val failureCount: Int,

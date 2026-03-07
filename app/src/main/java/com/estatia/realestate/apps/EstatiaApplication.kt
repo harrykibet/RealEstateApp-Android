@@ -1,23 +1,37 @@
 package com.estatia.realestate.apps
 
 import android.app.Application
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
+import javax.inject.Inject
 
 @HiltAndroidApp
 class EstatiaApplication : Application()  {
+
+    @Inject
+    lateinit var configRepository: ConfigRepository
 
     override fun onCreate() {
         super.onCreate()
         initializeFirebase()
         initializeBouncyCastle()
         configureGlobalExceptionHandler()
+        initializeConfig()
     }
 
+    private fun initializeConfig() {
+        CoroutineScope(Dispatchers.IO).launch {
+            configRepository.initialize()
+        }
+    }
 
     private fun initializeFirebase() {
         FirebaseApp.initializeApp(this)

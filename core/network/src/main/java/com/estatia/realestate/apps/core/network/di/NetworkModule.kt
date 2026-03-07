@@ -4,7 +4,7 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.estatia.realestate.apps.core.network.interfaces.IRemoteConfigManager
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,10 +55,10 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        remoteConfigManager: IRemoteConfigManager
+        config: ConfigRepository
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(remoteConfigManager.getBaseUrl()) // Use the dynamically provided base URL
+            .baseUrl(config.baseUrl) // Use the dynamically provided base URL
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

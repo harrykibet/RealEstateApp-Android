@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.utils
 
-import com.estatia.realestate.apps.core.network.interfaces.IRemoteConfigManager
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.exceptions.InvalidApiKeyException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import javax.inject.Inject
@@ -16,25 +16,28 @@ import javax.inject.Singleton
  * and provides sanitization for logging purposes to prevent exposing sensitive information.
  *
  * @property logger An instance of [LoggerInterface] for logging validation results and errors.
- * @property remoteConfigManager An instance of [IRemoteConfigManager] for retrieving API key patterns from remote config.
+ * @property config An instance of [ConfigRepository] for retrieving API key patterns from remote config.
  */
 @Singleton
 class ApiKeyValidator @Inject constructor(
     private val logger: LoggerInterface,
-    private val remoteConfigManager: IRemoteConfigManager
+    private val config: ConfigRepository
 ) : IApiKeyValidator {
 
     private val googleKeyPattern: Regex
-        get() = Regex(remoteConfigManager.getGoogleKeyPattern())
+        get() = config.googleKeyPattern
 
     private val genericKeyPattern: Regex
-        get() = Regex(remoteConfigManager.getGenericKeyPattern())
+        get() = config.genericKeyPattern
+
+    private val paymentsKeyPattern: Regex
+        get() = config.paymentsKeyPattern
 
     private val servicePatterns: Map<ServiceNames, Regex>
         get() = mapOf(
             ServiceNames.MAPS to googleKeyPattern,
             ServiceNames.PLACES to googleKeyPattern,
-            ServiceNames.PAYMENTS to Regex(remoteConfigManager.getPaymentsKeyPattern()),
+            ServiceNames.PAYMENTS to paymentsKeyPattern,
             ServiceNames.AUTH to googleKeyPattern
         )
 

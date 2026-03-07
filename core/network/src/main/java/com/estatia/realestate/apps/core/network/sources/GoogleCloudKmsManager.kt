@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import android.util.Base64
-import com.estatia.realestate.apps.core.network.interfaces.IRemoteConfigManager
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.exceptions.CryptoOperationException
 import com.estatia.realestate.apps.core.network.exceptions.GoogleKmsException
 import com.estatia.realestate.apps.core.network.exceptions.InvalidKeyVersionException
@@ -37,7 +37,7 @@ import javax.inject.Singleton
  * The class is designed to be used as a singleton via Dagger dependency injection.
  *
  * @property kmsClient The Google Cloud KMS client.
- * @property remoteConfig The remote configuration manager for retrieving KMS settings.
+ * @property config The configuration manager for retrieving KMS settings.
  * @property projectId The Google Cloud project ID.
  * @property logger The logger for logging operations and errors.
  *
@@ -46,7 +46,7 @@ import javax.inject.Singleton
 @Singleton
 class GoogleCloudKmsManager @Inject constructor(
     private val kmsClient: KeyManagementServiceClient,
-    private val remoteConfig: IRemoteConfigManager,
+    private val config: ConfigRepository,
     private val projectId: String,
     private val logger: LoggerInterface
 ) : IGoogleCloudKmsManager {
@@ -238,22 +238,22 @@ class GoogleCloudKmsManager @Inject constructor(
     }
 
     private fun getKeyId(keyType: KeyType): String = when (keyType) {
-        KeyType.SYMMETRIC -> remoteConfig.getSymmetricKeyId()
-        KeyType.ASYMMETRIC -> remoteConfig.getAsymmetricKeyId()
-        KeyType.ASYMMETRIC_SIGNING -> remoteConfig.getAsymmetricSigningKeyId()
+        KeyType.SYMMETRIC -> config.symmetricKeyId
+        KeyType.ASYMMETRIC -> config.asymmetricKeyId
+        KeyType.ASYMMETRIC_SIGNING -> config.asymmetricSigningKeyId
         KeyType.ANY -> "any"
     }
 
     private fun getKeyRingName() = KeyRingName.of(
         projectId,
-        remoteConfig.getKeyRingLocationId(),
-        remoteConfig.getKeyRingId()
+        config.encryptionLocationId,
+        config.encryptionKeyRingId
     )
 
     private fun getKeyName(keyType: KeyType) = CryptoKeyName.of(
         projectId,
-        remoteConfig.getKeyRingLocationId(),
-        remoteConfig.getKeyRingId(),
+        config.encryptionLocationId,
+        config.encryptionKeyRingId,
         getKeyId(keyType)
     )
 

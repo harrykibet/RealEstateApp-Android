@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
+import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex

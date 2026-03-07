@@ -11,10 +11,16 @@
     "asymmetric_key_id": "RSA_CRYPTO",
     "asymmetric_signing_key_id": "RSA_SIGNING_CRYPTO"
   },
-  "cdn_endpoints": {
-    "endpoint1": "https://cdn1.example.com",
-    "endpoint2": "https://cdn2.example.com"
-  },
+  "cdn_endpoints": [
+    {
+      "name": "primary",
+      "base_url": "https://cdn1.example.com"
+    },
+    {
+      "name": "backup",
+      "base_url": "https://cdn2.example.com"
+    }
+  ],
   "base_config": {
     "base_url": "https://firestore-72e4c.firebaseapp.com",
     "enable_logging": true

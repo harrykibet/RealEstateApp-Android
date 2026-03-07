@@ -41,6 +41,7 @@ include(":core:analytics")
 include(":core:network")
 include(":core:ui")
 include(":core:common")
+include(":core:config")
 include(":core:notifications")
 include(":core:data")
 include(":core:domain")
@@ -67,6 +68,7 @@ include(":feature:favorites")
 include(":feature:comments")
 include(":feature:settings")
 include(":feature:service")
+
 
 
 

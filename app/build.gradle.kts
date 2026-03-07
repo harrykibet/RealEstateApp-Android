@@ -83,6 +83,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.config)
     implementation(projects.core.network)
     implementation(projects.core.testing)
     implementation(projects.core.playerUi)

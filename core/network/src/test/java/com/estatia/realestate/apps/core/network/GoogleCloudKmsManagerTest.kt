@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.network
 
 import android.util.Base64
-import com.estatia.realestate.apps.core.network.interfaces.IRemoteConfigManager
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.exceptions.CryptoOperationException
 import com.estatia.realestate.apps.core.network.sources.GoogleCloudKmsManager
 import com.estatia.realestate.apps.core.network.exceptions.GoogleKmsException
@@ -19,23 +19,23 @@ import java.security.GeneralSecurityException
 class GoogleCloudKmsManagerTest {
 
     private lateinit var kmsClient: KeyManagementServiceClient
-    private lateinit var remoteConfig: IRemoteConfigManager
+    private lateinit var config: ConfigRepository
     private lateinit var logger: LoggerInterface
     private lateinit var googleCloudKmsManager: GoogleCloudKmsManager
 
     @BeforeAll
     fun setup() {
         kmsClient = mockk()
-        remoteConfig = mockk()
+        config = mockk()
         logger = mockk(relaxed = true)
 
-        every { remoteConfig.getSymmetricKeyId() } returns "symmetric-key-id"
-        every { remoteConfig.getAsymmetricKeyId() } returns "asymmetric-key-id"
-        every { remoteConfig.getAsymmetricSigningKeyId() } returns "signing-key-id"
-        every { remoteConfig.getKeyRingLocationId() } returns "global"
-        every { remoteConfig.getKeyRingId() } returns "my-key-ring"
+        every { config.symmetricKeyId } returns "symmetric-key-id"
+        every { config.asymmetricKeyId } returns "asymmetric-key-id"
+        every { config.asymmetricSigningKeyId } returns "signing-key-id"
+        every { config.encryptionLocationId} returns "global"
+        every { config.encryptionKeyRingId } returns "my-key-ring"
 
-        googleCloudKmsManager = GoogleCloudKmsManager(kmsClient, remoteConfig, "test-project", logger)
+        googleCloudKmsManager = GoogleCloudKmsManager(kmsClient, config, "test-project", logger)
     }
 
     @Test
