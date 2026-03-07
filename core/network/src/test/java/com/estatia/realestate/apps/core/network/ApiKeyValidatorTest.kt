@@ -22,9 +22,9 @@ class ApiKeyValidatorTest {
         logger = mockk(relaxed = true)  // Mock logger, allow relaxed mode to avoid unnecessary stubs
         config = mockk()
 
-        every { config.googleKeyPattern } returns Regex("^AIza[0-9A-Za-z_-]{35}\$")
-        every { config.genericKeyPattern } returns Regex("^[A-Za-z0-9]{32}\$")
-        every { config.paymentsKeyPattern } returns Regex("^[0-9A-Za-z]{40}\$")
+        every { config.googleKeyPattern } returns Regex("^AIza[0-9A-Za-z_-]{35}$")
+        every { config.genericKeyPattern } returns Regex("^[A-Za-z0-9]{32}$")
+        every { config.paymentsKeyPattern } returns Regex("^[0-9A-Za-z]{40}$")
 
         apiKeyValidator = ApiKeyValidator(logger, config)
     }
