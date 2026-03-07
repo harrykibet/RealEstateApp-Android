@@ -9,12 +9,12 @@ import javax.inject.Singleton
 class CdnSelector @Inject constructor(
     private val policy: ICdnPolicy,
     private val healthMonitor: CdnHealthMonitor,
-    private val configRepository: ConfigRepository
+    private val config: ConfigRepository
 ) {
 
     suspend fun select(): CdnEndpoint {
 
-        val endpoints = configRepository.cdnEndpoints
+        val endpoints = config.cdnEndpoints
 
         require(endpoints.isNotEmpty()) {
             "No CDN endpoints configured"

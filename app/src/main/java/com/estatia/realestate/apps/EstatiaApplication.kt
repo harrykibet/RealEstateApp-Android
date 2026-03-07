@@ -17,7 +17,7 @@ import javax.inject.Inject
 class EstatiaApplication : Application()  {
 
     @Inject
-    lateinit var configRepository: ConfigRepository
+    lateinit var config: ConfigRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -29,7 +29,7 @@ class EstatiaApplication : Application()  {
 
     private fun initializeConfig() {
         CoroutineScope(Dispatchers.IO).launch {
-            configRepository.initialize()
+            config.initialize()
         }
     }
 
