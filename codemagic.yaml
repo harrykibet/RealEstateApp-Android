@@ -8,7 +8,6 @@ workflows:
       vars:
         CI: "true"
         PACKAGE_NAME: "io.codemagic.androidquicksample"
-
       groups:
         - google_play
         - android_signing
@@ -17,30 +16,63 @@ workflows:
 
       - name: Enable HiDPI display modes
         script: |
-          echo "Enabling HiDPI modes for VNC session..."
-          sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+          echo "Enabling HiDPI modes..."
+          sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true || true
 
-      - name: Install displayplacer
+      - name: Install display utilities
         script: |
           echo "Installing displayplacer..."
-          brew update
+          brew update || true
           brew install displayplacer || true
 
-      - name: Configure VNC screen resolution
+      - name: Trigger QuickTime framebuffer expansion
         script: |
-          echo "Detecting display..."
+          echo "Launching QuickTime Player recording window to force larger framebuffer..."
+          osascript <<EOF
+          tell application "QuickTime Player"
+              activate
+              try
+                  new movie recording
+              end try
+          end tell
+          EOF
+          sleep 5
+
+      - name: Detect available display modes
+        script: |
+          echo "Reading display configuration..."
+
           DISPLAY_ID=$(displayplacer list | awk '/Persistent screen id/ {print $4; exit}')
 
           if [ -z "$DISPLAY_ID" ]; then
-            echo "Display ID not detected. Skipping resolution configuration."
-          else
-            echo "Setting 4K resolution for VNC session..."
-            displayplacer "id:$DISPLAY_ID res:3840x2160 scaling:on" || \
-            displayplacer "id:$DISPLAY_ID res:2560x1440 scaling:on" || \
-            displayplacer "id:$DISPLAY_ID res:1920x1080 scaling:on"
+            echo "No display detected. Skipping resolution configuration."
+            exit 0
           fi
 
-          echo "Current display configuration:"
+          echo "Detected display: $DISPLAY_ID"
+
+          echo "Available resolutions:"
+          displayplacer list | grep -Eo '[0-9]{3,5}x[0-9]{3,5}' | sort -u || true
+
+      - name: Apply best available resolution
+        script: |
+          DISPLAY_ID=$(displayplacer list | awk '/Persistent screen id/ {print $4; exit}')
+
+          BEST_RES=$(displayplacer list \
+            | grep -Eo '[0-9]{3,5}x[0-9]{3,5}' \
+            | sort -t x -k1 -nr -k2 -nr \
+            | head -n 1)
+
+          if [ -z "$BEST_RES" ]; then
+            echo "No usable resolution detected."
+            exit 0
+          fi
+
+          echo "Applying best resolution: $BEST_RES"
+
+          displayplacer "id:$DISPLAY_ID res:$BEST_RES scaling:on" || true
+
+          echo "Final display state:"
           system_profiler SPDisplaysDataType | grep Resolution || true
 
       - name: Set Android SDK location
@@ -58,7 +90,8 @@ workflows:
             rm -f "$DEBUG_KEYSTORE_PATH"
           fi
 
-          echo "Generating new debug keystore..."
+          echo "Generating debug keystore..."
+
           keytool -genkey -v \
             -keystore "$DEBUG_KEYSTORE_PATH" \
             -storepass android \
@@ -71,13 +104,11 @@ workflows:
 
           sudo chmod 644 "$DEBUG_KEYSTORE_PATH"
 
-          echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
-
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
 
-      - name: Build Android Release APK
+      - name: Build Android release APK
         script: |
           ./gradlew assembleRelease \
             -PversionCode=1 \
@@ -85,7 +116,7 @@ workflows:
             --build-cache \
             --no-daemon
 
-      - name: Check APK Existence
+      - name: Check APK existence
         script: |
           APK_DIR="app/build/outputs/apk/release"
           APK_FILE=$(find "$APK_DIR" -name "*.apk" | head -n 1)
@@ -93,22 +124,23 @@ workflows:
           if [ -f "$APK_FILE" ]; then
             echo "APK found: $APK_FILE"
           else
-            echo "ERROR: APK not found in $APK_DIR"
+            echo "ERROR: APK not found"
             exit 1
           fi
 
-      - name: Sign the APK
+      - name: Sign APK if required
         script: |
           APK_DIR="app/build/outputs/apk/release"
 
           APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
 
           if [ -f "$APK_FILE" ]; then
+
             SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
 
-            echo "Signing APK: $APK_FILE"
+            echo "Signing APK..."
 
-            jarsigner -verbose \
+            jarsigner \
               -sigalg SHA256withRSA \
               -digestalg SHA-256 \
               -keystore "$CM_KEYSTORE_PATH" \
@@ -121,17 +153,18 @@ workflows:
             echo "Signed APK: $SIGNED_APK"
 
           else
+
             SIGNED_APK=$(find "$APK_DIR" -name "*.apk" | head -n 1)
 
             if [ -f "$SIGNED_APK" ]; then
-              echo "APK already signed: $SIGNED_APK"
+              echo "APK already signed."
             else
-              echo "ERROR: No APK found (unsigned or signed)"
+              echo "ERROR: No APK found"
               exit 1
             fi
           fi
 
-      - name: Verify APK Directory
+      - name: Verify APK directory
         script: |
           echo "APK directory contents:"
           ls -alh app/build/outputs/apk/release/
