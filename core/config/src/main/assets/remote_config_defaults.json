@@ -14,15 +14,15 @@
   "cdn_endpoints": [
     {
       "name": "primary",
-      "base_url": "https://cdn1.example.com"
+      "base_url": "https://primarycdn.estatia.com"
     },
     {
       "name": "backup",
-      "base_url": "https://cdn2.example.com"
+      "base_url": "https://backupcdn.estatia.com"
     }
   ],
   "base_config": {
-    "base_url": "https://firestore-72e4c.firebaseapp.com",
+    "base_url": "https://api.estatia.com/",
     "enable_logging": true
   }
 }

@@ -57,8 +57,13 @@ object NetworkModule {
         okHttpClient: OkHttpClient,
         config: ConfigRepository
     ): Retrofit {
+
+        val baseUrl = config.baseUrl
+            .takeIf { it.endsWith("/") }
+            ?: "${config.baseUrl}/"
+
         return Retrofit.Builder()
-            .baseUrl(config.baseUrl) // Use the dynamically provided base URL
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
