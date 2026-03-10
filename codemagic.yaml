@@ -5,6 +5,7 @@ workflows:
     instance_type: mac_mini_m2
 
     environment:
+      xcode: latest
       vars:
         CI: "true"
         PACKAGE_NAME: "io.codemagic.androidquicksample"
