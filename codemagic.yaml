@@ -1,131 +1,127 @@
-workflows:
-  native-android:
-    name: Native Android
-    max_build_duration: 120
-    instance_type: mac_mini_m2
+  workflows:
+    native-android:
+      name: Native Android
+      max_build_duration: 120
+      instance_type: mac_mini_m2
 
-    environment:
-      xcode: latest
-      vars:
-        CI: "true"
-        PACKAGE_NAME: "io.codemagic.androidquicksample"
-      groups:
-        - google_play
-        - android_signing
+      environment:
+        xcode: latest
+        vars:
+          CI: "true"
+          PACKAGE_NAME: "io.codemagic.androidquicksample"
+        groups:
+          - google_play
+          - android_signing
 
-    scripts:
+      scripts:
 
-      - name: Bootstrap virtual display with BetterDisplay
-        script: |
-          echo "=============================="
-          echo "DISPLAY BOOTSTRAP"
-          echo "=============================="
+        - name: Bootstrap virtual display
+          script: |
+            echo "Initializing CI display environment..."
+            chmod +x scripts/ci-display-bootstrap.sh
+            ./scripts/ci-display-bootstrap.sh
 
-          sleep 10
+        - name: Set Android SDK location
+          script: |
+            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
 
-          echo "Enabling HiDPI modes..."
-          sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true || true
+        - name: Generate Debug Keystore
+          script: |
+            DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
+            
+            sudo mkdir -p /root/.android
+            
+            if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
+              echo "Removing existing debug keystore..."
+              rm -f "$DEBUG_KEYSTORE_PATH"
+            fi
+            
+            echo "Generating debug keystore..."
+            
+            keytool -genkey -v \
+              -keystore "$DEBUG_KEYSTORE_PATH" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -dname "CN=Android Debug,O=Android,C=US" \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000
+            
+            sudo chmod 644 "$DEBUG_KEYSTORE_PATH"
 
-          echo "Installing BetterDisplay..."
-          brew update || true
-          brew install --cask betterdisplay || true
+        - name: Set Gradlew Permissions
+          script: |
+            chmod +x ./gradlew
 
-          echo "Searching for BetterDisplay installation..."
+        - name: Build Android release APK
+          script: |
+            ./gradlew assembleRelease \
+              -PversionCode=1 \
+              -PversionName=1.0.2 \
+              --build-cache \
+              --no-daemon
 
-          APP_PATH=$(find /Applications -name "BetterDisplay.app" -maxdepth 2 2>/dev/null | head -n 1)
+        - name: Check APK existence
+          script: |
+            APK_DIR="app/build/outputs/apk/release"
+            APK_FILE=$(find "$APK_DIR" -name "*.apk" | head -n 1)
+            
+            if [ -f "$APK_FILE" ]; then
+              echo "APK found: $APK_FILE"
+            else
+              echo "ERROR: APK not found"
+              exit 1
+            fi
 
-          if [ -z "$APP_PATH" ]; then
-            echo "BetterDisplay not found. Continuing build without virtual display."
-            exit 0
-          fi
+        - name: Sign APK if required
+          script: |
+            APK_DIR="app/build/outputs/apk/release"
+            
+            APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
+            
+            if [ -f "$APK_FILE" ]; then
+            
+              SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
+            
+              echo "Signing APK..."
+            
+              jarsigner \
+                -sigalg SHA256withRSA \
+                -digestalg SHA-256 \
+                -keystore "$CM_KEYSTORE_PATH" \
+                -storepass "$CM_KEYSTORE_PASSWORD" \
+                -keypass "$CM_KEY_PASSWORD" \
+                "$APK_FILE" "$CM_KEY_ALIAS"
+            
+              mv "$APK_FILE" "$SIGNED_APK"
+            
+              echo "Signed APK: $SIGNED_APK"
+            
+            else
+            
+              SIGNED_APK=$(find "$APK_DIR" -name "*.apk" | head -n 1)
+            
+              if [ -f "$SIGNED_APK" ]; then
+                echo "APK already signed."
+              else
+                echo "ERROR: No APK found"
+                exit 1
+              fi
+            fi
 
-          echo "BetterDisplay installed at:"
-          echo "$APP_PATH"
+        - name: Verify APK directory
+          script: |
+            echo "APK directory contents:"
+            ls -alh app/build/outputs/apk/release/
 
-          echo "Launching BetterDisplay..."
-          open "$APP_PATH"
+      artifacts:
+        - app/build/outputs/**/*.apk
 
-          sleep 10
-
-          BIN_PATH="$APP_PATH/Contents/MacOS/BetterDisplay"
-
-          if [ ! -f "$BIN_PATH" ]; then
-            echo "BetterDisplay CLI not found. Continuing build."
-            exit 0
-          fi
-
-          echo "Creating dummy display..."
-          "$BIN_PATH" --create-dummy || true
-
-          sleep 8
-
-          echo "Setting high resolution framebuffer..."
-          "$BIN_PATH" --set-resolution 2560x1440 || true
-
-          echo "Display state:"
-          system_profiler SPDisplaysDataType | grep Resolution || true
-
-      - name: Set Android SDK location
-        script: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
-
-      - name: Generate Debug Keystore
-        script: |
-          DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
-
-          sudo mkdir -p /root/.android
-
-          if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
-            rm -f "$DEBUG_KEYSTORE_PATH"
-          fi
-
-          keytool -genkey -v \
-            -keystore "$DEBUG_KEYSTORE_PATH" \
-            -storepass android \
-            -alias androiddebugkey \
-            -keypass android \
-            -dname "CN=Android Debug,O=Android,C=US" \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000
-
-          sudo chmod 644 "$DEBUG_KEYSTORE_PATH"
-
-      - name: Set Gradlew Permissions
-        script: |
-          chmod +x ./gradlew
-
-      - name: Build Android release APK
-        script: |
-          ./gradlew assembleRelease \
-            -PversionCode=1 \
-            -PversionName=1.0.2 \
-            --build-cache \
-            --no-daemon
-
-      - name: Check APK existence
-        script: |
-          APK_DIR="app/build/outputs/apk/release"
-          APK_FILE=$(find "$APK_DIR" -name "*.apk" | head -n 1)
-
-          if [ -f "$APK_FILE" ]; then
-            echo "APK found: $APK_FILE"
-          else
-            echo "ERROR: APK not found"
-            exit 1
-          fi
-
-      - name: Verify APK directory
-        script: |
-          ls -alh app/build/outputs/apk/release/
-
-    artifacts:
-      - app/build/outputs/**/*.apk
-
-    publishing:
-      email:
-        recipients:
-          - trmnjames@gmail.com
-        notify:
-          success: true
-          failure: true
+      publishing:
+        email:
+          recipients:
+            - trmnjames@gmail.com
+          notify:
+            success: true
+            failure: true
