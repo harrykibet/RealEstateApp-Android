@@ -41,8 +41,8 @@ echo "Configuring BetterDisplay auto dummy display..."
 mkdir -p ~/Library/Preferences
 
 defaults write com.waydabber.BetterDisplay createDummyOnLaunch -bool true
-defaults write com.waydabber.BetterDisplay dummyDisplayWidth -int 2560
-defaults write com.waydabber.BetterDisplay dummyDisplayHeight -int 1440
+defaults write com.waydabber.BetterDisplay dummyDisplayWidth -int 1920
+defaults write com.waydabber.BetterDisplay dummyDisplayHeight -int 1080
 defaults write com.waydabber.BetterDisplay dummyDisplayHiDPI -bool true
 
 echo "Launching BetterDisplay in background..."
