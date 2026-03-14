@@ -45,19 +45,6 @@ defaults write com.waydabber.BetterDisplay dummyDisplayWidth -int 1920
 defaults write com.waydabber.BetterDisplay dummyDisplayHeight -int 1080
 defaults write com.waydabber.BetterDisplay dummyDisplayHiDPI -bool true
 
-echo "Launching BetterDisplay in background..."
-open -a "$APP_PATH"
-
-# Wait for the dummy display to register
-sleep 15
-
-echo "Verifying BetterDisplay process..."
-if pgrep -f BetterDisplay >/dev/null; then
-    echo "BetterDisplay running"
-else
-    echo "BetterDisplay did not start correctly. Continuing build."
-fi
-
 echo "Display configuration:"
 system_profiler SPDisplaysDataType | grep Resolution || echo "Resolution info unavailable"
 
