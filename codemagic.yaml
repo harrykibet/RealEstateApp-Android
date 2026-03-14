@@ -17,43 +17,52 @@ workflows:
 
       - name: Bootstrap virtual display with BetterDisplay
         script: |
-          echo "========================================"
-          echo "CI DISPLAY BOOTSTRAP"
-          echo "========================================"
+          echo "=============================="
+          echo "DISPLAY BOOTSTRAP"
+          echo "=============================="
 
-          echo "Allow WindowServer to fully initialize..."
           sleep 10
 
-          echo "Enabling HiDPI display modes..."
+          echo "Enabling HiDPI modes..."
           sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true || true
 
           echo "Installing BetterDisplay..."
           brew update || true
-          brew install --cask betterdisplay --no-quarantine || true
+          brew install --cask betterdisplay || true
+
+          echo "Searching for BetterDisplay installation..."
+
+          APP_PATH=$(find /Applications -name "BetterDisplay.app" -maxdepth 2 2>/dev/null | head -n 1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "BetterDisplay not found. Continuing build without virtual display."
+            exit 0
+          fi
+
+          echo "BetterDisplay installed at:"
+          echo "$APP_PATH"
 
           echo "Launching BetterDisplay..."
-          open -a "BetterDisplay"
+          open "$APP_PATH"
 
-          echo "Waiting for BetterDisplay to initialize..."
           sleep 10
 
-          BETTERDISPLAY_BIN="/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay"
+          BIN_PATH="$APP_PATH/Contents/MacOS/BetterDisplay"
 
-          if [ ! -f "$BETTERDISPLAY_BIN" ]; then
-            echo "ERROR: BetterDisplay binary not found."
-            exit 1
+          if [ ! -f "$BIN_PATH" ]; then
+            echo "BetterDisplay CLI not found. Continuing build."
+            exit 0
           fi
 
           echo "Creating dummy display..."
-          "$BETTERDISPLAY_BIN" --create-dummy || true
+          "$BIN_PATH" --create-dummy || true
 
-          echo "Waiting for WindowServer to register display..."
           sleep 8
 
-          echo "Applying HiDPI framebuffer resolution..."
-          "$BETTERDISPLAY_BIN" --set-resolution 2560x1440 || true
+          echo "Setting high resolution framebuffer..."
+          "$BIN_PATH" --set-resolution 2560x1440 || true
 
-          echo "Current display configuration:"
+          echo "Display state:"
           system_profiler SPDisplaysDataType | grep Resolution || true
 
       - name: Set Android SDK location
@@ -67,11 +76,8 @@ workflows:
           sudo mkdir -p /root/.android
 
           if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
-            echo "Removing existing debug keystore..."
             rm -f "$DEBUG_KEYSTORE_PATH"
           fi
-
-          echo "Generating debug keystore..."
 
           keytool -genkey -v \
             -keystore "$DEBUG_KEYSTORE_PATH" \
@@ -109,45 +115,8 @@ workflows:
             exit 1
           fi
 
-      - name: Sign APK if required
-        script: |
-          APK_DIR="app/build/outputs/apk/release"
-
-          APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
-
-          if [ -f "$APK_FILE" ]; then
-
-            SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
-
-            echo "Signing APK..."
-
-            jarsigner \
-              -sigalg SHA256withRSA \
-              -digestalg SHA-256 \
-              -keystore "$CM_KEYSTORE_PATH" \
-              -storepass "$CM_KEYSTORE_PASSWORD" \
-              -keypass "$CM_KEY_PASSWORD" \
-              "$APK_FILE" "$CM_KEY_ALIAS"
-
-            mv "$APK_FILE" "$SIGNED_APK"
-
-            echo "Signed APK: $SIGNED_APK"
-
-          else
-
-            SIGNED_APK=$(find "$APK_DIR" -name "*.apk" | head -n 1)
-
-            if [ -f "$SIGNED_APK" ]; then
-              echo "APK already signed."
-            else
-              echo "ERROR: No APK found"
-              exit 1
-            fi
-          fi
-
       - name: Verify APK directory
         script: |
-          echo "APK directory contents:"
           ls -alh app/build/outputs/apk/release/
 
     artifacts:
