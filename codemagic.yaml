@@ -17,14 +17,7 @@ workflows:
 
     scripts:
 
-      # 1️⃣ Bootstrap virtual display (if needed for Compose/UI tests)
-      - name: Bootstrap virtual display
-        script: |
-          echo "Initializing CI display environment..."
-          chmod +x scripts/ci-display-bootstrap.sh
-          ./scripts/ci-display-bootstrap.sh
-
-      # 2️⃣ Generate local.properties with secrets
+      # 1 Generate local.properties with secrets
       - name: Generate local.properties
         script: |
           cat > "$CM_BUILD_DIR/local.properties" << EOF
@@ -43,7 +36,7 @@ workflows:
 
           echo "local.properties generated"
 
-      # 3️⃣ Restore secret files (keystores and google-services.json)
+      # 2 Restore secret files (keystores and google-services.json)
       - name: Restore secret files
         script: |
           # Create AppKeyStore folder if missing
@@ -59,7 +52,7 @@ workflows:
 
           echo "Secret files restored successfully"
 
-      # 4️⃣ Verify restored files
+      # 3 Verify restored files
       - name: Verify secret files
         script: |
           test -f "$CM_BUILD_DIR/AppKeyStore/debug.keystore"
@@ -69,12 +62,19 @@ workflows:
 
           echo "All secret files verified"
 
-      # 5️⃣ Ensure Gradle wrapper executable
+      # 4 Ensure Gradle wrapper executable
       - name: Set Gradlew Permissions
         script: |
           chmod +x ./gradlew
 
-      # 6️⃣ Build release APK or AAB (Gradle handles signing)
+      # 5 Bootstrap virtual display (if needed for Compose/UI tests)
+      - name: Bootstrap virtual display
+        script: |
+          echo "Initializing CI display environment..."
+          chmod +x scripts/ci-display-bootstrap.sh
+          ./scripts/ci-display-bootstrap.sh
+
+      # 6 Build release APK or AAB (Gradle handles signing)
       - name: Build Android Release
         script: |
           ./gradlew bundleRelease \
@@ -83,7 +83,7 @@ workflows:
             --build-cache \
             --no-daemon
 
-      # 7️⃣ Verify output
+      # 7 Verify Output
       - name: Verify build output
         script: |
           ARTIFACT_DIR="app/build/outputs/bundle/release"
