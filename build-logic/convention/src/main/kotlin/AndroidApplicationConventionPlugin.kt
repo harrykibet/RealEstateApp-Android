@@ -19,7 +19,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.android.compose")
         pluginManager.apply("androidx.baselineprofile")
-        pluginManager.apply("com.estatia.realestate.apps.sonarqube")
         pluginManager.apply("com.estatia.realestate.apps.android.packaging")
 
         extensions.configure<ApplicationExtension>("android") {

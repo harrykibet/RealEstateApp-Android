@@ -53,10 +53,6 @@ gradlePlugin {
             id = libs.plugins.estatia.firebase.get().pluginId
             implementationClass = "FirebaseConventionPlugin"
         }
-        register("sonarqube") {
-            id = libs.plugins.estatia.sonarqube.get().pluginId
-            implementationClass = "SonarQubeConventionPlugin"
-        }
         register("androidPackaging") {
             id = libs.plugins.estatia.android.packaging.get().pluginId
             implementationClass = "AndroidPackagingConventionPlugin"
