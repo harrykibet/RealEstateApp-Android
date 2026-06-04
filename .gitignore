@@ -36,10 +36,6 @@ captures/
 .kotlin/sessions/u
 .cxx/
 
-# Scripts
-.update_repos.sh
-.updategitremotes.sh
-
 # Misc
 dependencies_tree.txt
 dependency_tree.txt
