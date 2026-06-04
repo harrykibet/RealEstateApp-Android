@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import com.estatia.realestate.apps.feature.search.R
 import com.google.android.libraries.places.api.Places
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.LocationServices
@@ -66,7 +65,7 @@ fun MapWithSearchBar(
     // Initialize Places
     LaunchedEffect(Unit) {
         if (!Places.isInitialized()) {
-            Places.initialize(context, context.getString(R.string.google_maps_key))
+            Places.initialize(context, BuildConfig.MAPS_API_KEY)
         }
     }
 

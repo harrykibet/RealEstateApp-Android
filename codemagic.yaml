@@ -1,127 +1,108 @@
-  workflows:
-    native-android:
-      name: Native Android
-      max_build_duration: 120
-      instance_type: mac_mini_m2
+workflows:
+  native-android:
+    name: Native Android
+    max_build_duration: 120
+    instance_type: mac_mini_m2
 
-      environment:
-        xcode: latest
-        vars:
-          CI: "true"
-          PACKAGE_NAME: "io.codemagic.androidquicksample"
-        groups:
-          - google_play
-          - android_signing
+    environment:
+      xcode: latest
+      vars:
+        CI: "true"
+      groups:
+        - signing_debug
+        - signing_release
+        - signing_play_store
+        - firebase
+        - api_keys
 
-      scripts:
+    scripts:
 
-        - name: Bootstrap virtual display
-          script: |
-            echo "Initializing CI display environment..."
-            chmod +x scripts/ci-display-bootstrap.sh
-            ./scripts/ci-display-bootstrap.sh
+      # 1️⃣ Bootstrap virtual display (if needed for Compose/UI tests)
+      - name: Bootstrap virtual display
+        script: |
+          echo "Initializing CI display environment..."
+          chmod +x scripts/ci-display-bootstrap.sh
+          ./scripts/ci-display-bootstrap.sh
 
-        - name: Set Android SDK location
-          script: |
-            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      # 2️⃣ Generate local.properties with secrets
+      - name: Generate local.properties
+        script: |
+          cat > "$CM_BUILD_DIR/local.properties" << EOF
+          sdk.dir=$ANDROID_SDK_ROOT
 
-        - name: Generate Debug Keystore
-          script: |
-            DEBUG_KEYSTORE_PATH="/root/.android/debug.keystore"
-            
-            sudo mkdir -p /root/.android
-            
-            if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
-              echo "Removing existing debug keystore..."
-              rm -f "$DEBUG_KEYSTORE_PATH"
-            fi
-            
-            echo "Generating debug keystore..."
-            
-            keytool -genkey -v \
-              -keystore "$DEBUG_KEYSTORE_PATH" \
-              -storepass android \
-              -alias androiddebugkey \
-              -keypass android \
-              -dname "CN=Android Debug,O=Android,C=US" \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000
-            
-            sudo chmod 644 "$DEBUG_KEYSTORE_PATH"
+          GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
 
-        - name: Set Gradlew Permissions
-          script: |
-            chmod +x ./gradlew
+          DEBUG_STORE_PASSWORD=$DEBUG_STORE_PASSWORD
+          DEBUG_KEY_ALIAS=$DEBUG_KEY_ALIAS
+          DEBUG_KEY_PASSWORD=$DEBUG_KEY_PASSWORD
 
-        - name: Build Android release APK
-          script: |
-            ./gradlew assembleRelease \
-              -PversionCode=1 \
-              -PversionName=1.0.2 \
-              --build-cache \
-              --no-daemon
+          RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
+          RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
+          RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
+          EOF
 
-        - name: Check APK existence
-          script: |
-            APK_DIR="app/build/outputs/apk/release"
-            APK_FILE=$(find "$APK_DIR" -name "*.apk" | head -n 1)
-            
-            if [ -f "$APK_FILE" ]; then
-              echo "APK found: $APK_FILE"
-            else
-              echo "ERROR: APK not found"
-              exit 1
-            fi
+          echo "local.properties generated"
 
-        - name: Sign APK if required
-          script: |
-            APK_DIR="app/build/outputs/apk/release"
-            
-            APK_FILE=$(find "$APK_DIR" -name "*-unsigned.apk" | head -n 1)
-            
-            if [ -f "$APK_FILE" ]; then
-            
-              SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
-            
-              echo "Signing APK..."
-            
-              jarsigner \
-                -sigalg SHA256withRSA \
-                -digestalg SHA-256 \
-                -keystore "$CM_KEYSTORE_PATH" \
-                -storepass "$CM_KEYSTORE_PASSWORD" \
-                -keypass "$CM_KEY_PASSWORD" \
-                "$APK_FILE" "$CM_KEY_ALIAS"
-            
-              mv "$APK_FILE" "$SIGNED_APK"
-            
-              echo "Signed APK: $SIGNED_APK"
-            
-            else
-            
-              SIGNED_APK=$(find "$APK_DIR" -name "*.apk" | head -n 1)
-            
-              if [ -f "$SIGNED_APK" ]; then
-                echo "APK already signed."
-              else
-                echo "ERROR: No APK found"
-                exit 1
-              fi
-            fi
+      # 3️⃣ Restore secret files (keystores and google-services.json)
+      - name: Restore secret files
+        script: |
+          # Create AppKeyStore folder if missing
+          mkdir -p "$CM_BUILD_DIR/AppKeyStore"
 
-        - name: Verify APK directory
-          script: |
-            echo "APK directory contents:"
-            ls -alh app/build/outputs/apk/release/
+          # Decode keystores from Base64
+          echo "$DEBUG_KEYSTORE_FILE_B64"  | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/debug.keystore"
+          echo "$RELEASE_KEYSTORE_FILE_B64" | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/keystore.jks"
+          echo "$PRIVATE_KEY_PEPK_FILE_B64"  | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/private_key.pepk"
 
-      artifacts:
-        - app/build/outputs/**/*.apk
+          # Write google-services.json to existing app module
+          echo "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > "$CM_BUILD_DIR/app/google-services.json"
 
-      publishing:
-        email:
-          recipients:
-            - trmnjames@gmail.com
-          notify:
-            success: true
-            failure: true
+          echo "Secret files restored successfully"
+
+      # 4️⃣ Verify restored files
+      - name: Verify secret files
+        script: |
+          test -f "$CM_BUILD_DIR/AppKeyStore/debug.keystore"
+          test -f "$CM_BUILD_DIR/AppKeyStore/keystore.jks"
+          test -f "$CM_BUILD_DIR/AppKeyStore/private_key.pepk"
+          test -f "$CM_BUILD_DIR/app/google-services.json"
+
+          echo "All secret files verified"
+
+      # 5️⃣ Ensure Gradle wrapper executable
+      - name: Set Gradlew Permissions
+        script: |
+          chmod +x ./gradlew
+
+      # 6️⃣ Build release APK or AAB (Gradle handles signing)
+      - name: Build Android Release
+        script: |
+          ./gradlew bundleRelease \
+            -PversionCode=1 \
+            -PversionName=1.0.2 \
+            --build-cache \
+            --no-daemon
+
+      # 7️⃣ Verify output
+      - name: Verify build output
+        script: |
+          ARTIFACT_DIR="app/build/outputs/bundle/release"
+          ARTIFACT_FILE=$(find "$ARTIFACT_DIR" -name "*.aab" | head -n 1)
+
+          if [ -f "$ARTIFACT_FILE" ]; then
+            echo "Release artifact found: $ARTIFACT_FILE"
+          else
+            echo "ERROR: Release artifact not found!"
+            exit 1
+          fi
+
+    artifacts:
+      - app/build/outputs/**/*.aab
+
+    publishing:
+      email:
+        recipients:
+          - trmnjames@gmail.com
+        notify:
+          success: true
+          failure: true

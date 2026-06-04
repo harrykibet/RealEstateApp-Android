@@ -26,10 +26,6 @@
         <profileable
             android:shell="true"
             tools:targetApi="29" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAMbM4FJlF3OZ2ok1gwXsndHXDO6YnB_H4" />
         <activity
             android:name="com.estatia.realestate.apps.MainActivity"
             android:configChanges="uiMode"
