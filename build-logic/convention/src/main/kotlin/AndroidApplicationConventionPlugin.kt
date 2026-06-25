@@ -4,9 +4,13 @@ import org.gradle.api.Project
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
 
-    /** Helper to read Gradle properties, or fail fast if missing */
-    private fun Project.requireProperty(name: String): String =
-        providers.gradleProperty(name).orNull ?: error("Gradle property '$name' not found")
+    /** Helper to read Gradle properties or environment variables, or fail fast if missing */
+    private fun Project.requireSecret(name: String): String =
+        providers.gradleProperty(name).orNull
+            ?: providers.environmentVariable(name).orNull
+            ?: error(
+                "Required secret '$name' was not found in Gradle properties or environment variables."
+            )
 
     override fun apply(target: Project) = with(target) {
 
@@ -42,16 +46,16 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
                 getByName("debug") {
                     storeFile = rootProject.file("AppKeyStore/debug.keystore")
-                    storePassword = target.requireProperty("DEBUG_STORE_PASSWORD")
-                    keyAlias = target.requireProperty("DEBUG_KEY_ALIAS")
-                    keyPassword = target.requireProperty("DEBUG_KEY_PASSWORD")
+                    storePassword = target.requireSecret("DEBUG_STORE_PASSWORD")
+                    keyAlias = target.requireSecret("DEBUG_KEY_ALIAS")
+                    keyPassword = target.requireSecret("DEBUG_KEY_PASSWORD")
                 }
 
                 create("release") {
                     storeFile = rootProject.file("AppKeyStore/keystore.jks")
-                    storePassword = target.requireProperty("RELEASE_STORE_PASSWORD")
-                    keyAlias = target.requireProperty("RELEASE_KEY_ALIAS")
-                    keyPassword = target.requireProperty("RELEASE_KEY_PASSWORD")
+                    storePassword = target.requireSecret("RELEASE_STORE_PASSWORD")
+                    keyAlias = target.requireSecret("RELEASE_KEY_ALIAS")
+                    keyPassword = target.requireSecret("RELEASE_KEY_PASSWORD")
                 }
             }
 

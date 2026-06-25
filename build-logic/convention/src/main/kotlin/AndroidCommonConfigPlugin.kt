@@ -11,12 +11,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidCommonConfigPlugin : Plugin<Project> {
 
-    private var isDynamicFeatureModule: Boolean = false
-
     override fun apply(target: Project) {
         with(target) {
             val isAppModule = plugins.hasPlugin("com.android.application")
-            isDynamicFeatureModule = plugins.hasPlugin("com.android.dynamic-feature")
+            val isDynamicFeatureModule = plugins.hasPlugin("com.android.dynamic-feature")
 
             when {
                 isAppModule -> {
@@ -26,7 +24,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 }
                 isDynamicFeatureModule -> {
                     extensions.configure<DynamicFeatureExtension> {
-                        configureAndroidCommon(isDynamicFeatureModule)
+                        configureAndroidCommon(isDynamicFeatureModule = true)
                     }
                 }
                 else -> {
@@ -34,7 +32,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                     extensions.configure<LibraryExtension> {
                         configureAndroidCommon()
                         defaultConfig {
-                            // ✅ Only for library modules
                             consumerProguardFiles("consumer-rules.pro")
                         }
                     }
@@ -44,9 +41,8 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.android")
             pluginManager.apply("org.jetbrains.dokka")
 
-            // ✅ Configure KotlinOptions properly
             extensions.configure<KotlinAndroidProjectExtension> {
-                jvmToolchain(17) // Sets JVM target
+                jvmToolchain(17)
             }
 
             tasks.withType<DokkaGenerateTask>().configureEach {

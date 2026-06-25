@@ -4,7 +4,6 @@ plugins {
 
 android {
     namespace = "com.estatia.realestate.apps"
-
     buildTypes {
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
@@ -12,31 +11,36 @@ android {
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
-        release{
+        release {
             signingConfig = signingConfigs.getByName("release")
-            // Ensure Baseline Profile is fresh for release builds.
-            baselineProfile.automaticGenerationDuringBuild = true
         }
     }
-
     dokka {
         moduleName.set("RealEstateApp")
-
         dokkaSourceSets {
             configureEach {
                 suppress.set(true)
                 skipEmptyPackages.set(true)
                 reportUndocumented.set(false)
             }
-
             named("release") {
                 suppress.set(false)
             }
         }
     }
-
     hilt {
         enableAggregatingTask = true
+    }
+}
+
+// Top-level block — outside android {}
+baselineProfile {
+    // Regenerate on every release build
+    automaticGenerationDuringBuild = true
+
+    // Suppress the AGP version compatibility warning
+    warnings {
+        maxAgpVersion = false
     }
 }
 

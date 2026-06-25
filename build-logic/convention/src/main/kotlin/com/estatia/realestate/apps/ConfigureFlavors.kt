@@ -1,37 +1,44 @@
 package com.estatia.realestate.apps
 
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.ApplicationProductFlavor
-import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.ProductFlavor
 
+// AGP 9.x: flavorDimensions / productFlavors removed from CommonExtension.
+// Provide typed overloads for app and library modules.
 
 fun configureFlavors(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    extension: ApplicationExtension,
     flavorConfigurationBlock: ProductFlavor.(flavor: EstatiaFlavor) -> Unit = {}
 ) {
-    commonExtension.apply {
-
-        // Register dimensions
-        for (dimension in FlavorDimension.values()) {
-            flavorDimensions += dimension.name
-        }
-
-        // Register flavors
+    extension.apply {
+        FlavorDimension.entries.forEach { flavorDimensions += it.name }
         productFlavors {
-            for (flavor in EstatiaFlavor.values()) {
+            EstatiaFlavor.entries.forEach { flavor ->
                 register(flavor.name) {
                     dimension = flavor.dimension.name
-
                     flavorConfigurationBlock(this, flavor)
-
-                    // Only for Application modules
-                    if (commonExtension is ApplicationExtension && this is ApplicationProductFlavor) {
-                        flavor.applicationIdSuffix?.let { applicationIdSuffix = it }
-                        flavor.versionNameSuffix?.let { versionNameSuffix = it }
+                    (this).let {
+                        flavor.applicationIdSuffix?.let { s -> applicationIdSuffix = s }
+                        flavor.versionNameSuffix?.let { s -> versionNameSuffix = s }
                     }
+                }
+            }
+        }
+    }
+}
 
-                    // Library modules won't apply these; they just have the flavor itself
+fun configureFlavors(
+    extension: LibraryExtension,
+    flavorConfigurationBlock: ProductFlavor.(flavor: EstatiaFlavor) -> Unit = {}
+) {
+    extension.apply {
+        FlavorDimension.entries.forEach { flavorDimensions += it.name }
+        productFlavors {
+            EstatiaFlavor.entries.forEach { flavor ->
+                register(flavor.name) {
+                    dimension = flavor.dimension.name
+                    flavorConfigurationBlock(this, flavor)
                 }
             }
         }
