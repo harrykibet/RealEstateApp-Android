@@ -5,8 +5,8 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 data class PropertyEntity(
-    var id: String? = null,
-    val title: String? = null,
+    var id: String = "",
+    val title: String = "",
     val description: String? = null,
     val price: Double? = null,
     var imageUrl: List<String> = emptyList(),
@@ -21,10 +21,10 @@ data class PropertyEntity(
     val contactEmail: String? = null,
     val county: String? = null,
     val active: Boolean = true,
-    val viewsCount: Int? = null,
-    val sharesCount: Int? = null,
-    val likesCount: Int? = null,
-    val commentsCount: Int? = null,
+    val viewsCount: Int = 0,
+    val sharesCount: Int = 0,
+    val likesCount: Int = 0,
+    val commentsCount: Int = 0,
     val propertyType: String? = null,
     val bedrooms: Int? = null,
     val bathrooms: Int? = null,
