@@ -33,7 +33,6 @@ rootProject.name = "Estatia"
 
 include(":app")
 include(":benchmark")
-include(":benchmark:baselineprofile")
 include(":localization")
 include(":lint")
 

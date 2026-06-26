@@ -77,10 +77,6 @@ gradlePlugin {
             id = libs.plugins.estatia.android.application.get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
-        register("androidBenchmark") {
-            id = libs.plugins.estatia.android.benchmark.get().pluginId
-            implementationClass = "AndroidBenchmarkConventionPlugin"
-        }
         register("androidFeature") {
             id = libs.plugins.estatia.android.feature.get().pluginId
             implementationClass = "AndroidFeatureConventionPlugin"

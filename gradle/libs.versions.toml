@@ -1,20 +1,20 @@
 [versions]
 
 androidGradlePlugin = "9.2.1"
-androidTools = "32.0.0"
-androidx-activity = "1.12.3"
+androidTools = "32.2.1"
+androidx-activity = "1.13.0"
 androidx-appcompat = "1.7.1"
 androidx-arch-core = "2.2.0"
 androidx-constraintlayout = "2.2.1"
-androidx-core = "1.17.0"
+androidx-core = "1.19.0"
 androidx-core-splashscreen = "1.2.0"
 androidx-fragment = "1.8.9"
 androidx-hilt = "1.3.0"
-androidx-lifecycle = "2.10.0"
+androidx-lifecycle = "2.11.0"
 androidx-metrics = "1.0.0"
-androidx-media3 = "1.9.2"
+androidx-media3 = "1.10.1"
 androidx-mediarouter = "1.8.1"
-androidx-navigation = "2.9.7"
+androidx-navigation = "2.9.8"
 androidx-recyclerview = "1.4.0"
 androidx-room = "2.8.4"
 androidx-security-crypto = "1.1.0"
@@ -24,66 +24,51 @@ androidx-test-espresso = "3.7.0"
 androidx-test-ext-junit = "1.3.0"
 androidx-test-uiautomator = "2.3.0"
 androidx-viewpager2 = "1.1.0"
-androidx-work = "2.11.1"
-androidxLintGradle = "1.0.0-alpha03"
-bouncy = "1.83"
-caffeine = "3.2.0"
-compose-bom =  "2026.01.01"
-conscrypt-openjdk-uber = "2.5.2"
-converter-gson = "2.11.0"
-credentialManager = "1.5.0"
-dokka = "2.1.0"
-firebase-bom = "34.9.0"
-firebaseCrashlyticsPlugin = "3.0.6"
+androidx-work = "2.11.2"
+bouncy = "1.84"
+compose-bom =  "2026.06.00"
+credentialManager = "1.6.0"
+dokka = "2.2.0"
+firebase-bom = "34.15.0"
+firebaseCrashlyticsPlugin = "3.0.7"
 firebasePerfPlugin = "2.0.2"
-google-android-material = "1.13.0"
-google-android-places = "5.1.1"
+google-android-material = "1.14.0"
+google-android-places = "5.2.0"
 google-android-play-services-appset = "16.1.0"
-google-android-play-services-auth = "21.5.0"
-google-android-play-services-location = "21.3.0"
+google-android-play-services-auth = "21.6.0"
+google-android-play-services-location = "21.4.0"
 google-android-play-services-maps = "20.0.0"
 google-android-play-services-mlkit-image-labeling = "16.0.8"
 google-android-play-services-mlkit-text-recognition = "19.0.1"
-google-cloud-bom = "26.55.0"
 googleId = "1.2.0"
-google-dagger = "2.56"
+google-dagger = "2.60"
 google-mlkit-barcode-scanning = "17.3.0"
 google-mlkit-face-detection = "16.1.7"
 google-mlkit-image-labeling = "17.0.9"
 google-mlkit-text-recognition = "16.0.1"
-gson = "2.12.1"
-hilt-android = "2.50"
 junit-junit = "4.13.2"
-junit-jupiter = "6.0.2"
-kotlin = "2.2.20"
-kotest = "6.1.3"
+junit-jupiter = "6.1.0"
+kotlin = "2.3.0"
+kotest = "6.2.1"
 ksp = "2.3.2"
-leakcanary = "3.0-alpha-8"
-maps-compose = "8.0.1"
-mockk = "1.14.9"
-moduleGraph = "2.9.0"
-metrics-performance = "1.0.0-beta01"
-micrometer-core = "1.15.0-M2"
-micrometer-registry-prometheus = "1.15.0-M2"
-okhttp3 = "5.3.2"
-opentelemetry-api = "1.47.0"
-opentelemetry-exporter-otlp = "1.47.0"
+leakcanary = "3.0-alpha-9"
+maps-compose = "8.3.0"
+mockk = "1.14.11"
+moduleGraph = "2.9.1"
+okhttp3 = "5.4.0"
 retrofit2 = "3.0.0"
 truth = "1.4.5"
-firebaseAuthKtx = "23.2.0"
 benchmarkMacroJunit4 = "1.4.1"
 baselineprofile = "1.4.1"
 profileinstaller = "1.4.1"
-compose-compiler = "1.5.10"
-sonarqube = "7.2.2.6593"
-kotlinxSerializationJson = "1.10.0"
+sonarqube = "7.3.1.8318"
+kotlinxSerializationJson = "1.11.0"
 coil = "2.7.0"
 androidx-tracing = "1.3.0"
-kotlinxCoroutines = "1.10.2"
-androidxDataStore = "1.2.0"
-playServicesAuth = "21.0.1"
-protobufPlugin = "0.9.6"
-protobuf = "4.33.5"
+kotlinxCoroutines = "1.11.0"
+androidxDataStore = "1.2.1"
+protobufPlugin = "0.10.0"
+protobuf = "4.35.1"
 
 [plugins]
 
@@ -119,20 +104,20 @@ com-google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", versio
 androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 
 # Dokka for docs
-org-jetbrains-dokka = { id = "org.jetbrains.dokka", version = "2.1.0" }
+org-jetbrains-dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
 
 # Static analysis
-org-sonarqube = { id = "org.sonarqube", version = "7.2.2.6593" }
+org-sonarqube = { id = "org.sonarqube", version = "7.3.1.8318" }
 
 # Firebase
-com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
+com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.7" }
 com-google-firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
 
 # Google
-com-google-gms-google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
+com-google-gms-google-services = { id = "com.google.gms.google-services", version = "4.5.0" }
 
 # Safe Args
-androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version = "2.9.7" }
+androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version = "2.9.8" }
 
 # Secrets
 com-google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version = "2.0.1" }
@@ -323,7 +308,7 @@ swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefre
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splashscreen" }
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.8.0" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
 androidx-dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
@@ -335,7 +320,7 @@ protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref 
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.9.7" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.9.8" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended"}
@@ -387,8 +372,8 @@ navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx",
 
 
 # Glide for image loading
-glide = { group = "com.github.bumptech.glide", name = "glide", version = "5.0.5" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version = "5.0.5" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version = "5.0.7" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version = "5.0.7" }
 
 
 # Testing
@@ -413,10 +398,10 @@ dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref =
 # Networking
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
-gson = "com.google.code.gson:gson:2.13.2"
+gson = "com.google.code.gson:gson:2.14.0"
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit2" }
-guava = { group = "com.google.guava", name = "guava", version = "33.5.0-jre"}
+guava = { group = "com.google.guava", name = "guava", version = "33.6.0-jre"}
 
 
 # Room for local data persistence
@@ -474,22 +459,22 @@ androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchm
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
 # Google Cloud
-google-cloud-bom = "com.google.cloud:libraries-bom:26.75.0"
+google-cloud-bom = "com.google.cloud:libraries-bom:26.84.0"
 google-cloud-kms = { module = "com.google.cloud:google-cloud-kms" }
 google-cloud-secretmanager = { module = "com.google.cloud:google-cloud-secretmanager" }
 
 
 # Caching
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.4"
 
 
 
 
 # Analytics and Perfomance
-opentelemetry-api = "io.opentelemetry:opentelemetry-api:1.59.0"
-opentelemetry-exporter-otlp = "io.opentelemetry:opentelemetry-exporter-otlp:1.59.0"
-micrometer-core = "io.micrometer:micrometer-core:1.16.2"
-micrometer-registry-prometheus = "io.micrometer:micrometer-registry-prometheus:1.16.2"
+opentelemetry-api = "io.opentelemetry:opentelemetry-api:1.63.0"
+opentelemetry-exporter-otlp = "io.opentelemetry:opentelemetry-exporter-otlp:1.63.0"
+micrometer-core = "io.micrometer:micrometer-core:1.17.0"
+micrometer-registry-prometheus = "io.micrometer:micrometer-registry-prometheus:1.17.0"
 conscrypt-openjdk-uber = "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
 metrics-performance = { group = "androidx.metrics", name = "metrics-performance", version.ref = "androidx-metrics" }
 play-services-appset = { group = "com.google.android.gms", name = "play-services-appset", version.ref = "google-android-play-services-appset" }

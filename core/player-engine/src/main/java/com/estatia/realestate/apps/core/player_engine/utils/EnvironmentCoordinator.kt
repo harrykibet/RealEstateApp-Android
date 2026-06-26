@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.player_engine.utils
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
-import com.estatia.realestate.apps.core.common.interfaces.INetworkUtils
 import com.estatia.realestate.apps.core.common.system.BatteryState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose

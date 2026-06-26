@@ -1,4 +1,5 @@
-import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -8,14 +9,24 @@ import com.estatia.realestate.apps.libs
 class ComposeConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
-            pluginManager.apply("org.jetbrains.kotlin.android")
+            // ✅ REMOVED: pluginManager.apply("org.jetbrains.kotlin.android")
+            // ✅ Keep compose compiler plugin — this one is still needed
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
-            extensions.configure<CommonExtension> {
-                buildFeatures.apply {
-                    compose = true
+            // Configure compose build feature on whichever concrete extension is present
+            pluginManager.withPlugin("com.android.application") {
+                extensions.configure<ApplicationExtension> {
+                    buildFeatures.compose = true
                 }
             }
+            pluginManager.withPlugin("com.android.library") {
+                extensions.configure<LibraryExtension> {
+                    buildFeatures.compose = true
+                }
+            }
+
+            // composeOptions.kotlinCompilerExtensionVersion is no longer needed in AGP 9.x
+            // when using the Compose compiler Gradle plugin — it's handled automatically.
 
             dependencies {
                 val bom = libs.findLibrary("androidx-compose-bom").get()

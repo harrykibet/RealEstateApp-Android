@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
+import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +33,15 @@ object NetworkModule {
     fun provideNetworkStatsManager(@ApplicationContext context: Context): NetworkStatsManager {
         return context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
     }
+
+    @Provides
+    @Singleton
+    fun provideNetworkStateProvider(
+        connectivityManager: ConnectivityManager
+    ): INetworkStateProvider {
+        return AndroidNetworkStateProvider(connectivityManager)
+    }
+
 
     @Provides
     @Singleton

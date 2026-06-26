@@ -1,4 +1,4 @@
-plugins {
+ plugins {
     alias(libs.plugins.estatia.android.application)
 }
 
@@ -23,24 +23,10 @@ android {
                 skipEmptyPackages.set(true)
                 reportUndocumented.set(false)
             }
-            named("release") {
-                suppress.set(false)
-            }
         }
     }
     hilt {
         enableAggregatingTask = true
-    }
-}
-
-// Top-level block — outside android {}
-baselineProfile {
-    // Regenerate on every release build
-    automaticGenerationDuringBuild = true
-
-    // Suppress the AGP version compatibility warning
-    warnings {
-        maxAgpVersion = false
     }
 }
 
@@ -79,8 +65,6 @@ dependencies {
 
     implementation(libs.glide)
     ksp(libs.glide.compiler)
-
-    baselineProfile(projects.benchmark.baselineprofile)
 
     implementation(projects.core.ui)
     implementation(projects.core.data)

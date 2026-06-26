@@ -1,11 +1,17 @@
 plugins {
-    alias(libs.plugins.estatia.android.benchmark)
+    alias(libs.plugins.android.test)
 }
 
 android {
     namespace = "com.estatia.realestate.apps.benchmark"
 
+    compileSdk = 36
+
     defaultConfig {
+        minSdk = 28
+        targetSdk = 36
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         missingDimensionStrategy("env", "prod")
     }
 

@@ -38,11 +38,18 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 }
             }
 
-            pluginManager.apply("org.jetbrains.kotlin.android")
+            // ✅ REMOVED: pluginManager.apply("org.jetbrains.kotlin.android")
+            // AGP 9.x bundles Kotlin support — applying this plugin explicitly is now fatal.
+
             pluginManager.apply("org.jetbrains.dokka")
 
-            extensions.configure<KotlinAndroidProjectExtension> {
-                jvmToolchain(17)
+            // AGP 9.x registers KotlinAndroidProjectExtension via its built-in Kotlin integration.
+            // Use withPlugin on "com.android.base" (always present for Android modules) as the
+            // safe lifecycle hook, since there's no "org.jetbrains.kotlin.android" to hook on.
+            pluginManager.withPlugin("com.android.base") {
+                extensions.configure<KotlinAndroidProjectExtension> {
+                    jvmToolchain(17)
+                }
             }
 
             tasks.withType<DokkaGenerateTask>().configureEach {

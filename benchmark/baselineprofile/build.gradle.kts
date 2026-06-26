@@ -1,14 +1,20 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
-    alias(libs.plugins.estatia.android.benchmark)
+    alias(libs.plugins.android.test)
     alias(libs.plugins.baselineprofile)
 }
 
 android {
     namespace = "com.estatia.realestate.apps.baselineprofile"
 
+    compileSdk = 36
+
     defaultConfig {
+        minSdk = 28
+        targetSdk = 36
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         missingDimensionStrategy("env", "prod")
     }
 
@@ -23,10 +29,12 @@ android {
         }
     }
 
+    experimentalProperties["android.experimental.self-instrumenting"] = true
+
 
     targetProjectPath = ":app"
 
-    // This code creates the gradle managed device used to generate baseline profiles.
+    // This code creates the Gradle managed device used to generate baseline profiles.
     // To use GMD please invoke generation through the command line:
     // ./gradlew :app:generateBaselineProfile
     testOptions.managedDevices.allDevices {
