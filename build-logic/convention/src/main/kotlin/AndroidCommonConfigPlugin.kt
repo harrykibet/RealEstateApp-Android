@@ -31,9 +31,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                     pluginManager.apply("com.android.library")
                     extensions.configure<LibraryExtension> {
                         configureAndroidCommon()
-                        defaultConfig {
-                            consumerProguardFiles("consumer-rules.pro")
-                        }
                     }
                 }
             }

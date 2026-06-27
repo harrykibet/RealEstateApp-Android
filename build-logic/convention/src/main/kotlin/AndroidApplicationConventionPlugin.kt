@@ -58,7 +58,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
         extensions.configure<ApplicationExtension>("android") {
 
-            compileSdk { version = release(36) }
+            compileSdk { version = release(37) }
 
             buildFeatures {
                 buildConfig = true
@@ -67,7 +67,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             defaultConfig {
                 applicationId = "com.estatia.realestate.apps"
                 minSdk = 28
-                targetSdk = 36
+                targetSdk = 37
                 versionCode = 1
                 versionName = "1.0"
             }

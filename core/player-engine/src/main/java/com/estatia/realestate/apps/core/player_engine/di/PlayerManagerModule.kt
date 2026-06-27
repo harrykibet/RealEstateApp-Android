@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlaybackConfigurationProvider
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.configuration.PlaybackConfigurationProvider
@@ -15,6 +17,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.ICdnPolicy
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.StreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import dagger.Binds
 import dagger.Module
@@ -50,43 +53,9 @@ annotation class EngineScope
 @InstallIn(SingletonComponent::class)
 abstract class PlayerManagerModule {
 
-    @Provides
-    @Singleton
-    @PlayerDispatcher
-    fun providesPlayerDispatcher(): CoroutineDispatcher {
-        return Executors.newSingleThreadExecutor { r ->
-            Thread(r, "PlayerManagerThread")
-        }.asCoroutineDispatcher()
-    }
-
-    @Provides
-    @Singleton
-    @IODispatcher
-    fun provideIODispatcher(): CoroutineDispatcher =
-        Executors.newFixedThreadPool(2).asCoroutineDispatcher()
-
-    @Provides
-    @Singleton
-    @StreamingDispatcher
-    fun provideStreamingDispatcher(): CoroutineDispatcher =
-        Executors.newSingleThreadExecutor{ r ->
-            Thread(r, "StreamingThread")
-        }.asCoroutineDispatcher()
-
-    @Provides
-    @Singleton
-    @EngineScope
-    fun provideEngineScope(
-        @IODispatcher dispatcher: CoroutineDispatcher
-    ): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + dispatcher)
-    }
-
-    @Provides
-    @Singleton
-    fun provideBandwidthMeter(context: Context): BandwidthMeter {
-        return DefaultBandwidthMeter.Builder(context).build()
-    }
+    // -------------------------------------------------------
+    // @Binds — must be abstract, stays in the abstract class
+    // -------------------------------------------------------
 
     @Binds
     @Singleton
@@ -106,21 +75,72 @@ abstract class PlayerManagerModule {
 
     @Binds
     @Singleton
-    abstract fun bindCdnPolicy(
-        cdnPolicy: CdnPolicy
-    ) : ICdnPolicy
+    abstract fun bindCdnPolicy(cdnPolicy: CdnPolicy): ICdnPolicy
 
     @Binds
     @Singleton
     abstract fun bindPlayerConfigurationFactory(
-        playerConfigurationFactory:
-        PlayerConfigurationFactory
+        playerConfigurationFactory: PlayerConfigurationFactory
     ): IPlayerConfigurationFactory
 
     @Binds
     @Singleton
     abstract fun bindPlaybackConfigurationProvider(
-        playbackConfigurationProvider:
-        PlaybackConfigurationProvider
+        playbackConfigurationProvider: PlaybackConfigurationProvider
     ): IPlaybackConfigurationProvider
+
+    // -------------------------------------------------------
+    // @Provides — must be static, goes in companion object
+    // -------------------------------------------------------
+
+    companion object {
+
+        @Provides
+        @Singleton
+        @PlayerDispatcher
+        fun providesPlayerDispatcher(): CoroutineDispatcher =
+            Executors.newSingleThreadExecutor { r ->
+                Thread(r, "PlayerManagerThread")
+            }.asCoroutineDispatcher()
+
+        @Provides
+        @Singleton
+        @IODispatcher
+        fun provideIODispatcher(): CoroutineDispatcher =
+            Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+
+        @Provides
+        @Singleton
+        @StreamingDispatcher
+        fun provideStreamingDispatcher(): CoroutineDispatcher =
+            Executors.newSingleThreadExecutor { r ->
+                Thread(r, "StreamingThread")
+            }.asCoroutineDispatcher()
+
+        @Provides
+        @Singleton
+        @EngineScope
+        fun provideEngineScope(
+            @IODispatcher dispatcher: CoroutineDispatcher
+        ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+
+        @Provides
+        @Singleton
+        fun provideBandwidthMeter(context: Context): BandwidthMeter =
+            DefaultBandwidthMeter.Builder(context).build()
+
+        @Provides
+        @Singleton
+        fun provideEnvironmentCoordinator(
+            networkStateProvider: INetworkStateProvider,
+            batteryManager: IBatteryManager,
+            bandwidthMeter: BandwidthMeter
+        ): EnvironmentCoordinator {
+            return EnvironmentCoordinator(
+                networkStateProvider = networkStateProvider,
+                batteryManager = batteryManager,
+                bandwidthMeter = bandwidthMeter
+            )
+        }
+    }
 }

@@ -23,9 +23,9 @@ private fun applyCompileOptions(extension: Any) {
 }
 
 private fun ApplicationExtension.applyCommon(isDynamicFeature: Boolean = false) {
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
-        minSdk = 26
+        minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -47,9 +47,9 @@ private fun ApplicationExtension.applyCommon(isDynamicFeature: Boolean = false) 
 }
 
 private fun LibraryExtension.applyCommon(isDynamicFeature: Boolean = false) {
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
-        minSdk = 26
+        minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -71,9 +71,9 @@ private fun LibraryExtension.applyCommon(isDynamicFeature: Boolean = false) {
 }
 
 private fun DynamicFeatureExtension.applyCommon(isDynamicFeature: Boolean = true) {
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
-        minSdk = 26
+        minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {

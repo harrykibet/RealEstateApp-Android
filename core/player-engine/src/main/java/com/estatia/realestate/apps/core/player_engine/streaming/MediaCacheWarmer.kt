@@ -7,13 +7,15 @@ import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,24 +26,21 @@ import javax.inject.Singleton
 @Singleton
 class MediaCacheWarmer @Inject constructor(
     private val playbackDataSourceFactory: DataSource.Factory,
-    private val networkUtils: INetworkUtils,
+    private val environmentCoordinator: EnvironmentCoordinator,
     @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AutoCloseable {
-
 
     private val requests = MutableSharedFlow<WarmRequest>(
         extraBufferCapacity = 16,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    @Volatile
+    private val environment: StateFlow<EnvironmentState>
+        get() = environmentCoordinator.environment
+
     private var visibleJob: Job? = null
-
-    @Volatile
     private var nextJob: Job? = null
-
-    @Volatile
     private var buffering = false
 
     init {
@@ -60,11 +59,9 @@ class MediaCacheWarmer @Inject constructor(
     }
 
     fun onBufferingStarted() {
-        scope.launch {
-            buffering = true
-            nextJob?.cancel()
-            nextJob = null
-        }
+        buffering = true
+        nextJob?.cancel()
+        nextJob = null
     }
 
     fun onBufferingEnded() {
@@ -77,9 +74,7 @@ class MediaCacheWarmer @Inject constructor(
         visibleJob = scope.launch {
             prefetchInternal(
                 uri = request.uri,
-                maxBytes = adaptivePrefetchSize(
-                    visible = true
-                )
+                maxBytes = adaptivePrefetchSize(visible = true)
             )
         }
     }
@@ -92,27 +87,46 @@ class MediaCacheWarmer @Inject constructor(
         nextJob = scope.launch {
             prefetchInternal(
                 uri = request.uri,
-                maxBytes = adaptivePrefetchSize(
-                    visible = false
-                )
+                maxBytes = adaptivePrefetchSize(visible = false)
             )
         }
     }
 
+    /**
+     * Core policy engine: derives cache size from environment snapshot.
+     * No direct system calls, no legacy network utils.
+     */
     private fun adaptivePrefetchSize(visible: Boolean): Long {
+        val env = environment.value
+
+        val throttled = env.shouldThrottlePerformance
+        val metered = env.isMetered
+        val throughput = env.estimatedThroughputBps
+
         return when {
-            networkUtils.isLowLatencyNetwork() -> {
-                if (visible) 5L * 1024 * 1024 else 3L * 1024 * 1024
+
+            throttled -> {
+                if (visible) 1L * 1024 * 1024 else 512L * 1024
             }
-            networkUtils.isNetworkMetered() -> {
+
+            metered -> {
                 if (visible) 2L * 1024 * 1024 else 1L * 1024 * 1024
             }
+
+            throughput > 10_000_000L -> {
+                if (visible) 5L * 1024 * 1024 else 3L * 1024 * 1024
+            }
+
             else -> {
                 if (visible) 3L * 1024 * 1024 else 2L * 1024 * 1024
             }
         }
     }
 
+    /**
+     * Safe bounded prefetch using DataSource streaming.
+     * Fully cancellable and IO-isolated.
+     */
     private suspend fun prefetchInternal(
         uri: Uri,
         maxBytes: Long
@@ -122,10 +136,14 @@ class MediaCacheWarmer @Inject constructor(
         val dataSource = playbackDataSourceFactory.createDataSource()
 
         DataSourceInputStream(dataSource, dataSpec).use { input ->
+
             val buffer = ByteArray(32 * 1024)
             var total = 0L
 
-            while (total < maxBytes && currentCoroutineContext().isActive) {
+            while (
+                total < maxBytes &&
+                currentCoroutineContext().isActive
+            ) {
                 val read = input.read(buffer)
                 if (read == -1) break
                 total += read
