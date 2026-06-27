@@ -19,8 +19,11 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.feature.VideoItem
+import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
+import com.estatia.realestate.apps.core.player_ui.state.FeedNeighbor
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun EngineVideoFeed(
@@ -28,32 +31,48 @@ fun EngineVideoFeed(
     modifier: Modifier = Modifier,
     viewModel: VideoPlaybackViewModel = viewModel()
 ) {
-    val pagerState = rememberPagerState(pageCount = { videos.size })
 
-    // Collect once — not per page
+    val pagerState = rememberPagerState(pageCount = { videos.size })
     val uiState by viewModel.uiState.collectAsState()
 
-    // Observe visible page changes only
-    LaunchedEffect(pagerState.currentPage) {
+    // Prevent duplicate dispatches
+    var lastDispatchedPage by remember { mutableIntStateOf(-1) }
 
-        val page = pagerState.currentPage
-        val video = videos.getOrNull(page) ?: return@LaunchedEffect
+    LaunchedEffect(pagerState) {
 
-        val previous = videos.getOrNull(page - 1)?.let {
-            it.mediaId to it.videoUrl.toUri()
-        }
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .collect { page ->
 
-        val next = videos.getOrNull(page + 1)?.let {
-            it.mediaId to it.videoUrl.toUri()
-        }
+                // HARD GUARD: avoid duplicate calls
+                if (page == lastDispatchedPage) return@collect
+                lastDispatchedPage = page
 
-        viewModel.onPageVisible(
-            mediaId = video.mediaId,
-            mediaType = MediaType.VOD,
-            mediaUri = video.videoUrl.toUri(),
-            previous = previous,
-            next = next
-        )
+                val video = videos.getOrNull(page) ?: return@collect
+
+                val previous = videos.getOrNull(page - 1)?.let {
+                    FeedNeighbor(
+                        mediaId = it.mediaId,
+                        uri = it.videoUrl.toUri()
+                    )
+                }
+
+                val next = videos.getOrNull(page + 1)?.let {
+                    FeedNeighbor(
+                        mediaId = it.mediaId,
+                        uri = it.videoUrl.toUri()
+                    )
+                }
+
+                viewModel.onPageVisible(
+                    FeedMediaContext(
+                        mediaId = video.mediaId,
+                        uri = video.videoUrl.toUri(),
+                        previous = previous,
+                        next = next
+                    )
+                )
+            }
     }
 
     VerticalPager(
@@ -73,7 +92,6 @@ fun EngineVideoFeed(
                 viewModel = viewModel
             )
 
-            // Overlay only for active page
             if (isActive) {
                 when (val state = uiState) {
 

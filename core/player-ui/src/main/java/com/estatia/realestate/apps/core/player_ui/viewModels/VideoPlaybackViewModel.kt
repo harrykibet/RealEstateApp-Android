@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
+import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -22,42 +23,27 @@ class VideoPlaybackViewModel @Inject constructor(
     private val streamingPipeline: IStreamingPipeline
 ) : ViewModel() {
 
-    // ---------------------------------------
-    // Active Media Tracking
-    // ---------------------------------------
-
     private var currentMediaId: String? = null
+
     private var playJob: Job? = null
     private var preloadJob: Job? = null
 
-    // Track what we’ve already warmed to avoid redundant warm calls
     private val warmedMedia = mutableSetOf<String>()
-
-    // ---------------------------------------
-    // UI State
-    // ---------------------------------------
 
     private val _uiState =
         MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
 
-    val uiState: StateFlow<PlayerUiState> =
-        _uiState.asStateFlow()
+    val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
 
     init {
         observeEngineState()
     }
 
-    // ---------------------------------------
-    // Engine → UI Mapping
-    // ---------------------------------------
-
     private fun observeEngineState() {
         viewModelScope.launch {
-            playerController
-                .observeState()
+            playerController.observeState()
                 .collectLatest { engineState ->
 
-                    // Forward buffering state to cache warmer
                     when (engineState) {
                         PlaybackStateReducer.State.Buffering ->
                             streamingPipeline.onBufferingStarted()
@@ -74,58 +60,46 @@ class VideoPlaybackViewModel @Inject constructor(
         }
     }
 
-    private fun mapToUiState(
-        state: PlaybackStateReducer.State
-    ): PlayerUiState {
-        return when (state) {
+    fun onPageVisible(context: FeedMediaContext) {
 
-            PlaybackStateReducer.State.Idle ->
-                PlayerUiState.Idle
+        if (currentMediaId == context.mediaId) return
 
-            PlaybackStateReducer.State.Buffering ->
-                PlayerUiState.Buffering
-
-            PlaybackStateReducer.State.Ready ->
-                PlayerUiState.Ready
-
-            PlaybackStateReducer.State.Playing ->
-                PlayerUiState.Playing
-
-            PlaybackStateReducer.State.Paused ->
-                PlayerUiState.Paused
-
-            PlaybackStateReducer.State.Ended ->
-                PlayerUiState.Ended
-
-            is PlaybackStateReducer.State.Error ->
-                PlayerUiState.Error(state.error.message)
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Single Video Playback
-    // ------------------------------------------------------------
-
-    fun play(
-        mediaId: String,
-        mediaType: MediaType,
-        mediaUri: Uri
-    ) {
-        if (currentMediaId == mediaId) return
-
-        currentMediaId = mediaId
+        currentMediaId = context.mediaId
 
         playJob?.cancel()
+        preloadJob?.cancel()
+
         playJob = viewModelScope.launch {
-            playerController.play(mediaId, mediaType)
+            playerController.play(
+                mediaId = context.mediaId,
+                mediaType = MediaType.VOD
+            )
         }
 
-        warmVisible(mediaId, mediaUri)
+        warmVisible(context.mediaId, context.uri)
+
+        preloadJob = viewModelScope.launch {
+
+            context.previous?.let {
+                playerController.preload(it.mediaId, MediaType.VOD)
+            }
+
+            context.next?.let {
+                playerController.preload(it.mediaId, MediaType.VOD)
+                warmNext(it.mediaId, it.uri)
+            }
+        }
     }
 
-    fun pause() {
-        viewModelScope.launch {
-            playerController.pause()
+    private fun warmVisible(mediaId: String, uri: Uri) {
+        if (warmedMedia.add(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.VISIBLE)
+        }
+    }
+
+    private fun warmNext(mediaId: String, uri: Uri) {
+        if (warmedMedia.add(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.NEXT)
         }
     }
 
@@ -136,74 +110,31 @@ class VideoPlaybackViewModel @Inject constructor(
         return playerController.getPlayer(mediaId, mediaType)
     }
 
-    // ------------------------------------------------------------
-    // Feed-Oriented Playback (TikTok-style)
-    // ------------------------------------------------------------
-
-    fun onPageVisible(
-        mediaId: String,
-        mediaType: MediaType,
-        mediaUri: Uri,
-        previous: Pair<String, Uri>?,
-        next: Pair<String, Uri>?
-    ) {
-
-        if (currentMediaId == mediaId) return
-
-        currentMediaId = mediaId
-
-        playJob?.cancel()
-        preloadJob?.cancel()
-
-        playJob = viewModelScope.launch {
-            playerController.play(mediaId, mediaType)
-        }
-
-        // Warm visible immediately
-        warmVisible(mediaId, mediaUri)
-
-        preloadJob = viewModelScope.launch {
-
-            // Preload players (player-level)
-            previous?.let {
-                playerController.preload(it.first, mediaType)
-            }
-
-            next?.let {
-                playerController.preload(it.first, mediaType)
-            }
-
-            // Warm cache (network-level)
-            next?.let {
-                warmNext(it.first, it.second)
-            }
+    fun pause() {
+        viewModelScope.launch {
+            playerController.pause()
         }
     }
 
-    // ------------------------------------------------------------
-    // Cache Warming
-    // ------------------------------------------------------------
-
-    private fun warmVisible(
-        mediaId: String,
-        uri: Uri
-    ) {
-        if (warmedMedia.add(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.VISIBLE)
-        }
+    fun isActive(mediaId: String): Boolean {
+        return currentMediaId == mediaId
     }
 
-    private fun warmNext(
-        mediaId: String,
-        uri: Uri
-    ) {
-        if (warmedMedia.add(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.NEXT)
+    private fun mapToUiState(state: PlaybackStateReducer.State): PlayerUiState {
+        return when (state) {
+            PlaybackStateReducer.State.Idle -> PlayerUiState.Idle
+            PlaybackStateReducer.State.Buffering -> PlayerUiState.Buffering
+            PlaybackStateReducer.State.Ready -> PlayerUiState.Ready
+            PlaybackStateReducer.State.Playing -> PlayerUiState.Playing
+            PlaybackStateReducer.State.Paused -> PlayerUiState.Paused
+            PlaybackStateReducer.State.Ended -> PlayerUiState.Ended
+            is PlaybackStateReducer.State.Error ->
+                PlayerUiState.Error(state.error.message)
         }
     }
 
     override fun onCleared() {
-        super.onCleared()
         warmedMedia.clear()
+        super.onCleared()
     }
 }

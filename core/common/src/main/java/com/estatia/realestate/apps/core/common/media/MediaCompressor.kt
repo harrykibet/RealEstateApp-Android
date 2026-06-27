@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.common.media
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat.*
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
@@ -36,10 +36,10 @@ class MediaCompressor @Inject constructor(
             }
 
             val format = when (mediaFormat) {
-                MediaFormat.JPEG -> Bitmap.CompressFormat.JPEG
-                MediaFormat.PNG -> Bitmap.CompressFormat.PNG
-                MediaFormat.WEBP -> Bitmap.CompressFormat.WEBP
-                else -> Bitmap.CompressFormat.JPEG
+                MediaFormat.JPEG -> JPEG
+                MediaFormat.PNG -> PNG
+                MediaFormat.WEBP -> WEBP
+                else -> JPEG
             }
 
             val bitmap = Glide.with(context)

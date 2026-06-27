@@ -25,15 +25,20 @@ fun EngineVideoPlayer(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var player by remember(mediaId) { mutableStateOf<Player?>(null) }
-
-    // Acquire player instance
-    LaunchedEffect(mediaId) {
-        player = viewModel.getPlayer(mediaId, mediaType)
+    // Stable player reference (NOT tied to recomposition key)
+    val playerState = remember(mediaId) {
+        mutableStateOf<Player?>(null)
     }
 
-    // Remember SurfaceView so it's not recreated on recomposition
-    val surfaceView = remember {
+    // Acquire player only when mediaId changes
+    LaunchedEffect(mediaId, mediaType) {
+        playerState.value = viewModel.getPlayer(mediaId, mediaType)
+    }
+
+    val player = playerState.value
+
+    // Stable surface lifecycle
+    val surfaceView = remember(mediaId) {
         SurfaceView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -42,22 +47,26 @@ fun EngineVideoPlayer(
         }
     }
 
-    // Attach / detach surface from player
+    // Attach surface ONLY when player changes
     DisposableEffect(player) {
-        val currentPlayer = player
-
-        currentPlayer?.setVideoSurfaceView(surfaceView)
+        player?.setVideoSurfaceView(surfaceView)
 
         onDispose {
-            currentPlayer?.clearVideoSurfaceView(surfaceView)
+            player?.clearVideoSurfaceView(surfaceView)
         }
     }
 
-    // Lifecycle handling (pause only)
-    DisposableEffect(lifecycleOwner) {
+    // Lifecycle handling (FIXED: no global pause)
+    DisposableEffect(lifecycleOwner, mediaId) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_PAUSE -> viewModel.pause()
+                Lifecycle.Event.ON_PAUSE -> {
+                    // only pause if this is active media
+                    if (viewModel.isActive(mediaId)) {
+                        viewModel.pause()
+                    }
+                }
+
                 else -> Unit
             }
         }

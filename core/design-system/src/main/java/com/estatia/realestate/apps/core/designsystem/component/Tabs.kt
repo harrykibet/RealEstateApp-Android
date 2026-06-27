@@ -3,12 +3,13 @@ package com.estatia.realestate.apps.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -60,29 +61,37 @@ fun EstatiaTab(
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
- * @param tabs The tabs inside this tab row. Typically this will be multiple [EstatiaTab]s. Each element
+ * @param tabs The tabs inside this tab row. Typically, this will be multiple [EstatiaTab]s. Each element
  * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
  */
+
 @Composable
 fun EstatiaTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
 ) {
-    TabRow(
+    SecondaryTabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier,
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        indicator = { tabPositions ->
+        indicator = {
             TabRowDefaults.SecondaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                Modifier.tabIndicatorOffset(
+                    selectedTabIndex,
+                    matchContentSize = false
+                ),
                 height = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
-        tabs = tabs,
-    )
+        divider = {
+            HorizontalDivider()
+        }
+    ) {
+        tabs()
+    }
 }
 
 @ThemePreviews

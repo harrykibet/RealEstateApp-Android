@@ -7,6 +7,7 @@ import android.location.Address
 import android.location.LocationManager
 import android.location.Location
 import android.location.Geocoder
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
@@ -56,40 +57,40 @@ class LocationUtils @Inject constructor(
         kotlinx.coroutines.suspendCancellableCoroutine { cont ->
             val geocoder = Geocoder(context, Locale.getDefault())
 
-            geocoder.getFromLocation(
-                location.latitude,
-                location.longitude,
-                1,
-                object : Geocoder.GeocodeListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocation(
+                    location.latitude,
+                    location.longitude,
+                    1,
+                    object : Geocoder.GeocodeListener {
 
-                    override fun onGeocode(addresses: MutableList<Address>) {
-                        val address = addresses.firstOrNull()
+                        override fun onGeocode(addresses: MutableList<Address>) {
+                            val address = addresses.firstOrNull()
 
-                        cont.resume(
-                            UserLocation(
-                                country = address?.countryName ?: "Unknown",
-                                city = address?.locality ?: "Unknown",
-                                latitude = location.latitude,
-                                longitude = location.longitude
-                            ),
-                            null
-                        )
+                            cont.resume(
+                                UserLocation(
+                                    country = address?.countryName ?: "Unknown",
+                                    city = address?.locality ?: "Unknown",
+                                    latitude = location.latitude,
+                                    longitude = location.longitude
+                                )
+                            ) { _, _, _ -> }
+                        }
+
+                        override fun onError(errorMessage: String?) {
+                            logger.e("Geocoding failed: $errorMessage")
+                            cont.resume(
+                                UserLocation(
+                                    country = "Unknown",
+                                    city = "Unknown",
+                                    latitude = location.latitude,
+                                    longitude = location.longitude
+                                )
+                            ) { _, _, _ -> }
+                        }
                     }
-
-                    override fun onError(errorMessage: String?) {
-                        logger.e("Geocoding failed: $errorMessage")
-                        cont.resume(
-                            UserLocation(
-                                country = "Unknown",
-                                city = "Unknown",
-                                latitude = location.latitude,
-                                longitude = location.longitude
-                            ),
-                            null
-                        )
-                    }
-                }
-            )
+                )
+            }
         }
 
     private fun unknownLocation() = UserLocation(

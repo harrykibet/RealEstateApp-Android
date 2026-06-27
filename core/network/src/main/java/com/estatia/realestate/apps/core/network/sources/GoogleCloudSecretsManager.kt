@@ -60,9 +60,7 @@ class GoogleCloudSecretsManager @Inject constructor(
 
     override suspend fun preloadSecrets(keys: Set<CacheKey>): Map<CacheKey, Result<SensitiveString>> {
         return cache.getAll(keys).await().mapValues { entry ->
-            entry.value?.let { Result.success(it) } ?: Result.failure(
-                SecretsManagerException("Preload failed for ${entry.key}")
-            )
+            entry.value.let { Result.success(it) }
         }
     }
 

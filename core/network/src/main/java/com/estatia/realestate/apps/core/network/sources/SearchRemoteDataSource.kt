@@ -77,7 +77,6 @@ class SearchRemoteDataSource @Inject constructor(
             },
             onFailure = { e ->
                 log("Error loading nearby properties: ${e.message}")
-                false // Return false in case of failure
             }
         ) ?: false
     }

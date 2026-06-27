@@ -38,53 +38,52 @@ const val DEEP_LINK_URI_PATTERN = "$DEEP_LINK_BASE_PATH/{$DEEP_LINK_PROPERTIES_I
  */
 @Singleton
 internal class SystemTrayNotifier @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : Notifier {
 
     override fun postPropertiesNotifications(
         properties: List<Property>,
     ) = with(context) {
-        if (checkSelfPermission(this, permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED) {
-            return
-        }
+        if (checkSelfPermission(this, permission.POST_NOTIFICATIONS) == PERMISSION_GRANTED) {
 
-        val truncatedProperties = properties.take(MAX_NUM_NOTIFICATIONS)
+            val truncatedProperties = properties.take(MAX_NUM_NOTIFICATIONS)
 
-        val propertiesNotifications = truncatedProperties.map { property ->
-            createPropertiesNotification {
-                setSmallIcon(drawable.ic_estatia_notification)
-                    .setContentTitle(property.title)
-                    .setContentText(property.description)
-                    .setContentIntent(propertiesPendingIntent(property))
-                    .setGroup(PROPERTIES_NOTIFICATION_GROUP)
-                    .setAutoCancel(true)
+            val propertiesNotifications = truncatedProperties.map { property ->
+                createPropertiesNotification {
+                    setSmallIcon(drawable.ic_estatia_notification)
+                        .setContentTitle(property.title)
+                        .setContentText(property.description)
+                        .setContentIntent(propertiesPendingIntent(property))
+                        .setGroup(PROPERTIES_NOTIFICATION_GROUP)
+                        .setAutoCancel(true)
+                }
             }
-        }
-        val summaryNotification = createPropertiesNotification {
-            val title = getString(
-                string.core_notifications_properties_notification_group_summary,
-                truncatedProperties.size,
-            )
-            setContentTitle(title)
-                .setContentText(title)
-                .setSmallIcon(drawable.ic_estatia_notification)
-                // Build summary info into InboxStyle template.
-                .setStyle(propertiesNotificationStyle(truncatedProperties, title))
-                .setGroup(PROPERTIES_NOTIFICATION_GROUP)
-                .setGroupSummary(true)
-                .setAutoCancel(true)
-                .build()
-        }
+            val summaryNotification = createPropertiesNotification {
+                val title = getString(
+                    string.core_notifications_properties_notification_group_summary,
+                    truncatedProperties.size,
+                )
+                setContentTitle(title)
+                    .setContentText(title)
+                    .setSmallIcon(drawable.ic_estatia_notification)
+                    // Build summary info into InboxStyle template.
+                    .setStyle(propertiesNotificationStyle(truncatedProperties, title))
+                    .setGroup(PROPERTIES_NOTIFICATION_GROUP)
+                    .setGroupSummary(true)
+                    .setAutoCancel(true)
+                    .build()
+            }
 
-        // Send the notifications
-        val notificationManager = NotificationManagerCompat.from(this)
-        propertiesNotifications.forEachIndexed { index, notification ->
-            notificationManager.notify(
-                truncatedProperties[index].id.hashCode(),
-                notification,
-            )
+            // Send the notifications
+            val notificationManager = NotificationManagerCompat.from(this)
+            propertiesNotifications.forEachIndexed { index, notification ->
+                notificationManager.notify(
+                    truncatedProperties[index].id.hashCode(),
+                    notification,
+                )
+            }
+            notificationManager.notify(PROPERTIES_NOTIFICATION_SUMMARY_ID, summaryNotification)
         }
-        notificationManager.notify(PROPERTIES_NOTIFICATION_SUMMARY_ID, summaryNotification)
     }
 
     /**

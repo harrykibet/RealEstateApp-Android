@@ -34,7 +34,6 @@ class UserRemoteDataSource @Inject constructor(
             },
             onFailure = { e ->
                 logger.e("${this::class.simpleName}: Error fetching user by ID $userId - ${e.message ?: "Unknown error"}")
-                null
             }
         )
     }
