@@ -12,24 +12,24 @@ import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class CdnHealthMonitor @Inject constructor(
-    private val networkUtils: INetworkUtils,
-    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val ttl: Duration = 30.seconds,
-    private val timeout: Duration = 3.seconds,
-    private val failureThreshold: Int = 3,
-    private val circuitOpenDuration: Duration = 60.seconds,
-    private val clock: () -> Long = { System.currentTimeMillis() }
+    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
+    private val ttl: Duration = 30.seconds
+    private val timeout: Duration = 3.seconds
+    private val failureThreshold: Int = 3
+    private val circuitOpenDuration: Duration = 60.seconds
+    private val clock: () -> Long = { System.currentTimeMillis() }
 
     private val mutex = Mutex()
-
     private val healthMap = mutableMapOf<String, CdnHealth>()
 
     suspend fun getHealth(endpoint: CdnEndpoint): CdnHealth =
         mutex.withLock {
+
             val current = healthMap[endpoint.baseUrl]
             val now = clock()
 
+            // TTL cache hit
             if (current != null && now - current.lastCheckedAt < ttl.inWholeMilliseconds) {
                 return current
             }
@@ -46,14 +46,16 @@ class CdnHealthMonitor @Inject constructor(
 
         val now = clock()
 
-        if (previous?.isCircuitOpen == true) {
+        // circuit breaker open → skip probing
+        if (previous?.isCircuitOpen == true &&
+            previous.circuitOpenUntil != null &&
+            now < previous.circuitOpenUntil
+        ) {
             return@withContext previous
         }
 
         try {
-            val latency = withTimeout(timeout) {
-                networkUtils.getNetworkLatency(endpoint.baseUrl)
-            }
+            val latency = measureLatency(endpoint.baseUrl)
 
             CdnHealth(
                 latencyMs = latency,
@@ -77,6 +79,26 @@ class CdnHealthMonitor @Inject constructor(
                 lastCheckedAt = now,
                 circuitOpenUntil = circuitOpenUntil
             )
+        }
+    }
+
+    /**
+     * Direct latency probe (replaces INetworkUtils dependency).
+     * This is now owned by CDN layer, not network layer.
+     */
+    private suspend fun measureLatency(host: String): Long {
+        return try {
+            val start = System.currentTimeMillis()
+
+            withTimeout(timeout) {
+                val socket = java.net.Socket()
+                socket.connect(java.net.InetSocketAddress(host, 80), timeout.inWholeMilliseconds.toInt())
+                socket.close()
+            }
+
+            System.currentTimeMillis() - start
+        } catch (_: Throwable) {
+            throw RuntimeException("Latency probe failed")
         }
     }
 }
