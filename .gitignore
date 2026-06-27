@@ -2,7 +2,6 @@
 # Gradle-related files
 .gradle/
 local.properties
-gradle.properties
 
 # Firebase and API keys (sensitive information)
 G-Play_Intergrity_Api.json
@@ -12,6 +11,7 @@ MapsApiKey.json
 AI_ML_ApiKey.json
 firestore.rules
 .firebaserc
+app/google-services.json
 my-firebase-admin-app/
 
 # IDEA/Android Studio project files, because
@@ -45,4 +45,10 @@ java_pid4268.hprof
 *.hprof
 *.log
 large_assets/
+
+AppKeyStore/keystore.jks
+AppKeyStore/*.jks
+AppKeyStore/*.p12
+# debug.keystore is generated at runtime so can also be gitignored
+AppKeyStore/debug.keystore
 

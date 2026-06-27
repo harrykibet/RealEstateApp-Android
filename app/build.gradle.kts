@@ -4,31 +4,21 @@
 
 android {
     namespace = "com.estatia.realestate.apps"
-    buildTypes {
-        create("benchmark") {
-            initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("release")
-            matchingFallbacks += listOf("release")
-            isDebuggable = false
-        }
-        release {
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-    dokka {
-        moduleName.set("RealEstateApp")
-        dokkaSourceSets {
-            configureEach {
-                suppress.set(true)
-                skipEmptyPackages.set(true)
-                reportUndocumented.set(false)
-            }
-        }
-    }
-    hilt {
-        enableAggregatingTask = true
-    }
 }
+ dokka {
+     moduleName.set("RealEstateApp")
+     dokkaSourceSets {
+         configureEach {
+             suppress.set(true)
+             skipEmptyPackages.set(true)
+             reportUndocumented.set(false)
+         }
+     }
+ }
+
+ hilt {
+     enableAggregatingTask = true
+ }
 
 dependencies {
     implementation(libs.bundles.android)
@@ -101,15 +91,6 @@ dependencies {
 
     implementation(projects.lint)
     implementation(projects.localization)
-}
-
-baselineProfile {
-    // Don't build on every iteration of a full assemble.
-    // Instead, enable generation directly for the release build variant.
-    automaticGenerationDuringBuild = false
-
-    // Make use of Dex Layout Optimizations via Startup Profiles
-    dexLayoutOptimization = true
 }
 
 

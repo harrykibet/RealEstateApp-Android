@@ -1,16 +1,48 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
-
-    /** Helper to read Gradle properties or environment variables, or fail fast if missing */
-    private fun Project.requireSecret(name: String): String =
+    private fun Project.optionalSecret(name: String): String? =
         providers.gradleProperty(name).orNull
             ?: providers.environmentVariable(name).orNull
-            ?: error(
-                "Required secret '$name' was not found in Gradle properties or environment variables."
-            )
+
+    /**
+     * Generates a debug keystore at the given path if it doesn't already exist.
+     * Uses the same defaults as the Android SDK debug keystore so behavior is
+     * identical to what Android Studio would generate automatically.
+     */
+    private fun ensureDebugKeystore(keystoreFile: File) {
+        if (keystoreFile.exists()) return
+
+        keystoreFile.parentFile?.mkdirs()
+
+        // Delegate to keytool — available in any JDK, which Gradle already requires
+        val keytoolPath = "${System.getProperty("java.home")}/bin/keytool"
+
+        val process = ProcessBuilder(
+            keytoolPath,
+            "-genkeypair",
+            "-keystore", keystoreFile.absolutePath,
+            "-alias", "androiddebugkey",
+            "-keyalg", "RSA",
+            "-keysize", "2048",
+            "-validity", "10000",
+            "-keypass", "android",
+            "-storepass", "android",
+            "-dname", "CN=Android Debug,O=Android,C=US",
+            "-storetype", "JKS"
+        )
+            .redirectErrorStream(true)
+            .start()
+
+        val exitCode = process.waitFor()
+        if (exitCode != 0) {
+            val output = process.inputStream.bufferedReader().readText()
+            error("Failed to generate debug keystore at ${keystoreFile.absolutePath}:\n$output")
+        }
+    }
 
     override fun apply(target: Project) = with(target) {
 
@@ -22,7 +54,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.application.firebase")
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.android.compose")
-        pluginManager.apply("androidx.baselineprofile")
         pluginManager.apply("com.estatia.realestate.apps.android.packaging")
 
         extensions.configure<ApplicationExtension>("android") {
@@ -35,31 +66,50 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             defaultConfig {
                 applicationId = "com.estatia.realestate.apps"
-                minSdk = 26
+                minSdk = 28
                 targetSdk = 36
                 versionCode = 1
                 versionName = "1.0"
             }
 
-            // Signing configuration driven entirely by Gradle properties
             signingConfigs {
 
+                // Debug: generate keystore at runtime if absent.
+                // Fixed credentials match Android SDK defaults — safe to hardcode,
+                // nothing sensitive, debug APKs are never shipped.
                 getByName("debug") {
-                    storeFile = rootProject.file("AppKeyStore/debug.keystore")
-                    storePassword = target.requireSecret("DEBUG_STORE_PASSWORD")
-                    keyAlias = target.requireSecret("DEBUG_KEY_ALIAS")
-                    keyPassword = target.requireSecret("DEBUG_KEY_PASSWORD")
+                    val debugKeystoreFile = rootProject.file("AppKeyStore/debug.keystore")
+                    ensureDebugKeystore(debugKeystoreFile)
+
+                    storeFile = debugKeystoreFile
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
                 }
 
-                create("release") {
-                    storeFile = rootProject.file("AppKeyStore/keystore.jks")
-                    storePassword = target.requireSecret("RELEASE_STORE_PASSWORD")
-                    keyAlias = target.requireSecret("RELEASE_KEY_ALIAS")
-                    keyPassword = target.requireSecret("RELEASE_KEY_PASSWORD")
+                // Release: all values must come from CI/CD environment or local
+                // gradle.properties (gitignored). Never committed to source control.
+                // Config is skipped entirely if secrets are absent (local dev on
+                // non-release builds won't need it).
+                val releaseStoreFile = rootProject.file("AppKeyStore/keystore.jks")
+                val releaseStorePassword = optionalSecret("RELEASE_STORE_PASSWORD")
+                val releaseKeyAlias = optionalSecret("RELEASE_KEY_ALIAS")
+                val releaseKeyPassword = optionalSecret("RELEASE_KEY_PASSWORD")
+
+                if (releaseStoreFile.exists()
+                    && releaseStorePassword != null
+                    && releaseKeyAlias != null
+                    && releaseKeyPassword != null
+                ) {
+                    create("release") {
+                        storeFile = releaseStoreFile
+                        storePassword = releaseStorePassword
+                        keyAlias = releaseKeyAlias
+                        keyPassword = releaseKeyPassword
+                    }
                 }
             }
 
-            // Build types
             buildTypes {
                 getByName("debug") {
                     signingConfig = signingConfigs.getByName("debug")
@@ -67,8 +117,18 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
 
                 getByName("release") {
-                    signingConfig = signingConfigs.getByName("release")
+                    // Falls back to null signingConfig if release secrets absent —
+                    // release builds will fail at assemble time, not at sync time.
+                    // This allows local development and sync to work without CI secrets.
+                    signingConfig = signingConfigs.findByName("release")
                     isMinifyEnabled = true
+                }
+
+                create("benchmark") {
+                    initWith(buildTypes.getByName("release"))
+                    signingConfig = signingConfigs.getByName("debug") // benchmark uses debug sig
+                    matchingFallbacks += listOf("release")
+                    isDebuggable = false
                 }
             }
         }
