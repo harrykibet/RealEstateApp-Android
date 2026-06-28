@@ -20,7 +20,7 @@ class FirebaseRemoteConfigDataSource @Inject constructor(
             remoteConfig.getString(CONFIG_KEY)
                 .takeIf { it.isNotBlank() }
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

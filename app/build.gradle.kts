@@ -5,6 +5,7 @@
 android {
     namespace = "com.estatia.realestate.apps"
 }
+
  dokka {
      moduleName.set("RealEstateApp")
      dokkaSourceSets {
