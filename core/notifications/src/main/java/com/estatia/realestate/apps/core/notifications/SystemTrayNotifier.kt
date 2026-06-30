@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.InboxStyle
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.notifications.R.string
 import com.estatia.realestate.apps.core.notifications.R.drawable
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,7 +42,7 @@ internal class SystemTrayNotifier @Inject constructor(
 ) : Notifier {
 
     override fun postPropertiesNotifications(
-        properties: List<Property>,
+        properties: List<PropertyDomainModel>,
     ) = with(context) {
         if (checkSelfPermission(this, permission.POST_NOTIFICATIONS) == PERMISSION_GRANTED) {
 
@@ -90,7 +90,7 @@ internal class SystemTrayNotifier @Inject constructor(
      * Creates an inbox style summary notification for property updates
      */
     private fun propertiesNotificationStyle(
-        properties: List<Property>,
+        properties: List<PropertyDomainModel>,
         title: String,
     ): InboxStyle = properties
         .fold(InboxStyle()) { inboxStyle, property -> inboxStyle.addLine(property.title) }
@@ -131,7 +131,7 @@ private fun Context.ensureNotificationChannelExists() {
 }
 
 private fun Context.propertiesPendingIntent(
-    property: Property,
+    property: PropertyDomainModel,
 ): PendingIntent? = PendingIntent.getActivity(
     this,
     PROPERTIES_NOTIFICATION_REQUEST_CODE,
@@ -146,4 +146,4 @@ private fun Context.propertiesPendingIntent(
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
 )
 
-private fun Property.propertiesDeepLinkUri() = "$DEEP_LINK_BASE_PATH/$id".toUri()
+private fun PropertyDomainModel.propertiesDeepLinkUri() = "$DEEP_LINK_BASE_PATH/$id".toUri()

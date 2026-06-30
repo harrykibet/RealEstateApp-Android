@@ -3,11 +3,11 @@ package com.estatia.realestate.apps.core.network.sources
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.common.misc.Consts
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntity
+import com.estatia.realestate.apps.core.network.db_entities.EntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.mappers.toDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
@@ -31,7 +31,7 @@ class SearchRemoteDataSource @Inject constructor(
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property> {
+    ): List<PropertyDomainModel> {
         return network.safeApiCallSuspend(
             apiCall = {
                 val propertiesSnapshot = db.collection(FirestoreCollections.PROPERTIES)
@@ -40,7 +40,7 @@ class SearchRemoteDataSource @Inject constructor(
                     .get()
                     .await()
 
-                propertiesSnapshot.documents.map { it.toObject(PropertyEntity::class.java)!!.toDomainModel() }
+                propertiesSnapshot.documents.map { it.toObject(EntityModel::class.java)!!.toDomainModel() }
             },
             onFailure = { e ->
                 log(e.message)

@@ -14,4 +14,6 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.gson)
+
+    implementation(projects.core.model)
 }

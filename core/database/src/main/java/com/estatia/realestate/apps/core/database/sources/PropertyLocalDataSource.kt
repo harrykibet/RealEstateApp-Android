@@ -1,36 +1,59 @@
 package com.estatia.realestate.apps.core.database.sources
 
+import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
-import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
+import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
+import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import javax.inject.Inject
 
 class PropertyLocalDataSource @Inject constructor(
-    private val draftDao: PropertyDraftDao
+    private val draftDao: PropertyDraftDao,
+    private val cacheDao: PropertyCacheDao
 ) : IPropertyLocalDataSource {
 
-    // Save or update a property draft
+    // ---------------- Drafts ----------------
+
     override suspend fun saveDraft(draft: PropertyDraftEntity): Long {
         return draftDao.insertDraft(draft)
     }
 
-    // Retrieve all property drafts
     override suspend fun getAllDrafts(): List<PropertyDraftEntity> {
         return draftDao.getAllDrafts()
     }
 
-    // Retrieve a specific draft by its ID
     override suspend fun getDraftById(draftId: Int): PropertyDraftEntity? {
         return draftDao.getDraftById(draftId)
     }
 
-    // Delete a specific draft by its ID
     override suspend fun deleteDraft(draftId: Int) {
         draftDao.deleteDraftById(draftId)
     }
 
-    // Clear all drafts
     override suspend fun clearAllDrafts() {
         draftDao.clearAllDrafts()
+    }
+
+    // ---------------- CACHE ----------------
+
+    override suspend fun cacheProperties(properties: List<PropertyCacheEntity>) {
+        cacheDao.insertAll(properties)
+    }
+
+    override suspend fun getCachedProperties(): List<PropertyCacheEntity> {
+        return cacheDao.getAll()
+    }
+
+    override suspend fun getCachedPropertyById(id: String): PropertyCacheEntity? {
+        return cacheDao.getById(id)
+    }
+
+    override suspend fun clearCachedProperties() {
+        cacheDao.clearAll()
+    }
+
+    override suspend fun isCacheStale(maxAgeMillis: Long): Boolean {
+        val latest = cacheDao.getLatestTimestamp() ?: return true
+        return (System.currentTimeMillis() - latest) > maxAgeMillis
     }
 }

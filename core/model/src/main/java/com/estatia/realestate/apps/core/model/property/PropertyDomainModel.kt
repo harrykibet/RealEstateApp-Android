@@ -1,37 +1,48 @@
 package com.estatia.realestate.apps.core.model.property
 
-import java.util.Date
-
-data class Property(
-    val id: String,
+data class PropertyDomainModel(
+    val id: PropertyId,
     val title: String,
+
     val description: String?,
-    val price: Double?,
+    val price: Money?,
+
     val imageUrls: List<String>,
     val videoUrls: List<String>,
     val videosAvailable: Boolean,
-    val latitude: Double?,
-    val longitude: Double?,
-    val createdAt: Date?,
+
+    val coordinates: Coordinates?,
+
+    val createdAt: Long?,
+
     val ownerId: String?,
     val ownerName: String?,
-    val contactPhone: String?,
-    val contactEmail: String?,
+
+    val contact: ContactInfo,
+
     val county: String?,
+
     val active: Boolean,
+
     val viewsCount: Int,
     val likesCount: Int,
     val commentsCount: Int,
     val sharesCount: Int,
+
     val propertyType: String?,
+
     val bedrooms: Int?,
     val bathrooms: Int?,
     val areaSize: Double?,
-    val amenities: List<String>?,
+
+    val amenities: List<String>,
+
     val features: String?,
-    val depositAmount: Double?,
+    val depositAmount: Money?,
+
     val address: String?,
     val availableFrom: String?,
     val leaseTerms: String?,
+
     val available: Boolean
 )

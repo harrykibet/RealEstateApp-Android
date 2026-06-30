@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 
 @Composable
 fun PropertyInfoOverlay(
-    property: Property,
+    property: PropertyDomainModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {

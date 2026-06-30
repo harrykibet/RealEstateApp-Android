@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.google.android.gms.maps.GoogleMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,8 +16,8 @@ class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository
 ) : ViewModel() {
 
-    private val _searchResults = MutableLiveData<List<Property>>()
-    val searchResults: LiveData<List<Property>> = _searchResults
+    private val _searchResults = MutableLiveData<List<PropertyDomainModel>>()
+    val searchResults: LiveData<List<PropertyDomainModel>> = _searchResults
 
     private val _searchHistory = MutableLiveData<List<String>>()
     val searchHistory: LiveData<List<String>> = _searchHistory

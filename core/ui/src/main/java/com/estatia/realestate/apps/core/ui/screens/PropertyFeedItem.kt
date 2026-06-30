@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -27,12 +27,12 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 
 @Composable
 fun PropertyFeedItem(
-    property: Property,
+    property: PropertyDomainModel,
     viewModel: VideoPlaybackViewModel,
     isActive: Boolean,
-    onLikeClick: (Property) -> Unit,
-    onCommentClick: (Property) -> Unit,
-    onShareClick: (Property) -> Unit
+    onLikeClick: (PropertyDomainModel) -> Unit,
+    onCommentClick: (PropertyDomainModel) -> Unit,
+    onShareClick: (PropertyDomainModel) -> Unit
 ) {
     val uiState = if (isActive) { viewModel.uiState.collectAsState().value } else { null }
 

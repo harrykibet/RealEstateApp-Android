@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +22,8 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState
 
-    private val _propertiesLiveData = MutableLiveData<List<Property>>()
-    val propertiesLiveData: LiveData<List<Property>> get() = _propertiesLiveData
+    private val _propertiesLiveData = MutableLiveData<List<PropertyDomainModel>>()
+    val propertiesLiveData: LiveData<List<PropertyDomainModel>> get() = _propertiesLiveData
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -62,7 +62,7 @@ class HomeViewModel @Inject constructor(
     }
 
     // Handle adding new properties to the list
-    private fun handleFetchedProperties(newProperties: List<Property>, isFirstLoad: Boolean) {
+    private fun handleFetchedProperties(newProperties: List<PropertyDomainModel>, isFirstLoad: Boolean) {
         if (isFirstLoad) {
             _propertiesLiveData.value = newProperties
         } else {

@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.database.di
 import android.content.Context
 import com.estatia.realestate.apps.core.database.PropertyDatabase
 import com.estatia.realestate.apps.core.database.SearchDatabase
+import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
 import dagger.Module
@@ -23,6 +24,12 @@ object RoomModule {
         return PropertyDatabase.getDatabase(context)
     }
 
+    @Provides
+    @Singleton
+    fun provideSearchDatabase(@ApplicationContext context: Context): SearchDatabase {
+        return SearchDatabase.getDatabase(context)
+    }
+
     // Provides the PropertyDraftDao from the PropertyDatabase
     @Provides
     fun providePropertyDraftDao(propertyDatabase: PropertyDatabase): PropertyDraftDao {
@@ -30,9 +37,8 @@ object RoomModule {
     }
 
     @Provides
-    @Singleton
-    fun provideSearchDatabase(@ApplicationContext context: Context): SearchDatabase {
-        return SearchDatabase.getDatabase(context)
+    fun providePropertyCacheDao(propertyDatabase: PropertyDatabase): PropertyCacheDao {
+        return propertyDatabase.propertyCacheDao()
     }
 
     @Provides

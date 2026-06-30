@@ -19,5 +19,15 @@ class RoomTypeConverters {
         if (list == null) return null
         return gson.toJson(list)
     }
+
+    @TypeConverter
+    fun toList(json: String): List<String> {
+        return try {
+            gson.fromJson(json, Array<String>::class.java)?.toList()
+                ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
 

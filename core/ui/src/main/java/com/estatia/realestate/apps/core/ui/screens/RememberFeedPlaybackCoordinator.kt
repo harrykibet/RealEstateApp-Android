@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.ui.screens
 import androidx.compose.runtime.*
 import androidx.core.net.toUri
 import androidx.compose.foundation.pager.PagerState
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.FeedNeighbor
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -11,7 +11,7 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 @Composable
 fun RememberFeedPlaybackCoordinator(
     pagerState: PagerState,
-    items: List<Property>,
+    items: List<PropertyDomainModel>,
     viewModel: VideoPlaybackViewModel
 ) {
     LaunchedEffect(pagerState.currentPage) {

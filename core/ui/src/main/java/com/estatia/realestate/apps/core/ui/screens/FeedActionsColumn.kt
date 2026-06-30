@@ -11,14 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.FeedActionButton
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 
 @Composable
 fun FeedActionsColumn(
-    property: Property,
-    onLikeClick: (Property) -> Unit,
-    onCommentClick: (Property) -> Unit,
-    onShareClick: (Property) -> Unit,
+    property: PropertyDomainModel,
+    onLikeClick: (PropertyDomainModel) -> Unit,
+    onCommentClick: (PropertyDomainModel) -> Unit,
+    onShareClick: (PropertyDomainModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(

@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.database.mappers.PropertyCacheMapper
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import com.estatia.realestate.apps.core.network.mappers.PropertyMapper
 import javax.inject.Inject
 
 class PropertyRepository @Inject constructor(
@@ -43,7 +45,7 @@ class PropertyRepository @Inject constructor(
         get() = remoteDataSource.uploadError
 
     override suspend fun uploadProperty(
-        property: Property,
+        property: PropertyDomainModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
@@ -62,14 +64,14 @@ class PropertyRepository @Inject constructor(
     override suspend fun getPropertyById(
         propertyId: String,
         onFailure: (Exception) -> Unit
-    ): Property? {
+    ): PropertyDomainModel? {
         return remoteDataSource.getPropertyById(propertyId, onFailure)
     }
 
     override suspend fun fetchLikedProperties(
         userId: String,
         onFailure: (Exception) -> Unit
-    ): List<Property>? {
+    ): List<PropertyDomainModel>? {
         return remoteDataSource.fetchLikedProperties(userId, onFailure)
     }
 
@@ -94,15 +96,47 @@ class PropertyRepository @Inject constructor(
         lastVisible: String?,
         pageSize: Int,
         onFailure: (Exception) -> Unit
-    ): Pair<List<Property>, String?> {
+    ): Pair<List<PropertyDomainModel>, String?> {
         return remoteDataSource.fetchPropertiesPaginated(lastVisible, pageSize, onFailure)
+    }
+
+    suspend fun fetchProperties(
+        forceRefresh: Boolean = false,
+        onFailure: (Exception) -> Unit
+    ): List<PropertyDomainModel> {
+
+        val cachedEntities = localDataSource.getCachedProperties()
+
+        if (cachedEntities.isNotEmpty() && !forceRefresh) {
+            return cachedEntities.map { PropertyCacheMapper.toDomain(it) }
+        }
+
+        return try {
+            val remote = remoteDataSource.fetchPropertiesPaginated(
+                lastVisible = null,
+                pageSize = 50,
+                onFailure = onFailure
+            ).first
+
+            val domainModels = remote.map { PropertyMapper.fromEntity(it) }
+
+            val cacheEntities = domainModels.map { PropertyCacheMapper.fromDomain(it) }
+
+            localDataSource.cacheProperties(cacheEntities)
+
+            domainModels
+
+        } catch (e: Exception) {
+            onFailure(e)
+            cachedEntities.map { PropertyCacheMapper.toDomain(it) }
+        }
     }
 
     override suspend fun searchProperties(
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property> {
+    ): List<PropertyDomainModel> {
         return remoteDataSource.searchProperties(query, limit, onFailure)
     }
 

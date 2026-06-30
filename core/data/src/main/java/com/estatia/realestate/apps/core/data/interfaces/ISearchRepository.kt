@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.google.android.gms.maps.GoogleMap
 
 interface ISearchRepository {
@@ -9,7 +9,7 @@ interface ISearchRepository {
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property>
+    ): List<PropertyDomainModel>
 
     suspend fun getSearchHistory(): List<String>
 

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.interfaces
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 
 interface IPropertyRepository {
     // LiveData to monitor the upload status
@@ -17,7 +17,7 @@ interface IPropertyRepository {
     suspend fun clearAllDrafts()
 
     suspend fun uploadProperty(
-        property: Property,
+        property: PropertyDomainModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
@@ -30,12 +30,12 @@ interface IPropertyRepository {
     suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean
 
     // Get Property by Id
-    suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): Property?
+    suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): PropertyDomainModel?
 
     suspend fun fetchLikedProperties(
         userId: String,
         onFailure: (Exception) -> Unit
-    ): List<Property>?
+    ): List<PropertyDomainModel>?
 
     suspend fun likeProperty(
         userId: String,
@@ -54,11 +54,11 @@ interface IPropertyRepository {
         lastVisible: String?,
         pageSize: Int,
         onFailure: (Exception) -> Unit
-    ): Pair<List<Property>, String?>
+    ): Pair<List<PropertyDomainModel>, String?>
 
     suspend fun searchProperties(
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property>
+    ): List<PropertyDomainModel>
 }

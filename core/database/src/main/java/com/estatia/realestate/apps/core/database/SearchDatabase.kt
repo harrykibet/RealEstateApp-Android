@@ -7,7 +7,11 @@ import androidx.room.RoomDatabase
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
 
-@Database(entities = [SearchHistoryEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [SearchHistoryEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class SearchDatabase : RoomDatabase() {
 
     // Abstract function to get the SearchHistoryDao

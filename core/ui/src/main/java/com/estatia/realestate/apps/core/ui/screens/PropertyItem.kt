@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -36,12 +36,12 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 @Composable
 private fun PropertyItem(
     modifier: Modifier = Modifier,
-    property: Property,
+    property: PropertyDomainModel,
     viewModel: VideoPlaybackViewModel = hiltViewModel(),
     isActive: Boolean, // 👈 important for state overlays
-    onLikeClick: (Property) -> Unit,
-    onCommentClick: (Property) -> Unit,
-    onShareClick: (Property) -> Unit
+    onLikeClick: (PropertyDomainModel) -> Unit,
+    onCommentClick: (PropertyDomainModel) -> Unit,
+    onShareClick: (PropertyDomainModel) -> Unit
 ) {
     // Collect player UI state only if active
     val uiState = if (isActive) {

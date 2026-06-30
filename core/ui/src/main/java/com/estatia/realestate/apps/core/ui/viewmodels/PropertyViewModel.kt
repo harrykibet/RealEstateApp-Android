@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,14 +29,14 @@ class PropertyViewModel @Inject constructor(
 
     private  val currentUserId: String? = authApi.getCurrentUserId()
 
-    private val _propertyLiveData = MutableLiveData<Property?>()
-    val propertyLiveData: LiveData<Property?> get() = _propertyLiveData
+    private val _propertyLiveData = MutableLiveData<PropertyDomainModel?>()
+    val propertyLiveData: LiveData<PropertyDomainModel?> get() = _propertyLiveData
 
     private val _likedStatus = MutableLiveData<LikeStatus>()
     val likedStatus: LiveData<LikeStatus> get() = _likedStatus
 
-    private val _likedProperties = MutableLiveData<List<Property>>()
-    val likedProperties: LiveData<List<Property>> get() = _likedProperties
+    private val _likedProperties = MutableLiveData<List<PropertyDomainModel>>()
+    val likedProperties: LiveData<List<PropertyDomainModel>> get() = _likedProperties
 
     init {
         loadLikedProperties{ exception ->

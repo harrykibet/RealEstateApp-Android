@@ -15,11 +15,11 @@ interface PropertyDraftDao {
     suspend fun insertDraft(draft: PropertyDraftEntity): Long
 
     // Get all drafts from the database
-    @Query("SELECT * FROM property_drafts")
+    @Query("SELECT * FROM properties_drafts")
     suspend fun getAllDrafts(): List<PropertyDraftEntity>
 
     // Get a specific draft by its ID
-    @Query("SELECT * FROM property_drafts WHERE draft_id = :id")
+    @Query("SELECT * FROM properties_drafts WHERE id = :id")
     suspend fun getDraftById(id: Int): PropertyDraftEntity?
 
     // Update an existing draft
@@ -27,10 +27,10 @@ interface PropertyDraftDao {
     suspend fun updateDraft(draft: PropertyDraftEntity)
 
     // Delete a specific draft by its ID
-    @Query("DELETE FROM property_drafts WHERE draft_id = :id")
+    @Query("DELETE FROM properties_drafts WHERE id = :id")
     suspend fun deleteDraftById(id: Int)
 
     // Clear all drafts from the database
-    @Query("DELETE FROM property_drafts")
+    @Query("DELETE FROM properties_drafts")
     suspend fun clearAllDrafts()
 }

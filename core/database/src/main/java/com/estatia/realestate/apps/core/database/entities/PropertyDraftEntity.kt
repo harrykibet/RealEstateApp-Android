@@ -4,60 +4,23 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "property_drafts")
+@Entity(tableName = "properties_drafts")
 data class PropertyDraftEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "draft_id")
-    val draftId: Int = 0, // Auto-generated ID for drafts
+    val id: Long = 0,
 
     @ColumnInfo(name = "title")
-    val title: String?, // Property title
-
+    val title: String?,
     @ColumnInfo(name = "description")
-    val description: String?, // Description of the property
-
+    val description: String?,
     @ColumnInfo(name = "price")
-    val price: Double?, // Property price
-
-    @ColumnInfo(name = "address")
-    val address: String?, // Address of the property
-
-    @ColumnInfo(name = "property_type")
-    val propertyType: String?, // Type of property (e.g., Apartment, House)
-
-    @ColumnInfo(name = "bedrooms")
-    val bedrooms: Int?, // Number of bedrooms
-
-    @ColumnInfo(name = "bathrooms")
-    val bathrooms: Int?, // Number of bathrooms
-
-    @ColumnInfo(name = "area_size")
-    val areaSize: Double?, // Size of the property in square meters
-
-    @ColumnInfo(name = "deposit_amount")
-    val depositAmount: Double?, // Deposit amount for the property
-
-    @ColumnInfo(name = "available_from")
-    val availableFrom: String?, // Date the property becomes available
-
-    @ColumnInfo(name = "lease_terms")
-    val leaseTerms: String?, // Lease terms for the property
-
-    @ColumnInfo(name = "amenities")
-    val amenities: List<String>?, // List of amenities
-
-    @ColumnInfo(name = "features")
-    val features: String?, // Additional features of the property
-
-    @ColumnInfo(name = "latitude")
-    val latitude: Double?, // Latitude for geolocation
-
-    @ColumnInfo(name = "longitude")
-    val longitude: Double?, // Longitude for geolocation
+    val price: Double?,
 
     @ColumnInfo(name = "image_urls")
-    val imageUrls: List<String>?, // List of local URIs for property images
-
+    val imageUrls: String,
     @ColumnInfo(name = "video_urls")
-    val videoUrls: List<String>? // List of local URIs for property videos
+    val videoUrls: String,
+
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long
 )

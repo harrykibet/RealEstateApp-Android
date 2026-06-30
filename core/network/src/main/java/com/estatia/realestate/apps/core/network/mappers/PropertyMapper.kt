@@ -1,78 +1,68 @@
 package com.estatia.realestate.apps.core.network.mappers
 
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntity
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.ContactInfo
+import com.estatia.realestate.apps.core.model.property.Coordinates
+import com.estatia.realestate.apps.core.model.property.Money
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.PropertyId
+import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-// Extension function to convert PropertyEntity to Domain model
-fun PropertyEntity.toDomainModel(): Property {
-    return Property(
-        id = id,
-        title = title,
-        description = description,
-        price = price,
-        imageUrls = imageUrl,
-        videoUrls = videoUrl,
-        videosAvailable = video,
-        latitude = latitude,
-        longitude = longitude,
-        createdAt = createdAt,
-        ownerId = ownerId,
-        ownerName = ownerName,
-        contactPhone = contactPhone,
-        contactEmail = contactEmail,
-        county = county,
-        active = active,
-        viewsCount = viewsCount,
-        sharesCount = sharesCount,
-        likesCount = likesCount,
-        commentsCount = commentsCount,
-        propertyType = propertyType,
-        bedrooms = bedrooms,
-        bathrooms = bathrooms,
-        areaSize = areaSize,
-        amenities = amenities,
-        features = features,
-        depositAmount = depositAmount,
-        address = address,
-        availableFrom = availableFrom,
-        leaseTerms = leaseTerms,
-        available = available
-    )
-}
+object PropertyMapper {
 
-// Extension function to convert Domain model to PropertyEntity
-fun Property.toEntityModel(): PropertyEntity {
-    return PropertyEntity(
-        id = id,
-        title = title,
-        description = description,
-        price = price,
-        imageUrl = imageUrls,
-        videoUrl = videoUrls,
-        video = videosAvailable,
-        latitude = latitude,
-        longitude = longitude,
-        createdAt = createdAt,
-        ownerId = ownerId,
-        ownerName = ownerName,
-        contactPhone = contactPhone,
-        contactEmail = contactEmail,
-        county = county,
-        active = active,
-        viewsCount = viewsCount,
-        sharesCount = sharesCount,
-        likesCount = likesCount,
-        commentsCount = commentsCount,
-        propertyType = propertyType,
-        bedrooms = bedrooms,
-        bathrooms = bathrooms,
-        areaSize = areaSize,
-        amenities = amenities,
-        features = features,
-        depositAmount = depositAmount,
-        address = address,
-        availableFrom = availableFrom,
-        leaseTerms = leaseTerms,
-        available = available
-    )
+    fun fromEntity(entity: PropertyEntityModel): PropertyDomainModel {
+        return PropertyDomainModel(
+            id = PropertyId(entity.id),
+            title = entity.title.ifBlank { "Untitled" },
+
+            description = entity.description,
+
+            price = entity.price?.let { Money(it) },
+
+            imageUrls = entity.imageUrl.orEmpty(),
+            videoUrls = entity.videoUrl.orEmpty(),
+
+            videosAvailable = entity.video,
+
+            coordinates = if (entity.latitude != null && entity.longitude != null) {
+                Coordinates(entity.latitude, entity.longitude)
+            } else null,
+
+            createdAt = entity.createdAt,
+
+            ownerId = entity.ownerId,
+            ownerName = entity.ownerName,
+
+            contact = ContactInfo(
+                phone = entity.contactPhone,
+                email = entity.contactEmail
+            ),
+
+            county = entity.county,
+
+            active = entity.active,
+
+            viewsCount = entity.viewsCount,
+            likesCount = entity.likesCount,
+            commentsCount = entity.commentsCount,
+            sharesCount = entity.sharesCount,
+
+            propertyType = entity.propertyType,
+
+            bedrooms = entity.bedrooms,
+            bathrooms = entity.bathrooms,
+            areaSize = entity.areaSize,
+
+            amenities = entity.amenities.orEmpty(),
+
+            features = entity.features,
+
+            depositAmount = entity.depositAmount?.let { Money(it) },
+
+            address = entity.address,
+            availableFrom = entity.availableFrom,
+            leaseTerms = entity.leaseTerms,
+
+            available = entity.available
+        )
+    }
 }

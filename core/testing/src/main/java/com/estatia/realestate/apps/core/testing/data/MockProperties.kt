@@ -1,12 +1,12 @@
 package com.estatia.realestate.apps.core.testing.data
 
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import java.util.Date
 
 object MockProperties {
 
-    fun single(): Property {
-        return Property(
+    fun single(): PropertyDomainModel {
+        return PropertyDomainModel(
             id = "prop_001",
             title = "Modern 2 Bedroom Apartment",
             description = "A spacious and modern apartment in the heart of the city with all amenities included.",
@@ -47,7 +47,7 @@ object MockProperties {
         )
     }
 
-    fun list(count: Int = 5): List<Property> = List(count) {
+    fun list(count: Int = 5): List<PropertyDomainModel> = List(count) {
         single().copy(
             id = "prop_${it + 1}",
             title = "Property #${it + 1}",

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.feature.property.utils.PropertyData
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyUiState
 import com.estatia.realestate.apps.feature.property.utils.PropertyStrings
@@ -339,7 +339,7 @@ class AddPropertyViewModel @Inject constructor(
         if (userId.isNullOrEmpty()) return
 
         val state = _uiState.value
-        val property = Property(
+        val property = PropertyDomainModel(
             title = state.title,
             description = state.description,
             price = state.price,

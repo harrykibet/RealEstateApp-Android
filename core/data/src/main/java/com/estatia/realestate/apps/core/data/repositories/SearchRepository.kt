@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.google.android.gms.maps.GoogleMap
@@ -16,7 +16,7 @@ class SearchRepository @Inject constructor(
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property> {
+    ): List<PropertyDomainModel> {
         localDataSource.saveSearchQuery(query) // Cache the search query locally
         return remoteDataSource.searchProperties(query, limit, onFailure)
     }

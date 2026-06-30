@@ -5,14 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntity
+import com.estatia.realestate.apps.core.network.db_entities.EntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.mappers.toDomainModel
 import com.estatia.realestate.apps.core.network.mappers.toEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.model.feature.Likes
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.common.media.MediaFormat
+import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKES
@@ -38,7 +39,7 @@ class PropertyRemoteDataSource @Inject constructor(
     override val uploadError = MutableLiveData<String?>()
 
     override suspend fun uploadProperty(
-        property: Property,
+        property: PropertyDomainModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
@@ -145,12 +146,12 @@ class PropertyRemoteDataSource @Inject constructor(
     override suspend fun getPropertyById(
         propertyId: String,
         onFailure: (Exception) -> Unit
-    ): Property? {
+    ): PropertyEntityModel? {
         return network.safeApiCallSuspend(
             apiCall = {
                 val doc = db.collection(PROPERTIES).document(propertyId).get().await()
                 // Convert the data model (PropertyEntity) to domain model (Property)
-                doc.toObject(PropertyEntity::class.java)?.toDomainModel()
+                doc.toObject(PropertyEntityModel::class.java)
             },
             onFailure = { exception ->
                 onFailure(exception)
@@ -161,7 +162,7 @@ class PropertyRemoteDataSource @Inject constructor(
     override suspend fun fetchLikedProperties(
         userId: String,
         onFailure: (Exception) -> Unit
-    ): List<Property>? {
+    ): List<PropertyEntityModel>? {
         return network.safeApiCallSuspend(
             apiCall = {
                 val likedPropertyIds = db.collection(USERS)
@@ -178,7 +179,7 @@ class PropertyRemoteDataSource @Inject constructor(
                         .await()
 
                     propertiesSnapshot.documents.map {
-                        it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                        it.toObject(PropertyEntityModel::class.java)
                     }
                 } else {
                     emptyList()
@@ -256,7 +257,7 @@ class PropertyRemoteDataSource @Inject constructor(
         lastVisible: String?,  // Use String instead of DocumentSnapshot
         pageSize: Int,
         onFailure: (Exception) -> Unit
-    ): Pair<List<Property>, String?> {
+    ): Pair<List<PropertyEntityModel?>, String?> {
         return network.safeApiCallSuspend(
             apiCall = {
                 val query = if (lastVisible == null) {
@@ -273,7 +274,7 @@ class PropertyRemoteDataSource @Inject constructor(
                 val snapshot = query.get().await()
 
                 val properties = snapshot.documents.map {
-                    it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                    it.toObject(PropertyEntityModel::class.java)
                 }
 
                 val newLastVisible = snapshot.documents.lastOrNull()?.id
@@ -290,7 +291,7 @@ class PropertyRemoteDataSource @Inject constructor(
         query: String,
         limit: Int,
         onFailure: (Exception) -> Unit
-    ): List<Property> {
+    ): List<PropertyEntityModel?> {
         return network.safeApiCallSuspend(
             apiCall = {
                 val propertiesSnapshot = db.collection(PROPERTIES)
@@ -300,7 +301,7 @@ class PropertyRemoteDataSource @Inject constructor(
                     .await()
 
                 propertiesSnapshot.documents.map {
-                    it.toObject(PropertyEntity::class.java)!!.toDomainModel()
+                    it.toObject(PropertyEntityModel::class.java)
                 }
             },
             onFailure = { e ->

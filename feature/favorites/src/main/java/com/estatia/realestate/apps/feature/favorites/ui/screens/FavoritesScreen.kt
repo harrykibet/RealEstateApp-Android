@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.core.ui.LocalIExoplayer
 import com.estatia.realestate.apps.core.ui.PropertyCard
-import com.estatia.realestate.apps.core.model.property.Property
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 
 @Composable
 fun FavoritesScreen() {
-    val likedProperties: List<Property> = emptyList() // Replace with actual data
+    val likedProperties: List<PropertyDomainModel> = emptyList() // Replace with actual data
     val exoPlayer = LocalIExoplayer.current
     LazyColumn(
         modifier = Modifier
