@@ -7,9 +7,9 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-object PropertyMapper {
+object RemoteDbPropertyMapper {
 
-    fun fromEntity(entity: PropertyEntityModel): PropertyDomainModel {
+    fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(
             id = PropertyId(entity.id),
             title = entity.title.ifBlank { "Untitled" },

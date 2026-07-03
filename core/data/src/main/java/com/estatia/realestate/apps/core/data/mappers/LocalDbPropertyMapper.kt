@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.google.gson.Gson
 import kotlin.collections.toList
 
-object PropertyCacheMapper {
+object LocalDbPropertyMapper {
 
     private val gson = Gson()
 
@@ -22,7 +22,7 @@ object PropertyCacheMapper {
             emptyList()
         }
 
-    fun fromDomain(domain: PropertyDomainModel): PropertyCacheEntity {
+    fun toEntity(domain: PropertyDomainModel): PropertyCacheEntity {
         return PropertyCacheEntity(
             id = domain.id.value,
 
