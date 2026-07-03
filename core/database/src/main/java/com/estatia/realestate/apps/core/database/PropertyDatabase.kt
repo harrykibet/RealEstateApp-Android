@@ -7,12 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
-import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
-import com.estatia.realestate.apps.core.database.mappers.RoomTypeConverters
+import com.estatia.realestate.apps.core.database.converters.RoomTypeConverters
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
-import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
-
 
 
 @Database(

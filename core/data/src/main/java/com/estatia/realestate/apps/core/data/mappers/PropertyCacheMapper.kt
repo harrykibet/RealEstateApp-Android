@@ -1,12 +1,13 @@
-package com.estatia.realestate.apps.core.database.mappers
+package com.estatia.realestate.apps.core.data.mappers
 
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
 import com.estatia.realestate.apps.core.model.property.Money
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.google.gson.Gson
+import kotlin.collections.toList
 
 object PropertyCacheMapper {
 
@@ -75,8 +76,8 @@ object PropertyCacheMapper {
 
             coordinates = if (entity.latitude != null && entity.longitude != null) {
                 Coordinates(
-                    entity.latitude,
-                    entity.longitude
+                    entity.latitude!!,
+                    entity.longitude!!
                 )
             } else null,
 

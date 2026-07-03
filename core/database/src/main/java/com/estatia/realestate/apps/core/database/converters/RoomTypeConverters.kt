@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.database.mappers
+package com.estatia.realestate.apps.core.database.converters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

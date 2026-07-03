@@ -23,9 +23,11 @@ object PropertyMapper {
 
             videosAvailable = entity.video,
 
-            coordinates = if (entity.latitude != null && entity.longitude != null) {
-                Coordinates(entity.latitude!!, entity.longitude!!)
-            } else null,
+            coordinates = entity.latitude?.let { lat ->
+                entity.longitude?.let { lng ->
+                    Coordinates(lat, lng)
+                }
+            },
 
             createdAt = entity.createdAt,
 
@@ -63,6 +65,42 @@ object PropertyMapper {
             leaseTerms = entity.leaseTerms,
 
             available = entity.available
+        )
+    }
+
+    fun toEntity(domain: PropertyDomainModel): PropertyEntityModel {
+        return PropertyEntityModel(
+            id = domain.id.value,
+            title = domain.title,
+            description = domain.description,
+            price = domain.price?.amount,
+            imageUrl = domain.imageUrls,
+            videoUrl = domain.videoUrls,
+            video = domain.videosAvailable,
+            latitude = domain.coordinates?.latitude,
+            longitude = domain.coordinates?.longitude,
+            createdAt = domain.createdAt,
+            ownerId = domain.ownerId,
+            ownerName = domain.ownerName,
+            contactPhone = domain.contact.phone,
+            contactEmail = domain.contact.email,
+            county = domain.county,
+            active = domain.active,
+            viewsCount = domain.viewsCount,
+            likesCount = domain.likesCount,
+            commentsCount = domain.commentsCount,
+            sharesCount = domain.sharesCount,
+            propertyType = domain.propertyType,
+            bedrooms = domain.bedrooms,
+            bathrooms = domain.bathrooms,
+            areaSize = domain.areaSize,
+            amenities = domain.amenities,
+            features = domain.features,
+            depositAmount = domain.depositAmount?.amount,
+            address = domain.address,
+            availableFrom = domain.availableFrom,
+            leaseTerms = domain.leaseTerms,
+            available = domain.available
         )
     }
 }

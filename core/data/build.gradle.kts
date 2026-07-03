@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
+    implementation(libs.gson)
+
     implementation(libs.bundles.firebase)
     implementation(libs.play.services.maps)
 
