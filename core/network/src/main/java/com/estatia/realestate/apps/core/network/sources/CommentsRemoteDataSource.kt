@@ -23,7 +23,7 @@ class CommentsRemoteDataSource @Inject constructor(
 
     override fun observeComments(
         propertyId: String
-    ): Flow<List<Comment>> = callbackFlow {
+    ): Flow<List<CommentEntity>> = callbackFlow {
 
         val listenerRegistration = db.collection(FirestoreCollections.PROPERTIES)
             .document(propertyId)
@@ -39,7 +39,6 @@ class CommentsRemoteDataSource @Inject constructor(
                 val comments = snapshot?.documents
                     ?.mapNotNull {
                         it.toObject(CommentEntity::class.java)
-                            ?.toDomainModel()
                     }
                     ?: emptyList()
 
@@ -51,7 +50,7 @@ class CommentsRemoteDataSource @Inject constructor(
 
 
     override suspend fun submitComment(
-        comment: Comment
+        comment: CommentEntity
     ): Result<Unit> {
         return try {
             val commentsRef = db.collection(FirestoreCollections.PROPERTIES)
@@ -59,9 +58,8 @@ class CommentsRemoteDataSource @Inject constructor(
                 .collection(FirestoreCollections.SubCollections.COMMENTS)
                 .document()
 
-            // Domain → Entity
             commentsRef
-                .set(CommentEntity.fromDomainModel(comment))
+                .set(comment)
                 .await()
 
             Result.Success(Unit)

@@ -5,13 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
-import com.estatia.realestate.apps.core.network.db_entities.EntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.network.mappers.toDomainModel
-import com.estatia.realestate.apps.core.network.mappers.toEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.model.feature.Likes
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.common.media.MediaFormat
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
@@ -39,7 +35,7 @@ class PropertyRemoteDataSource @Inject constructor(
     override val uploadError = MutableLiveData<String?>()
 
     override suspend fun uploadProperty(
-        property: PropertyDomainModel,
+        property: PropertyEntityModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
@@ -54,7 +50,7 @@ class PropertyRemoteDataSource @Inject constructor(
                 db.collection(PROPERTIES)
                     .document(propertyId)
                     .set(
-                        property.toEntityModel().copy(id = propertyId)
+                        property.copy(id = propertyId)
                     ) // Make sure to store the ID as well
                     .await()
 
@@ -65,7 +61,7 @@ class PropertyRemoteDataSource @Inject constructor(
                     uploadMedia(propertyId, videoUris, MediaFormat.MEDIA_TYPE_VIDEOS, onFailure)
 
                 // 3. Update the FireStore document with media URLs
-                val updatedPropertyEntity = property.toEntityModel().copy(
+                val updatedPropertyEntity = property.copy(
                     id = propertyId,
                     imageUrl = imageUrls,
                     videoUrl = videoUrls
@@ -162,7 +158,7 @@ class PropertyRemoteDataSource @Inject constructor(
     override suspend fun fetchLikedProperties(
         userId: String,
         onFailure: (Exception) -> Unit
-    ): List<PropertyEntityModel>? {
+    ): List<PropertyEntityModel?>? {
         return network.safeApiCallSuspend(
             apiCall = {
                 val likedPropertyIds = db.collection(USERS)

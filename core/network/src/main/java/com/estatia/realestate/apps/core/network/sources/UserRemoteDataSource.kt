@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.network.db_entities.UserEntity
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
@@ -15,7 +15,7 @@ class UserRemoteDataSource @Inject constructor(
     private val network: INetworkHandler
 ) : IUserRemoteDataSource {
 
-    override suspend fun getUserById(userId: String): User? {
+    override suspend fun getUserById(userId: String): UserEntity? {
         if (userId.isBlank()) {
             logger.e("${this::class.simpleName}: Invalid userId provided.")
             return null
@@ -27,7 +27,7 @@ class UserRemoteDataSource @Inject constructor(
                     .document(userId)
                     .get()
                     .await()
-                val user = snapshot.toObject(User::class.java)
+                val user = snapshot.toObject(UserEntity::class.java)
 
                 logger.d("${this::class.simpleName}: Successfully fetched user for ID: $userId")
                 user

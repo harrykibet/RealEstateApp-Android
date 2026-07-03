@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSo
 import com.estatia.realestate.apps.core.database.mappers.PropertyCacheMapper
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
-import com.estatia.realestate.apps.core.network.mappers.PropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.PropertyMapper
 import javax.inject.Inject
 
 class PropertyRepository @Inject constructor(

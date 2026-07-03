@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
 interface IPropertyRemoteDatasource {
@@ -11,25 +10,35 @@ interface IPropertyRemoteDatasource {
     val uploadError: LiveData<String?>
 
     suspend fun uploadProperty(
-        property: PropertyDomainModel,
+        property: PropertyEntityModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
     ): Boolean?
 
     // Update Property
-    suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean
+    suspend fun updateProperty(
+        propertyId: String,
+        updates: Map<String, Any>,
+        onFailure: (Exception) -> Unit
+    ): Boolean
 
     // Delete Property
-    suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean
+    suspend fun deleteProperty(
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): Boolean
 
-    // Get Property by Id
-    suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): PropertyEntityModel?
+    // Get Property by id
+    suspend fun getPropertyById(
+        propertyId: String,
+        onFailure: (Exception) -> Unit
+    ): PropertyEntityModel?
 
     suspend fun fetchLikedProperties(
         userId: String,
         onFailure: (Exception) -> Unit
-    ): List<PropertyEntityModel>?
+    ): List<PropertyEntityModel?>?
 
     // Fetch Properties Paginated
     suspend fun fetchPropertiesPaginated(

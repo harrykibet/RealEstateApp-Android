@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.network.mappers
+package com.estatia.realestate.apps.core.data.mappers
 
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
@@ -24,7 +24,7 @@ object PropertyMapper {
             videosAvailable = entity.video,
 
             coordinates = if (entity.latitude != null && entity.longitude != null) {
-                Coordinates(entity.latitude, entity.longitude)
+                Coordinates(entity.latitude!!, entity.longitude!!)
             } else null,
 
             createdAt = entity.createdAt,
