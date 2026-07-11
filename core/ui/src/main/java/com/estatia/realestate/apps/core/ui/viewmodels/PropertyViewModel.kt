@@ -64,7 +64,7 @@ class PropertyViewModel @Inject constructor(
 
         viewModelScope.launch {
             val isCurrentlyLiked =
-                _likedProperties.value?.any { it.id == propertyId } == true
+                _likedProperties.value?.any { it.id.value == propertyId } == true
 
             try {
                 val success = if (isCurrentlyLiked) {

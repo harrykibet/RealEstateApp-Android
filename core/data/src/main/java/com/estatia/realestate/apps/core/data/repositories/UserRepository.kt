@@ -1,8 +1,9 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.data.mappers.RemoteUserMapper
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
@@ -15,8 +16,8 @@ class UserRepository @Inject constructor(
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
     private val analyticsRepository: AnalyticsRepository
 ) : IUserRepository {
-    override suspend fun getUserById(userId: String): User? {
-        return remoteDataSource.getUserById(userId)
+    override suspend fun getUserById(userId: String): UserDomainModel {
+        return RemoteUserMapper.toDomain(remoteDataSource.getUserById(userId))
     }
 
     override val userData: Flow<UserData> = estatiaPreferencesDataSource.userData

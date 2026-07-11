@@ -1,16 +1,19 @@
 package com.estatia.realestate.apps.core.testing.data
 
+import com.estatia.realestate.apps.core.model.property.ContactInfo
+import com.estatia.realestate.apps.core.model.property.Coordinates
+import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import java.util.Date
+import com.estatia.realestate.apps.core.model.property.PropertyId
 
 object MockProperties {
 
     fun single(): PropertyDomainModel {
         return PropertyDomainModel(
-            id = "prop_001",
+            id = PropertyId("prop_001"),
             title = "Modern 2 Bedroom Apartment",
             description = "A spacious and modern apartment in the heart of the city with all amenities included.",
-            price = 55000.0,
+            price = Money(55000.0),
             imageUrls = listOf(
                 "https://via.placeholder.com/600x400.png?text=Living+Room",
                 "https://via.placeholder.com/600x400.png?text=Bedroom",
@@ -20,13 +23,14 @@ object MockProperties {
                 "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
             ),
             videosAvailable = true,
-            latitude = -1.2921,
-            longitude = 36.8219,
-            createdAt = Date(),
+            coordinates = Coordinates(latitude = -1.2921, longitude = 36.8219),
+            createdAt = 1_746_619_200_000,
             ownerId = "user_123",
             ownerName = "James Kibet",
-            contactPhone = "+254712345678",
-            contactEmail = "owner@example.com",
+            contact = ContactInfo(
+                phone = "+254712345678",
+                email = "owner@example.com",
+            ),
             county = "Nairobi",
             active = true,
             viewsCount = 152,
@@ -39,7 +43,7 @@ object MockProperties {
             areaSize = 85.0,
             amenities = listOf("WiFi", "Parking", "Swimming Pool"),
             features = "Balcony, Security System, Backup Generator",
-            depositAmount = 55000.0,
+            depositAmount = Money(55000.0),
             address = "Westlands, Nairobi",
             availableFrom = "2025-06-01",
             leaseTerms = "12 months minimum lease",
@@ -49,9 +53,9 @@ object MockProperties {
 
     fun list(count: Int = 5): List<PropertyDomainModel> = List(count) {
         single().copy(
-            id = "prop_${it + 1}",
+            id = PropertyId("prop_${it + 1}"),
             title = "Property #${it + 1}",
-            price = 30000.0 + (it * 5000),
+            price = Money(30000.0 + (it * 5000)),
             bedrooms = 1 + (it % 3),
             bathrooms = 1 + (it % 2),
             likesCount = 10 * (it + 1),

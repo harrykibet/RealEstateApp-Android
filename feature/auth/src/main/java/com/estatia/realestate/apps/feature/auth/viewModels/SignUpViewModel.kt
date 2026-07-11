@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,7 +100,7 @@ class SignUpViewModel @Inject constructor(
         authResult: AuthUser,
         current: SignUpFormState
     ) {
-        val user = User(
+        val userDomainModel = UserDomainModel(
             userId = authResult.userId,
             name = current.userName,
             email = current.email,
@@ -113,8 +113,8 @@ class SignUpViewModel @Inject constructor(
 
         when (
             val result = authRepository.createUserIfNotExists(
-                user.userId!!,
-                user
+                userDomainModel.userId!!,
+                userDomainModel
             )
         ) {
             is Result.Success -> {

@@ -1,13 +1,13 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
-    suspend fun getUserById(userId: String): User?
+    suspend fun getUserById(userId: String): UserDomainModel
     /**
      * Stream of [UserData]
      */

@@ -119,4 +119,7 @@ object LocalDbPropertyMapper {
             available = entity.active
         )
     }
+
+    fun List<PropertyDomainModel>.toCacheEntities() =
+        map(LocalDbPropertyMapper::toEntity)
 }

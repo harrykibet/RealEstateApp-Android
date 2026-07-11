@@ -1,10 +1,10 @@
 package com.estatia.realestate.apps.core.testing.data
 
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 
 val mockUsers = listOf(
-    User(
+    UserDomainModel(
         userId = "user_001",
         name = "Alice Wanjiku",
         email = "alice@example.com",
@@ -14,7 +14,7 @@ val mockUsers = listOf(
         verified = true,
         likedProperties = listOf("property_101", "property_102")
     ),
-    User(
+    UserDomainModel(
         userId = "user_002",
         name = "Brian Otieno",
         email = "brian@example.com",
@@ -24,7 +24,7 @@ val mockUsers = listOf(
         verified = false,
         likedProperties = listOf("property_103")
     ),
-    User(
+    UserDomainModel(
         userId = "user_003",
         name = "Clara Mwende",
         email = "clara@example.com",

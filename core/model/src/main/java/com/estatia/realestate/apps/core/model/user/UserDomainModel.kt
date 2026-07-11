@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.user
 
-data class User(
+data class UserDomainModel(
     val userId: String?,
     val name: String?,
     val email: String?,

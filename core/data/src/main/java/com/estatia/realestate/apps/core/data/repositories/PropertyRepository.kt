@@ -4,11 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper
-import com.estatia.realestate.apps.core.data.mappers.RemoteDbPropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper.toCacheEntities
+import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainModels
+import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainOrNull
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import javax.inject.Inject
 
 class PropertyRepository @Inject constructor(
@@ -60,7 +63,7 @@ class PropertyRepository @Inject constructor(
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
     ): Boolean? {
-        val entity = RemoteDbPropertyMapper.toEntity(property)
+        val entity = RemotePropertyMapper.toEntity(property)
 
         return remoteDataSource.uploadProperty(
             entity,
@@ -83,7 +86,7 @@ class PropertyRepository @Inject constructor(
         onFailure: (Exception) -> Unit
     ): PropertyDomainModel? {
         return remoteDataSource.getPropertyById(propertyId, onFailure)
-            ?.let(RemoteDbPropertyMapper::toDomain)
+            .toDomainOrNull()
     }
 
     override suspend fun fetchLikedProperties(
@@ -91,7 +94,7 @@ class PropertyRepository @Inject constructor(
         onFailure: (Exception) -> Unit
     ): List<PropertyDomainModel> {
         return remoteDataSource.fetchLikedProperties(userId, onFailure)
-            ?.map(RemoteDbPropertyMapper::toDomain)
+            ?.toDomainModels()
             ?: emptyList()
     }
 
@@ -123,7 +126,7 @@ class PropertyRepository @Inject constructor(
             onFailure
         )
 
-        val domain = result.first.map(RemoteDbPropertyMapper::toDomain)
+        val domain = result.first.toDomainModels()
 
         return domain to result.second
     }
@@ -151,9 +154,9 @@ class PropertyRepository @Inject constructor(
                 onFailure = onFailure
             ).first
 
-            val domainModels = remoteEntities.map(RemoteDbPropertyMapper::toDomain)
+            val domainModels = remoteEntities.toDomainModels()
 
-            val cacheEntities = domainModels.map(LocalDbPropertyMapper::toEntity)
+            val cacheEntities = domainModels.toCacheEntities()
 
             localDataSource.cacheProperties(cacheEntities)
 
@@ -171,7 +174,7 @@ class PropertyRepository @Inject constructor(
         onFailure: (Exception) -> Unit
     ): List<PropertyDomainModel> {
         return remoteDataSource.searchProperties(query, limit, onFailure)
-            .map(RemoteDbPropertyMapper::toDomain)
+            .toDomainModels()
     }
 
     override suspend fun deleteProperty(

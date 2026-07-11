@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
@@ -39,7 +39,7 @@ class AuthRemoteDataSource @Inject constructor(
 
     override suspend fun createUserIfNotExists(
         userId: String,
-        user: User
+        user: UserDomainModel
     ): Result<Unit> {
         return try {
             val userRef = db

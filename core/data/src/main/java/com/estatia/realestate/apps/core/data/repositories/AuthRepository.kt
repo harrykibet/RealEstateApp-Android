@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,7 +16,7 @@ class AuthRepository @Inject constructor(
 
     override suspend fun createUserIfNotExists(
         userId: String,
-        user: User
+        user: UserDomainModel
     ): Result<Unit> {
         return remoteDataSource.createUserIfNotExists(userId, user)
     }

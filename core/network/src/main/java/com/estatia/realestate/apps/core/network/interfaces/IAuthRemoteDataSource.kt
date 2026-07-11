@@ -4,7 +4,7 @@ import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
-import com.estatia.realestate.apps.core.model.user.User
+import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthRemoteDataSource {
@@ -30,7 +30,7 @@ interface IAuthRemoteDataSource {
 
     suspend fun createUserIfNotExists(
         userId: String,
-        user: User
+        user: UserDomainModel
     ): Result<Unit>
 
 

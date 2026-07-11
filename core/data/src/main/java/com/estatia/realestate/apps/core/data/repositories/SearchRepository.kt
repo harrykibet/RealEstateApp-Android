@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainModels
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
@@ -18,7 +19,7 @@ class SearchRepository @Inject constructor(
         onFailure: (Exception) -> Unit
     ): List<PropertyDomainModel> {
         localDataSource.saveSearchQuery(query) // Cache the search query locally
-        return remoteDataSource.searchProperties(query, limit, onFailure)
+        return remoteDataSource.searchProperties(query, limit, onFailure).toDomainModels()
     }
 
     override suspend fun getSearchHistory(): List<String> {

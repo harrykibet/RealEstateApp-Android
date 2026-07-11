@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-object RemoteDbPropertyMapper {
+object RemotePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(
@@ -103,4 +103,10 @@ object RemoteDbPropertyMapper {
             available = domain.available
         )
     }
+
+    fun PropertyEntityModel?.toDomainOrNull(): PropertyDomainModel? =
+        this?.let(RemotePropertyMapper::toDomain)
+
+    fun List<PropertyEntityModel?>.toDomainModels(): List<PropertyDomainModel> =
+        mapNotNull { it.toDomainOrNull() }
 }

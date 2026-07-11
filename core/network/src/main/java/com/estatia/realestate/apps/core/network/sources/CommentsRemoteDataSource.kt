@@ -2,10 +2,9 @@ package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.network.db_entities.CommentEntity
+import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.model.feature.Comment
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +22,7 @@ class CommentsRemoteDataSource @Inject constructor(
 
     override fun observeComments(
         propertyId: String
-    ): Flow<List<CommentEntity>> = callbackFlow {
+    ): Flow<List<CommentEntityModel>> = callbackFlow {
 
         val listenerRegistration = db.collection(FirestoreCollections.PROPERTIES)
             .document(propertyId)
@@ -38,7 +37,7 @@ class CommentsRemoteDataSource @Inject constructor(
 
                 val comments = snapshot?.documents
                     ?.mapNotNull {
-                        it.toObject(CommentEntity::class.java)
+                        it.toObject(CommentEntityModel::class.java)
                     }
                     ?: emptyList()
 
@@ -50,7 +49,7 @@ class CommentsRemoteDataSource @Inject constructor(
 
 
     override suspend fun submitComment(
-        comment: CommentEntity
+        comment: CommentEntityModel
     ): Result<Unit> {
         return try {
             val commentsRef = db.collection(FirestoreCollections.PROPERTIES)

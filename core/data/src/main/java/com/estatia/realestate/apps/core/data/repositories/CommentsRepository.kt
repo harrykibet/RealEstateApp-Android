@@ -4,7 +4,10 @@ import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.Comment
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.data.mappers.RemoteCommentMapper
+import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CommentsRepository @Inject constructor(
@@ -16,7 +19,9 @@ class CommentsRepository @Inject constructor(
     override fun observeComments(
         propertyId: String
     ): Flow<List<Comment>> {
-        return remoteDataSource.observeComments(propertyId)
+        return remoteDataSource.observeComments(propertyId).map { comments ->
+            comments.map { RemoteCommentMapper.toDomain(it) }
+        }
     }
 
 
@@ -31,7 +36,8 @@ class CommentsRepository @Inject constructor(
         val user = userRepository.getUserById(userId)
             ?: return Result.Error(IllegalStateException("User not found"))
 
-        val comment = Comment(
+
+        val comment = CommentEntityModel(
             id = null,
             propertyId = propertyId,
             authorId = userId,
