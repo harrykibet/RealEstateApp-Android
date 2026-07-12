@@ -15,5 +15,6 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)
+    implementation(projects.core.ui)
     implementation(projects.core.domain)
 }

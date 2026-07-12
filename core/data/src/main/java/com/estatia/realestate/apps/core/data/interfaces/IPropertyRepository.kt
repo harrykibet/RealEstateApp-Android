@@ -1,14 +1,15 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import kotlinx.coroutines.flow.StateFlow
 
 interface IPropertyRepository {
-    // LiveData to monitor the upload status
-    val uploadStatus: LiveData<Boolean>
-    val uploadError: LiveData<String?>
+    // StateFlow to monitor the upload status
+    val uploadStatus: StateFlow<Boolean>
+
+    val uploadError: StateFlow<String?>
 
     suspend fun getDraftById(draftId: Int): PropertyDraftEntity?
     suspend fun saveDraft(draft: PropertyDraftEntity): Long

@@ -1,38 +1,52 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
-import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
-import com.estatia.realestate.apps.core.model.feature.Likes
 import com.estatia.realestate.apps.core.common.media.MediaFormat
+import com.estatia.realestate.apps.core.model.feature.Likes
+import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
 
+
 class PropertyRemoteDataSource @Inject constructor(
-    private val db: FirebaseFirestore,   // Injected via DI
-    private val logger: LoggerInterface, // Injected via DI
-    private val storageRef: FirebaseStorage, // Injected via DI
-    private val network: INetworkHandler // Injected via DI
+    private val db: FirebaseFirestore,
+    private val logger: LoggerInterface,
+    private val storageRef: FirebaseStorage,
+    private val network: INetworkHandler
 ) : IPropertyRemoteDatasource {
 
-    override val uploadStatus = MutableLiveData<Boolean>()
-    override val uploadError = MutableLiveData<String?>()
+
+    private val _uploadStatus =
+        MutableStateFlow(false)
+
+    override val uploadStatus: StateFlow<Boolean> =
+        _uploadStatus.asStateFlow()
+
+
+    private val _uploadError =
+        MutableStateFlow<String?>(null)
+
+    override val uploadError: StateFlow<String?> =
+        _uploadError.asStateFlow()
+
 
     override suspend fun uploadProperty(
         property: PropertyEntityModel,
@@ -40,46 +54,100 @@ class PropertyRemoteDataSource @Inject constructor(
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
     ): Boolean? {
-        val propertyId = db.collection(PROPERTIES).document().id // Always generate a new ID
+
+
+        val propertyId =
+            db.collection(PROPERTIES)
+                .document()
+                .id
+
 
         return network.safeApiCallSuspend(
             apiCall = {
-                uploadStatus.value = true // Uploading process started
 
-                // 1. **Create the FireStore document first** with an initial state
-                db.collection(PROPERTIES)
-                    .document(propertyId)
-                    .set(
-                        property.copy(id = propertyId)
-                    ) // Make sure to store the ID as well
-                    .await()
 
-                // 2. Upload images and videos, updating their URLs
-                val imageUrls =
-                    uploadMedia(propertyId, imageUris, MediaFormat.MEDIA_TYPE_IMAGES, onFailure)
-                val videoUrls =
-                    uploadMedia(propertyId, videoUris, MediaFormat.MEDIA_TYPE_VIDEOS, onFailure)
+                _uploadStatus.value = true
+                _uploadError.value = null
 
-                // 3. Update the FireStore document with media URLs
-                val updatedPropertyEntity = property.copy(
-                    id = propertyId,
-                    imageUrl = imageUrls,
-                    videoUrl = videoUrls
-                )
-                db.collection(PROPERTIES)
-                    .document(propertyId)
-                    .set(updatedPropertyEntity, SetOptions.merge())
-                    .await()
 
-                uploadStatus.value = false // Upload finished
-                uploadError.value = null
-                true
-            }, onFailure = { exception ->
-                uploadStatus.value = false // Upload failed
-                uploadError.value = exception.message
+                try {
+
+
+                    /*
+                     * Create initial Firestore document
+                     */
+                    db.collection(PROPERTIES)
+                        .document(propertyId)
+                        .set(
+                            property.copy(
+                                id = propertyId
+                            )
+                        )
+                        .await()
+
+
+                    /*
+                     * Upload media
+                     */
+                    val imageUrls =
+                        uploadMedia(
+                            propertyId,
+                            imageUris,
+                            MediaFormat.MEDIA_TYPE_IMAGES,
+                            onFailure
+                        )
+
+
+                    val videoUrls =
+                        uploadMedia(
+                            propertyId,
+                            videoUris,
+                            MediaFormat.MEDIA_TYPE_VIDEOS,
+                            onFailure
+                        )
+
+
+                    /*
+                     * Update media URLs
+                     */
+                    db.collection(PROPERTIES)
+                        .document(propertyId)
+                        .set(
+                            property.copy(
+                                id = propertyId,
+                                imageUrl = imageUrls,
+                                videoUrl = videoUrls
+                            ),
+                            SetOptions.merge()
+                        )
+                        .await()
+
+
+
+                    true
+
+
+                } finally {
+
+                    _uploadStatus.value = false
+                }
+
+
+            },
+
+            onFailure = { exception ->
+
+                _uploadError.value =
+                    exception.message ?: "Unknown upload error"
+
+
                 onFailure(exception)
-                log(exception.message)
-            })
+
+                logger.e(
+                    exception.message ?: "Upload failed"
+                )
+            }
+        )
     }
 
     private suspend fun uploadMedia(

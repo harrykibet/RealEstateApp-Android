@@ -44,6 +44,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.estatia.realestate.apps.feature.search.BuildConfig
 
 @Composable
 fun MapWithSearchBar(
@@ -64,9 +65,7 @@ fun MapWithSearchBar(
 
     // Initialize Places
     LaunchedEffect(Unit) {
-        if (!Places.isInitialized()) {
-            Places.initialize(context, BuildConfig.MAPS_API_KEY)
-        }
+        viewModel.initializePlaces(context)
     }
 
     val placesClient = remember { Places.createClient(context) }

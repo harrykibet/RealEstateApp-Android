@@ -9,7 +9,6 @@ import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

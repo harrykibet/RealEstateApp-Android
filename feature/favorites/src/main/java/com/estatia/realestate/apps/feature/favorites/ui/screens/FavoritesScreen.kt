@@ -1,34 +1,27 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.estatia.realestate.apps.core.ui.LocalIExoplayer
-import com.estatia.realestate.apps.core.ui.PropertyCard
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
+
 
 @Composable
-fun FavoritesScreen() {
-    val likedProperties: List<PropertyDomainModel> = emptyList() // Replace with actual data
-    val exoPlayer = LocalIExoplayer.current
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        items(likedProperties) { property ->
-            PropertyCard(
-                property = property,
-                onLikeClick = { /* handle like */ },
-                onCommentClick = { /* handle comment */ },
-                onShareClick = { /* handle share */ },
-                exoPlayer = exoPlayer,
-                onPropertyClick = { /* handle property click */ }
-            )
-        }
-    }
+fun FavoritesScreen(
+    favoriteProperties: List<PropertyDomainModel>,
+    onLikeClick: (PropertyDomainModel) -> Unit,
+    onCommentClick: (PropertyDomainModel) -> Unit,
+    onShareClick: (PropertyDomainModel) -> Unit,
+    onPropertyClick: (PropertyDomainModel) -> Unit
+) {
+
+
+    PropertyFeedScreen(
+        properties = favoriteProperties,
+
+        onLikeClick = onLikeClick,
+
+        onCommentClick = onCommentClick,
+
+        onShareClick = onShareClick
+    )
 }

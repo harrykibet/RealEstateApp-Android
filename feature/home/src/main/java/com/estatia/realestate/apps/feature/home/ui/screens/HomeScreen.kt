@@ -1,74 +1,41 @@
 package com.estatia.realestate.apps.feature.home.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.estatia.realestate.apps.core.ui.PropertyCard
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.estatia.realestate.apps.feature.home.ui.HomeUiState
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
     onBackClick: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    )
 ) {
-
     val state by viewModel.uiState.collectAsState()
 
-    HomeScreen(
-        state = state,
-        onPropertyClick = { property ->
-            property.id?.let { onNavigateToPropertyDetail(it) }
-        },
-        onBackClick = onBackClick,
+    PropertyFeedScreen(
+        properties = state.properties,
+
         onLikeClick = { property ->
-            //viewModel.toggleLike(property)
+            // viewModel.toggleLike(property)
         },
+
         onCommentClick = { property ->
-            //viewModel.toggleComment(property)
+            // viewModel.openComments(property)
         },
+
         onShareClick = { property ->
-            //viewModel.shareProperty(property)
-        },
-        exoPlayer = viewModel.exoPlayer
+            // viewModel.shareProperty(property)
+        }
     )
 }
-
-
-@Composable
-internal fun HomeScreen(
-    state: HomeUiState,
-    onBackClick: () -> Unit,
-    onPropertyClick: (PropertyDomainModel) -> Unit,
-    onLikeClick: (PropertyDomainModel) -> Unit,
-    onCommentClick: (PropertyDomainModel) -> Unit,
-    onShareClick: (PropertyDomainModel) -> Unit,
-    exoPlayer: IPlayer
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        items(state.properties) { property ->
-            PropertyCard(
-                property = property,
-                onPropertyClick = onPropertyClick,
-                onLikeClick = onLikeClick,
-                onCommentClick = onCommentClick,
-                onShareClick = onShareClick,
-                exoPlayer = exoPlayer
-            )
-        }
-    }
-}
-

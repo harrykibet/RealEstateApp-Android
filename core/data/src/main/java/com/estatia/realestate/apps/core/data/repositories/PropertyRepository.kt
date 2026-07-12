@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper.toCacheEntities
@@ -12,6 +11,7 @@ import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class PropertyRepository @Inject constructor(
@@ -47,10 +47,10 @@ class PropertyRepository @Inject constructor(
     // Remote state
     // ─────────────────────────────────────────────
 
-    override val uploadStatus: LiveData<Boolean>
+    override val uploadStatus: StateFlow<Boolean>
         get() = remoteDataSource.uploadStatus
 
-    override val uploadError: LiveData<String?>
+    override val uploadError: StateFlow<String?>
         get() = remoteDataSource.uploadError
 
     // ─────────────────────────────────────────────

@@ -20,7 +20,16 @@ import dagger.hilt.components.SingletonComponent
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class OfflineCache
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PlaybackCache
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -39,6 +48,7 @@ object StreamingModule {
 
     @Provides
     @Singleton
+    @PlaybackCache
     fun providePlaybackCache(
         @ApplicationContext context: Context,
         databaseProvider: StandaloneDatabaseProvider
@@ -51,6 +61,7 @@ object StreamingModule {
 
     @Provides
     @Singleton
+    @OfflineCache
     fun provideOfflineCache(
         @ApplicationContext context: Context,
         databaseProvider: StandaloneDatabaseProvider
@@ -71,7 +82,7 @@ object StreamingModule {
     fun provideDownloadManager(
         @ApplicationContext context: Context,
         databaseProvider: StandaloneDatabaseProvider,
-        offlineCache: SimpleCache,
+        @OfflineCache offlineCache: SimpleCache,
         upstreamFactory: DataSource.Factory,
         executor: ExecutorService
     ): DownloadManager =
@@ -86,8 +97,8 @@ object StreamingModule {
     @Provides
     @Singleton
     fun provideMediaSourceFactory(
-        playbackCache: SimpleCache,
-        offlineCache: SimpleCache,
+        @PlaybackCache playbackCache: SimpleCache,
+        @OfflineCache offlineCache: SimpleCache,
         upstreamFactory: DataSource.Factory
     ): MediaSource.Factory {
 

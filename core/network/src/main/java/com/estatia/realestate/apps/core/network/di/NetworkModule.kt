@@ -4,9 +4,13 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
+import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
+import com.estatia.realestate.apps.core.network.core.ApiExecutor
+import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +37,23 @@ object NetworkModule {
     fun provideNetworkStatsManager(@ApplicationContext context: Context): NetworkStatsManager {
         return context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
     }
+
+    @Provides
+    @Singleton
+    fun provideRetryPolicy(): IRetryPolicy {
+        return ExponentialRetryPolicy()
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiExecutor(
+        networkStateProvider: INetworkStateProvider,
+        retryPolicy: IRetryPolicy,
+        logger: LoggerInterface
+    ): ApiExecutor {
+        return ApiExecutor(networkStateProvider, retryPolicy, logger)
+    }
+
 
     @Provides
     @Singleton

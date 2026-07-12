@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.google.firebase.firestore.FirebaseFirestore

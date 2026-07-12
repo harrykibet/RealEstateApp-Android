@@ -5,7 +5,6 @@ import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.common.misc.Consts
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections

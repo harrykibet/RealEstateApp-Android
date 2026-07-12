@@ -4,11 +4,11 @@ import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.network.interfaces.INetworkHandler
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,31 +16,52 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+
 class AnalyticsRemoteDataSource @Inject constructor(
     db: FirebaseFirestore,
-    private val network: INetworkHandler,
+    private val apiExecutor: IApiExecutor,
     private val logger: LoggerInterface,
     private val deviceUtils: IDeviceUtils,
-    private val authApi : IAuthRemoteDataSource,
+    private val authApi: IAuthRemoteDataSource,
     private val locationUtils: ILocationUtils,
     private val firebaseAnalytics: FirebaseAnalytics
 ) : IAnalyticsRemoteDataSource {
 
-    private val analyticsCollection = db.collection(FirestoreCollections.ANALYTICS)
 
-    override suspend fun logEvent(event: AnalyticsEvent, onFailure: (Exception) -> Unit): Boolean {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                // Save the event to FireStore
-                analyticsCollection.document(event.eventId).set(event).await()
-                true // Indicate success
+    private val analyticsCollection =
+        db.collection(FirestoreCollections.ANALYTICS)
+
+
+    override suspend fun logEvent(
+        event: AnalyticsEvent,
+        onFailure: (Exception) -> Unit
+    ): Boolean {
+
+        return apiExecutor.execute {
+
+            analyticsCollection
+                .document(event.eventId)
+                .set(event)
+                .await()
+
+            true
+
+        }.fold(
+            onSuccess = {
+                true
             },
             onFailure = { exception ->
-                onFailure(exception)
-                exception.message?.let { log(it) }
+
+                handleFailure(
+                    exception,
+                    onFailure
+                )
+
+                false
             }
-        ) ?: false // Return false if result is null
+        )
     }
+
 
     override suspend fun logEvent(
         message: String,
@@ -48,68 +69,130 @@ class AnalyticsRemoteDataSource @Inject constructor(
         customMetadata: Map<String, String>?,
         onFailure: (Exception) -> Unit
     ): Boolean {
-        val metadata = customMetadata?.toMutableMap() ?: mutableMapOf()
-        metadata["message"] = message  // Add default message if not already present
-        val deviceInfo = deviceUtils.getDeviceInfo()
-        val locationInfo = locationUtils.getLocationInfo()
 
-        val analyticsEvent = authApi.getCurrentUserId()?.let {
-            AnalyticsEvent(
-                eventId = generateEventId(),
-                eventType = eventType,
-                userId = it,
-                timestamp = System.currentTimeMillis(),
-                metadata = metadata,
-                deviceInfo = deviceInfo,
-                userLocation = locationInfo
-            )
-        }
-        return logEvent(analyticsEvent!!, onFailure)
+        val metadata =
+            customMetadata
+                ?.toMutableMap()
+                ?: mutableMapOf()
+
+
+        metadata["message"] = message
+
+
+        val userId =
+            authApi.getCurrentUserId()
+                ?: return false
+
+
+        val event = AnalyticsEvent(
+            eventId = generateEventId(),
+            eventType = eventType,
+            userId = userId,
+            timestamp = System.currentTimeMillis(),
+            metadata = metadata,
+            deviceInfo = deviceUtils.getDeviceInfo(),
+            userLocation = locationUtils.getLocationInfo()
+        )
+
+
+        return logEvent(
+            event,
+            onFailure
+        )
     }
+
 
     override suspend fun getEventsForUser(
         userId: String,
         onFailure: (Exception) -> Unit
     ): List<AnalyticsEvent> {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                val querySnapshot = analyticsCollection
-                    .whereEqualTo(FirestoreFields.USER_ID, userId)
-                    .get()
-                    .await()
 
-                querySnapshot.documents.mapNotNull { document ->
+
+        return apiExecutor.execute {
+
+            analyticsCollection
+                .whereEqualTo(
+                    FirestoreFields.USER_ID,
+                    userId
+                )
+                .get()
+                .await()
+                .documents
+                .mapNotNull { document ->
                     document.toObject<AnalyticsEvent>()
                 }
-            },
-            onFailure = { exception ->
-                onFailure(exception)
-                exception.message?.let { log(it) }
-            }
-        ) ?: emptyList()
-    }
 
 
-    override suspend fun getEventById(eventId: String, onFailure: (Exception) -> Unit): AnalyticsEvent? {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                // Retrieve a specific event by its ID
-                val documentSnapshot = analyticsCollection.document(eventId).get().await()
-                documentSnapshot.toObject<AnalyticsEvent>()
+        }.fold(
+
+            onSuccess = { events ->
+                events
             },
+
             onFailure = { exception ->
-                onFailure(exception)
-                exception.message?.let { log(it) }
+
+                handleFailure(
+                    exception,
+                    onFailure
+                )
+
+                emptyList()
             }
         )
     }
 
-    override suspend fun generateEventId(): String {
-        // Create a new document reference in the analytics collection and return its ID
-        return analyticsCollection.document().id
+
+    override suspend fun getEventById(
+        eventId: String,
+        onFailure: (Exception) -> Unit
+    ): AnalyticsEvent? {
+
+
+        return apiExecutor.execute {
+
+            analyticsCollection
+                .document(eventId)
+                .get()
+                .await()
+                .toObject<AnalyticsEvent>()
+
+        }.fold(
+
+            onSuccess = { event ->
+                event
+            },
+
+            onFailure = { exception ->
+
+                handleFailure(
+                    exception,
+                    onFailure
+                )
+
+                null
+            }
+        )
     }
 
-    private fun log(message: String) {
-        logger.e("${Errors.ANALYTICS_REPO} : $message")
+
+    override suspend fun generateEventId(): String {
+
+        return analyticsCollection
+            .document()
+            .id
+    }
+
+
+    private fun handleFailure(
+        exception: Exception,
+        onFailure: (Exception) -> Unit
+    ) {
+
+        logger.e(
+            "${Errors.ANALYTICS_REPO}: ${exception.message}",
+            exception
+        )
+
+        onFailure(exception)
     }
 }

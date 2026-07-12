@@ -15,6 +15,12 @@ fun NavController.navigateToFavorites(navOptions: NavOptions? = null) = navigate
 
 fun NavGraphBuilder.favoritesRoute() {
     composable<FavoritesRoute> {
-        FavoritesScreen()
+        FavoritesScreen(
+            favoriteProperties = emptyList(),
+            onLikeClick = {},
+            onCommentClick = {},
+            onShareClick = {},
+            onPropertyClick = {}
+        )
     }
 }

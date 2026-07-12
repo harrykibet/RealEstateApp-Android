@@ -4,6 +4,24 @@ plugins {
 
 android {
     namespace = "com.estatia.realestate.apps.core.security"
+
+    defaultConfig {
+
+        val mapsApiKey = project.findProperty("MAPS_API_KEY")
+            ?: error(
+                """
+                MAPS_API_KEY is missing.
+                Add it to gradle.properties or pass:
+                -PMAPS_API_KEY=<your_key>
+                """.trimIndent()
+            )
+
+        buildConfigField(
+            "String",
+            "MAPS_API_KEY",
+            "\"$mapsApiKey\""
+        )
+    }
 }
 
 dependencies {

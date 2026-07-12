@@ -1,13 +1,14 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import kotlinx.coroutines.flow.StateFlow
 
 interface IPropertyRemoteDatasource {
     // LiveData to monitor the upload status
-    val uploadStatus: LiveData<Boolean>
-    val uploadError: LiveData<String?>
+    val uploadStatus: StateFlow<Boolean>
+
+    val uploadError: StateFlow<String?>
 
     suspend fun uploadProperty(
         property: PropertyEntityModel,
