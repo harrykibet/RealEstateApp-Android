@@ -31,10 +31,10 @@ class CommentsRepository @Inject constructor(
     ): Result<Unit> {
 
         val userId = authRepository.getCurrentUserId()
-            ?: return Result.Error(IllegalStateException("User not authenticated"))
+            ?: return Result.Result.Failure(IllegalStateException("User not authenticated"))
 
         val user = userRepository.getUserById(userId)
-            ?: return Result.Error(IllegalStateException("User not found"))
+            ?: return Result.Result.Failure(IllegalStateException("User not found"))
 
 
         val comment = CommentEntityModel(

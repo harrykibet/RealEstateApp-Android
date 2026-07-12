@@ -5,7 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ import javax.inject.Inject
  */
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
-    private val analyticsClient: IAnalyticsRepository,
+    private val analyticsClient: IAnalyticsTracker,
     private val logger: LoggerInterface
 ) : AnalyticsListener {
 

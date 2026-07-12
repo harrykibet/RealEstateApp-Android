@@ -53,7 +53,7 @@ class LoginViewModel @Inject constructor(
                 is Result.Success ->
                     _authState.value = determineAuthState(result.data)
 
-                is Result.Error ->
+                is Result.Failure ->
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Login failed"
                     )
@@ -71,7 +71,7 @@ class LoginViewModel @Inject constructor(
                 is Result.Success ->
                     _authState.value = determineAuthState(result.data)
 
-                is Result.Error ->
+                is Result.Failure ->
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Google sign-in failed"
                     )

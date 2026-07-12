@@ -14,7 +14,7 @@ import javax.inject.Inject
 class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
-    private val analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsTracker
 ) : IUserRepository {
     override suspend fun getUserById(userId: String): UserDomainModel {
         return RemoteUserMapper.toDomain(remoteDataSource.getUserById(userId))

@@ -32,7 +32,7 @@ class EmailVerificationViewModel @Inject constructor(
                 is Result.Success ->
                     _uiState.value = EmailVerificationUiState.EmailSent
 
-                is Result.Error ->
+                is Result.Failure ->
                     _uiState.value = EmailVerificationUiState.Error("Failed to send email")
             }
         }
@@ -51,7 +51,7 @@ class EmailVerificationViewModel @Inject constructor(
                             EmailVerificationUiState.EmailSent
                 }
 
-                is Result.Error ->
+                is Result.Failure ->
                     _uiState.value =
                         EmailVerificationUiState.Error("Verification check failed")
             }

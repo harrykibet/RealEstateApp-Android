@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.di
 
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.data.interfaces.ICryptoRepository
@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.data.interfaces.ISecurityRepository
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
-import com.estatia.realestate.apps.core.data.repositories.AnalyticsRepository
+import com.estatia.realestate.apps.core.data.repositories.AnalyticsTracker
 import com.estatia.realestate.apps.core.data.repositories.AuthRepository
 import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
 import com.estatia.realestate.apps.core.data.repositories.CryptoRepository
@@ -36,7 +36,7 @@ abstract class DataModule {
 
     @Binds
     @Singleton
-    abstract fun bindAnalyticsRepository(analyticsRepository: AnalyticsRepository) : IAnalyticsRepository
+    abstract fun bindAnalyticsRepository(analyticsRepository: AnalyticsTracker) : IAnalyticsTracker
 
     @Binds
     @Singleton

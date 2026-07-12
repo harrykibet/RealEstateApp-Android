@@ -88,7 +88,7 @@ class CommentsViewModel @Inject constructor(
                     _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
 
-                is Result.Error -> {
+                is Result.Failure -> {
                     _events.emit(
                         CommentsEvent.ShowMessage(
                             result.exception.message ?: "Failed to post comment"

@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
+import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -29,324 +30,232 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class AuthRemoteDataSource @Inject constructor(
-    private val db: FirebaseFirestore, // Injected via DI
-    private val logger: LoggerInterface, // Injected via DI
-    private val firebaseAuth: FirebaseAuth, // Injected via DI
-    private val network: INetworkHandler  // Injected via DI
+    private val db: FirebaseFirestore,
+    private val logger: LoggerInterface,
+    private val firebaseAuth: FirebaseAuth,
+    private val apiExecutor: IApiExecutor
 ) : IAuthRemoteDataSource {
-    private var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
+
+
+    private var resendingToken:
+            PhoneAuthProvider.ForceResendingToken? = null
+
 
     override suspend fun createUserIfNotExists(
         userId: String,
         user: UserDomainModel
     ): Result<Unit> {
-        return try {
-            val userRef = db
-                .collection(FirestoreCollections.USERS)
-                .document(userId)
 
-            val snapshot = userRef.get().await()
+        return apiExecutor.execute {
+
+            val userRef =
+                db.collection(FirestoreCollections.USERS)
+                    .document(userId)
+
+
+            val snapshot =
+                userRef.get().await()
+
 
             if (!snapshot.exists()) {
                 userRef.set(user).await()
             }
 
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(e)
+            Unit
         }
     }
-
 
 
     override suspend fun signUpWithEmail(
         email: String,
         password: String
     ): Result<AuthUser> {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                firebaseAuth.createUserWithEmailAndPassword(email, password)
+
+
+        return apiExecutor.execute {
+
+            val firebaseUser =
+                firebaseAuth
+                    .createUserWithEmailAndPassword(
+                        email,
+                        password
+                    )
                     .await()
                     .user
-            },
-            onFailure = { exception ->
-                log(exception.message)
-            }
-        )?.let { user ->
-            Result.Success(user.toAuthUser())
-        } ?: Result.Error(Exception("Failed to sign up"))
+                    ?: throw IllegalStateException(
+                        "Firebase returned null user"
+                    )
+
+
+            firebaseUser.toAuthUser()
+        }
     }
+
 
     override suspend fun signInWithEmail(
         email: String,
         password: String
     ): Result<AuthUser> {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                firebaseAuth.signInWithEmailAndPassword(email, password)
+
+
+        return apiExecutor.execute {
+
+            val firebaseUser =
+                firebaseAuth
+                    .signInWithEmailAndPassword(
+                        email,
+                        password
+                    )
                     .await()
                     .user
-            },
-            onFailure = { exception ->
-                log(exception.message)
-            }
-        )?.let { user ->
-            Result.Success(user.toAuthUser())
-        } ?: Result.Error(Exception("Failed to sign in"))
+                    ?: throw IllegalStateException(
+                        "Firebase returned null user"
+                    )
+
+
+            firebaseUser.toAuthUser()
+        }
     }
+
 
     override suspend fun signInWithGoogle(
         idToken: String
     ): Result<AuthUser> {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                val credential = GoogleAuthProvider.getCredential(idToken, null)
-                firebaseAuth.signInWithCredential(credential)
+
+
+        return apiExecutor.execute {
+
+
+            val credential =
+                GoogleAuthProvider
+                    .getCredential(
+                        idToken,
+                        null
+                    )
+
+
+            val firebaseUser =
+                firebaseAuth
+                    .signInWithCredential(
+                        credential
+                    )
                     .await()
                     .user
-            },
-            onFailure = { exception ->
-                log(exception.message)
-            }
-        )?.let { user ->
-            Result.Success(user.toAuthUser())
-        } ?: Result.Error(Exception("Failed to sign in with Google"))
-    }
+                    ?: throw IllegalStateException(
+                        "Google login failed"
+                    )
 
 
-    private suspend fun signInWithCredentialSuspend(
-        credential: PhoneAuthCredential
-    ): Unit = suspendCancellableCoroutine { cont ->
-        firebaseAuth.signInWithCredential(credential)
-            .addOnSuccessListener {
-                if (cont.isActive) cont.resume(Unit)
-            }
-            .addOnFailureListener { exception ->
-                if (cont.isActive) cont.resumeWithException(exception)
-            }
-    }
-
-    override fun startPhoneNumberVerification(
-        phoneNumber: String,
-        activity: Activity
-    ): Flow<PhoneVerificationState> = callbackFlow {
-        trySend(PhoneVerificationState.Idle)
-
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                resendingToken = token
-                trySend(PhoneVerificationState.CodeSent(verificationId))
-            }
-
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                launch {
-                    try {
-                        signInWithCredentialSuspend(credential)
-                        trySend(PhoneVerificationState.Verified)
-                    } catch (e: Exception) {
-                        trySend(
-                            PhoneVerificationState.Error(
-                                e.message ?: "Verification failed"
-                            )
-                        )
-                    }
-                }
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                trySend(PhoneVerificationState.Error(e.message ?: "Verification failed"))
-            }
+            firebaseUser.toAuthUser()
         }
-
-        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(120L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(callbacks)
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
-
-        awaitClose { }
     }
+
 
     override suspend fun verifyPhoneCode(
         verificationId: String,
         code: String
     ): Result<Unit> {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
 
-        val result = network.safeApiCallSuspend(
-            apiCall = {
-                signInWithCredentialSuspend(credential)
-            },
-            onFailure = { }
-        )
 
-        return if (result != null) {
-            Result.Success(Unit)
-        } else {
-            Result.Error(IllegalStateException("Phone auth failed"))
+        val credential =
+            PhoneAuthProvider.getCredential(
+                verificationId,
+                code
+            )
+
+
+        return apiExecutor.execute {
+
+            signInWithCredentialSuspend(
+                credential
+            )
+
+            Unit
         }
     }
 
-    private suspend fun resendCodeSuspend(
-        phoneNumber: String,
-        activity: Activity
-    ): String = suspendCancellableCoroutine { cont ->
-
-        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setForceResendingToken(resendingToken!!)
-            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    // We DO NOT auto-sign in here — verificationId is what we want
-                }
-
-                override fun onVerificationFailed(e: FirebaseException) {
-                    if (cont.isActive) cont.resumeWithException(e)
-                }
-
-                override fun onCodeSent(
-                    verificationId: String,
-                    token: PhoneAuthProvider.ForceResendingToken
-                ) {
-                    resendingToken = token
-                    if (cont.isActive) cont.resume(verificationId)
-                }
-            })
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
-    }
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
         activity: Activity
     ): Result<String> {
 
-        val verificationId = network.safeApiCallSuspend(
-            apiCall = {
-                resendCodeSuspend(
-                    phoneNumber = phoneNumber,
-                    activity = activity
-                )
-            },
-            onFailure = { exception ->
-                logger.e("AuthRepository: resend failed - ${exception.message}")
-            }
-        )
 
-        return if (verificationId != null) {
-            Result.Success(verificationId)
-        } else {
-            Result.Error(
-                IllegalStateException("Failed to resend verification code")
+        return apiExecutor.execute {
+
+            resendCodeSuspend(
+                phoneNumber,
+                activity
             )
         }
     }
 
-    override fun signOut(
-        onFailure: (Exception) -> Unit) {
-        network.safeApiCall(
-            apiCall = {
-                firebaseAuth.signOut()
-            },
-            onFailure = { exception ->
-                onFailure(exception)
-                log(exception.message)
-            })
-    }
-
-    override fun getCurrentUser(): AuthUser? {
-        return firebaseAuth.currentUser?.toAuthUser()
-    }
 
     override suspend fun sendPasswordResetEmail(
         email: String
     ): Result<Unit> {
-        return network.safeApiCallSuspend(
-            apiCall = {
-                firebaseAuth.sendPasswordResetEmail(email).await()
-                Unit
-            },
-            onFailure = { }
-        )?.let {
-            Result.Success(Unit)
-        } ?: Result.Error(Exception("Failed to send reset email"))
+
+
+        return apiExecutor.execute {
+
+
+            firebaseAuth
+                .sendPasswordResetEmail(email)
+                .await()
+
+
+            Unit
+        }
     }
 
 
-    override suspend fun sendEmailVerification(): Result<Unit> =
-        try {
-            val user = firebaseAuth.currentUser
-                ?: return Result.Error(IllegalStateException("User not logged in"))
-
-            user.sendEmailVerification().await()
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+    override suspend fun sendEmailVerification(): Result<Unit> {
 
 
-    override suspend fun isEmailVerified(): Result<Boolean> =
-        network.safeApiCallSuspend(
-            apiCall = {
+        return apiExecutor.execute {
+
+
+            val user =
                 firebaseAuth.currentUser
-                    ?.reload()
-                    ?.await()
-
-                firebaseAuth.currentUser?.isEmailVerified == true
-            },
-            onFailure = { }
-        )?.let {
-            Result.Success(it)
-        } ?: Result.Error(Exception("Failed to check verification status"))
+                    ?: throw IllegalStateException(
+                        "User not logged in"
+                    )
 
 
+            user.sendEmailVerification()
+                .await()
 
-    override fun isUserAuthenticated(): Flow<Boolean> = callbackFlow {
-        val authListener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser != null)
-        }
 
-        firebaseAuth.addAuthStateListener(authListener)
-
-        // Emit initial value
-        trySend(firebaseAuth.currentUser != null)
-
-        awaitClose {
-            firebaseAuth.removeAuthStateListener(authListener)
+            Unit
         }
     }
 
 
-    override fun getCurrentUserId(): String? {
-        return firebaseAuth.currentUser?.uid
+    override suspend fun isEmailVerified(): Result<Boolean> {
+
+
+        return apiExecutor.execute {
+
+
+            firebaseAuth.currentUser
+                ?.reload()
+                ?.await()
+
+
+            firebaseAuth.currentUser
+                ?.isEmailVerified == true
+        }
     }
 
-    override fun getCurrentUserEmail(): String? {
-        return firebaseAuth.currentUser?.email
-    }
 
-    private fun FirebaseUser.toAuthUser(): AuthUser {
-        return AuthUser(
-            userId = uid,
-            displayName = displayName,
-            email = email,
-            phoneNumber = phoneNumber,
-            photoUrl = photoUrl?.toString(),
-            isEmailVerified = isEmailVerified
-        )
-    }
+    override fun signOut(): Result<Unit> {
 
-    private fun log(message: String?) {
-        logger.e("${Errors.AUTH_REPO}: $message")
+
+        return apiExecutor.execute {
+
+            firebaseAuth.signOut()
+
+            Unit
+        }
     }
 }

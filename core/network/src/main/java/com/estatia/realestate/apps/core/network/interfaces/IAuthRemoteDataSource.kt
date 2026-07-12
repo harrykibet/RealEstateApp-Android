@@ -52,4 +52,5 @@ interface IAuthRemoteDataSource {
     suspend fun sendEmailVerification(): Result<Unit>
     suspend fun isEmailVerified(): Result<Boolean>
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
+    fun signOut(): Result<Unit>
 }

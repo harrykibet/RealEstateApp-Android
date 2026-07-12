@@ -78,7 +78,7 @@ class ForgotPasswordViewModel @Inject constructor(
                         ForgotPasswordUiState.Success(email)
                 }
 
-                is Result.Error -> {
+                is Result.Failure -> {
                     _uiState.value =
                         ForgotPasswordUiState.Error(
                             email = email,

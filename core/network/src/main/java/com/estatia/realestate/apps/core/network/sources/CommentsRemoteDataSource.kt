@@ -64,7 +64,7 @@ class CommentsRemoteDataSource @Inject constructor(
             Result.Success(Unit)
         } catch (e: Exception) {
             log(e.message)
-            Result.Error(e)
+            Result.Result.Failure(e)
         }
     }
 

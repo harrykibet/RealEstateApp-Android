@@ -2,7 +2,7 @@
 package com.estatia.realestate.apps.core.analytics
 
 import android.util.Log
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsRepository
+import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
 
 import javax.inject.Inject
@@ -16,7 +16,7 @@ private const val TAG = "StubAnalyticsHelper"
  */
 @Singleton
 internal class StubAnalyticsHelper @Inject constructor(
-    private val analyticsRepository: IAnalyticsRepository
+    private val analyticsRepository: IAnalyticsTracker
 ) : AnalyticsHelper {
     override suspend fun logEvent(event: FirebaseAnalyticsEvent) {
         analyticsRepository.logEvent(event){

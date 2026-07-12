@@ -60,7 +60,7 @@ class LocalCryptoManager @Inject constructor(
             Result.Success(Unit)
         } catch (e: Exception) {
             logger.e("AES key rotation failed", e)
-            Result.Error(SecurityException("Key rotation failed", e))
+            Result.Result.Failure(SecurityException("Key rotation failed", e))
         }
     }
 
@@ -71,7 +71,7 @@ class LocalCryptoManager @Inject constructor(
             Result.Success(Unit)
         } catch (e: Exception) {
             logger.e("RSA encryption key rotation failed", e)
-            Result.Error(SecurityException("Key rotation failed", e))
+            Result.Result.Failure(SecurityException("Key rotation failed", e))
         }
     }
     // endregion
@@ -86,7 +86,7 @@ class LocalCryptoManager @Inject constructor(
                 Result.Success(cipher.iv + cipher.doFinal(bytes))
             } catch (e: Exception) {
                 logger.e("Symmetric encryption failed", e)
-                Result.Error(SecurityException("Encryption failed", e))
+                Result.Result.Failure(SecurityException("Encryption failed", e))
             }
         }
 
@@ -102,7 +102,7 @@ class LocalCryptoManager @Inject constructor(
                 Result.Success(cipher.doFinal(bytes, 12, bytes.size - 12))
             } catch (e: Exception) {
                 logger.e("Symmetric decryption failed", e)
-                Result.Error(SecurityException("Decryption failed", e))
+                Result.Result.Failure(SecurityException("Decryption failed", e))
             }
         }
     // endregion
@@ -133,7 +133,7 @@ class LocalCryptoManager @Inject constructor(
                 Result.Success(encryptedAesKey + iv + encryptedData)
             } catch (e: Exception) {
                 logger.e("RSA encryption failed", e)
-                Result.Error(SecurityException("RSA encryption failed", e))
+                Result.Result.Failure(SecurityException("RSA encryption failed", e))
             }
         }
 
@@ -161,7 +161,7 @@ class LocalCryptoManager @Inject constructor(
                 Result.Success(cipherAes.doFinal(encryptedData))
             } catch (e: Exception) {
                 logger.e("RSA decryption failed", e)
-                Result.Error(SecurityException("RSA decryption failed", e))
+                Result.Result.Failure(SecurityException("RSA decryption failed", e))
             }
         }
     // endregion
@@ -178,7 +178,7 @@ class LocalCryptoManager @Inject constructor(
                 }
             } catch (e: Exception) {
                 logger.e("Signature generation failed", e)
-                Result.Error(SecurityException("Signing failed", e))
+                Result.Result.Failure(SecurityException("Signing failed", e))
             }
         }
 
@@ -193,7 +193,7 @@ class LocalCryptoManager @Inject constructor(
                 }
             } catch (e: Exception) {
                 logger.e("Signature verification failed", e)
-                Result.Error(SecurityException("Verification failed", e))
+                Result.Result.Failure(SecurityException("Verification failed", e))
             }
         }
     // endregion
@@ -278,7 +278,7 @@ class LocalCryptoManager @Inject constructor(
                 }
         } catch (e: Exception) {
             logger.e("Password hashing failed", e)
-            Result.Error(SecurityException("Hashing failed", e))
+            Result.Result.Failure(SecurityException("Hashing failed", e))
         }
     }
 
@@ -299,7 +299,7 @@ class LocalCryptoManager @Inject constructor(
                     }
             } catch (e: Exception) {
                 logger.e("Hash verification failed", e)
-                Result.Error(SecurityException("Verification failed", e))
+                Result.Result.Failure(SecurityException("Verification failed", e))
             }
         }
     // endregion

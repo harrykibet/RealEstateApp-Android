@@ -4,7 +4,8 @@ import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.network.utils.NetworkException
+import com.estatia.realestate.apps.core.network.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.errors.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class ApiExecutor @Inject constructor(
             when (networkStateProvider.current()) {
 
                 NetworkState.NoInternet -> {
-                    Result.failure(
+                    Result.Failure(
                         NetworkException.NoInternet
                     )
                 }
@@ -62,7 +63,7 @@ class ApiExecutor @Inject constructor(
 
         return try {
 
-            Result.success(
+            Result.Success(
                 retryPolicy.execute(
                     maxRetries = maxRetries,
                     initialDelayMs = 1000,
@@ -77,7 +78,7 @@ class ApiExecutor @Inject constructor(
                 exception
             )
 
-            Result.failure(exception)
+            Result.Failure(exception)
         }
     }
 }

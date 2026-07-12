@@ -84,7 +84,7 @@ class SignUpViewModel @Inject constructor(
                     )
                 }
 
-                is Result.Error -> {
+                is Result.Failure -> {
                     update {
                         copy(
                             isLoading = false,
@@ -122,7 +122,7 @@ class SignUpViewModel @Inject constructor(
                 update { copy(isLoading = false) }
             }
 
-            is Result.Error -> {
+            is Result.Failure -> {
                 update {
                     copy(
                         isLoading = false,

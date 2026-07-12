@@ -115,7 +115,7 @@ class PhoneVerificationViewModel @Inject constructor(
                     _uiState.value = PhoneVerificationUiState.CodeSent(result.data)
                 }
 
-                is Result.Error -> {
+                is Result.Failure -> {
                     _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Failed to resend code"
                     )
@@ -139,7 +139,7 @@ class PhoneVerificationViewModel @Inject constructor(
                     _uiState.value = PhoneVerificationUiState.Success
                 }
 
-                is Result.Error -> {
+                is Result.Failure -> {
                     _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Verification failed"
                     )

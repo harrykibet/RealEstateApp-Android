@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.network.utils
+package com.estatia.realestate.apps.core.network.exceptions
 
 sealed class NetworkException(
     message: String
