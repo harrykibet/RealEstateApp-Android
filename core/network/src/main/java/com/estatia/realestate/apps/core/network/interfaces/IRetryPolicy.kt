@@ -1,9 +1,15 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
+import com.estatia.realestate.apps.core.network.core.RetryConfig
+
 interface IRetryPolicy {
+
+
     suspend fun <T> execute(
-        maxRetries: Int,
-        initialDelayMs: Long,
-        block: suspend () -> T
-    ): T
+
+        config: RetryConfig,
+
+        block:suspend()->T
+
+    ):T
 }

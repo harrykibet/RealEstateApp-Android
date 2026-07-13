@@ -1,84 +1,82 @@
 package com.estatia.realestate.apps.core.network.core
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.network.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.IErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.network.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.errors.Result
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
 
 class ApiExecutor @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val retryPolicy: IRetryPolicy,
+    private val errorMapper: IErrorMapper,
     private val logger: LoggerInterface
 ) : IApiExecutor {
 
 
     override suspend fun <T> execute(
-        maxRetries: Int,
+        config: RetryConfig,
         apiCall: suspend () -> T
     ): Result<T> {
 
-        return withContext(Dispatchers.IO) {
 
-            when (networkStateProvider.current()) {
+        /*
+         * Fast failure.
+         *
+         * Do not enter retry logic when
+         * there is no network available.
+         */
+        if (
+            networkStateProvider.current()
+            == NetworkState.NoInternet
+        ) {
 
-                NetworkState.NoInternet -> {
-                    Result.Failure(
-                        NetworkException.NoInternet
-                    )
-                }
-
-                NetworkState.PoorConnection -> {
-
-                    logger.w(
-                        "Poor connection detected"
-                    )
-
-                    executeWithRetry(
-                        maxRetries,
-                        apiCall
-                    )
-                }
-
-                NetworkState.Connected -> {
-
-                    executeWithRetry(
-                        maxRetries,
-                        apiCall
-                    )
-                }
-            }
+            return Result.Failure(
+                NetworkException.NoInternet
+            )
         }
-    }
 
 
-    private suspend fun <T> executeWithRetry(
-        maxRetries: Int,
-        apiCall: suspend () -> T
-    ): Result<T> {
 
         return try {
 
-            Result.Success(
+
+            val response =
                 retryPolicy.execute(
-                    maxRetries = maxRetries,
-                    initialDelayMs = 1000,
+                    config = config,
                     block = apiCall
                 )
+
+
+            Result.Success(
+                response
             )
 
-        } catch (exception: Exception) {
+
+        } catch(
+            throwable: Throwable
+        ) {
+
+
+            val networkException =
+                errorMapper.map(
+                    throwable
+                )
+
 
             logger.e(
-                "API failed",
-                exception
+                message = "API request failed",
+                throwable = networkException
             )
 
-            Result.Failure(exception)
+
+            Result.Failure(
+                networkException
+            )
         }
     }
 }

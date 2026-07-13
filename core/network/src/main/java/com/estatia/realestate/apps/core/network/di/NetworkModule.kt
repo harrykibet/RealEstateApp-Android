@@ -8,7 +8,9 @@ import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ApiExecutor
+import com.estatia.realestate.apps.core.network.core.DefaultErrorMapper
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
+import com.estatia.realestate.apps.core.network.interfaces.IErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import dagger.Module
@@ -46,12 +48,19 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideErrorMapper(): IErrorMapper {
+        return DefaultErrorMapper()
+    }
+
+    @Provides
+    @Singleton
     fun provideApiExecutor(
         networkStateProvider: INetworkStateProvider,
         retryPolicy: IRetryPolicy,
+        errorMapper: IErrorMapper,
         logger: LoggerInterface
     ): ApiExecutor {
-        return ApiExecutor(networkStateProvider, retryPolicy, logger)
+        return ApiExecutor(networkStateProvider, retryPolicy, errorMapper, logger)
     }
 
 
