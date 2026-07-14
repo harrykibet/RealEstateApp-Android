@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.google.firebase.auth.FirebaseUser
@@ -13,20 +12,20 @@ interface IAuthRemoteDataSource {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    fun getCurrentUser(): FirebaseUser
+    fun getCurrentUser(): FirebaseUser?
     suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser>
+    ): Result<FirebaseUser>
 
     suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser>
+    ): Result<FirebaseUser>
 
     suspend fun signInWithGoogle(
         idToken: String
-    ): Result<AuthUser>
+    ): Result<FirebaseUser>
 
     suspend fun createOrUpdateUserProfile(
         userId: String,

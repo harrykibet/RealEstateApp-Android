@@ -112,7 +112,7 @@ class SignUpViewModel @Inject constructor(
         )
 
         when (
-            val result = authRepository.createUserIfNotExists(
+            val result = authRepository.createOrUpdateUserProfile(
                 userDomainModel.userId!!,
                 userDomainModel
             )

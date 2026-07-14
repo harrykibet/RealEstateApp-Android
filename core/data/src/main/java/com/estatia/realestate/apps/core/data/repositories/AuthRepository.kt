@@ -2,13 +2,15 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.map
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.mappers.auth.AuthUserMapper
+import com.estatia.realestate.apps.core.data.mappers.auth.FirebaseAuthUserMapper
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -16,12 +18,12 @@ class AuthRepository @Inject constructor(
     private val remoteDataSource: IAuthRemoteDataSource
 ) : IAuthRepository {
 
-    override suspend fun createUserIfNotExists(
+    override suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
     ): Result<Unit> {
-        val remoteUser = FirestoreUserProfileMapper.toEntity(user)
-        return remoteDataSource.createOrUpdateUserProfile(userId, remoteUser)
+        val firestoreUser = FirestoreUserProfileMapper.toEntity(user)
+        return remoteDataSource.createOrUpdateUserProfile(userId, firestoreUser)
     }
 
     override suspend fun signUpWithEmail(
@@ -29,6 +31,9 @@ class AuthRepository @Inject constructor(
         password: String
     ): Result<AuthUser> {
         return remoteDataSource.signUpWithEmail(email, password)
+            .map { firebaseUser ->
+            FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+        }
     }
 
     override suspend fun signInWithEmail(
@@ -36,20 +41,31 @@ class AuthRepository @Inject constructor(
         password: String
     ): Result<AuthUser> {
         return remoteDataSource.signInWithEmail(email, password)
+            .map { firebaseUser ->
+            FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+        }
     }
 
     override suspend fun signOut(): Result<Unit> {
         return remoteDataSource.signOut()
     }
 
-    override fun getCurrentUser(): AuthUser {
-        return AuthUserMapper.fromFirebase(remoteDataSource.getCurrentUser())
+    override fun getCurrentUser(): AuthUser? {
+        return remoteDataSource
+            .getCurrentUser()
+            ?.let { firebaseUser ->
+                FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            }
     }
 
     override suspend fun signInWithGoogle(
         idToken: String
     ): Result<AuthUser> {
-        return remoteDataSource.signInWithGoogle(idToken)
+        return remoteDataSource
+            .signInWithGoogle(idToken)
+            .map { firebaseUser ->
+                FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            }
     }
 
     override suspend fun sendPasswordResetEmail(

@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.network.sources
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
-import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
@@ -68,7 +67,7 @@ class AuthRemoteDataSource @Inject constructor(
     override suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser> {
+    ): Result<FirebaseUser> {
 
 
         return apiExecutor.execute(RetryConfigs.AUTH) {
@@ -84,7 +83,7 @@ class AuthRemoteDataSource @Inject constructor(
                     ?: throw NetworkException.SignUpFailed
 
 
-            firebaseUser.toAuthUser()
+            firebaseUser
         }
     }
 
@@ -92,7 +91,7 @@ class AuthRemoteDataSource @Inject constructor(
     override suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser> {
+    ): Result<FirebaseUser> {
 
 
         return apiExecutor.execute(RetryConfigs.AUTH) {
@@ -108,14 +107,14 @@ class AuthRemoteDataSource @Inject constructor(
                     ?: throw NetworkException.SignInFailed
 
 
-            firebaseUser.toAuthUser()
+            firebaseUser
         }
     }
 
 
     override suspend fun signInWithGoogle(
         idToken: String
-    ): Result<AuthUser> {
+    ): Result<FirebaseUser> {
 
 
         return apiExecutor.execute(RetryConfigs.AUTH) {
@@ -139,7 +138,7 @@ class AuthRemoteDataSource @Inject constructor(
                     ?: throw NetworkException.SignInFailed
 
 
-            firebaseUser.toAuthUser()
+            firebaseUser
         }
     }
 
@@ -414,8 +413,8 @@ class AuthRemoteDataSource @Inject constructor(
         }
     }
 
-    override fun getCurrentUser(): FirebaseUser {
-        return firebaseAuth.currentUser ?: throw NetworkException.UserNotAuthenticated
+    override fun getCurrentUser(): FirebaseUser? {
+        return firebaseAuth.currentUser
     }
 
     override fun getCurrentUserId(): String? {

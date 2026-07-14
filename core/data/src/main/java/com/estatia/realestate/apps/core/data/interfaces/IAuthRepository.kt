@@ -12,7 +12,7 @@ interface IAuthRepository {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    fun getCurrentUser(): AuthUser
+    fun getCurrentUser(): AuthUser?
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 
     suspend fun signUpWithEmail(
@@ -29,7 +29,7 @@ interface IAuthRepository {
         idToken: String
     ): Result<AuthUser>
 
-    suspend fun createUserIfNotExists(
+    suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
     ): Result<Unit>
