@@ -11,6 +11,23 @@ object RetryConfigs {
             maxDelayMs = 5000
         )
 
+    val ANALYTICS =
+        RetryConfig(
+            name = "ANALYTICS",
+            maxAttempts = 1,
+            initialDelayMs = 500,
+            maxDelayMs = 5000
+        )
+
+
+    val AUTH =
+        RetryConfig(
+            name = "AUTH",
+            maxAttempts = 1,
+            initialDelayMs = 0,
+            maxDelayMs = 0
+        )
+
 
     val IMAGE_UPLOAD =
         RetryConfig(

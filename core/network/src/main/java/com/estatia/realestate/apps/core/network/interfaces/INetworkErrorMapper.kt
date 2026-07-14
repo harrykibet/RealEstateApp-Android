@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
-import com.estatia.realestate.apps.core.network.exceptions.NetworkException
+import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
 
-interface IErrorMapper {
+interface INetworkErrorMapper {
 
     fun map(
         throwable: Throwable

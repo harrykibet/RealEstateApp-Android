@@ -18,7 +18,7 @@ class AuthRepository @Inject constructor(
         userId: String,
         user: UserDomainModel
     ): Result<Unit> {
-        return remoteDataSource.createUserIfNotExists(userId, user)
+        return remoteDataSource.createOrUpdateUserProfile(userId, user)
     }
 
     override suspend fun signUpWithEmail(

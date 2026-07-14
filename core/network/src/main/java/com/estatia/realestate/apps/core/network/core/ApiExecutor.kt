@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.network.core
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.network.exceptions.NetworkException
+import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
-import com.estatia.realestate.apps.core.network.interfaces.IErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import com.estatia.realestate.apps.core.common.errors.Result
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ApiExecutor @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val retryPolicy: IRetryPolicy,
-    private val errorMapper: IErrorMapper,
+    private val errorMapper: INetworkErrorMapper,
     private val logger: LoggerInterface
 ) : IApiExecutor {
 

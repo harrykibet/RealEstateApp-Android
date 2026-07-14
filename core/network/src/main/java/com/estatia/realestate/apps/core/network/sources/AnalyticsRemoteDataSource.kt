@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
+import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
@@ -32,8 +33,7 @@ class AnalyticsRemoteDataSource @Inject constructor(
         event: AnalyticsEvent
     ): Result<Unit> {
 
-        return apiExecutor.execute {
-
+        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
             analyticsCollection
                 .document(event.eventId)
                 .set(event)
@@ -86,7 +86,7 @@ class AnalyticsRemoteDataSource @Inject constructor(
         userId: String
     ): Result<List<AnalyticsEvent>> {
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
 
             analyticsCollection
                 .whereEqualTo(
@@ -109,7 +109,7 @@ class AnalyticsRemoteDataSource @Inject constructor(
         eventId: String
     ): Result<AnalyticsEvent?> {
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
 
             analyticsCollection
                 .document(eventId)

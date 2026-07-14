@@ -1,14 +1,18 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.network.exceptions.NetworkException
-import com.estatia.realestate.apps.core.network.interfaces.IErrorMapper
+import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
+import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
-class DefaultErrorMapper @Inject constructor()
-    : IErrorMapper {
+class NetworkErrorMapper @Inject constructor()
+    : INetworkErrorMapper {
 
 
     override fun map(
@@ -52,6 +56,21 @@ class DefaultErrorMapper @Inject constructor()
 
             is IOException ->
                 NetworkException.ConnectionFailed
+
+            is FirebaseAuthInvalidCredentialsException ->
+                NetworkException.InvalidCredentials
+
+
+            is FirebaseAuthUserCollisionException ->
+                NetworkException.UserAlreadyExists
+
+
+            is FirebaseAuthInvalidUserException ->
+                NetworkException.UserNotFound
+
+
+            is FirebaseTooManyRequestsException ->
+                NetworkException.TooManyRequests
 
 
             else ->

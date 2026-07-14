@@ -1,15 +1,16 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
+import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +19,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,43 +27,40 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class AuthRemoteDataSource @Inject constructor(
     private val db: FirebaseFirestore,
-    private val logger: LoggerInterface,
     private val firebaseAuth: FirebaseAuth,
+    private val errorMapper: INetworkErrorMapper,
     private val apiExecutor: IApiExecutor
 ) : IAuthRemoteDataSource {
 
 
-    private var resendingToken:
-            PhoneAuthProvider.ForceResendingToken? = null
+    private val resendToken =
+        AtomicReference<PhoneAuthProvider.ForceResendingToken?>()
 
 
-    override suspend fun createUserIfNotExists(
+    override suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
     ): Result<Unit> {
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
             val userRef =
                 db.collection(FirestoreCollections.USERS)
                     .document(userId)
 
-
-            val snapshot =
-                userRef.get().await()
-
-
-            if (!snapshot.exists()) {
-                userRef.set(user).await()
-            }
-
-            Unit
+                userRef.set(
+                    user,
+                    SetOptions.merge()
+                ).await()
         }
     }
 
@@ -72,7 +71,7 @@ class AuthRemoteDataSource @Inject constructor(
     ): Result<AuthUser> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
             val firebaseUser =
                 firebaseAuth
@@ -82,9 +81,7 @@ class AuthRemoteDataSource @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw IllegalStateException(
-                        "Firebase returned null user"
-                    )
+                    ?: throw NetworkException.SignUpFailed
 
 
             firebaseUser.toAuthUser()
@@ -98,7 +95,7 @@ class AuthRemoteDataSource @Inject constructor(
     ): Result<AuthUser> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
             val firebaseUser =
                 firebaseAuth
@@ -108,9 +105,7 @@ class AuthRemoteDataSource @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw IllegalStateException(
-                        "Firebase returned null user"
-                    )
+                    ?: throw NetworkException.SignInFailed
 
 
             firebaseUser.toAuthUser()
@@ -123,7 +118,7 @@ class AuthRemoteDataSource @Inject constructor(
     ): Result<AuthUser> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
 
             val credential =
@@ -141,54 +136,220 @@ class AuthRemoteDataSource @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw IllegalStateException(
-                        "Google login failed"
-                    )
+                    ?: throw NetworkException.SignInFailed
 
 
             firebaseUser.toAuthUser()
         }
     }
 
-
-    override suspend fun verifyPhoneCode(
-        verificationId: String,
-        code: String
-    ): Result<Unit> {
-
-
-        val credential =
-            PhoneAuthProvider.getCredential(
-                verificationId,
-                code
-            )
-
-
-        return apiExecutor.execute {
-
-            signInWithCredentialSuspend(
-                credential
-            )
-
-            Unit
-        }
-    }
-
-
-    override suspend fun resendVerificationCode(
+    override fun startPhoneNumberVerification(
         phoneNumber: String,
         activity: Activity
-    ): Result<String> {
+    ): Flow<PhoneVerificationState> = callbackFlow {
+        trySend(PhoneVerificationState.Idle)
+
+        val verificationActive = AtomicBoolean(true)
+
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
+
+                if (!verificationActive.get())
+                    return
 
 
-        return apiExecutor.execute {
+                resendToken.set(token)
 
-            resendCodeSuspend(
-                phoneNumber,
-                activity
-            )
+                trySend(
+                    PhoneVerificationState.CodeSent(
+                        verificationId
+                    )
+                )
+            }
+
+            override fun onVerificationCompleted(
+                credential: PhoneAuthCredential
+            ) {
+
+                launch {
+
+                    if (!verificationActive.get())
+                        return@launch
+
+
+                    try {
+
+                        signInWithCredentialSuspend(
+                            credential
+                        )
+
+                        if (verificationActive.get()) {
+                            trySend(
+                                PhoneVerificationState.Verified
+                            )
+                        }
+
+
+                    }
+
+                    catch (e: CancellationException) {
+                        throw e
+                    }
+
+                    catch (e: Exception) {
+
+                        if (verificationActive.get()) {
+
+                            trySend(
+                                PhoneVerificationState.Error(
+                                    errorMapper.map(e)
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            override fun onVerificationFailed(
+                e: FirebaseException
+            ) {
+
+                if (!verificationActive.get())
+                    return
+
+
+                trySend(
+                    PhoneVerificationState.Error(
+                        errorMapper.map(e)
+                    )
+                )
+            }
         }
+
+            val options = PhoneAuthOptions.newBuilder(firebaseAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(120L, TimeUnit.SECONDS)
+                .setActivity(activity)
+                .setCallbacks(callbacks)
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(options)
+
+        awaitClose()
+            {
+
+                verificationActive.set(false)
+                resendToken.set(null)
+
+            }
     }
+
+
+        override suspend fun verifyPhoneCode(
+            verificationId: String,
+            code: String
+        ): Result<Unit> {
+
+
+            val credential =
+                PhoneAuthProvider.getCredential(
+                    verificationId,
+                    code
+                )
+
+
+            return apiExecutor.execute(RetryConfigs.AUTH) {
+
+                signInWithCredentialSuspend(
+                    credential
+                )
+            }
+        }
+
+        private suspend fun signInWithCredentialSuspend(
+            credential: PhoneAuthCredential
+        ): Unit = suspendCancellableCoroutine { cont ->
+            firebaseAuth.signInWithCredential(credential)
+                .addOnSuccessListener {
+                    if (cont.isActive) cont.resume(Unit)
+                }
+                .addOnFailureListener { exception ->
+                    if (cont.isActive) cont.resumeWithException(exception)
+                }
+        }
+
+
+        override suspend fun resendVerificationCode(
+            phoneNumber: String,
+            activity: Activity
+        ): Result<String> {
+
+
+            return apiExecutor.execute(RetryConfigs.AUTH) {
+
+                resendCodeSuspend(
+                    phoneNumber,
+                    activity
+                )
+            }
+        }
+
+        private suspend fun resendCodeSuspend(
+            phoneNumber: String,
+            activity: Activity
+        ): String = suspendCancellableCoroutine { cont ->
+
+            val options = PhoneAuthOptions.newBuilder(firebaseAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(activity)
+                .setForceResendingToken(
+                    resendToken.get()
+                        ?: throw NetworkException.InvalidState(
+                            "Missing resend token"
+                        )
+                )
+                .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                        // We DO NOT auto-sign in here — verificationId is what we want
+                    }
+
+                    override fun onVerificationFailed(e: FirebaseException) {
+                        if (cont.isActive) cont.resumeWithException(e)
+                    }
+
+                    override fun onCodeSent(
+                        verificationId: String,
+                        token: PhoneAuthProvider.ForceResendingToken
+                    ) {
+                        resendToken.set(token)
+                        if (cont.isActive) cont.resume(verificationId)
+                    }
+                })
+                .build()
+
+            try {
+
+                PhoneAuthProvider.verifyPhoneNumber(options)
+
+            }
+
+            catch (e: CancellationException) {
+                throw e
+            }
+
+            catch(e:Exception){
+
+                if(cont.isActive){
+                    cont.resumeWithException(e)
+                }
+            }
+        }
 
 
     override suspend fun sendPasswordResetEmail(
@@ -196,15 +357,12 @@ class AuthRemoteDataSource @Inject constructor(
     ): Result<Unit> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
 
             firebaseAuth
                 .sendPasswordResetEmail(email)
                 .await()
-
-
-            Unit
         }
     }
 
@@ -212,21 +370,15 @@ class AuthRemoteDataSource @Inject constructor(
     override suspend fun sendEmailVerification(): Result<Unit> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
 
 
             val user =
                 firebaseAuth.currentUser
-                    ?: throw IllegalStateException(
-                        "User not logged in"
-                    )
-
+                    ?: throw NetworkException.UserNotAuthenticated
 
             user.sendEmailVerification()
                 .await()
-
-
-            Unit
         }
     }
 
@@ -234,28 +386,62 @@ class AuthRemoteDataSource @Inject constructor(
     override suspend fun isEmailVerified(): Result<Boolean> {
 
 
-        return apiExecutor.execute {
+        return apiExecutor.execute(RetryConfigs.AUTH) {
+
+            val user =
+                firebaseAuth.currentUser
+                    ?: throw NetworkException.UserNotAuthenticated
 
 
-            firebaseAuth.currentUser
-                ?.reload()
-                ?.await()
+            user.reload().await()
 
-
-            firebaseAuth.currentUser
-                ?.isEmailVerified == true
+            user.isEmailVerified
         }
     }
 
-
-    override fun signOut(): Result<Unit> {
-
-
-        return apiExecutor.execute {
-
-            firebaseAuth.signOut()
-
-            Unit
+    override fun isUserAuthenticated(): Flow<Boolean> = callbackFlow {
+        val authListener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser != null)
         }
+
+        firebaseAuth.addAuthStateListener(authListener)
+
+        // Emit initial value
+        trySend(firebaseAuth.currentUser != null)
+
+        awaitClose {
+            firebaseAuth.removeAuthStateListener(authListener)
+        }
+    }
+
+    override fun getCurrentUser(): AuthUser? {
+        return firebaseAuth.currentUser?.toAuthUser()
+    }
+
+    override fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
+
+    override fun getCurrentUserEmail(): String? {
+        return firebaseAuth.currentUser?.email
+    }
+
+    private fun FirebaseUser.toAuthUser(): AuthUser {
+        return AuthUser(
+            userId = uid,
+            displayName = displayName,
+            email = email,
+            phoneNumber = phoneNumber,
+            photoUrl = photoUrl?.toString(),
+            isEmailVerified = isEmailVerified
+        )
+    }
+
+
+    override suspend fun signOut(): Result<Unit> {
+
+        firebaseAuth.signOut()
+
+        return Result.Success(Unit)
     }
 }

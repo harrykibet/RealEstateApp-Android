@@ -11,7 +11,6 @@ interface IAuthRemoteDataSource {
     fun isUserAuthenticated(): Flow<Boolean>
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
-    fun signOut(onFailure: (Exception) -> Unit)
 
     fun getCurrentUser(): AuthUser?
     suspend fun signUpWithEmail(
@@ -28,7 +27,7 @@ interface IAuthRemoteDataSource {
         idToken: String
     ): Result<AuthUser>
 
-    suspend fun createUserIfNotExists(
+    suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
     ): Result<Unit>
@@ -52,5 +51,5 @@ interface IAuthRemoteDataSource {
     suspend fun sendEmailVerification(): Result<Unit>
     suspend fun isEmailVerified(): Result<Boolean>
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
-    fun signOut(): Result<Unit>
+    suspend fun signOut(): Result<Unit>
 }
