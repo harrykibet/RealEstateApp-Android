@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.data.mappers
+package com.estatia.realestate.apps.core.data.mappers.firestore
 
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-object RemotePropertyMapper {
+object FirestorePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(
@@ -105,7 +105,7 @@ object RemotePropertyMapper {
     }
 
     fun PropertyEntityModel?.toDomainOrNull(): PropertyDomainModel? =
-        this?.let(RemotePropertyMapper::toDomain)
+        this?.let(FirestorePropertyMapper::toDomain)
 
     fun List<PropertyEntityModel?>.toDomainModels(): List<PropertyDomainModel> =
         mapNotNull { it.toDomainOrNull() }

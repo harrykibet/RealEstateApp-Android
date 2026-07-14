@@ -1,10 +1,10 @@
-package com.estatia.realestate.apps.core.data.mappers
+package com.estatia.realestate.apps.core.data.mappers.firestore
 
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 
-object RemoteUserMapper {
+object FirestoreUserProfileMapper {
 
     // Map to Domain Model
     fun toDomain(user: UserEntityModel) : UserDomainModel {

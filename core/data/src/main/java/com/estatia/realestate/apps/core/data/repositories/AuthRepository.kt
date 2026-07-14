@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.core.data.repositories
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.data.mappers.auth.AuthUserMapper
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
@@ -18,7 +20,8 @@ class AuthRepository @Inject constructor(
         userId: String,
         user: UserDomainModel
     ): Result<Unit> {
-        return remoteDataSource.createOrUpdateUserProfile(userId, user)
+        val remoteUser = FirestoreUserProfileMapper.toEntity(user)
+        return remoteDataSource.createOrUpdateUserProfile(userId, remoteUser)
     }
 
     override suspend fun signUpWithEmail(
@@ -35,13 +38,12 @@ class AuthRepository @Inject constructor(
         return remoteDataSource.signInWithEmail(email, password)
     }
 
-    override fun signOut(
-        onFailure: (Exception) -> Unit) {
-        return remoteDataSource.signOut(onFailure)
+    override suspend fun signOut(): Result<Unit> {
+        return remoteDataSource.signOut()
     }
 
-    override fun getCurrentUser(): AuthUser? {
-        return remoteDataSource.getCurrentUser()
+    override fun getCurrentUser(): AuthUser {
+        return AuthUserMapper.fromFirebase(remoteDataSource.getCurrentUser())
     }
 
     override suspend fun signInWithGoogle(

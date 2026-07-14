@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
-import com.estatia.realestate.apps.core.data.mappers.RemoteUserMapper
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
@@ -17,7 +17,7 @@ class UserRepository @Inject constructor(
     private val analyticsRepository: AnalyticsTracker
 ) : IUserRepository {
     override suspend fun getUserById(userId: String): UserDomainModel {
-        return RemoteUserMapper.toDomain(remoteDataSource.getUserById(userId))
+        return FirestoreUserProfileMapper.toDomain(remoteDataSource.getUserById(userId))
     }
 
     override val userData: Flow<UserData> = estatiaPreferencesDataSource.userData

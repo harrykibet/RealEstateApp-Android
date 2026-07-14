@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.data.mappers
+package com.estatia.realestate.apps.core.data.mappers.room
 
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.model.property.ContactInfo
@@ -7,9 +7,8 @@ import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.google.gson.Gson
-import kotlin.collections.toList
 
-object LocalDbPropertyMapper {
+object RoomPropertyMapper {
 
     private val gson = Gson()
 
@@ -121,5 +120,5 @@ object LocalDbPropertyMapper {
     }
 
     fun List<PropertyDomainModel>.toCacheEntities() =
-        map(LocalDbPropertyMapper::toEntity)
+        map(RoomPropertyMapper::toEntity)
 }

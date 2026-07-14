@@ -4,7 +4,8 @@ import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
-import com.estatia.realestate.apps.core.model.user.UserDomainModel
+import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthRemoteDataSource {
@@ -12,7 +13,7 @@ interface IAuthRemoteDataSource {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    fun getCurrentUser(): AuthUser?
+    fun getCurrentUser(): FirebaseUser
     suspend fun signUpWithEmail(
         email: String,
         password: String
@@ -29,7 +30,7 @@ interface IAuthRemoteDataSource {
 
     suspend fun createOrUpdateUserProfile(
         userId: String,
-        user: UserDomainModel
+        user: UserEntityModel
     ): Result<Unit>
 
 

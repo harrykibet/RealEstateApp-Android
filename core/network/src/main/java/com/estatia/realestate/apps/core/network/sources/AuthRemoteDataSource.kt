@@ -5,8 +5,8 @@ import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
 import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
-import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
+import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
@@ -48,7 +48,7 @@ class AuthRemoteDataSource @Inject constructor(
 
     override suspend fun createOrUpdateUserProfile(
         userId: String,
-        user: UserDomainModel
+        user: UserEntityModel
     ): Result<Unit> {
 
         return apiExecutor.execute(RetryConfigs.AUTH) {
@@ -414,8 +414,8 @@ class AuthRemoteDataSource @Inject constructor(
         }
     }
 
-    override fun getCurrentUser(): AuthUser? {
-        return firebaseAuth.currentUser?.toAuthUser()
+    override fun getCurrentUser(): FirebaseUser {
+        return firebaseAuth.currentUser ?: throw NetworkException.UserNotAuthenticated
     }
 
     override fun getCurrentUserId(): String? {
@@ -425,18 +425,6 @@ class AuthRemoteDataSource @Inject constructor(
     override fun getCurrentUserEmail(): String? {
         return firebaseAuth.currentUser?.email
     }
-
-    private fun FirebaseUser.toAuthUser(): AuthUser {
-        return AuthUser(
-            userId = uid,
-            displayName = displayName,
-            email = email,
-            phoneNumber = phoneNumber,
-            photoUrl = photoUrl?.toString(),
-            isEmailVerified = isEmailVerified
-        )
-    }
-
 
     override suspend fun signOut(): Result<Unit> {
 

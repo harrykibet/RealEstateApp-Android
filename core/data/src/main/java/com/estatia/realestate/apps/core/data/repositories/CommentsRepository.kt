@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.Comment
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.data.mappers.RemoteCommentMapper
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreCommentMapper
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,7 +20,7 @@ class CommentsRepository @Inject constructor(
         propertyId: String
     ): Flow<List<Comment>> {
         return remoteDataSource.observeComments(propertyId).map { comments ->
-            comments.map { RemoteCommentMapper.toDomain(it) }
+            comments.map { FirestoreCommentMapper.toDomain(it) }
         }
     }
 

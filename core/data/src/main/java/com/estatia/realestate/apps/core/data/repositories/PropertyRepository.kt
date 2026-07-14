@@ -2,11 +2,11 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper
-import com.estatia.realestate.apps.core.data.mappers.LocalDbPropertyMapper.toCacheEntities
-import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper
-import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainModels
-import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainOrNull
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper.toDomainModels
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper.toDomainOrNull
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
@@ -63,7 +63,7 @@ class PropertyRepository @Inject constructor(
         videoUris: List<Uri>,
         onFailure: (Exception) -> Unit
     ): Boolean? {
-        val entity = RemotePropertyMapper.toEntity(property)
+        val entity = FirestorePropertyMapper.toEntity(property)
 
         return remoteDataSource.uploadProperty(
             entity,
@@ -143,7 +143,7 @@ class PropertyRepository @Inject constructor(
         val cachedEntities = localDataSource.getCachedProperties()
 
         if (cachedEntities.isNotEmpty() && !forceRefresh) {
-            return cachedEntities.map(LocalDbPropertyMapper::toDomain)
+            return cachedEntities.map(RoomPropertyMapper::toDomain)
         }
 
         return try {
@@ -164,7 +164,7 @@ class PropertyRepository @Inject constructor(
 
         } catch (e: Exception) {
             onFailure(e)
-            cachedEntities.map(LocalDbPropertyMapper::toDomain)
+            cachedEntities.map(RoomPropertyMapper::toDomain)
         }
     }
 

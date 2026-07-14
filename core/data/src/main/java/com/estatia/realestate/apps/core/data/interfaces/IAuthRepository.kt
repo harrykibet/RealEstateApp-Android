@@ -11,9 +11,8 @@ interface IAuthRepository {
     fun isUserAuthenticated(): Flow<Boolean>
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
-    fun signOut(onFailure: (Exception) -> Unit)
 
-    fun getCurrentUser(): AuthUser?
+    fun getCurrentUser(): AuthUser
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 
     suspend fun signUpWithEmail(
@@ -52,5 +51,5 @@ interface IAuthRepository {
 
     suspend fun sendEmailVerification(): Result<Unit>
     suspend fun isEmailVerified(): Result<Boolean>
-
+    suspend fun signOut(): Result<Unit>
 }

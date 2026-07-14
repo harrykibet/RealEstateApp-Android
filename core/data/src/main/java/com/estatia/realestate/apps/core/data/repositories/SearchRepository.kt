@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.data.mappers.RemotePropertyMapper.toDomainModels
+import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper.toDomainModels
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource

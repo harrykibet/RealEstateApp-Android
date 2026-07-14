@@ -1,9 +1,9 @@
-package com.estatia.realestate.apps.core.data.mappers
+package com.estatia.realestate.apps.core.data.mappers.firestore
 
 import com.estatia.realestate.apps.core.model.feature.Comment
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 
-object RemoteCommentMapper {
+object FirestoreCommentMapper {
 
     // Map to Domain Model
     fun toDomain(comment: CommentEntityModel): Comment {
