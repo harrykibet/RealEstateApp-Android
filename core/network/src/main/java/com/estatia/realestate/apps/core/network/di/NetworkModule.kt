@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ApiExecutor
-import com.estatia.realestate.apps.core.network.core.NetworkErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper

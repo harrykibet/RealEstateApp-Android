@@ -59,6 +59,23 @@ sealed class AuthException(
             "User is not authenticated"
         )
 
+    data object TooManyRequests :
+        AuthException(
+            "Too many requests"
+        )
+
+    data class Unknown(
+        val original: Throwable
+    ) : AuthException(
+        "Unknown auth error",
+        original
+    )
+
+    data object ActionCodeInvalid :
+        AuthException(
+            "Action code is invalid"
+        )
+
     data class TokenError(val msg: String) :
         AuthException(
             "Token error: $msg"

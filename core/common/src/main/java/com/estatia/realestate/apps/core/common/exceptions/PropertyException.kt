@@ -11,6 +11,22 @@ sealed class PropertyException(
             "Property not found"
         )
 
+    data object PermissionDenied :
+        PropertyException(
+            "Permission denied"
+        )
+
+    data object AlreadyExists :
+        PropertyException(
+            "Property already exists"
+        )
+
+    data class Unknown(val throwable: Throwable) :
+        PropertyException(
+            "Unknown property error",
+            throwable
+        )
+
 
     data object InvalidProperty :
         PropertyException(
