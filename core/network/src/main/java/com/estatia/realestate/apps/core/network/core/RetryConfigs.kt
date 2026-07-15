@@ -19,6 +19,14 @@ object RetryConfigs {
             maxDelayMs = 5000
         )
 
+    val COMMENTS =
+        RetryConfig(
+            name = "COMMENTS",
+            maxAttempts = 3,
+            initialDelayMs = 500,
+            maxDelayMs = 5000
+        )
+
 
     val AUTH =
         RetryConfig(

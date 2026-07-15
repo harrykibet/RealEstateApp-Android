@@ -26,7 +26,7 @@ import java.util.Date
 import javax.inject.Inject
 
 
-class PropertyRemoteDataSource @Inject constructor(
+class FirestoreProperties @Inject constructor(
     private val db: FirebaseFirestore,
     private val logger: LoggerInterface,
     private val storageRef: FirebaseStorage,

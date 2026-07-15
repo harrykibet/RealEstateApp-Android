@@ -16,7 +16,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class AnalyticsRemoteDataSource @Inject constructor(
+class FirebaseAnalytics @Inject constructor(
     db: FirebaseFirestore,
     private val apiExecutor: IApiExecutor,
     private val deviceUtils: IDeviceUtils,

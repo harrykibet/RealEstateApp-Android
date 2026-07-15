@@ -10,7 +10,6 @@ import com.estatia.realestate.apps.core.model.auth.AuthUser
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

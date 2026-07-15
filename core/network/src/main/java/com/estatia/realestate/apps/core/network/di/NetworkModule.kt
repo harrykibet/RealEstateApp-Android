@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ApiExecutor
 import com.estatia.realestate.apps.core.network.core.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
+import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
@@ -59,7 +60,7 @@ object NetworkModule {
         retryPolicy: IRetryPolicy,
         errorMapper: INetworkErrorMapper,
         logger: LoggerInterface
-    ): ApiExecutor {
+    ): IApiExecutor {
         return ApiExecutor(networkStateProvider, retryPolicy, errorMapper, logger)
     }
 

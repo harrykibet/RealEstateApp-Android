@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ICommentsRemoteDataSource {
     fun observeComments(
         propertyId: String
-    ): Flow<List<CommentEntityModel>>
+    ): Flow<Result<List<CommentEntityModel>>>
 
     suspend fun submitComment(
         comment: CommentEntityModel

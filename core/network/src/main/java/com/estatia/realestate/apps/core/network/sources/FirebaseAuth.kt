@@ -33,7 +33,7 @@ import kotlinx.coroutines.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class AuthRemoteDataSource @Inject constructor(
+class FirebaseAuth @Inject constructor(
     private val db: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val errorMapper: INetworkErrorMapper,

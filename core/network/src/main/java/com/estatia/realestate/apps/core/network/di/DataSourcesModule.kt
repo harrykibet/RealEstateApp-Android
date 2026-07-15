@@ -8,14 +8,14 @@ import com.estatia.realestate.apps.core.network.interfaces.IGoogleCloudSecretsMa
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.AnalyticsRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.AuthRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.CommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.FirebaseAnalytics
+import com.estatia.realestate.apps.core.network.sources.FirebaseAuth
+import com.estatia.realestate.apps.core.network.sources.FirestoreComments
 import com.estatia.realestate.apps.core.network.sources.GoogleCloudKmsManager
 import com.estatia.realestate.apps.core.network.sources.GoogleCloudSecretsManager
-import com.estatia.realestate.apps.core.network.sources.PropertyRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.SearchRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.UserRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.FirestoreProperties
+import com.estatia.realestate.apps.core.network.sources.FirestoreSearch
+import com.estatia.realestate.apps.core.network.sources.FirestoreUsers
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,37 +26,37 @@ import javax.inject.Singleton
 // Network EndPoints
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RemoteDataSourceModule {
+abstract class DataSourcesModule {
 
     @Binds
     @Singleton
     abstract fun bindSearchRemoteSource(
-        dataSource: SearchRemoteDataSource): ISearchRemoteDataSource
+        dataSource: FirestoreSearch): ISearchRemoteDataSource
 
     @Binds
     @Singleton
     abstract fun bindPropertyRemoteSource(
-        dataSource: PropertyRemoteDataSource): IPropertyRemoteDatasource
+        dataSource: FirestoreProperties): IPropertyRemoteDatasource
 
     @Binds
     @Singleton
     abstract fun bindAuthRemoteSource(
-        dataSource: AuthRemoteDataSource): IAuthRemoteDataSource
+        dataSource: FirebaseAuth): IAuthRemoteDataSource
 
     @Binds
     @Singleton
     abstract fun bindCommentsRemoteSource(
-        dataSource: CommentsRemoteDataSource): ICommentsRemoteDataSource
+        dataSource: FirestoreComments): ICommentsRemoteDataSource
 
     @Binds
     @Singleton
     abstract fun bindAnalyticsRemoteSource(
-        dataSource: AnalyticsRemoteDataSource): IAnalyticsRemoteDataSource
+        dataSource: FirebaseAnalytics): IAnalyticsRemoteDataSource
 
     @Binds
     @Singleton
     abstract fun bindUserRemoteDataSource(
-        dataSource: UserRemoteDataSource): IUserRemoteDataSource
+        dataSource: FirestoreUsers): IUserRemoteDataSource
 
     @Binds
     @Singleton

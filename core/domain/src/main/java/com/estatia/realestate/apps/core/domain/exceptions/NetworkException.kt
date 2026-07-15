@@ -89,6 +89,22 @@ sealed class NetworkException(
             "User already exists"
         )
 
+    data object ActionCodeInvalid:
+        NetworkException(
+            "Action code invalid"
+        )
+
+    data object InvalidEmail:
+        NetworkException(
+            "Invalid email"
+        )
+
+    data object MultiFactorRequired:
+        NetworkException(
+            "Multi-factor authentication required"
+        )
+
+
 
     data object UserNotFound:
         NetworkException(
