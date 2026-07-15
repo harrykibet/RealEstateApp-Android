@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.core.model.feature.Comment
+import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
@@ -91,7 +91,7 @@ fun CommentsScreen(
 }
 
 @Composable
-fun CommentItem(comment: Comment) {
+fun CommentItem(comment: CommentDomainModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

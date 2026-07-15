@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.network.sources
 
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.common.errors.Result
@@ -16,10 +15,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirestoreComments @Inject constructor(
+class FirestoreCommentsCollection @Inject constructor(
     private val db: FirebaseFirestore,
-    private val apiExecutor: IApiExecutor,
-    private val logger: LoggerInterface
+    private val apiExecutor: IApiExecutor
 ) : ICommentsRemoteDataSource {
 
 
@@ -32,8 +30,6 @@ class FirestoreComments @Inject constructor(
                 .document()
                 .set(comment)
                 .await()
-
-            Unit
         }
 
 

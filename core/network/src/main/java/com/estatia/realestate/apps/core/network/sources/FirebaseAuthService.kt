@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.sources
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
@@ -33,7 +33,7 @@ import kotlinx.coroutines.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FirebaseAuth @Inject constructor(
+class FirebaseAuthService @Inject constructor(
     private val db: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val errorMapper: INetworkErrorMapper,
@@ -80,7 +80,7 @@ class FirebaseAuth @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw NetworkException.SignUpFailed
+                    ?: throw AuthException.SignUpFailed
 
 
             firebaseUser
@@ -104,7 +104,7 @@ class FirebaseAuth @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw NetworkException.SignInFailed
+                    ?: throw AuthException.SignInFailed
 
 
             firebaseUser
@@ -135,7 +135,7 @@ class FirebaseAuth @Inject constructor(
                     )
                     .await()
                     .user
-                    ?: throw NetworkException.SignInFailed
+                    ?: throw AuthException.SignInFailed
 
 
             firebaseUser
@@ -308,7 +308,7 @@ class FirebaseAuth @Inject constructor(
                 .setActivity(activity)
                 .setForceResendingToken(
                     resendToken.get()
-                        ?: throw NetworkException.InvalidState(
+                        ?: throw AuthException.TokenError(
                             "Missing resend token"
                         )
                 )
@@ -374,7 +374,7 @@ class FirebaseAuth @Inject constructor(
 
             val user =
                 firebaseAuth.currentUser
-                    ?: throw NetworkException.UserNotAuthenticated
+                    ?: throw AuthException.UserNotAuthenticated
 
             user.sendEmailVerification()
                 .await()
@@ -389,7 +389,7 @@ class FirebaseAuth @Inject constructor(
 
             val user =
                 firebaseAuth.currentUser
-                    ?: throw NetworkException.UserNotAuthenticated
+                    ?: throw AuthException.UserNotAuthenticated
 
 
             user.reload().await()

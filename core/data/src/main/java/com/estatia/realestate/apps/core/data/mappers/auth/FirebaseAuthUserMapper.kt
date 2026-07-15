@@ -1,15 +1,15 @@
 package com.estatia.realestate.apps.core.data.mappers.auth
 
-import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.google.firebase.auth.FirebaseUser
 
 object FirebaseAuthUserMapper {
 
     fun fromFirebase(
         user: FirebaseUser
-    ): AuthUser {
+    ): AuthUserDomainModel {
 
-        return AuthUser(
+        return AuthUserDomainModel(
             userId = user.uid,
             displayName = user.displayName,
             email = user.email,

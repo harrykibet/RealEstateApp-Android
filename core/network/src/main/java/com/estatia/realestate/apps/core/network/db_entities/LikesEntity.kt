@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.db_entities
 
-import com.estatia.realestate.apps.core.model.feature.Likes
+import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
@@ -10,14 +10,14 @@ data class LikesEntity(
 ) {
     // Map to Domain Model
     @Suppress("unused")
-    fun toDomainModel() = Likes(
+    fun toDomainModel() = LikesDomainModel(
         userId = userId,
         likedAt = likedAt
     )
 
     companion object {
         // Map from Domain Model
-        fun fromDomainModel(likes: Likes) = LikesEntity(
+        fun fromDomainModel(likes: LikesDomainModel) = LikesEntity(
             userId = likes.userId,
             likedAt = likes.likedAt
         )

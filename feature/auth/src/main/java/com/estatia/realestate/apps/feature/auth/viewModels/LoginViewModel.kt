@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import com.estatia.realestate.apps.feature.auth.state.AuthState.Authenticated
 import com.estatia.realestate.apps.feature.auth.state.AuthState.EmailVerificationRequired
@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
-    private fun determineAuthState(user: AuthUser?): AuthState {
+    private fun determineAuthState(user: AuthUserDomainModel?): AuthState {
         if (user == null) return AuthState.Unauthenticated
 
         if (!user.isEmailVerified) {

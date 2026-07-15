@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.interfaces
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -12,22 +12,22 @@ interface IAuthRepository {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    fun getCurrentUser(): AuthUser?
+    fun getCurrentUser(): AuthUserDomainModel?
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 
     suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser>
+    ): Result<AuthUserDomainModel>
 
     suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Result<AuthUser>
+    ): Result<AuthUserDomainModel>
 
     suspend fun signInWithGoogle(
         idToken: String
-    ): Result<AuthUser>
+    ): Result<AuthUserDomainModel>
 
     suspend fun createOrUpdateUserProfile(
         userId: String,

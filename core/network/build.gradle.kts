@@ -37,6 +37,5 @@ dependencies {
 
     implementation(projects.core.common)
     implementation(projects.core.config)
-    implementation(projects.core.domain)
     implementation(projects.core.model)
 }

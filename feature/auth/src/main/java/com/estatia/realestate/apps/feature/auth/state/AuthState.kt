@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.state
 
-import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 
 sealed interface AuthState {
 
@@ -25,7 +25,7 @@ sealed interface AuthState {
 
     /** Fully authenticated and verified */
     data class Authenticated(
-        val user: AuthUser
+        val user: AuthUserDomainModel
     ) : AuthState
 
     /** Any unrecoverable auth error */

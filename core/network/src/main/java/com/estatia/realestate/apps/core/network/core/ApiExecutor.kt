@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.core
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
-import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider

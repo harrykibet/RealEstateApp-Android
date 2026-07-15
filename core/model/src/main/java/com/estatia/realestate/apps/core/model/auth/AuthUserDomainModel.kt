@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.auth
 
-data class AuthUser(
+data class AuthUserDomainModel(
     val userId: String,
     val displayName: String?,
     val email: String?,

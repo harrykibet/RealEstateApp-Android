@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.model.auth.AuthUser
+import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.errors.Result
@@ -97,7 +97,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     private suspend fun handleUserRegistration(
-        authResult: AuthUser,
+        authResult: AuthUserDomainModel,
         current: SignUpFormState
     ) {
         val userDomainModel = UserDomainModel(

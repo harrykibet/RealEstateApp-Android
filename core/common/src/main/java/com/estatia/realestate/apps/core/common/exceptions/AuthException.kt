@@ -1,0 +1,66 @@
+package com.estatia.realestate.apps.core.common.exceptions
+
+sealed class AuthException(
+    message: String,
+    cause: Throwable? = null
+) : AppException(message, cause) {
+
+
+    data object InvalidCredentials :
+        AuthException(
+            "Invalid credentials"
+        )
+
+
+    data object UserAlreadyExists :
+        AuthException(
+            "User already exists"
+        )
+
+
+    data object UserNotFound :
+        AuthException(
+            "User not found"
+        )
+
+
+    data object InvalidEmail :
+        AuthException(
+            "Invalid email"
+        )
+
+
+    data object MultiFactorRequired :
+        AuthException(
+            "Multi-factor authentication required"
+        )
+
+
+    data object SignUpFailed :
+        AuthException(
+            "Sign up failed"
+        )
+
+
+    data object SignInFailed :
+        AuthException(
+            "Sign in failed"
+        )
+
+
+    data object EmailVerificationRequired :
+        AuthException(
+            "Email verification required"
+        )
+
+
+    data object UserNotAuthenticated :
+        AuthException(
+            "User is not authenticated"
+        )
+
+    data class TokenError(val msg: String) :
+        AuthException(
+            "Token error: $msg"
+        )
+}

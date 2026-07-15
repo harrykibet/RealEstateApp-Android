@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
@@ -16,7 +17,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class FirebaseAnalytics @Inject constructor(
+class FirestoreAnalyticsCollection @Inject constructor(
     db: FirebaseFirestore,
     private val apiExecutor: IApiExecutor,
     private val deviceUtils: IDeviceUtils,
@@ -52,9 +53,7 @@ class FirebaseAnalytics @Inject constructor(
         val userId =
             authApi.getCurrentUserId()
                 ?: return Result.Failure(
-                    IllegalStateException(
-                        "No authenticated user"
-                    )
+                    AuthException.UserNotAuthenticated
                 )
 
 

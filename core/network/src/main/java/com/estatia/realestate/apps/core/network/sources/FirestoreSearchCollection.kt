@@ -18,7 +18,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class FirestoreSearch @Inject constructor(
+class FirestoreSearchCollection @Inject constructor(
     private val db: FirebaseFirestore, // Injected via DI
     private val logger: LoggerInterface, // Injected via DI
     private val network: INetworkHandler // Injected via DI

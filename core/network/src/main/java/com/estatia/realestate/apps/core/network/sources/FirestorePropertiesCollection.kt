@@ -4,7 +4,7 @@ import android.net.Uri
 import com.estatia.realestate.apps.core.common.errors.Errors
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.common.media.MediaFormat
-import com.estatia.realestate.apps.core.model.feature.Likes
+import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
@@ -26,7 +26,7 @@ import java.util.Date
 import javax.inject.Inject
 
 
-class FirestoreProperties @Inject constructor(
+class FirestorePropertiesCollection @Inject constructor(
     private val db: FirebaseFirestore,
     private val logger: LoggerInterface,
     private val storageRef: FirebaseStorage,
@@ -271,7 +271,7 @@ class FirestoreProperties @Inject constructor(
                 .collection(LIKED_PROPERTIES)
                 .document(propertyId)
 
-            val likeData = Likes(userId, Date())
+            val likeData = LikesDomainModel(userId, Date())
 
             db.runBatch { batch ->
                 batch.set(likesRef, LikesEntity.fromDomainModel(likeData))

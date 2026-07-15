@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.domain.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import kotlinx.coroutines.delay
 import javax.inject.Inject

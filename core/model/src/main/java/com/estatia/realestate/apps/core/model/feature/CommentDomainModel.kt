@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.feature
 
-data class Comment(
+data class CommentDomainModel(
     val id: String?,
     val propertyId: String,
     val authorId: String,
