@@ -2,20 +2,20 @@ package com.estatia.realestate.apps.core.network.core
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
-import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
-import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import javax.inject.Inject
 
 
-class ApiExecutor @Inject constructor(
+class FirebaseNetworkClient @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val retryPolicy: IRetryPolicy,
-    private val errorMapper: INetworkErrorMapper,
+    private val exceptionMapper: IExceptionMapper,
     private val logger: LoggerInterface
-) : IApiExecutor {
+) : INetworkClient {
 
 
     override suspend fun <T> execute(
@@ -24,13 +24,7 @@ class ApiExecutor @Inject constructor(
     ): Result<T> {
 
 
-        /*
-         * Fast failure.
-         *
-         * Do not enter retry logic when
-         * there is no network available.
-         */
-        if (
+        if(
             networkStateProvider.current()
             == NetworkState.NoInternet
         ) {
@@ -41,19 +35,14 @@ class ApiExecutor @Inject constructor(
         }
 
 
-
         return try {
 
 
-            val response =
-                retryPolicy.execute(
-                    config = config,
-                    block = apiCall
-                )
-
-
             Result.Success(
-                response
+                retryPolicy.execute(
+                    config,
+                    apiCall
+                )
             )
 
 
@@ -62,20 +51,20 @@ class ApiExecutor @Inject constructor(
         ) {
 
 
-            val networkException =
-                errorMapper.map(
+            val exception =
+                exceptionMapper.map(
                     throwable
                 )
 
 
             logger.e(
-                message = "API request failed",
-                throwable = networkException
+                message = "Remote operation failed",
+                throwable = exception
             )
 
 
             Result.Failure(
-                networkException
+                exception
             )
         }
     }

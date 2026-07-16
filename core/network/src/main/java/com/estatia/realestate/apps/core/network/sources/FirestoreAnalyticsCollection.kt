@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class FirestoreAnalyticsCollection @Inject constructor(
     db: FirebaseFirestore,
-    private val apiExecutor: IApiExecutor,
+    private val networkClient: INetworkClient,
     private val deviceUtils: IDeviceUtils,
     private val authApi: IAuthRemoteDataSource,
     private val locationUtils: ILocationUtils
@@ -34,7 +34,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
         event: AnalyticsEvent
     ): Result<Unit> {
 
-        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute(RetryConfigs.ANALYTICS) {
             analyticsCollection
                 .document(event.eventId)
                 .set(event)
@@ -85,7 +85,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
         userId: String
     ): Result<List<AnalyticsEvent>> {
 
-        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute(RetryConfigs.ANALYTICS) {
 
             analyticsCollection
                 .whereEqualTo(
@@ -108,7 +108,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
         eventId: String
     ): Result<AnalyticsEvent?> {
 
-        return apiExecutor.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute(RetryConfigs.ANALYTICS) {
 
             analyticsCollection
                 .document(eventId)

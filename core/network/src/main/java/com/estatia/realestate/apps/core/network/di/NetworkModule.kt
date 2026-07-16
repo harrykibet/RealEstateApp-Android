@@ -7,13 +7,14 @@ import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
-import com.estatia.realestate.apps.core.network.core.ApiExecutor
+import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.error_mappers.ExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
@@ -62,21 +63,22 @@ object NetworkModule {
     fun provideExceptionMapper(
         networkMapper: INetworkErrorMapper,
         authMapper: IFirebaseAuthErrorMapper,
-        databaseMapper: IFirestoreErrorMapper
+        databaseMapper: IFirestoreErrorMapper,
+        storageMapper: IFirebaseStorageErrorMapper
     ): IExceptionMapper {
-        return ExceptionMapper(networkMapper, authMapper, databaseMapper)
+        return ExceptionMapper(networkMapper, authMapper, databaseMapper, storageMapper)
     }
 
 
     @Provides
     @Singleton
-    fun provideApiExecutor(
+    fun provideNetworkClient(
         networkStateProvider: INetworkStateProvider,
         retryPolicy: IRetryPolicy,
-        errorMapper: INetworkErrorMapper,
+        exceptionMapper: IExceptionMapper,
         logger: LoggerInterface
-    ): IApiExecutor {
-        return ApiExecutor(networkStateProvider, retryPolicy, errorMapper, logger)
+    ): INetworkClient {
+        return FirebaseNetworkClient(networkStateProvider, retryPolicy, exceptionMapper, logger)
     }
 
 

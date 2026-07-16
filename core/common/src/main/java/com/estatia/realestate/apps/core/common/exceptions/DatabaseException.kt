@@ -39,7 +39,7 @@ sealed class DatabaseException(
     data object Unavailable :
         DatabaseException(
             "Database unavailable"
-        )
+        ), RetryableException
 
 
     data object Timeout :

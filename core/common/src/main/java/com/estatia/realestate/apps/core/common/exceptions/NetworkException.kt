@@ -11,19 +11,19 @@ sealed class NetworkException(
     data object NoInternet :
         NetworkException(
             "No internet connection"
-        )
+        ), RetryableException
 
 
     data object Timeout :
         NetworkException(
             "Request timeout"
-        )
+        ), RetryableException
 
 
     data object ConnectionFailed :
         NetworkException(
             "Connection failed"
-        )
+        ), RetryableException
 
 
     // HTTP/API failures
@@ -32,7 +32,7 @@ sealed class NetworkException(
         val code: Int
     ) : NetworkException(
         "Server error $code"
-    )
+    ), RetryableException
 
 
     data class ClientError(

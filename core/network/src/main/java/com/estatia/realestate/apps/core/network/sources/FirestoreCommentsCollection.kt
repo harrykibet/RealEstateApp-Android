@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
-import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -17,14 +17,14 @@ import javax.inject.Inject
 
 class FirestoreCommentsCollection @Inject constructor(
     private val db: FirebaseFirestore,
-    private val apiExecutor: IApiExecutor
+    private val networkClient: INetworkClient
 ) : ICommentsRemoteDataSource {
 
 
     override suspend fun submitComment(
         comment: CommentEntityModel
     ): Result<Unit> =
-        apiExecutor.execute(RetryConfigs.COMMENTS) {
+        networkClient.execute(RetryConfigs.COMMENTS) {
 
             commentsCollection(comment.propertyId)
                 .document()

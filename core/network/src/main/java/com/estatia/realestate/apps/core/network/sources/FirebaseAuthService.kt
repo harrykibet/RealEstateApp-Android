@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
-import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.google.firebase.FirebaseException
@@ -37,7 +37,7 @@ class FirebaseAuthService @Inject constructor(
     private val db: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val errorMapper: INetworkErrorMapper,
-    private val apiExecutor: IApiExecutor
+    private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {
 
 
@@ -50,7 +50,7 @@ class FirebaseAuthService @Inject constructor(
         user: UserEntityModel
     ): Result<Unit> {
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
             val userRef =
                 db.collection(FirestoreCollections.USERS)
@@ -70,7 +70,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
             val firebaseUser =
                 firebaseAuth
@@ -94,7 +94,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
             val firebaseUser =
                 firebaseAuth
@@ -117,7 +117,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
 
             val credential =
@@ -261,7 +261,7 @@ class FirebaseAuthService @Inject constructor(
                 )
 
 
-            return apiExecutor.execute(RetryConfigs.AUTH) {
+            return networkClient.execute(RetryConfigs.AUTH) {
 
                 signInWithCredentialSuspend(
                     credential
@@ -288,7 +288,7 @@ class FirebaseAuthService @Inject constructor(
         ): Result<String> {
 
 
-            return apiExecutor.execute(RetryConfigs.AUTH) {
+            return networkClient.execute(RetryConfigs.AUTH) {
 
                 resendCodeSuspend(
                     phoneNumber,
@@ -356,7 +356,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<Unit> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
 
             firebaseAuth
@@ -369,7 +369,7 @@ class FirebaseAuthService @Inject constructor(
     override suspend fun sendEmailVerification(): Result<Unit> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
 
             val user =
@@ -385,7 +385,7 @@ class FirebaseAuthService @Inject constructor(
     override suspend fun isEmailVerified(): Result<Boolean> {
 
 
-        return apiExecutor.execute(RetryConfigs.AUTH) {
+        return networkClient.execute(RetryConfigs.AUTH) {
 
             val user =
                 firebaseAuth.currentUser

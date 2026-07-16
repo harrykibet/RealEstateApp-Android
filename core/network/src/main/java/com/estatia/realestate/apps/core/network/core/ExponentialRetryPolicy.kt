@@ -1,14 +1,18 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.common.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.exceptions.AppException
+import com.estatia.realestate.apps.core.common.exceptions.RetryableException
+import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
-class ExponentialRetryPolicy @Inject constructor()
-    : IRetryPolicy {
+
+class ExponentialRetryPolicy @Inject constructor(
+    private val exceptionMapper: IExceptionMapper
+) : IRetryPolicy {
 
 
     override suspend fun <T> execute(
@@ -19,17 +23,30 @@ class ExponentialRetryPolicy @Inject constructor()
 
         var attempt = 0
         var delayMs = config.initialDelayMs
+        var lastException: AppException? = null
 
 
-        while(true){
+        while(
+            attempt < config.maxAttempts
+        ) {
+
 
             try {
 
                 return block()
 
             } catch(
-                exception: NetworkException
-            ){
+                throwable: Throwable
+            ) {
+
+
+                val exception =
+                    exceptionMapper.map(
+                        throwable
+                    )
+
+
+                lastException = exception
 
 
                 if(
@@ -38,12 +55,15 @@ class ExponentialRetryPolicy @Inject constructor()
                         attempt,
                         config
                     )
-                ){
+                ) {
                     throw exception
                 }
 
 
-                delay(addJitter(delayMs).milliseconds)
+                delay(
+                    addJitter(delayMs)
+                        .milliseconds
+                )
 
 
                 attempt++
@@ -60,39 +80,38 @@ class ExponentialRetryPolicy @Inject constructor()
                         )
             }
         }
+
+
+        throw lastException
+            ?: IllegalStateException(
+                "Retry failed without exception"
+            )
     }
 
 
 
     private fun shouldRetry(
-        exception:NetworkException,
-        attempt:Int,
-        config:RetryConfig
-    ):Boolean {
+        exception: AppException,
+        attempt: Int,
+        config: RetryConfig
+    ): Boolean {
 
 
-        if(attempt >= config.maxAttempts - 1)
+        if(
+            attempt >= config.maxAttempts - 1
+        ) {
             return false
-
-
-        return when(exception){
-
-            is NetworkException.Timeout,
-            is NetworkException.ConnectionFailed,
-            is NetworkException.ServerError ->
-                true
-
-
-            else ->
-                false
         }
+
+
+        return exception is RetryableException
     }
 
 
 
     private fun addJitter(
-        delay:Long
-    ):Long {
+        delay: Long
+    ): Long {
 
         return delay +
                 Random.nextLong(
