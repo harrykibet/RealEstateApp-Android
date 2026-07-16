@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthMultiFactorException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuthException
 import javax.inject.Inject
 
 class FirebaseAuthErrorMapper @Inject constructor() : IFirebaseAuthErrorMapper {
@@ -46,6 +47,31 @@ class FirebaseAuthErrorMapper @Inject constructor() : IFirebaseAuthErrorMapper {
 
             is FirebaseAuthMultiFactorException ->
                 AuthException.MultiFactorRequired
+
+            is FirebaseAuthException -> {
+
+                when (throwable.errorCode) {
+
+
+                    "ERROR_INVALID_PHONE_NUMBER" ->
+                        AuthException.InvalidPhoneNumber
+
+
+                    "ERROR_SESSION_EXPIRED" ->
+                        AuthException.SessionExpired
+
+
+                    "ERROR_QUOTA_EXCEEDED" ->
+                        AuthException.TooManyRequests
+
+
+                    "ERROR_OPERATION_NOT_ALLOWED" ->
+                        AuthException.OperationNotAllowed
+
+                    else ->
+                        AuthException.Unknown(throwable)
+                }
+            }
 
 
             else ->

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
+import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 
 @HiltViewModel
 class PhoneVerificationViewModel @Inject constructor(

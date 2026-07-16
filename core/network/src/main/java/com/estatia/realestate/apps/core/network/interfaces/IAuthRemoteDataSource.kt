@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
+import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow

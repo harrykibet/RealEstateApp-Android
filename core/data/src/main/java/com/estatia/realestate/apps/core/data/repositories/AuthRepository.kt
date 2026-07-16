@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.mappers.auth.FirebaseAuthUserMapper
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
-import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
+import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import kotlinx.coroutines.flow.Flow

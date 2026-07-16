@@ -3,13 +3,13 @@ package com.estatia.realestate.apps.core.network.sources
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.errors.Result
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
-import com.estatia.realestate.apps.core.model.auth.PhoneVerificationState
+import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -36,7 +36,7 @@ import kotlin.coroutines.resumeWithException
 class FirebaseAuthService @Inject constructor(
     private val db: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
-    private val errorMapper: INetworkErrorMapper,
+    private val authErrorMapper: IFirebaseAuthErrorMapper,
     private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {
 
@@ -205,7 +205,7 @@ class FirebaseAuthService @Inject constructor(
 
                             trySend(
                                 PhoneVerificationState.Error(
-                                    errorMapper.map(e)
+                                    authErrorMapper.map(e)
                                 )
                             )
                         }
@@ -223,7 +223,7 @@ class FirebaseAuthService @Inject constructor(
 
                 trySend(
                     PhoneVerificationState.Error(
-                        errorMapper.map(e)
+                        authErrorMapper.map(e)
                     )
                 )
             }

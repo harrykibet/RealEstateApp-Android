@@ -64,6 +64,21 @@ sealed class AuthException(
             "Too many requests"
         )
 
+    data object InvalidPhoneNumber :
+        AuthException(
+            "Invalid phone number"
+        )
+
+    data object SessionExpired :
+        AuthException(
+            "Session expired"
+        )
+
+    data object OperationNotAllowed :
+        AuthException(
+            "Operation not allowed"
+        )
+
     data class Unknown(
         val original: Throwable
     ) : AuthException(
