@@ -16,20 +16,23 @@ class ExponentialRetryPolicy @Inject constructor(
 
 
     override suspend fun <T> execute(
-        config: RetryConfig,
+        config: RetryConfig?,
         block: suspend () -> T
     ): T {
 
 
+        val retryConfig =
+            config ?: RetryConfigs.NO_RETRY
+
+
         var attempt = 0
-        var delayMs = config.initialDelayMs
+        var delayMs = retryConfig.initialDelayMs
         var lastException: AppException? = null
 
 
         while(
-            attempt < config.maxAttempts
+            attempt < retryConfig.maxAttempts
         ) {
-
 
             try {
 
@@ -53,7 +56,7 @@ class ExponentialRetryPolicy @Inject constructor(
                     !shouldRetry(
                         exception,
                         attempt,
-                        config
+                        retryConfig
                     )
                 ) {
                     throw exception
@@ -72,11 +75,11 @@ class ExponentialRetryPolicy @Inject constructor(
                 delayMs =
                     (
                             delayMs *
-                                    config.multiplier
+                                    retryConfig.multiplier
                             )
                         .toLong()
                         .coerceAtMost(
-                            config.maxDelayMs
+                            retryConfig.maxDelayMs
                         )
             }
         }

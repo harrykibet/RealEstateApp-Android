@@ -19,7 +19,7 @@ class FirebaseNetworkClient @Inject constructor(
 
 
     override suspend fun <T> execute(
-        config: RetryConfig,
+        config: RetryConfig?,
         apiCall: suspend () -> T
     ): Result<T> {
 

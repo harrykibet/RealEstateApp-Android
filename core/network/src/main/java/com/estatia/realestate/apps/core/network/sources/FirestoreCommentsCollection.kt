@@ -16,7 +16,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirestoreCommentsCollection @Inject constructor(
-    private val db: FirebaseFirestore,
+    private val database: FirebaseFirestore,
     private val networkClient: INetworkClient
 ) : ICommentsRemoteDataSource {
 
@@ -73,7 +73,7 @@ class FirestoreCommentsCollection @Inject constructor(
 
 
     private fun commentsCollection(propertyId: String) =
-        db.collection(FirestoreCollections.PROPERTIES)
+        database.collection(FirestoreCollections.PROPERTIES)
             .document(propertyId)
             .collection(FirestoreCollections.SubCollections.COMMENTS)
 }

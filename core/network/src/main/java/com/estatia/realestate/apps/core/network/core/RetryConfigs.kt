@@ -11,6 +11,13 @@ object RetryConfigs {
             maxDelayMs = 5000
         )
 
+    val NO_RETRY = RetryConfig(
+        name = "NO_RETRY",
+        maxAttempts = 1,
+        initialDelayMs = 0,
+        maxDelayMs = 0
+    )
+
     val ANALYTICS =
         RetryConfig(
             name = "ANALYTICS",

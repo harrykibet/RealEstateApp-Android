@@ -19,6 +19,8 @@ import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
+import com.estatia.realestate.apps.core.network.error_mappers.*
+import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,7 +51,15 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetryPolicy(): IRetryPolicy {
-        return ExponentialRetryPolicy()
+        return ExponentialRetryPolicy(
+            exceptionMapper = ExceptionMapper(
+                networkMapper = NetworkErrorMapper(),
+                authMapper = FirebaseAuthErrorMapper(),
+                databaseMapper = FirebaseFirestoreErrorMapper(),
+                storageMapper = FirebaseStorageErrorMapper(),
+                fallbackFirebaseMapper = FirebaseFallbackErrorMapper()
+            )
+        )
     }
 
     @Provides
@@ -64,9 +74,15 @@ object NetworkModule {
         networkMapper: INetworkErrorMapper,
         authMapper: IFirebaseAuthErrorMapper,
         databaseMapper: IFirestoreErrorMapper,
-        storageMapper: IFirebaseStorageErrorMapper
+        storageMapper: IFirebaseStorageErrorMapper,
+        fallbackFirebaseMapper: IFirebaseErrorMapper
     ): IExceptionMapper {
-        return ExceptionMapper(networkMapper, authMapper, databaseMapper, storageMapper)
+        return ExceptionMapper(
+            networkMapper,
+            authMapper,
+            databaseMapper,
+            storageMapper,
+            fallbackFirebaseMapper)
     }
 
 

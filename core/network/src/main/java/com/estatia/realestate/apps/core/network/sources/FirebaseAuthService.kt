@@ -34,7 +34,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class FirebaseAuthService @Inject constructor(
-    private val db: FirebaseFirestore,
+    private val database: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val authErrorMapper: IFirebaseAuthErrorMapper,
     private val networkClient: INetworkClient
@@ -53,7 +53,7 @@ class FirebaseAuthService @Inject constructor(
         return networkClient.execute(RetryConfigs.AUTH) {
 
             val userRef =
-                db.collection(FirestoreCollections.USERS)
+                database.collection(FirestoreCollections.USERS)
                     .document(userId)
 
                 userRef.set(
@@ -70,7 +70,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return networkClient.execute(RetryConfigs.AUTH) {
+        return networkClient.execute {
 
             val firebaseUser =
                 firebaseAuth
@@ -94,7 +94,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return networkClient.execute(RetryConfigs.AUTH) {
+        return networkClient.execute {
 
             val firebaseUser =
                 firebaseAuth
@@ -117,7 +117,7 @@ class FirebaseAuthService @Inject constructor(
     ): Result<FirebaseUser> {
 
 
-        return networkClient.execute(RetryConfigs.AUTH) {
+        return networkClient.execute {
 
 
             val credential =
@@ -261,7 +261,7 @@ class FirebaseAuthService @Inject constructor(
                 )
 
 
-            return networkClient.execute(RetryConfigs.AUTH) {
+            return networkClient.execute {
 
                 signInWithCredentialSuspend(
                     credential
@@ -288,7 +288,7 @@ class FirebaseAuthService @Inject constructor(
         ): Result<String> {
 
 
-            return networkClient.execute(RetryConfigs.AUTH) {
+            return networkClient.execute {
 
                 resendCodeSuspend(
                     phoneNumber,
@@ -385,7 +385,7 @@ class FirebaseAuthService @Inject constructor(
     override suspend fun isEmailVerified(): Result<Boolean> {
 
 
-        return networkClient.execute(RetryConfigs.AUTH) {
+        return networkClient.execute {
 
             val user =
                 firebaseAuth.currentUser

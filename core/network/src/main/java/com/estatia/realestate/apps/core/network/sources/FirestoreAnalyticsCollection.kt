@@ -5,7 +5,6 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
-import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
@@ -18,23 +17,23 @@ import javax.inject.Inject
 
 
 class FirestoreAnalyticsCollection @Inject constructor(
-    db: FirebaseFirestore,
+    database: FirebaseFirestore,
     private val networkClient: INetworkClient,
     private val deviceUtils: IDeviceUtils,
-    private val authApi: IAuthRemoteDataSource,
+    private val authService: IAuthRemoteDataSource,
     private val locationUtils: ILocationUtils
 ) : IAnalyticsRemoteDataSource {
 
 
     private val analyticsCollection =
-        db.collection(FirestoreCollections.ANALYTICS)
+        database.collection(FirestoreCollections.ANALYTICS)
 
 
     override suspend fun logEvent(
         event: AnalyticsEvent
     ): Result<Unit> {
 
-        return networkClient.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute {
             analyticsCollection
                 .document(event.eventId)
                 .set(event)
@@ -51,7 +50,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
     ): Result<Unit> {
 
         val userId =
-            authApi.getCurrentUserId()
+            authService.getCurrentUserId()
                 ?: return Result.Failure(
                     AuthException.UserNotAuthenticated
                 )
@@ -85,7 +84,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
         userId: String
     ): Result<List<AnalyticsEvent>> {
 
-        return networkClient.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute {
 
             analyticsCollection
                 .whereEqualTo(
@@ -108,7 +107,7 @@ class FirestoreAnalyticsCollection @Inject constructor(
         eventId: String
     ): Result<AnalyticsEvent?> {
 
-        return networkClient.execute(RetryConfigs.ANALYTICS) {
+        return networkClient.execute {
 
             analyticsCollection
                 .document(eventId)
