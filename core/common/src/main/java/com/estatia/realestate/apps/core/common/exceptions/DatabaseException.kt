@@ -1,0 +1,57 @@
+package com.estatia.realestate.apps.core.common.exceptions
+
+sealed class DatabaseException(
+    message: String,
+    cause: Throwable? = null
+) : AppException(message, cause) {
+
+
+    data object PermissionDenied :
+        DatabaseException(
+            "Database permission denied"
+        )
+
+
+    data object NotFound :
+        DatabaseException(
+            "Database record not found"
+        )
+
+
+    data object AlreadyExists :
+        DatabaseException(
+            "Database record already exists"
+        )
+
+
+    data object TransactionFailed :
+        DatabaseException(
+            "Database transaction failed"
+        )
+
+
+    data object ResourceExhausted :
+        DatabaseException(
+            "Database resource exhausted"
+        )
+
+
+    data object Unavailable :
+        DatabaseException(
+            "Database unavailable"
+        )
+
+
+    data object Timeout :
+        DatabaseException(
+            "Database timeout"
+        )
+
+
+    data class Unknown(
+        val original: Throwable
+    ) : DatabaseException(
+        "Unknown database error",
+        original
+    )
+}

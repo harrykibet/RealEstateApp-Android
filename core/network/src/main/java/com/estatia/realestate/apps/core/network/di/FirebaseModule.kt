@@ -2,6 +2,10 @@ package com.estatia.realestate.apps.core.network.di
 
 import android.content.Context
 import android.util.Log
+import com.estatia.realestate.apps.core.network.error_mappers.FirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.FirebaseFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
@@ -92,5 +96,17 @@ object FirebaseModule {
         initializeFirebaseIfNeeded(context)
         return FirebaseApp.getInstance().options.projectId
             ?: throw IllegalStateException("Firebase Project ID is missing.")
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestoreErrorMapper() : IFirestoreErrorMapper {
+        return FirebaseFirestoreErrorMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuthenticationErrorMapper() : IFirebaseAuthErrorMapper {
+        return FirebaseAuthErrorMapper()
     }
 }

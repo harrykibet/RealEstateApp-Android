@@ -10,7 +10,11 @@ import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ApiExecutor
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
+import com.estatia.realestate.apps.core.network.error_mappers.ExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IApiExecutor
+import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
@@ -49,9 +53,20 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideErrorMapper(): INetworkErrorMapper {
+    fun provideNetworkErrorMapper(): INetworkErrorMapper {
         return NetworkErrorMapper()
     }
+
+    @Provides
+    @Singleton
+    fun provideExceptionMapper(
+        networkMapper: INetworkErrorMapper,
+        authMapper: IFirebaseAuthErrorMapper,
+        databaseMapper: IFirestoreErrorMapper
+    ): IExceptionMapper {
+        return ExceptionMapper(networkMapper, authMapper, databaseMapper)
+    }
+
 
     @Provides
     @Singleton
