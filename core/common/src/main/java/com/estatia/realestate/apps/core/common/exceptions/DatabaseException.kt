@@ -29,6 +29,11 @@ sealed class DatabaseException(
             "Database transaction failed"
         )
 
+    data class InvalidData(val msg: String) :
+        DatabaseException(
+            "Database invalid data"
+        )
+
 
     data object ResourceExhausted :
         DatabaseException(

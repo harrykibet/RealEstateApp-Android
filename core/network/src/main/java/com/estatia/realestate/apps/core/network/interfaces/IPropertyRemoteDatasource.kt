@@ -3,13 +3,10 @@ package com.estatia.realestate.apps.core.network.interfaces
 import android.net.Uri
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.common.errors.Result
-import kotlinx.coroutines.flow.StateFlow
+import com.estatia.realestate.apps.core.network.db_entities.PropertyCursor
+import com.estatia.realestate.apps.core.network.db_entities.PropertyPage
 
 interface IPropertyRemoteDatasource {
-    // LiveData to monitor the upload status
-    val uploadStatus: StateFlow<Boolean>
-
-    val uploadError: StateFlow<String?>
 
     suspend fun uploadProperty(
         property: PropertyEntityModel,
@@ -37,12 +34,6 @@ interface IPropertyRemoteDatasource {
         userId: String
     ): Result<List<PropertyEntityModel>>
 
-    // Fetch Properties Paginated
-    suspend fun fetchPropertiesPaginated(
-        lastVisible: String?,
-        pageSize: Int
-    ): Result<Pair<List<PropertyEntityModel>, String?>>
-
     suspend fun searchProperties(
         query: String,
         limit: Int
@@ -57,4 +48,9 @@ interface IPropertyRemoteDatasource {
         userId: String,
         propertyId: String
     ): Result<Unit>
+
+    suspend fun fetchPropertiesPaginated(
+        cursor: PropertyCursor?,
+        pageSize: Int
+    ): Result<PropertyPage>
 }

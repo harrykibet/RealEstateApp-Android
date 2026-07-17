@@ -13,16 +13,15 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
+import com.estatia.realestate.apps.core.network.db_entities.PropertyCursor
+import com.estatia.realestate.apps.core.network.db_entities.PropertyPage
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
-import java.util.Date
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -32,45 +31,18 @@ class FirestoreProperties @Inject constructor(
     private val networkClient: INetworkClient
 ) : IPropertyRemoteDatasource {
 
-
-    private val _uploadStatus =
-        MutableStateFlow(false)
-
-    override val uploadStatus: StateFlow<Boolean> =
-        _uploadStatus.asStateFlow()
-
-
-    private val _uploadError =
-        MutableStateFlow<String?>(null)
-
-    override val uploadError: StateFlow<String?> =
-        _uploadError.asStateFlow()
-
-
     override suspend fun uploadProperty(
         property: PropertyEntityModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): Result<String> {
 
-
         return networkClient.execute {
-
 
             val propertyId =
                 database.collection(PROPERTIES)
                     .document()
                     .id
-
-
-            database.collection(PROPERTIES)
-                .document(propertyId)
-                .set(
-                    property.copy(
-                        id = propertyId
-                    )
-                )
-                .await()
 
 
             val images =
@@ -89,14 +61,17 @@ class FirestoreProperties @Inject constructor(
                 )
 
 
+            val finalProperty =
+                property.copy(
+                    id = propertyId,
+                    imageUrl = images,
+                    videoUrl = videos
+                )
+
+
             database.collection(PROPERTIES)
                 .document(propertyId)
-                .update(
-                    mapOf(
-                        FirestoreFields.IMAGE_URL to images,
-                        FirestoreFields.VIDEO_URL to videos
-                    )
-                )
+                .set(finalProperty)
                 .await()
 
 
@@ -105,38 +80,27 @@ class FirestoreProperties @Inject constructor(
     }
 
     private suspend fun uploadMedia(
-        propertyId:String,
-        uris:List<Uri>,
-        mediaType:String
-    ):List<String>{
+        propertyId: String,
+        uris: List<Uri>,
+        mediaType: String
+    ): List<String> {
 
-        val urls =
-            mutableListOf<String>()
-
-
-        uris.forEachIndexed { index, uri ->
+        return uris.map { uri ->
 
 
             val path =
-                "$PROPERTIES/$propertyId/$mediaType/$index"
+                "$PROPERTIES/$propertyId/$mediaType/${UUID.randomUUID()}"
 
 
-            val url =
-                storage.reference
-                    .child(path)
-                    .putFile(uri)
-                    .await()
-                    .storage
-                    .downloadUrl
-                    .await()
-                    .toString()
-
-
-            urls.add(url)
+            storage.reference
+                .child(path)
+                .putFile(uri)
+                .await()
+                .storage
+                .downloadUrl
+                .await()
+                .toString()
         }
-
-
-        return urls
     }
 
     override suspend fun updateProperty(
@@ -169,15 +133,24 @@ class FirestoreProperties @Inject constructor(
     override suspend fun getPropertyById(
         propertyId: String
     ): Result<PropertyEntityModel> {
+
         return networkClient.execute {
-            database.collection(PROPERTIES)
-                .document(propertyId)
-                .get()
-                .await()
-                .toObject(PropertyEntityModel::class.java)
-                ?: throw FirebaseFirestoreException(
-                    "Property not found",
-                    FirebaseFirestoreException.Code.NOT_FOUND
+
+            val snapshot =
+                database.collection(PROPERTIES)
+                    .document(propertyId)
+                    .get()
+                    .await()
+
+
+            if(!snapshot.exists()) {
+                throw DatabaseException.NotFound
+            }
+
+
+            snapshot.toObject(PropertyEntityModel::class.java)
+                ?: throw DatabaseException.InvalidData(
+                    "Unable to parse property"
                 )
         }
     }
@@ -185,7 +158,9 @@ class FirestoreProperties @Inject constructor(
     override suspend fun fetchLikedProperties(
         userId: String
     ): Result<List<PropertyEntityModel>> {
+
         return networkClient.execute {
+
             val likedPropertyIds = database.collection(USERS)
                 .document(userId)
                 .collection(LIKED_PROPERTIES)
@@ -231,12 +206,10 @@ class FirestoreProperties @Inject constructor(
                     .document(propertyId)
 
 
-            val likeData =
-                LikesDomainModel(
-                    userId,
-                    Date()
-                )
-
+            val likeData = LikesDomainModel(
+                userId,
+                System.currentTimeMillis()
+            )
 
             database.runBatch { batch ->
 
@@ -291,35 +264,33 @@ class FirestoreProperties @Inject constructor(
         }
     }
 
-    // Updated implementation of fetchPropertiesPaginated
     override suspend fun fetchPropertiesPaginated(
-        lastVisible:String?,
-        pageSize:Int
-    ):Result<Pair<List<PropertyEntityModel>,String?>> {
+        cursor: PropertyCursor?,
+        pageSize: Int
+    ): Result<PropertyPage> {
+
 
         return networkClient.execute {
 
 
             val query =
-                if(lastVisible == null){
+                database.collection(PROPERTIES)
+                    .orderBy(
+                        FirestoreFields.CREATED_AT,
+                        Query.Direction.DESCENDING
+                    )
+                    .let {
 
-                    database.collection(PROPERTIES)
-                        .orderBy(
-                            FirestoreFields.CREATED_AT,
-                            Query.Direction.DESCENDING
-                        )
-                        .limit(pageSize.toLong())
+                        if(cursor != null)
+                            it.startAfter(
+                                cursor.createdAt,
+                                cursor.documentId
+                            )
+                        else
+                            it
 
-                } else {
-
-                    database.collection(PROPERTIES)
-                        .orderBy(
-                            FirestoreFields.CREATED_AT,
-                            Query.Direction.DESCENDING
-                        )
-                        .startAfter(lastVisible)
-                        .limit(pageSize.toLong())
-                }
+                    }
+                    .limit(pageSize.toLong())
 
 
             val snapshot =
@@ -328,15 +299,30 @@ class FirestoreProperties @Inject constructor(
 
             val properties =
                 snapshot.documents.mapNotNull {
-                    it.toObject(PropertyEntityModel::class.java)
+                    it.toObject(
+                        PropertyEntityModel::class.java
+                    )
                 }
 
 
-            val cursor =
-                snapshot.documents.lastOrNull()?.id
+            val last =
+                snapshot.documents.lastOrNull()
 
 
-            properties to cursor
+            PropertyPage(
+                properties = properties,
+                cursor =
+                    last?.let {
+                        PropertyCursor(
+                            createdAt =
+                                it.getLong(
+                                    FirestoreFields.CREATED_AT
+                                ) ?: 0L,
+                            documentId =
+                                it.id
+                        )
+                    }
+            )
         }
     }
 
