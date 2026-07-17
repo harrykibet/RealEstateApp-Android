@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.error_mappers.ExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
@@ -72,7 +72,7 @@ object NetworkModule {
     @Singleton
     fun provideExceptionMapper(
         networkMapper: INetworkErrorMapper,
-        authMapper: IFirebaseAuthErrorMapper,
+        authMapper: IAuthExceptionMapper,
         databaseMapper: IFirestoreErrorMapper,
         storageMapper: IFirebaseStorageErrorMapper,
         fallbackFirebaseMapper: IFirebaseErrorMapper

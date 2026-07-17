@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import kotlinx.coroutines.delay
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -42,11 +43,22 @@ class ExponentialRetryPolicy @Inject constructor(
                 throwable: Throwable
             ) {
 
+                if (throwable is CancellationException) {
+                    throw throwable
+                }
+
 
                 val exception =
-                    exceptionMapper.map(
-                        throwable
-                    )
+                    when(throwable){
+
+                        is AppException ->
+                            throwable
+
+                        else ->
+                            exceptionMapper.map(
+                                throwable
+                            )
+                    }
 
 
                 lastException = exception
@@ -58,7 +70,7 @@ class ExponentialRetryPolicy @Inject constructor(
                         attempt,
                         retryConfig
                     )
-                ) {
+                ){
                     throw exception
                 }
 

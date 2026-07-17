@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import javax.inject.Inject
 
@@ -23,12 +24,10 @@ class FirebaseNetworkClient @Inject constructor(
         apiCall: suspend () -> T
     ): Result<T> {
 
-
-        if(
+        if (
             networkStateProvider.current()
             == NetworkState.NoInternet
         ) {
-
             return Result.Failure(
                 NetworkException.NoInternet
             )
@@ -37,7 +36,6 @@ class FirebaseNetworkClient @Inject constructor(
 
         return try {
 
-
             Result.Success(
                 retryPolicy.execute(
                     config,
@@ -45,16 +43,22 @@ class FirebaseNetworkClient @Inject constructor(
                 )
             )
 
-
-        } catch(
+        } catch (
             throwable: Throwable
         ) {
 
 
             val exception =
-                exceptionMapper.map(
-                    throwable
-                )
+                when (throwable) {
+
+                    is AppException ->
+                        throwable
+
+                    else ->
+                        exceptionMapper.map(
+                            throwable
+                        )
+                }
 
 
             logger.e(

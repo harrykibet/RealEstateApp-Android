@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.network.error_mappers.FirebaseAuthErrorM
 import com.estatia.realestate.apps.core.network.error_mappers.FirebaseFallbackErrorMapper
 import com.estatia.realestate.apps.core.network.error_mappers.FirebaseFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.error_mappers.FirebaseStorageErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
@@ -110,7 +110,7 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuthenticationErrorMapper() : IFirebaseAuthErrorMapper {
+    fun provideFirebaseAuthenticationErrorMapper() : IAuthExceptionMapper {
         return FirebaseAuthErrorMapper()
     }
 

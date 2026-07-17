@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.error_mappers
 
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.google.firebase.auth.FirebaseAuthActionCodeException
 import com.google.firebase.auth.FirebaseAuthEmailException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -12,7 +12,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthException
 import javax.inject.Inject
 
-class FirebaseAuthErrorMapper @Inject constructor() : IFirebaseAuthErrorMapper {
+class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
 
     override fun map(

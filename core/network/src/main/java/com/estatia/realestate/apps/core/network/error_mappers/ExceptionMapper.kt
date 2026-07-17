@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.error_mappers
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class ExceptionMapper @Inject constructor(
     private val networkMapper: INetworkErrorMapper,
-    private val authMapper: IFirebaseAuthErrorMapper,
+    private val authMapper: IAuthExceptionMapper,
     private val databaseMapper: IFirestoreErrorMapper,
     private val storageMapper: IFirebaseStorageErrorMapper,
     private val fallbackFirebaseMapper: IFirebaseErrorMapper
