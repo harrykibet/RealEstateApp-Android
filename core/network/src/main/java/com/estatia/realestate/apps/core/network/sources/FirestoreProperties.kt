@@ -12,10 +12,10 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.US
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.network.db_entities.PropertyCursor
-import com.estatia.realestate.apps.core.network.db_entities.PropertyPage
+import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -35,7 +35,7 @@ class FirestoreProperties @Inject constructor(
         property: PropertyEntityModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>
-    ): Result<String> {
+    ): AppResult<String> {
 
         return networkClient.execute {
 
@@ -106,7 +106,7 @@ class FirestoreProperties @Inject constructor(
     override suspend fun updateProperty(
         propertyId: String,
         updates: Map<String, Any>
-    ): Result<Unit> {
+    ): AppResult<Unit> {
 
         return networkClient.execute {
 
@@ -120,7 +120,7 @@ class FirestoreProperties @Inject constructor(
 
     override suspend fun deleteProperty(
         propertyId: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         return networkClient.execute {
 
             database.collection(PROPERTIES)
@@ -132,7 +132,7 @@ class FirestoreProperties @Inject constructor(
 
     override suspend fun getPropertyById(
         propertyId: String
-    ): Result<PropertyEntityModel> {
+    ): AppResult<PropertyEntityModel> {
 
         return networkClient.execute {
 
@@ -157,7 +157,7 @@ class FirestoreProperties @Inject constructor(
 
     override suspend fun fetchLikedProperties(
         userId: String
-    ): Result<List<PropertyEntityModel>> {
+    ): AppResult<List<PropertyEntityModel>> {
 
         return networkClient.execute {
 
@@ -186,7 +186,7 @@ class FirestoreProperties @Inject constructor(
     override suspend fun likeProperty(
         userId: String,
         propertyId: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
 
 
         return networkClient.execute {
@@ -237,7 +237,7 @@ class FirestoreProperties @Inject constructor(
     override suspend fun unlikeProperty(
         userId: String,
         propertyId: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
 
         return networkClient.execute {
 
@@ -267,7 +267,7 @@ class FirestoreProperties @Inject constructor(
     override suspend fun fetchPropertiesPaginated(
         cursor: PropertyCursor?,
         pageSize: Int
-    ): Result<PropertyPage> {
+    ): AppResult<PropertyRemotePage> {
 
 
         return networkClient.execute {
@@ -309,7 +309,7 @@ class FirestoreProperties @Inject constructor(
                 snapshot.documents.lastOrNull()
 
 
-            PropertyPage(
+            PropertyRemotePage(
                 properties = properties,
                 cursor =
                     last?.let {
@@ -329,7 +329,7 @@ class FirestoreProperties @Inject constructor(
     override suspend fun searchProperties(
         query: String,
         limit: Int
-    ): Result<List<PropertyEntityModel>> {
+    ): AppResult<List<PropertyEntityModel>> {
 
         return networkClient.execute {
 

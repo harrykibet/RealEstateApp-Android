@@ -20,7 +20,7 @@ interface PropertyDraftDao {
 
     // Get a specific draft by its ID
     @Query("SELECT * FROM properties_drafts WHERE id = :id")
-    suspend fun getDraftById(id: Int): PropertyDraftEntity?
+    suspend fun getDraftById(id: Long): PropertyDraftEntity?
 
     // Update an existing draft
     @Update
@@ -28,7 +28,7 @@ interface PropertyDraftDao {
 
     // Delete a specific draft by its ID
     @Query("DELETE FROM properties_drafts WHERE id = :id")
-    suspend fun deleteDraftById(id: Int)
+    suspend fun deleteDraftById(id: Long)
 
     // Clear all drafts from the database
     @Query("DELETE FROM properties_drafts")

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
@@ -28,10 +28,10 @@ class AnalyticsTracker @Inject constructor(
             )
         ) {
 
-            is Result.Success -> Unit
+            is AppResult.Success -> Unit
 
 
-            is Result.Failure -> {
+            is AppResult.Error -> {
 
                 logger.e(
                     "Analytics logging failed",
@@ -51,10 +51,10 @@ class AnalyticsTracker @Inject constructor(
             val result = remoteDataSource.logEvent(event)
         ) {
 
-            is Result.Success -> Unit
+            is AppResult.Success -> Unit
 
 
-            is Result.Failure -> {
+            is AppResult.Error -> {
 
                 logger.e(
                     "Analytics logging failed",

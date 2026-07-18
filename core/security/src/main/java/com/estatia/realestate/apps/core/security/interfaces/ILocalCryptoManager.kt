@@ -1,16 +1,16 @@
 package com.estatia.realestate.apps.core.security.interfaces
 
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 
 interface ILocalCryptoManager {
-    suspend fun aesEncrypt(bytes: ByteArray): Result<ByteArray>
-    suspend fun aesDecrypt(bytes: ByteArray): Result<ByteArray>
-    suspend fun hashWithSalt(data: String): Result<String>
-    suspend fun verifyHash(data: String, hash: String): Result<Boolean>
-    suspend fun rsaDecrypt(data: ByteArray): Result<ByteArray>
-    suspend fun signData(data: ByteArray): Result<ByteArray>
-    suspend fun rsaEncrypt(data: ByteArray): Result<ByteArray>
-    suspend fun verifySignature(data: ByteArray, signature: ByteArray): Result<Boolean>
-    suspend fun rotateAesKey(): Result<Unit>
-    suspend fun rotateRsaEncryptionKey(): Result<Unit>
+    suspend fun aesEncrypt(bytes: ByteArray): AppResult<ByteArray>
+    suspend fun aesDecrypt(bytes: ByteArray): AppResult<ByteArray>
+    suspend fun hashWithSalt(data: String): AppResult<String>
+    suspend fun verifyHash(data: String, hash: String): AppResult<Boolean>
+    suspend fun rsaDecrypt(data: ByteArray): AppResult<ByteArray>
+    suspend fun signData(data: ByteArray): AppResult<ByteArray>
+    suspend fun rsaEncrypt(data: ByteArray): AppResult<ByteArray>
+    suspend fun verifySignature(data: ByteArray, signature: ByteArray): AppResult<Boolean>
+    suspend fun rotateAesKey(): AppResult<Unit>
+    suspend fun rotateRsaEncryptionKey(): AppResult<Unit>
 }

@@ -1,4 +1,5 @@
-package com.estatia.realestate.apps.core.network.db_entities
+package com.estatia.realestate.apps.core.model.property
+
 
 data class PropertyCursor(
     val createdAt: Long,
@@ -7,6 +8,6 @@ data class PropertyCursor(
 
 
 data class PropertyPage(
-    val properties: List<PropertyEntityModel>,
+    val properties: List<PropertyDomainModel>,
     val cursor: PropertyCursor?
 )

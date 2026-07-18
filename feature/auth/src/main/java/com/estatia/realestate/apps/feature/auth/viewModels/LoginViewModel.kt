@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.feature.auth.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.state.AuthState
@@ -50,10 +50,10 @@ class LoginViewModel @Inject constructor(
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             when (val result = authRepository.signInWithEmail(email, password)) {
-                is Result.Success ->
+                is AppResult.Success ->
                     _authState.value = determineAuthState(result.data)
 
-                is Result.Failure ->
+                is AppResult.Error ->
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Login failed"
                     )
@@ -68,10 +68,10 @@ class LoginViewModel @Inject constructor(
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             when (val result = authRepository.signInWithGoogle(idToken)) {
-                is Result.Success ->
+                is AppResult.Success ->
                     _authState.value = determineAuthState(result.data)
 
-                is Result.Failure ->
+                is AppResult.Error ->
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Google sign-in failed"
                     )

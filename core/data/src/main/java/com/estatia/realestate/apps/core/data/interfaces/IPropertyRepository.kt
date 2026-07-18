@@ -1,65 +1,62 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
 import android.net.Uri
-import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import kotlinx.coroutines.flow.StateFlow
+import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
+import com.estatia.realestate.apps.core.model.property.PropertyPage
 
 interface IPropertyRepository {
-    // StateFlow to monitor the upload status
-    val uploadStatus: StateFlow<Boolean>
-
-    val uploadError: StateFlow<String?>
-
-    suspend fun getDraftById(draftId: Int): PropertyDraftEntity?
-    suspend fun saveDraft(draft: PropertyDraftEntity): Long
-    suspend fun getAllDrafts(): List<PropertyDraftEntity>
-    suspend fun deleteDraft(draftId: Int)
+    suspend fun saveDraft(draft: PropertyDraftDomainModel): AppResult<Long>
+    suspend fun getAllDrafts(): AppResult<List<PropertyDraftDomainModel>>
+    suspend fun getDraftById(draftId: Long): AppResult<PropertyDraftDomainModel?>
+    suspend fun deleteDraft(draftId: Long)
     suspend fun clearAllDrafts()
 
     suspend fun uploadProperty(
         property: PropertyDomainModel,
         imageUris: List<Uri>,
-        videoUris: List<Uri>,
-        onFailure: (Exception) -> Unit
-    ): Boolean?
+        videoUris: List<Uri>
+    ): AppResult<String>
 
     // Update Property
-    suspend fun updateProperty(propertyId: String, updates: Map<String, Any>, onFailure: (Exception) -> Unit): Boolean
+    suspend fun updateProperty(
+        propertyId: String,
+        updates: Map<String, Any>
+    ): AppResult<Unit>
 
     // Delete Property
-    suspend fun deleteProperty(propertyId: String, onFailure: (Exception) -> Unit): Boolean
+    suspend fun deleteProperty(
+        propertyId: String
+    ): AppResult<Unit>
 
-    // Get Property by Id
-    suspend fun getPropertyById(propertyId: String, onFailure: (Exception) -> Unit): PropertyDomainModel?
+      suspend fun getPropertyById(
+        propertyId: String
+    ): AppResult<PropertyDomainModel>
 
     suspend fun fetchLikedProperties(
-        userId: String,
-        onFailure: (Exception) -> Unit
-    ): List<PropertyDomainModel>?
+        userId: String
+    ): AppResult<List<PropertyDomainModel>>
 
     suspend fun likeProperty(
         userId: String,
-        propertyId: String,
-        onFailure: (Exception) -> Unit
-    ): Boolean
+        propertyId: String
+    ): AppResult<Unit>
 
     suspend fun unlikeProperty(
         userId: String,
-        propertyId: String,
-        onFailure: (Exception) -> Unit
-    ): Boolean
-
-    // Fetch Properties Paginated
-    suspend fun fetchPropertiesPaginated(
-        lastVisible: String?,
-        pageSize: Int,
-        onFailure: (Exception) -> Unit
-    ): Pair<List<PropertyDomainModel>, String?>
+        propertyId: String
+    ): AppResult<Unit>
 
     suspend fun searchProperties(
         query: String,
-        limit: Int,
-        onFailure: (Exception) -> Unit
-    ): List<PropertyDomainModel>
+        limit: Int
+    ): AppResult<List<PropertyDomainModel>>
+
+    suspend fun fetchPropertiesPaginated(
+        cursor: PropertyCursor?,
+        pageSize: Int
+    ): AppResult<PropertyPage>
+
 }

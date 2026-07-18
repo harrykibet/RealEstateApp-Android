@@ -6,8 +6,6 @@ sealed class NetworkException(
 ) : AppException(message, cause) {
 
 
-    // Connectivity
-
     data object NoInternet :
         NetworkException(
             "No internet connection"
@@ -31,14 +29,14 @@ sealed class NetworkException(
     data class ServerError(
         val code: Int
     ) : NetworkException(
-        "Server error $code"
+        "Server error :  $code"
     ), RetryableException
 
 
     data class ClientError(
         val code: Int
     ) : NetworkException(
-        "Client error $code"
+        "Client error : $code"
     )
 
 

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.errors.map
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.mappers.auth.FirebaseAuthUserMapper
@@ -20,7 +20,7 @@ class AuthRepository @Inject constructor(
     override suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         val firestoreUser = FirestoreUserProfileMapper.toEntity(user)
         return remoteDataSource.createOrUpdateUserProfile(userId, firestoreUser)
     }
@@ -28,7 +28,7 @@ class AuthRepository @Inject constructor(
     override suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthUserDomainModel> {
+    ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signUpWithEmail(email, password)
             .map { firebaseUser ->
             FirebaseAuthUserMapper.fromFirebase(firebaseUser)
@@ -38,14 +38,14 @@ class AuthRepository @Inject constructor(
     override suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Result<AuthUserDomainModel> {
+    ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signInWithEmail(email, password)
             .map { firebaseUser ->
             FirebaseAuthUserMapper.fromFirebase(firebaseUser)
         }
     }
 
-    override suspend fun signOut(): Result<Unit> {
+    override suspend fun signOut(): AppResult<Unit> {
         return remoteDataSource.signOut()
     }
 
@@ -59,7 +59,7 @@ class AuthRepository @Inject constructor(
 
     override suspend fun signInWithGoogle(
         idToken: String
-    ): Result<AuthUserDomainModel> {
+    ): AppResult<AuthUserDomainModel> {
         return remoteDataSource
             .signInWithGoogle(idToken)
             .map { firebaseUser ->
@@ -69,7 +69,7 @@ class AuthRepository @Inject constructor(
 
     override suspend fun sendPasswordResetEmail(
         email: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         return remoteDataSource.sendPasswordResetEmail(email)
     }
 
@@ -95,22 +95,22 @@ class AuthRepository @Inject constructor(
     override suspend fun verifyPhoneCode(
         verificationId: String,
         code: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         return remoteDataSource.verifyPhoneCode(verificationId, code)
     }
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
         activity: Activity
-    ): Result<String> {
+    ): AppResult<String> {
         return remoteDataSource.resendVerificationCode(phoneNumber, activity)
     }
 
-    override suspend fun sendEmailVerification(): Result<Unit> {
+    override suspend fun sendEmailVerification(): AppResult<Unit> {
         return remoteDataSource.sendEmailVerification()
     }
 
-    override suspend fun isEmailVerified(): Result<Boolean> {
+    override suspend fun isEmailVerified(): AppResult<Boolean> {
         return remoteDataSource.isEmailVerified()
     }
 }

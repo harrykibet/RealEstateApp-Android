@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.sources
 
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
@@ -31,7 +31,7 @@ class FirestoreAnalytics @Inject constructor(
 
     override suspend fun logEvent(
         event: AnalyticsEvent
-    ): Result<Unit> {
+    ): AppResult<Unit> {
 
         return networkClient.execute {
             analyticsCollection
@@ -47,11 +47,11 @@ class FirestoreAnalytics @Inject constructor(
         message: String,
         eventType: String,
         customMetadata: Map<String, String>?
-    ): Result<Unit> {
+    ): AppResult<Unit> {
 
         val userId =
             authService.getCurrentUserId()
-                ?: return Result.Failure(
+                ?: return AppResult.Error(
                     AuthException.UserNotAuthenticated
                 )
 
@@ -82,7 +82,7 @@ class FirestoreAnalytics @Inject constructor(
 
     override suspend fun getEventsForUser(
         userId: String
-    ): Result<List<AnalyticsEvent>> {
+    ): AppResult<List<AnalyticsEvent>> {
 
         return networkClient.execute {
 
@@ -105,7 +105,7 @@ class FirestoreAnalytics @Inject constructor(
 
     override suspend fun getEventById(
         eventId: String
-    ): Result<AnalyticsEvent?> {
+    ): AppResult<AnalyticsEvent?> {
 
         return networkClient.execute {
 

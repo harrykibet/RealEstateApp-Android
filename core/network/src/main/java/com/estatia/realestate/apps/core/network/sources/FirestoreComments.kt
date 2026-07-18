@@ -2,11 +2,12 @@ package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
@@ -17,13 +18,14 @@ import javax.inject.Inject
 
 class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
-    private val networkClient: INetworkClient
+    private val networkClient: INetworkClient,
+    private val errorMapper: IFirestoreErrorMapper
 ) : ICommentsRemoteDataSource {
 
 
     override suspend fun submitComment(
         comment: CommentEntityModel
-    ): Result<Unit> =
+    ): AppResult<Unit> =
         networkClient.execute(RetryConfigs.COMMENTS) {
 
             commentsCollection(comment.propertyId)
@@ -35,7 +37,7 @@ class FirestoreComments @Inject constructor(
 
     override fun observeComments(
         propertyId: String
-    ): Flow<Result<List<CommentEntityModel>>> =
+    ): Flow<AppResult<List<CommentEntityModel>>> =
         callbackFlow {
 
             val listener =
@@ -48,7 +50,9 @@ class FirestoreComments @Inject constructor(
 
                         if (error != null) {
                             trySend(
-                                Result.Failure(error)
+                                AppResult.Error(
+                                    errorMapper.map(error)
+                                )
                             )
                             return@addSnapshotListener
                         }
@@ -61,7 +65,7 @@ class FirestoreComments @Inject constructor(
                                 ?: emptyList()
 
                         trySend(
-                            Result.Success(comments)
+                            AppResult.Success(comments)
                         )
                     }
 

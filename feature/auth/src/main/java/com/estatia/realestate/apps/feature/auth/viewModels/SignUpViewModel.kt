@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
@@ -77,14 +77,14 @@ class SignUpViewModel @Inject constructor(
                     current.password
                 )
             ) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     handleUserRegistration(
                         authResult = authResult.data,
                         current = current
                     )
                 }
 
-                is Result.Failure -> {
+                is AppResult.Error -> {
                     update {
                         copy(
                             isLoading = false,
@@ -117,12 +117,12 @@ class SignUpViewModel @Inject constructor(
                 userDomainModel
             )
         ) {
-            is Result.Success -> {
+            is AppResult.Success -> {
                 emitNextAuthStep(current)
                 update { copy(isLoading = false) }
             }
 
-            is Result.Failure -> {
+            is AppResult.Error -> {
                 update {
                     copy(
                         isLoading = false,

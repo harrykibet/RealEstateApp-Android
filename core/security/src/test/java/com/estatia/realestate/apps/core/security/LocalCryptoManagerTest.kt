@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.security
 
 import android.util.Base64
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
@@ -39,7 +39,7 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.rotateAesKey()
 
-        assertTrue(result is Result.Success)
+        assertTrue(result is AppResult.Success)
         verify { keyStore.deleteEntry("secure_app_key") }
         verify { cryptoManager invokeNoArgs "generateAesKey" }
     }
@@ -58,8 +58,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.aesEncrypt(plaintext)
 
-        assertTrue(result is Result.Success)
-        assertEquals(28, (result as Result.Success).data.size) // 12 IV + 16 Data
+        assertTrue(result is AppResult.Success)
+        assertEquals(28, (result as AppResult.Success).data.size) // 12 IV + 16 Data
     }
 
     @Test
@@ -75,8 +75,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.aesDecrypt(encryptedData)
 
-        assertTrue(result is Result.Success)
-        assertEquals("HelloWorld", String((result as Result.Success).data))
+        assertTrue(result is AppResult.Success)
+        assertEquals("HelloWorld", String((result as AppResult.Success).data))
     }
 
     @Test
@@ -92,8 +92,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.rsaEncrypt(plaintext)
 
-        assertTrue(result is Result.Success)
-        assertEquals(512, (result as Result.Success).data.size)
+        assertTrue(result is AppResult.Success)
+        assertEquals(512, (result as AppResult.Success).data.size)
     }
 
     @Test
@@ -109,8 +109,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.rsaDecrypt(encryptedData)
 
-        assertTrue(result is Result.Success)
-        assertEquals("SecureData", String((result as Result.Success).data))
+        assertTrue(result is AppResult.Success)
+        assertEquals("SecureData", String((result as AppResult.Success).data))
     }
 
     @Test
@@ -127,8 +127,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.signData(data)
 
-        assertTrue(result is Result.Success)
-        assertEquals(256, (result as Result.Success).data.size)
+        assertTrue(result is AppResult.Success)
+        assertEquals(256, (result as AppResult.Success).data.size)
     }
 
     @Test
@@ -146,8 +146,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.verifySignature(data, signatureBytes)
 
-        assertTrue(result is Result.Success)
-        assertTrue((result as Result.Success).data)
+        assertTrue(result is AppResult.Success)
+        assertTrue((result as AppResult.Success).data)
     }
 
     @Test
@@ -160,8 +160,8 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.hashWithSalt(data)
 
-        assertTrue(result is Result.Success)
-        assertEquals(expectedHash, (result as Result.Success).data)
+        assertTrue(result is AppResult.Success)
+        assertEquals(expectedHash, (result as AppResult.Success).data)
     }
 
     @Test
@@ -176,7 +176,7 @@ class LocalCryptoManagerTest {
 
         val result = cryptoManager.verifyHash(data, validHash)
 
-        assertTrue(result is Result.Success)
-        assertTrue((result as Result.Success).data)
+        assertTrue(result is AppResult.Success)
+        assertTrue((result as AppResult.Success).data)
     }
 }

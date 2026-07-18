@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import android.app.Activity
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -110,12 +110,12 @@ class PhoneVerificationViewModel @Inject constructor(
                         act
                     )
             ) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     startCountdown()
                     _uiState.value = PhoneVerificationUiState.CodeSent(result.data)
                 }
 
-                is Result.Failure -> {
+                is AppResult.Error -> {
                     _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Failed to resend code"
                     )
@@ -134,12 +134,12 @@ class PhoneVerificationViewModel @Inject constructor(
             when (
                 val result = authRepository.verifyPhoneCode(verificationId, code)
             ) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     countdownJob?.cancel()
                     _uiState.value = PhoneVerificationUiState.Success
                 }
 
-                is Result.Failure -> {
+                is AppResult.Error -> {
                     _uiState.value = PhoneVerificationUiState.Error(
                         result.exception.message ?: "Verification failed"
                     )

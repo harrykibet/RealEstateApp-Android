@@ -4,10 +4,11 @@ import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
-    suspend fun getUserById(userId: String): UserDomainModel
+    suspend fun getUserById(userId: String): AppResult<UserDomainModel>
     /**
      * Stream of [UserData]
      */

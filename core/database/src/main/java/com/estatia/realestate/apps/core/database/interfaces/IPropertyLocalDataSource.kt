@@ -8,8 +8,8 @@ interface IPropertyLocalDataSource {
     // Drafts (feature-specific)
     suspend fun saveDraft(draft: PropertyDraftEntity): Long
     suspend fun getAllDrafts(): List<PropertyDraftEntity>
-    suspend fun getDraftById(draftId: Int): PropertyDraftEntity?
-    suspend fun deleteDraft(draftId: Int)
+    suspend fun getDraftById(draftId: Long): PropertyDraftEntity?
+    suspend fun deleteDraft(draftId: Long)
     suspend fun clearAllDrafts()
 
     // -----------------------------

@@ -1,24 +1,24 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 
 interface IAnalyticsRemoteDataSource {
 
 
     suspend fun logEvent(
         event: AnalyticsEvent
-    ): Result<Unit>
+    ): AppResult<Unit>
 
 
     suspend fun getEventsForUser(
         userId: String
-    ): Result<List<AnalyticsEvent>>
+    ): AppResult<List<AnalyticsEvent>>
 
 
     suspend fun getEventById(
         eventId: String
-    ): Result<AnalyticsEvent?>
+    ): AppResult<AnalyticsEvent?>
 
 
     fun generateEventId(): String
@@ -28,5 +28,5 @@ interface IAnalyticsRemoteDataSource {
         message: String,
         eventType: String,
         customMetadata: Map<String, String>?
-    ): Result<Unit>
+    ): AppResult<Unit>
 }

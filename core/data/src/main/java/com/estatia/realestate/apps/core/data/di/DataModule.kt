@@ -4,10 +4,12 @@ import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.data.interfaces.ICryptoRepository
+import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.data.interfaces.ISecurityRepository
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.data.mappers.exceptions.ExceptionTranslator
 import com.estatia.realestate.apps.core.data.repositories.AnalyticsTracker
 import com.estatia.realestate.apps.core.data.repositories.AuthRepository
 import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
@@ -61,6 +63,10 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindUserRepo(repo: UserRepository): IUserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
 
     @Binds
     internal abstract fun bindsNetworkMonitor(

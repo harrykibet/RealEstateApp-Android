@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.security.interfaces
 
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 
 interface ITokenLocalDataSource {
-    suspend fun saveToken(token: String): Result<Unit>
-    suspend fun getToken(): Result<String?>
-    suspend fun clearToken(): Result<Unit>
+    suspend fun saveToken(token: String): AppResult<Unit>
+    suspend fun getToken(): AppResult<String?>
+    suspend fun clearToken(): AppResult<Unit>
 }

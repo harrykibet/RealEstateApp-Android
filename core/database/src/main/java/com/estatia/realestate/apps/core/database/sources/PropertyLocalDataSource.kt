@@ -22,11 +22,11 @@ class PropertyLocalDataSource @Inject constructor(
         return draftDao.getAllDrafts()
     }
 
-    override suspend fun getDraftById(draftId: Int): PropertyDraftEntity? {
+    override suspend fun getDraftById(draftId: Long): PropertyDraftEntity? {
         return draftDao.getDraftById(draftId)
     }
 
-    override suspend fun deleteDraft(draftId: Int) {
+    override suspend fun deleteDraft(draftId: Long) {
         draftDao.deleteDraftById(draftId)
     }
 

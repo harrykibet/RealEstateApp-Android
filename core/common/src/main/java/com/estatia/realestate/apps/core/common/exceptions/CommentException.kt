@@ -11,6 +11,31 @@ sealed class CommentException(
             "User must be authenticated to comment"
         )
 
+    data object CommentNotFound :
+        CommentException(
+            "Comment not found"
+        )
+
+    data class UserLookupFailed(
+        val exception: AppException
+    ): CommentException(
+        "Unable to load user profile",
+        exception
+    )
+
+
+    data object PermissionDenied :
+        CommentException(
+            "Permission denied"
+        )
+
+    data class Unknown(
+        val throwable:Throwable
+    ): CommentException(
+        "Unknown comment error",
+        throwable
+    )
+
 
     data object UserProfileMissing :
         CommentException(

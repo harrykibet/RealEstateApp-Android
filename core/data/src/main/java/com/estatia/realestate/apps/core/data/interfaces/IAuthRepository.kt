@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
@@ -13,26 +13,26 @@ interface IAuthRepository {
     fun getCurrentUserEmail(): String?
 
     fun getCurrentUser(): AuthUserDomainModel?
-    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
+    suspend fun sendPasswordResetEmail(email: String): AppResult<Unit>
 
     suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): Result<AuthUserDomainModel>
+    ): AppResult<AuthUserDomainModel>
 
     suspend fun signInWithEmail(
         email: String,
         password: String
-    ): Result<AuthUserDomainModel>
+    ): AppResult<AuthUserDomainModel>
 
     suspend fun signInWithGoogle(
         idToken: String
-    ): Result<AuthUserDomainModel>
+    ): AppResult<AuthUserDomainModel>
 
     suspend fun createOrUpdateUserProfile(
         userId: String,
         user: UserDomainModel
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     fun startPhoneNumberVerification(
         phoneNumber: String,
@@ -42,14 +42,14 @@ interface IAuthRepository {
     suspend fun verifyPhoneCode(
         verificationId: String,
         code: String
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     suspend fun resendVerificationCode(
         phoneNumber: String,
         activity: Activity
-    ): Result<String>
+    ): AppResult<String>
 
-    suspend fun sendEmailVerification(): Result<Unit>
-    suspend fun isEmailVerified(): Result<Boolean>
-    suspend fun signOut(): Result<Unit>
+    suspend fun sendEmailVerification(): AppResult<Unit>
+    suspend fun isEmailVerified(): AppResult<Boolean>
+    suspend fun signOut(): AppResult<Unit>
 }

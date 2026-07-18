@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -83,12 +83,12 @@ class CommentsViewModel @Inject constructor(
 
         viewModelScope.launch(ioDispatcher) {
             when (val result = commentsRepository.submitComment(propertyId, message)) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     update { copy(input = "") }
                     _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
 
-                is Result.Failure -> {
+                is AppResult.Error -> {
                     _events.emit(
                         CommentsEvent.ShowMessage(
                             result.exception.message ?: "Failed to post comment"

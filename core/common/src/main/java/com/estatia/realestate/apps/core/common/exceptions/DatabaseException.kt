@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.common.exceptions
 sealed class DatabaseException(
     message: String,
     cause: Throwable? = null
-) : AppException(message, cause) {
+) : AppException(message, cause), DomainMappableException {
 
 
     data object PermissionDenied :
@@ -31,7 +31,7 @@ sealed class DatabaseException(
 
     data class InvalidData(val msg: String) :
         DatabaseException(
-            "Database invalid data"
+            "Database invalid data : $msg"
         )
 
 
@@ -52,6 +52,10 @@ sealed class DatabaseException(
             "Database timeout"
         )
 
+    data class LocalDatabaseError(val msg: String) :
+        DatabaseException(
+            "Local database error : $msg"
+        )
 
     data class Unknown(
         val original: Throwable

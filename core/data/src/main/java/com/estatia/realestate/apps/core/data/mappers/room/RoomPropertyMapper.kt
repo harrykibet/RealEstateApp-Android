@@ -6,20 +6,8 @@ import com.estatia.realestate.apps.core.model.property.Coordinates
 import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
-import com.google.gson.Gson
 
 object RoomPropertyMapper {
-
-    private val gson = Gson()
-
-    private fun List<String>.toJson(): String = gson.toJson(this)
-
-    private fun String.toList(): List<String> =
-        try {
-            gson.fromJson(this, Array<String>::class.java)?.toList() ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
 
     fun toEntity(domain: PropertyDomainModel): PropertyCacheEntity {
         return PropertyCacheEntity(
@@ -29,8 +17,8 @@ object RoomPropertyMapper {
             description = domain.description,
             price = domain.price?.amount,
 
-            imageUrls = domain.imageUrls.toJson(),
-            videoUrls = domain.videoUrls.toJson(),
+            imageUrls = JsonConverter.toJson(domain.imageUrls),
+            videoUrls = JsonConverter.toJson(domain.videoUrls),
 
             videosAvailable = domain.videosAvailable,
 
@@ -68,8 +56,8 @@ object RoomPropertyMapper {
                 Money(it)
             },
 
-            imageUrls = entity.imageUrls.toList(),
-            videoUrls = entity.videoUrls.toList(),
+            imageUrls = JsonConverter.fromJson(entity.imageUrls),
+            videoUrls = JsonConverter.fromJson(entity.videoUrls),
 
             videosAvailable = entity.videosAvailable,
 

@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.EmailVerificationUiState
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +29,10 @@ class EmailVerificationViewModel @Inject constructor(
 
         viewModelScope.launch(ioDispatcher) {
             when (authRepository.sendEmailVerification()) {
-                is Result.Success ->
+                is AppResult.Success ->
                     _uiState.value = EmailVerificationUiState.EmailSent
 
-                is Result.Failure ->
+                is AppResult.Error ->
                     _uiState.value = EmailVerificationUiState.Error("Failed to send email")
             }
         }
@@ -43,7 +43,7 @@ class EmailVerificationViewModel @Inject constructor(
 
         viewModelScope.launch(ioDispatcher) {
             when (val result = authRepository.isEmailVerified()) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     _uiState.value =
                         if (result.data)
                             EmailVerificationUiState.Verified
@@ -51,7 +51,7 @@ class EmailVerificationViewModel @Inject constructor(
                             EmailVerificationUiState.EmailSent
                 }
 
-                is Result.Failure ->
+                is AppResult.Error ->
                     _uiState.value =
                         EmailVerificationUiState.Error("Verification check failed")
             }

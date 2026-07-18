@@ -16,16 +16,23 @@ sealed class PropertyException(
             "Permission denied"
         )
 
+    data class PropertyDraftNotFound(val msg: String? = null) :
+        PropertyException(
+            "Property draft not found : $msg"
+        )
+
+
     data object AlreadyExists :
         PropertyException(
             "Property already exists"
         )
 
-    data class Unknown(val throwable: Throwable) :
-        PropertyException(
-            "Unknown property error",
-            throwable
-        )
+    data class Unknown(
+        val throwable: Throwable? = null
+    ) : PropertyException(
+        "Unknown property error",
+        throwable
+    )
 
 
     data object InvalidProperty :
@@ -34,9 +41,9 @@ sealed class PropertyException(
         )
 
 
-    data object PropertyCreationFailed :
+    data class PropertyCreationFailed(val msg: String? = null) :
         PropertyException(
-            "Property creation failed"
+            "Property creation failed : $msg"
         )
 
 

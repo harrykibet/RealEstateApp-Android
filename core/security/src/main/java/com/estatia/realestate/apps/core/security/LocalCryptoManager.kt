@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.security
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import com.estatia.realestate.apps.core.common.errors.Result
+import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.security.interfaces.ILocalCryptoManager
 import kotlinx.coroutines.Dispatchers
@@ -53,44 +53,44 @@ class LocalCryptoManager @Inject constructor(
         if (!keyStore.containsAlias(RSA_SIGNING_KEY_ALIAS)) generateRsaSigningKey()
     }
 
-    override suspend fun rotateAesKey(): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun rotateAesKey(): AppResult<Unit> = withContext(Dispatchers.IO) {
         try {
             keyStore.deleteEntry(AES_KEY_ALIAS)
             generateAesKey()
-            Result.Success(Unit)
+            AppResult.Success(Unit)
         } catch (e: Exception) {
             logger.e("AES key rotation failed", e)
-            Result.Result.Failure(SecurityException("Key rotation failed", e))
+            AppResult.Result.Failure(SecurityException("Key rotation failed", e))
         }
     }
 
-    override suspend fun rotateRsaEncryptionKey(): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun rotateRsaEncryptionKey(): AppResult<Unit> = withContext(Dispatchers.IO) {
         try {
             keyStore.deleteEntry(RSA_ENCRYPTION_KEY_ALIAS)
             generateRsaEncryptionKey()
-            Result.Success(Unit)
+            AppResult.Success(Unit)
         } catch (e: Exception) {
             logger.e("RSA encryption key rotation failed", e)
-            Result.Result.Failure(SecurityException("Key rotation failed", e))
+            AppResult.Result.Failure(SecurityException("Key rotation failed", e))
         }
     }
     // endregion
 
     // region Symmetric Encryption
-    override suspend fun aesEncrypt(bytes: ByteArray): Result<ByteArray> =
+    override suspend fun aesEncrypt(bytes: ByteArray): AppResult<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 val cipher = Cipher.getInstance(AES_TRANSFORMATION).apply {
                     init(Cipher.ENCRYPT_MODE, getAesKey())
                 }
-                Result.Success(cipher.iv + cipher.doFinal(bytes))
+                AppResult.Success(cipher.iv + cipher.doFinal(bytes))
             } catch (e: Exception) {
                 logger.e("Symmetric encryption failed", e)
-                Result.Result.Failure(SecurityException("Encryption failed", e))
+                AppResult.Result.Failure(SecurityException("Encryption failed", e))
             }
         }
 
-    override suspend fun aesDecrypt(bytes: ByteArray): Result<ByteArray> =
+    override suspend fun aesDecrypt(bytes: ByteArray): AppResult<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 require(bytes.size >= 12) { "Invalid encrypted payload" }
@@ -99,16 +99,16 @@ class LocalCryptoManager @Inject constructor(
                 val cipher = Cipher.getInstance(AES_TRANSFORMATION).apply {
                     init(Cipher.DECRYPT_MODE, getAesKey(), GCMParameterSpec(GCM_TAG_LENGTH, iv))
                 }
-                Result.Success(cipher.doFinal(bytes, 12, bytes.size - 12))
+                AppResult.Success(cipher.doFinal(bytes, 12, bytes.size - 12))
             } catch (e: Exception) {
                 logger.e("Symmetric decryption failed", e)
-                Result.Result.Failure(SecurityException("Decryption failed", e))
+                AppResult.Result.Failure(SecurityException("Decryption failed", e))
             }
         }
     // endregion
 
     // region Asymmetric Encryption (Hybrid Approach)
-    override suspend fun rsaEncrypt(data: ByteArray): Result<ByteArray> =
+    override suspend fun rsaEncrypt(data: ByteArray): AppResult<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 // Generate one-time AES key
@@ -130,14 +130,14 @@ class LocalCryptoManager @Inject constructor(
                 val encryptedAesKey = cipherRsa.doFinal(aesKey.encoded)
 
                 // Package: [RSA-encrypted AES key] + [IV] + [AES-encrypted data]
-                Result.Success(encryptedAesKey + iv + encryptedData)
+                AppResult.Success(encryptedAesKey + iv + encryptedData)
             } catch (e: Exception) {
                 logger.e("RSA encryption failed", e)
-                Result.Result.Failure(SecurityException("RSA encryption failed", e))
+                AppResult.Result.Failure(SecurityException("RSA encryption failed", e))
             }
         }
 
-    override suspend fun rsaDecrypt(data: ByteArray): Result<ByteArray> =
+    override suspend fun rsaDecrypt(data: ByteArray): AppResult<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 require(data.size > RSA_ENCRYPTED_KEY_SIZE + 12) { "Invalid encrypted payload" }
@@ -158,42 +158,42 @@ class LocalCryptoManager @Inject constructor(
                 val cipherAes = Cipher.getInstance(AES_TRANSFORMATION).apply {
                     init(Cipher.DECRYPT_MODE, aesKey, GCMParameterSpec(GCM_TAG_LENGTH, iv))
                 }
-                Result.Success(cipherAes.doFinal(encryptedData))
+                AppResult.Success(cipherAes.doFinal(encryptedData))
             } catch (e: Exception) {
                 logger.e("RSA decryption failed", e)
-                Result.Result.Failure(SecurityException("RSA decryption failed", e))
+                AppResult.Result.Failure(SecurityException("RSA decryption failed", e))
             }
         }
     // endregion
 
     // region Digital Signatures
-    override suspend fun signData(data: ByteArray): Result<ByteArray> =
+    override suspend fun signData(data: ByteArray): AppResult<ByteArray> =
         withContext(Dispatchers.IO) {
             try {
                 Signature.getInstance(SIGNATURE_ALGORITHM).apply {
                     initSign(getRsaSigningPrivateKey())
                     update(data)
                 }.sign().let {
-                    Result.Success(it)
+                    AppResult.Success(it)
                 }
             } catch (e: Exception) {
                 logger.e("Signature generation failed", e)
-                Result.Result.Failure(SecurityException("Signing failed", e))
+                AppResult.Result.Failure(SecurityException("Signing failed", e))
             }
         }
 
-    override suspend fun verifySignature(data: ByteArray, signature: ByteArray): Result<Boolean> =
+    override suspend fun verifySignature(data: ByteArray, signature: ByteArray): AppResult<Boolean> =
         withContext(Dispatchers.IO) {
             try {
                 Signature.getInstance(SIGNATURE_ALGORITHM).apply {
                     initVerify(getRsaSigningPublicKey())
                     update(data)
                 }.verify(signature).let {
-                    Result.Success(it)
+                    AppResult.Success(it)
                 }
             } catch (e: Exception) {
                 logger.e("Signature verification failed", e)
-                Result.Result.Failure(SecurityException("Verification failed", e))
+                AppResult.Result.Failure(SecurityException("Verification failed", e))
             }
         }
     // endregion
@@ -262,7 +262,7 @@ class LocalCryptoManager @Inject constructor(
     // endregion
 
     // region Password Hashing
-    override suspend fun hashWithSalt(data: String): Result<String> = withContext(Dispatchers.IO) {
+    override suspend fun hashWithSalt(data: String): AppResult<String> = withContext(Dispatchers.IO) {
         try {
             val salt = ByteArray(16).apply { SecureRandom().nextBytes(this) }
             val iterations = 600000
@@ -270,7 +270,7 @@ class LocalCryptoManager @Inject constructor(
             val keySpec = PBEKeySpec(data.toCharArray(), salt, iterations, 256)
             SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(keySpec)
                 .let { secret ->
-                    Result.Success(
+                    AppResult.Success(
                         "pbkdf2_sha256:$iterations:${
                             Base64.encodeToString(salt, Base64.NO_WRAP)
                         }:${Base64.encodeToString(secret.encoded, Base64.NO_WRAP)}"
@@ -278,11 +278,11 @@ class LocalCryptoManager @Inject constructor(
                 }
         } catch (e: Exception) {
             logger.e("Password hashing failed", e)
-            Result.Result.Failure(SecurityException("Hashing failed", e))
+            AppResult.Result.Failure(SecurityException("Hashing failed", e))
         }
     }
 
-    override suspend fun verifyHash(data: String, hash: String): Result<Boolean> =
+    override suspend fun verifyHash(data: String, hash: String): AppResult<Boolean> =
         withContext(Dispatchers.IO) {
             try {
                 val parts = hash.split(":")
@@ -295,11 +295,11 @@ class LocalCryptoManager @Inject constructor(
                 val keySpec = PBEKeySpec(data.toCharArray(), salt, iterations, storedHash.size * 8)
                 SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(keySpec)
                     .let { secret ->
-                        Result.Success(secret.encoded.contentEquals(storedHash))
+                        AppResult.Success(secret.encoded.contentEquals(storedHash))
                     }
             } catch (e: Exception) {
                 logger.e("Hash verification failed", e)
-                Result.Result.Failure(SecurityException("Verification failed", e))
+                AppResult.Result.Failure(SecurityException("Verification failed", e))
             }
         }
     // endregion

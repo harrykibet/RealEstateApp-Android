@@ -22,4 +22,24 @@ sealed class SearchException(
         SearchException(
             "Search failed"
         )
+
+    data object QueryFailed:
+        SearchException(
+            "Search failed"
+        )
+
+
+
+    data object NoResults:
+        SearchException(
+            "No search results"
+        )
+
+
+    data class Unknown(
+        val throwable:Throwable
+    ):SearchException(
+        "Unknown search error",
+        throwable
+    )
 }

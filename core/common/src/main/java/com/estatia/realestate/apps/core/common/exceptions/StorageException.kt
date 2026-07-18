@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.common.exceptions
 sealed class StorageException(
     message: String,
     cause: Throwable? = null
-) : AppException(message, cause) {
+) : AppException(message, cause), DomainMappableException {
 
 
     data object PermissionDenied :
@@ -21,6 +21,11 @@ sealed class StorageException(
     data object BucketNotFound :
         StorageException(
             "Storage bucket not found"
+        )
+
+    data object UploadFailed :
+        StorageException(
+            "Storage upload failed"
         )
 
 

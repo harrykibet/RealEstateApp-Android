@@ -2,9 +2,9 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
-import com.estatia.realestate.apps.core.common.errors.Result
-import com.estatia.realestate.apps.core.network.db_entities.PropertyCursor
-import com.estatia.realestate.apps.core.network.db_entities.PropertyPage
+import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 
 interface IPropertyRemoteDatasource {
 
@@ -12,45 +12,45 @@ interface IPropertyRemoteDatasource {
         property: PropertyEntityModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>
-    ): Result<String>
+    ): AppResult<String>
 
     // Update Property
     suspend fun updateProperty(
         propertyId: String,
         updates: Map<String, Any>
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     // Delete Property
     suspend fun deleteProperty(
         propertyId: String
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     // Get Property by id
     suspend fun getPropertyById(
         propertyId: String
-    ): Result<PropertyEntityModel>
+    ): AppResult<PropertyEntityModel>
 
     suspend fun fetchLikedProperties(
         userId: String
-    ): Result<List<PropertyEntityModel>>
+    ): AppResult<List<PropertyEntityModel>>
 
     suspend fun searchProperties(
         query: String,
         limit: Int
-    ): Result<List<PropertyEntityModel>>
+    ): AppResult<List<PropertyEntityModel>>
 
     suspend fun likeProperty(
         userId: String,
         propertyId: String
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     suspend fun unlikeProperty(
         userId: String,
         propertyId: String
-    ): Result<Unit>
+    ): AppResult<Unit>
 
     suspend fun fetchPropertiesPaginated(
         cursor: PropertyCursor?,
         pageSize: Int
-    ): Result<PropertyPage>
+    ): AppResult<PropertyRemotePage>
 }
