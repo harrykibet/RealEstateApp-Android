@@ -43,7 +43,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.encryptDataSymmetric(plainText))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -51,7 +51,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.decryptDataSymmetric(encryptedText))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -60,7 +60,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.encryptDataAsymmetric(plainText))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -68,7 +68,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.decryptDataAsymmetric(encryptedText))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -103,7 +103,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.signData(plainText))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -111,7 +111,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.verifySignature(plainText, signature))
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 
@@ -129,7 +129,7 @@ class CryptoRepository(
         return try {
             AppResult.Success(remoteCryptoManager.listKeys())
         } catch (error: Exception) {
-            AppResult.Result.Failure(error)
+            AppResult.Error(error)
         }
     }
 }
