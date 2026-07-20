@@ -4,7 +4,6 @@ import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
-import com.estatia.realestate.apps.core.network.utils.ServiceNames
 import com.estatia.realestate.apps.core.network.exceptions.InvalidApiKeyException
 import io.mockk.*
 import org.junit.jupiter.api.*

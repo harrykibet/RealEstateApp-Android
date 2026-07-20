@@ -2,11 +2,10 @@ package com.estatia.realestate.apps.core.network.db_entities
 
 import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.google.firebase.firestore.ServerTimestamp
-import java.util.Date
 
 data class LikesEntity(
     val userId: String? = null,
-    @ServerTimestamp val likedAt: Date? = null
+    @ServerTimestamp val likedAt: Long
 ) {
     // Map to Domain Model
     @Suppress("unused")

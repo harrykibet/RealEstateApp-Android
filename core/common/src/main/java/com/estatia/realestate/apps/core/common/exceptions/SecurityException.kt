@@ -76,4 +76,13 @@ sealed class SecurityException(
             "Key rotation failed",
             throwable
         )
+
+    data class InvalidApiKey(
+        val msg: String,
+        val throwable: Throwable? = null
+    ) :
+        SecurityException(
+            "Invalid API key : $msg",
+            throwable
+        )
 }

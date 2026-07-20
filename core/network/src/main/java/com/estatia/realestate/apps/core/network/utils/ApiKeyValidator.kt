@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
-import com.estatia.realestate.apps.core.network.exceptions.InvalidApiKeyException
+import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -45,7 +45,7 @@ class ApiKeyValidator @Inject constructor(
         val sanitizedKey = sanitizeForLogging(apiKey)
 
         when {
-            apiKey.isEmpty() -> throw InvalidApiKeyException("API key cannot be empty", service)
+            apiKey.isEmpty() -> throw SecurityException.InvalidApiKey("API key cannot be empty + $service")
             service != null -> validateForService(apiKey, service, sanitizedKey)
             else -> performGenericValidation(apiKey, sanitizedKey)
         }
@@ -55,20 +55,18 @@ class ApiKeyValidator @Inject constructor(
 
     private fun validateForService(apiKey: String, service: ServiceNames, sanitizedKey: String) {
         val pattern = servicePatterns[service]
-            ?: throw IllegalArgumentException("No validation pattern defined for ${service.name}")
+            ?: throw SecurityException.InvalidApiKey("No matching api key pattern for: ${service.name}")
 
         if (!pattern.matches(apiKey)) {
             val error = "Invalid API key format for ${service.name}. Sanitized key: $sanitizedKey"
-            logger.e(error)
-            throw InvalidApiKeyException(error, service)
+            throw SecurityException.InvalidApiKey(error)
         }
     }
 
     private fun performGenericValidation(apiKey: String, sanitizedKey: String) {
         if (!genericKeyPattern.matches(apiKey)) {
             val error = "Invalid generic API key format. Sanitized key: $sanitizedKey"
-            logger.e(error)
-            throw InvalidApiKeyException(error)
+            throw SecurityException.InvalidApiKey(error)
         }
     }
 
