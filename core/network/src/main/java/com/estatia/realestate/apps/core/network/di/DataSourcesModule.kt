@@ -3,16 +3,12 @@ package com.estatia.realestate.apps.core.network.di
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IGoogleCloudKmsManager
-import com.estatia.realestate.apps.core.network.interfaces.IGoogleCloudSecretsManager
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.FirestoreAnalytics
 import com.estatia.realestate.apps.core.network.sources.FirebaseAuthService
 import com.estatia.realestate.apps.core.network.sources.FirestoreComments
-import com.estatia.realestate.apps.core.network.sources.GoogleCloudKmsManager
-import com.estatia.realestate.apps.core.network.sources.GoogleCloudSecretsManager
 import com.estatia.realestate.apps.core.network.sources.FirestoreProperties
 import com.estatia.realestate.apps.core.network.sources.FirestoreSearch
 import com.estatia.realestate.apps.core.network.sources.FirestoreUsers
@@ -57,14 +53,4 @@ abstract class DataSourcesModule {
     @Singleton
     abstract fun bindUserRemoteDataSource(
         dataSource: FirestoreUsers): IUserRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindGoogleKmsManager(
-        googleKmsManager: GoogleCloudKmsManager): IGoogleCloudKmsManager
-
-    @Binds
-    @Singleton
-    abstract fun bindGoogleSecretsManager(
-        googleSecretsManager: GoogleCloudSecretsManager): IGoogleCloudSecretsManager
 }

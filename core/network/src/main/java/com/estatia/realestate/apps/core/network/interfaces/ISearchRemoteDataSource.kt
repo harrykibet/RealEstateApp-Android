@@ -1,10 +1,20 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
-import com.google.android.gms.maps.GoogleMap
+import com.estatia.realestate.apps.core.common.errors.AppResult
 
 interface ISearchRemoteDataSource {
-    // Search Properties
-    suspend fun searchProperties(query: String, limit: Int, onFailure: (Exception) -> Unit): List<PropertyEntityModel?>
-    suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean
+
+
+    suspend fun searchProperties(
+        query:String,
+        limit:Int
+    ): AppResult<List<PropertyEntityModel>>
+
+
+    suspend fun getNearbyProperties(
+        latitude:Double,
+        longitude:Double,
+        radiusKm:Double
+    ): AppResult<List<PropertyEntityModel>>
 }
