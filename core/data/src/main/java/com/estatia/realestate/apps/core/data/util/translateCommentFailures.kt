@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.util
 
 import com.estatia.realestate.apps.core.common.errors.mapError
 import com.estatia.realestate.apps.core.common.errors.AppResult
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 
 fun <T> AppResult<T>.translateCommentFailures(
@@ -13,7 +13,7 @@ fun <T> AppResult<T>.translateCommentFailures(
 
         when(exception){
 
-            is DomainMappableException ->
+            is InfrastructureException ->
                 translator.translateComment(exception)
 
             else ->

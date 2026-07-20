@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.common.exceptions.UserException
 import com.estatia.realestate.apps.core.data.interfaces.DataExceptionMapper
@@ -12,7 +12,7 @@ class UserExceptionMapper @Inject constructor()
 
 
     override fun map(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): UserException {
 
 

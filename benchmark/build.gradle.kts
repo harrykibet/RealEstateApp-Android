@@ -17,7 +17,7 @@ android {
 
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your
-        // release build (for example, with minification on). It"s signed with a debug key
+        // release build (for example, with minification on). It's signed with a debug key
         create("benchmark") {
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true

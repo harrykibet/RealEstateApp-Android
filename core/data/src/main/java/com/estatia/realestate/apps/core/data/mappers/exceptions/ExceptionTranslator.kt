@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class ExceptionTranslator @Inject constructor(
 
 
     override fun translateProperty(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException {
 
         return propertyMapper.map(exception)
@@ -23,7 +23,7 @@ class ExceptionTranslator @Inject constructor(
 
 
     override fun translateUser(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException {
 
         return userMapper.map(exception)
@@ -31,7 +31,7 @@ class ExceptionTranslator @Inject constructor(
 
 
     override fun translateComment(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException {
 
         return commentMapper.map(exception)
@@ -39,7 +39,7 @@ class ExceptionTranslator @Inject constructor(
 
 
     override fun translateSearch(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException {
 
         return searchMapper.map(exception)

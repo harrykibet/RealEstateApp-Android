@@ -1,19 +1,18 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
-import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.data.interfaces.DataExceptionMapper
 import javax.inject.Inject
 
 class PropertyExceptionMapper @Inject constructor()
-    : DataExceptionMapper<AppException> {
+    : DataExceptionMapper<PropertyException> {
 
 
     override fun map(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): PropertyException {
 
         return when(exception) {
@@ -60,7 +59,7 @@ class PropertyExceptionMapper @Inject constructor()
         return when(exception) {
 
             StorageException.UploadFailed ->
-                PropertyException.PropertyCreationFailed
+                PropertyException.PropertyCreationFailed()
 
 
             StorageException.PermissionDenied ->

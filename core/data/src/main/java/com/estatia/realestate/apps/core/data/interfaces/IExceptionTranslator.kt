@@ -1,26 +1,26 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 
 interface IExceptionTranslator {
 
     fun translateProperty(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException
 
 
     fun translateUser(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException
 
 
     fun translateComment(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException
 
 
     fun translateSearch(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): AppException
 }

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.common.exceptions
 sealed class DatabaseException(
     message: String,
     cause: Throwable? = null
-) : AppException(message, cause), DomainMappableException {
+) : AppException(message, cause), InfrastructureException {
 
 
     data object PermissionDenied :

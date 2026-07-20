@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.CommentException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.common.exceptions.DomainMappableException
+import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.data.interfaces.DataExceptionMapper
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class CommentExceptionMapper @Inject constructor()
 
 
     override fun map(
-        exception: DomainMappableException
+        exception: InfrastructureException
     ): CommentException {
 
 
