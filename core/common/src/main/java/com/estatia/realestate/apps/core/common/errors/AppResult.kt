@@ -67,3 +67,11 @@ inline fun <T> AppResult<T>.mapError(
             )
     }
 }
+
+
+fun <T> AppResult<T>.getOrThrow(): T {
+    return when(this) {
+        is AppResult.Success -> data
+        is AppResult.Error -> throw exception
+    }
+}

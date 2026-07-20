@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import android.util.Base64
 import com.estatia.realestate.apps.core.common.errors.map
-import com.estatia.realestate.apps.core.security.interfaces.ILocalCryptoManager
 import com.estatia.realestate.apps.core.common.errors.AppResult
 import com.estatia.realestate.apps.core.data.interfaces.ICryptoRepository
 import kotlinx.coroutines.Dispatchers
