@@ -50,7 +50,7 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
 
                 AppResult.Success(Unit)
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
                 AppResult.Error(
                     SecurityException.KeyGenerationFailed
@@ -98,7 +98,7 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
                 AppResult.Success(Unit)
 
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
                 AppResult.Error(
                     SecurityException.KeyGenerationFailed
@@ -167,7 +167,7 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
                 AppResult.Success(Unit)
 
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
                 AppResult.Error(
                     SecurityException.KeyGenerationFailed
@@ -223,7 +223,7 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
             )
 
 
-        }catch(e:Exception){
+        }catch(_:Exception){
 
             AppResult.Error(
                 SecurityException.KeyRetrievalFailed
