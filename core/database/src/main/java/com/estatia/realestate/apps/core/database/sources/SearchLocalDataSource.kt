@@ -36,6 +36,7 @@ class SearchLocalDataSource @Inject constructor(
                 .map(SearchHistoryEntity::query)
         }
 
+
     // Clear all search history
     override suspend fun clearSearchHistory()
             : AppResult<Unit> =
