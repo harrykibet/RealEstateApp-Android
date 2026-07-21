@@ -28,7 +28,11 @@ class VideoPlaybackViewModel @Inject constructor(
     private var playJob: Job? = null
     private var preloadJob: Job? = null
 
-    private val warmedMedia = mutableSetOf<String>()
+    companion object {
+        private const val MAX_WARMED_MEDIA = 6
+    }
+
+    private val warmedMedia = LinkedHashSet<String>()
 
     private val _uiState =
         MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
@@ -91,14 +95,22 @@ class VideoPlaybackViewModel @Inject constructor(
         }
     }
 
+    private fun markWarmed(mediaId: String): Boolean {
+        val isNew = warmedMedia.add(mediaId)
+        while (warmedMedia.size > MAX_WARMED_MEDIA) {
+            warmedMedia.remove(warmedMedia.first())
+        }
+        return isNew
+    }
+
     private fun warmVisible(mediaId: String, uri: Uri) {
-        if (warmedMedia.add(mediaId)) {
+        if (markWarmed(mediaId)) {
             streamingPipeline.warm(uri, WarmPriority.VISIBLE)
         }
     }
 
     private fun warmNext(mediaId: String, uri: Uri) {
-        if (warmedMedia.add(mediaId)) {
+        if (markWarmed(mediaId)) {
             streamingPipeline.warm(uri, WarmPriority.NEXT)
         }
     }

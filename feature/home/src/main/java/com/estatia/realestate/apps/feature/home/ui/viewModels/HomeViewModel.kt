@@ -1,15 +1,16 @@
 package com.estatia.realestate.apps.feature.home.ui.viewModels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,56 +20,44 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private val _propertiesLiveData = MutableLiveData<List<PropertyDomainModel>>()
-    val propertiesLiveData: LiveData<List<PropertyDomainModel>> get() = _propertiesLiveData
-
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
-
-    private val isLoadingMutable = MutableLiveData<Boolean>()
-    //val isLoading: LiveData<Boolean> get() = isLoadingMutable
-
-    private var lastVisibleDocument: String? = null
+    private var cursor: PropertyCursor? = null
     private var canLoadMore = true
 
-    // Fetch properties with api in a coroutine
-    fun fetchProperties(isFirstLoad: Boolean, pageSize: Int, onFailure: (Exception) -> Unit) {
-        if (!canLoadMore || isLoadingMutable.value == true) return // Prevent redundant fetches
+    fun fetchProperties(isFirstLoad: Boolean, pageSize: Int) {
+        if (isFirstLoad) {
+            cursor = null
+            canLoadMore = true
+        }
 
-        isLoadingMutable.value = true
+        if (!canLoadMore || _uiState.value.isLoading) return
+
+        _uiState.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
             try {
-                val result = api.fetchPropertiesPaginated(lastVisibleDocument, pageSize, onFailure)
-                val newProperties = result.first
-                val lastVisible = result.second
+                val result = api.fetchPropertiesPaginated(cursor, pageSize)
+                val page = result.getOrThrow()
+                
+                val newProperties = page.properties
+                cursor = page.cursor
 
-                handleFetchedProperties(newProperties, isFirstLoad)
+                _uiState.update { current ->
+                    current.copy(
+                        isLoading = false,
+                        properties = if (isFirstLoad) newProperties else current.properties + newProperties
+                    )
+                }
 
-                // Update pagination state
-                lastVisibleDocument = lastVisible
                 canLoadMore = newProperties.size == pageSize
-
-            } catch (exception: Exception) {
-                // Error handling
-                _errorMessage.value = "Failed to fetch properties. Please try again."
-            } finally {
-                isLoadingMutable.value = false
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, error = "Failed to fetch properties. Please try again.")
+                }
             }
         }
     }
 
-    // Handle adding new properties to the list
-    private fun handleFetchedProperties(newProperties: List<PropertyDomainModel>, isFirstLoad: Boolean) {
-        if (isFirstLoad) {
-            _propertiesLiveData.value = newProperties
-        } else {
-            _propertiesLiveData.value = _propertiesLiveData.value.orEmpty() + newProperties
-        }
-    }
-
-    // Check if more properties can be loaded
     fun canLoadMore(): Boolean = canLoadMore
 }

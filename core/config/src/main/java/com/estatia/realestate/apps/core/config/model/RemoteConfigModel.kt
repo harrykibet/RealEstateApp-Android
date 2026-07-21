@@ -1,9 +1,11 @@
 package com.estatia.realestate.apps.core.config.model
 
+import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+
 data class RemoteConfigModel(
     val keyPatterns: KeyPatterns,
     val encryptionKeys: EncryptionKeys,
-    val cdnEndpoints: List<String>,
+    val cdnEndpoints: List<CdnEndpoint>,
     val baseConfig: BaseConfig
 )
 

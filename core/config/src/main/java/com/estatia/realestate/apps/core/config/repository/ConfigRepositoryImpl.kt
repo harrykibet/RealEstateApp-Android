@@ -78,27 +78,12 @@ class ConfigRepositoryImpl @Inject constructor(
     private fun applyConfig(config: RemoteConfigModel) {
 
         cachedConfig = config
-
         googleRegex = Regex(config.keyPatterns.google)
         genericRegex = Regex(config.keyPatterns.generic)
         paymentsRegex = Regex(config.keyPatterns.payments)
-
-        cachedCdnEndpoints = buildCdnEndpoints(config.cdnEndpoints)
-
+        cachedCdnEndpoints = config.cdnEndpoints
         stateHolder.update(config)
-    }
 
-    private fun buildCdnEndpoints(urls: List<String>): List<CdnEndpoint> {
-
-        if (urls.isEmpty()) return emptyList()
-
-        return urls.mapIndexed { index, url ->
-
-            CdnEndpoint(
-                name = "cdn-${index + 1}",
-                baseUrl = url
-            )
-        }
     }
 
     // -------------------------

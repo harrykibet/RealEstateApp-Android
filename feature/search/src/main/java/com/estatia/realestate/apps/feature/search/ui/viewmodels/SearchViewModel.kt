@@ -42,13 +42,18 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
-    
-    fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean {
-        var nearbyPropertiesFound = false
+
+    // SearchViewModel.kt
+    fun loadNearbyProperties(
+        map: GoogleMap,
+        userLat: Double,
+        userLng: Double,
+        onResult: (Boolean) -> Unit
+    ) {
         viewModelScope.launch {
-            nearbyPropertiesFound = searchRepository.loadNearbyProperties(map, userLat, userLng)
+            val found = searchRepository.loadNearbyProperties(map, userLat, userLng)
+            onResult(found)
         }
-        return nearbyPropertiesFound
     }
 
     fun loadSearchHistory() {

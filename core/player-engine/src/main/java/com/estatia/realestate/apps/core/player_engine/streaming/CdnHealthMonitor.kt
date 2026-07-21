@@ -20,24 +20,33 @@ class CdnHealthMonitor @Inject constructor(
     private val circuitOpenDuration: Duration = 60.seconds
     private val clock: () -> Long = { System.currentTimeMillis() }
 
-    private val mutex = Mutex()
-    private val healthMap = mutableMapOf<String, CdnHealth>()
+    private val endpointMutexes = java.util.concurrent.ConcurrentHashMap<String, Mutex>()
+    private val healthMap = java.util.concurrent.ConcurrentHashMap<String, CdnHealth>()
 
-    suspend fun getHealth(endpoint: CdnEndpoint): CdnHealth =
-        mutex.withLock {
+    private fun mutexFor(key: String): Mutex =
+        endpointMutexes.getOrPut(key) { Mutex() }
 
-            val current = healthMap[endpoint.baseUrl]
-            val now = clock()
+    suspend fun getHealth(endpoint: CdnEndpoint): CdnHealth {
+        val current = healthMap[endpoint.baseUrl]
+        val now = clock()
 
-            // TTL cache hit
-            if (current != null && now - current.lastCheckedAt < ttl.inWholeMilliseconds) {
-                return current
+        if (current != null && now - current.lastCheckedAt < ttl.inWholeMilliseconds) {
+            return current
+        }
+
+        // Locked only per-endpoint — probes to other endpoints proceed concurrently.
+        return mutexFor(endpoint.baseUrl).withLock {
+            val recheck = healthMap[endpoint.baseUrl]
+            val recheckNow = clock()
+            if (recheck != null && recheckNow - recheck.lastCheckedAt < ttl.inWholeMilliseconds) {
+                return@withLock recheck
             }
 
-            val updated = measure(endpoint, current)
+            val updated = measure(endpoint, recheck)
             healthMap[endpoint.baseUrl] = updated
             updated
         }
+    }
 
     private suspend fun measure(
         endpoint: CdnEndpoint,

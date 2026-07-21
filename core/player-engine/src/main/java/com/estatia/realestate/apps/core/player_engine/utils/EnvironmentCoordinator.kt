@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
+import android.net.ConnectivityManager
 import android.os.Handler
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
@@ -21,7 +22,8 @@ import javax.inject.Singleton
 class EnvironmentCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val batteryManager: IBatteryManager,
-    private val bandwidthMeter: BandwidthMeter
+    private val bandwidthMeter: BandwidthMeter,
+    private val connectivityManager: ConnectivityManager
 ) {
 
     private val _environment = MutableStateFlow(
@@ -112,9 +114,7 @@ class EnvironmentCoordinator @Inject constructor(
      * This avoids coupling network quality logic with system billing state.
      */
     private fun isNetworkMetered(): Boolean {
-        val context = (bandwidthMeter as? android.content.Context)
-        val cm = context?.getSystemService(android.net.ConnectivityManager::class.java)
-        return cm?.isActiveNetworkMetered ?: false
+        return connectivityManager.isActiveNetworkMetered
     }
 
     fun stop() {

@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.di
 
 import android.content.Context
+import android.net.ConnectivityManager
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
@@ -134,12 +135,14 @@ abstract class PlayerManagerModule {
         fun provideEnvironmentCoordinator(
             networkStateProvider: INetworkStateProvider,
             batteryManager: IBatteryManager,
-            bandwidthMeter: BandwidthMeter
+            bandwidthMeter: BandwidthMeter,
+            connectivityManager: ConnectivityManager
         ): EnvironmentCoordinator {
             return EnvironmentCoordinator(
                 networkStateProvider = networkStateProvider,
                 batteryManager = batteryManager,
-                bandwidthMeter = bandwidthMeter
+                bandwidthMeter = bandwidthMeter,
+                connectivityManager = connectivityManager
             )
         }
     }

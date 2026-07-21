@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.config.parser
 
 import com.estatia.realestate.apps.core.config.model.*
+import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import kotlinx.serialization.json.*
 
+// ConfigParser.kt
 class ConfigParser {
 
     fun parse(json: String): RemoteConfigModel {
@@ -14,7 +16,13 @@ class ConfigParser {
 
         val cdnEndpoints = root["cdn_endpoints"]!!
             .jsonArray
-            .map { it.jsonPrimitive.content }
+            .map { element ->
+                val obj = element.jsonObject
+                CdnEndpoint(
+                    name = obj["name"]!!.jsonPrimitive.content,
+                    baseUrl = obj["base_url"]!!.jsonPrimitive.content
+                )
+            }
 
         return RemoteConfigModel(
             keyPatterns = KeyPatterns(
@@ -27,8 +35,7 @@ class ConfigParser {
                 keyRingId = encryptionKeys["key_ring_id"]!!.jsonPrimitive.content,
                 symmetricKeyId = encryptionKeys["symmetric_key_id"]!!.jsonPrimitive.content,
                 asymmetricKeyId = encryptionKeys["asymmetric_key_id"]!!.jsonPrimitive.content,
-                asymmetricSigningKeyId =
-                    encryptionKeys["asymmetric_signing_key_id"]!!.jsonPrimitive.content
+                asymmetricSigningKeyId = encryptionKeys["asymmetric_signing_key_id"]!!.jsonPrimitive.content
             ),
             cdnEndpoints = cdnEndpoints,
             baseConfig = BaseConfig(

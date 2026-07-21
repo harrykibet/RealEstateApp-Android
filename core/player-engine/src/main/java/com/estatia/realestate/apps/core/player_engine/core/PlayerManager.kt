@@ -12,10 +12,15 @@ import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// PlayerManager.kt
 @UnstableApi
 @Singleton
 class PlayerManager @Inject constructor(
@@ -27,63 +32,48 @@ class PlayerManager @Inject constructor(
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) : IPlayerManager {
 
-    private val reducer = PlaybackStateReducer()
-
     private var activeMediaId: String? = null
+    private val activeMediaIdFlow = MutableStateFlow<String?>(null)
+    private val attachedPlayers = mutableSetOf<ExoPlayer>()
 
     init {
         require(playerDispatcher is ExecutorCoroutineDispatcher) {
             "PlayerDispatcher must be single-threaded"
         }
-
-        // Start environment monitoring
         environmentCoordinator.start(engineScope)
-
-        // React to environment changes
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
-
-                // 1️⃣ Update adaptive pool size
                 val newSize = sizingPolicy.calculateMaxPoolSize()
                 pool.updateMaxPoolSize(newSize, activeMediaId)
-
-                // 2️⃣ Apply environment to all pooled players
                 pool.forEachPlayer { player, mediaType ->
-                    dynamicBitrateController.apply(
-                        player,
-                        mediaType,
-                        env
-                    )
+                    dynamicBitrateController.apply(player, mediaType, env)
                 }
             }
         }
     }
 
-    override suspend fun play(
-        mediaId: String,
-        mediaType: MediaType
-    ) = withContext(playerDispatcher) {
+    override suspend fun play(mediaId: String, mediaType: MediaType) =
+        withContext(playerDispatcher) {
+            val managed = pool.getOrCreate(mediaId, mediaType)
 
-        val managed = pool.getOrCreate(mediaId, mediaType)
-
-        if (activeMediaId != mediaId) {
-            activeMediaId?.let { previous ->
-                pool.get(previous)?.player?.pause()
+            if (activeMediaId != mediaId) {
+                activeMediaId?.let { previous -> pool.get(previous)?.player?.pause() }
             }
+
+            attachListenerIfNeeded(managed)
+            managed.analyticsListener.markPlaybackStart()
+
+            managed.player.play()
+            activeMediaId = mediaId
+            activeMediaIdFlow.value = mediaId
         }
 
-        attachListenerIfNeeded(managed.player)
-
-        managed.player.play()
-        activeMediaId = mediaId
-    }
-
-    override suspend fun preload(
-        mediaId: String,
-        mediaType: MediaType
-    ) = withContext(playerDispatcher) {
-        pool.getOrCreate(mediaId, mediaType)
-    }
+    override suspend fun preload(mediaId: String, mediaType: MediaType) =
+        withContext(playerDispatcher) {
+            val managed = pool.getOrCreate(mediaId, mediaType)
+            attachListenerIfNeeded(managed)
+            managed
+        }
 
     override suspend fun pause() {
         withContext(playerDispatcher) {
@@ -91,67 +81,44 @@ class PlayerManager @Inject constructor(
         }
     }
 
-    override suspend fun getPlayer(
-        mediaId: String,
-        mediaType: MediaType
-    ): Player = withContext(playerDispatcher) {
-        pool.getOrCreate(mediaId, mediaType).player
-    }
+    override suspend fun getPlayer(mediaId: String, mediaType: MediaType): Player =
+        withContext(playerDispatcher) { pool.getOrCreate(mediaId, mediaType).player }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeState(): StateFlow<PlaybackStateReducer.State> =
-        reducer.state
+        activeMediaIdFlow
+            .flatMapLatest { mediaId ->
+                mediaId?.let { id -> pool.get(id)?.reducer?.state }
+                    ?: MutableStateFlow(PlaybackStateReducer.State.Idle)
+            }
+            .stateIn(engineScope, SharingStarted.Eagerly, PlaybackStateReducer.State.Idle)
 
     override fun shutdown() {
         pool.releaseAll()
         (playerDispatcher as ExecutorCoroutineDispatcher).close()
     }
 
-    // ---------------------------------------------------
-    // Listener Management
-    // ---------------------------------------------------
+    private fun attachListenerIfNeeded(managed: PlayerPool.ManagedPlayer) {
+        if (!attachedPlayers.add(managed.player)) return
 
-    private val attachedPlayers = mutableSetOf<ExoPlayer>()
-
-    private fun attachListenerIfNeeded(player: ExoPlayer) {
-        if (!attachedPlayers.add(player)) return
-
-        player.addListener(object : Player.Listener {
-
+        managed.player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
-                    Player.STATE_IDLE ->
-                        reducer.dispatch(PlaybackStateReducer.Event.Reset)
-
-                    Player.STATE_BUFFERING ->
-                        reducer.dispatch(
-                            PlaybackStateReducer.Event.BufferingStarted
-                        )
-
-                    Player.STATE_READY ->
-                        reducer.dispatch(
-                            PlaybackStateReducer.Event.BufferingCompleted
-                        )
-
-                    Player.STATE_ENDED ->
-                        reducer.dispatch(
-                            PlaybackStateReducer.Event.PlaybackEnded
-                        )
+                    Player.STATE_IDLE -> managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
+                    Player.STATE_BUFFERING -> managed.reducer.dispatch(PlaybackStateReducer.Event.BufferingStarted)
+                    Player.STATE_READY -> managed.reducer.dispatch(PlaybackStateReducer.Event.BufferingCompleted)
+                    Player.STATE_ENDED -> managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackEnded)
                 }
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                reducer.dispatch(
-                    if (isPlaying)
-                        PlaybackStateReducer.Event.Play
-                    else
-                        PlaybackStateReducer.Event.Pause
+                managed.reducer.dispatch(
+                    if (isPlaying) PlaybackStateReducer.Event.Play else PlaybackStateReducer.Event.Pause
                 )
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                reducer.dispatch(
-                    PlaybackStateReducer.Event.PlaybackError(error)
-                )
+                managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
             }
         })
     }

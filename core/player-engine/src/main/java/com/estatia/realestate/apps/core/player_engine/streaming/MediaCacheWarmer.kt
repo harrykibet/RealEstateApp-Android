@@ -7,6 +7,7 @@ import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
+import com.estatia.realestate.apps.core.player_engine.di.PlaybackCache
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +26,7 @@ import javax.inject.Singleton
 @UnstableApi
 @Singleton
 class MediaCacheWarmer @Inject constructor(
-    private val playbackDataSourceFactory: DataSource.Factory,
+    @param:PlaybackCache private val playbackDataSourceFactory: DataSource.Factory,
     private val environmentCoordinator: EnvironmentCoordinator,
     @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher

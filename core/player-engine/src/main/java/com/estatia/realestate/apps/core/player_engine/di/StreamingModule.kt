@@ -72,6 +72,18 @@ object StreamingModule {
             databaseProvider
         )
 
+    // StreamingModule.kt — add a qualified caching factory alongside the existing plain one
+    @Provides
+    @Singleton
+    @PlaybackCache
+    fun providePlaybackCacheDataSourceFactory(
+        @PlaybackCache playbackCache: SimpleCache,
+        upstreamFactory: DataSource.Factory
+    ): DataSource.Factory =
+        CacheDataSource.Factory()
+            .setCache(playbackCache)
+            .setUpstreamDataSourceFactory(upstreamFactory)
+
     @Provides
     @Singleton
     fun provideDownloadExecutor(): ExecutorService =

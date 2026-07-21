@@ -27,25 +27,25 @@ class OfflineDownloadController @Inject constructor(
         downloadManager.removeDownload(mediaId)
     }
 
+
     fun observe(): Flow<List<Download>> = callbackFlow {
-        // Create an explicit listener object
+        trySend(downloadManager.currentDownloads)
+
         val listener = object : DownloadManager.Listener {
             override fun onDownloadChanged(
                 manager: DownloadManager,
                 download: Download,
                 finalException: Exception?
             ) {
-                // Optional: handle single download change if needed
+                trySend(manager.currentDownloads)
             }
 
             override fun onDownloadRemoved(
                 manager: DownloadManager,
                 download: Download
             ) {
-                // Optional: handle removal if needed
+                trySend(manager.currentDownloads)
             }
-
-            // Add other overrides if your version of Media3 requires them
         }
 
         downloadManager.addListener(listener)

@@ -8,38 +8,36 @@ import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalytic
 import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfiguration
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
+// PlayerFactory.kt — request a fresh listener instance per player via Provider<T>
 @UnstableApi
 @Singleton
 class PlayerFactory @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
-    private val analyticsListener: PlaybackAnalyticsListener
+    private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>
 ) {
+    data class CreatedPlayer(
+        val player: ExoPlayer,
+        val analyticsListener: PlaybackAnalyticsListener
+    )
 
-    /**
-     * Creates a fully configured ExoPlayer instance from an immutable
-     * PlayerConfiguration snapshot.
-     *
-     * No mutation. No branching. No strategy pattern.
-     */
-    fun create(configuration: PlayerConfiguration): ExoPlayer {
-
+    fun create(configuration: PlayerConfiguration): CreatedPlayer {
         val builder = ExoPlayer.Builder(context)
             .setBandwidthMeter(bandwidthMeter)
             .setMediaSourceFactory(configuration.mediaSourceFactory)
             .setLoadControl(configuration.loadControl)
 
-        configuration.livePlaybackSpeedControl?.let {
-            builder.setLivePlaybackSpeedControl(it)
-        }
+        configuration.livePlaybackSpeedControl?.let { builder.setLivePlaybackSpeedControl(it) }
 
         val player = builder.build()
-
         player.setMediaItem(configuration.mediaItem)
-        player.addAnalyticsListener(analyticsListener)
 
-        return player
+        val listener = analyticsListenerProvider.get()
+        player.addAnalyticsListener(listener)
+
+        return CreatedPlayer(player, listener)
     }
 }
