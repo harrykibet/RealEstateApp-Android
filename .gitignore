@@ -52,3 +52,4 @@ AppKeyStore/*.p12
 # debug.keystore is generated at runtime so can also be gitignored
 AppKeyStore/debug.keystore
 
+/.kotlin/
