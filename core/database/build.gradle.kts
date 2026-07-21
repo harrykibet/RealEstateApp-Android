@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.gson)
 
     implementation(projects.core.model)
+    implementation(projects.core.common)
 }

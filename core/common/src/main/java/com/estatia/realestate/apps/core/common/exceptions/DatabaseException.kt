@@ -57,6 +57,41 @@ sealed class DatabaseException(
             "Local database error : $msg"
         )
 
+    data class ConstraintViolation(
+        override val cause: Throwable
+    ) : DatabaseException(
+        "Database constraint violated",
+        cause
+    )
+
+    data class CorruptedDatabase(
+        override val cause: Throwable
+    ) : DatabaseException(
+        "Database is corrupted",
+        cause
+    )
+
+    data class DiskIO(
+        override val cause: Throwable
+    ) : DatabaseException(
+        "Database disk I/O failure",
+        cause
+    )
+
+    data class StorageFull(
+        override val cause: Throwable
+    ) : DatabaseException(
+        "Device storage is full",
+        cause
+    )
+
+    data class QueryFailed(
+        override val cause: Throwable
+    ) : DatabaseException(
+        "Database query failed",
+        cause
+    )
+
     data class Unknown(
         val original: Throwable
     ) : DatabaseException(
