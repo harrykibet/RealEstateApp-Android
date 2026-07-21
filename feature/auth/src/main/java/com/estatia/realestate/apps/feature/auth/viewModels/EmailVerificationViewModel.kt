@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.EmailVerificationUiState
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

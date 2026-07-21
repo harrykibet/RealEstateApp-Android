@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.security
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

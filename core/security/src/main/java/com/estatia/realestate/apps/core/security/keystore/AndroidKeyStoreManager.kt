@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.security.keystore
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import kotlinx.coroutines.Dispatchers

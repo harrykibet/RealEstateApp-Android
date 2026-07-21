@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.security.interfaces
 
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey

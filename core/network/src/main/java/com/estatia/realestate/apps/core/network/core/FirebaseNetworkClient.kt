@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import javax.inject.Inject

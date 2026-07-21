@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.util
 
-import com.estatia.realestate.apps.core.common.errors.mapError
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.mapError
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 

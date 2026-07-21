@@ -1,6 +1,4 @@
-package com.estatia.realestate.apps.core.common.errors
-
-import com.estatia.realestate.apps.core.common.exceptions.AppException
+package com.estatia.realestate.apps.core.common.exceptions
 
 
 sealed class AppResult<out T> {

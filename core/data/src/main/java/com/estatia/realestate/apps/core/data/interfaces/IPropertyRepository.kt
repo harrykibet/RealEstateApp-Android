@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.interfaces
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyPage

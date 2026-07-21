@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.core.RetryConfigs

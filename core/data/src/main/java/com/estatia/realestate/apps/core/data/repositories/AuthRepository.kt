@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import android.app.Activity
-import com.estatia.realestate.apps.core.common.errors.AppResult
-import com.estatia.realestate.apps.core.common.errors.map
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.mappers.auth.FirebaseAuthUserMapper
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper

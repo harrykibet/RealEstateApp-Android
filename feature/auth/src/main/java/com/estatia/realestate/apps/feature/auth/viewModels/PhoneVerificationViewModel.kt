@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import android.app.Activity
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel

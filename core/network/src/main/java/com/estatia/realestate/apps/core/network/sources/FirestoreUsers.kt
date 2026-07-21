@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.sources
 
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections

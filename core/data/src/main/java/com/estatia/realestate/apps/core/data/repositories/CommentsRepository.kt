@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.core.data.repositories
 import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
-import com.estatia.realestate.apps.core.common.errors.AppResult
-import com.estatia.realestate.apps.core.common.errors.map
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreCommentMapper
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.common.exceptions.CommentException

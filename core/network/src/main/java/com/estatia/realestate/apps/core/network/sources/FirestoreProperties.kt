@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.US
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage

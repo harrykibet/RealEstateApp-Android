@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 
 interface INetworkClient {

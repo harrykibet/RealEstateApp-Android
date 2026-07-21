@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient

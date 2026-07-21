@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.security.crypto
 
 
-import com.estatia.realestate.apps.core.common.errors.AppResult
-import com.estatia.realestate.apps.core.common.errors.getOrThrow
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager

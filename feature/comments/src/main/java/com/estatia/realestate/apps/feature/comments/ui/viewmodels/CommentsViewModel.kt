@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job

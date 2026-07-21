@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 

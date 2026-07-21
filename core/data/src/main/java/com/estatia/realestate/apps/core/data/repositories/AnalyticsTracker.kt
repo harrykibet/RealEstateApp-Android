@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.errors.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
