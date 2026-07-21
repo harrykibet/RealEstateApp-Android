@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.utils
 
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
@@ -15,13 +15,13 @@ import javax.inject.Singleton
  * This class utilizes regular expressions to match the expected format of API keys
  * and provides sanitization for logging purposes to prevent exposing sensitive information.
  *
- * @property logger An instance of [LoggerInterface] for logging validation results and errors.
+ * @property logger An instance of [ILogger] for logging validation results and errors.
  * @property config An instance of [ConfigRepository] for retrieving API key patterns from remote config.
  */
 @Singleton
 class ApiKeyValidator @Inject constructor(
-    private val logger: LoggerInterface,
-    private val config: ConfigRepository
+    private val logger: ILogger,
+    private val config: ConfigRepository,
 ) : IApiKeyValidator {
 
     private val googleKeyPattern: Regex
@@ -50,7 +50,7 @@ class ApiKeyValidator @Inject constructor(
             else -> performGenericValidation(apiKey, sanitizedKey)
         }
 
-        logger.d("Validated API key for service {}: {}, ${service?.name}, $sanitizedKey")
+        logger.d(message = "Validated API key for service {}: {}, ${service?.name}, $sanitizedKey")
     }
 
     private fun validateForService(apiKey: String, service: ServiceNames, sanitizedKey: String) {
@@ -59,6 +59,7 @@ class ApiKeyValidator @Inject constructor(
 
         if (!pattern.matches(apiKey)) {
             val error = "Invalid API key format for ${service.name}. Sanitized key: $sanitizedKey"
+            logger.e(message = error)
             throw SecurityException.InvalidApiKey(error)
         }
     }
@@ -66,6 +67,7 @@ class ApiKeyValidator @Inject constructor(
     private fun performGenericValidation(apiKey: String, sanitizedKey: String) {
         if (!genericKeyPattern.matches(apiKey)) {
             val error = "Invalid generic API key format. Sanitized key: $sanitizedKey"
+            logger.e(message = error)
             throw SecurityException.InvalidApiKey(error)
         }
     }

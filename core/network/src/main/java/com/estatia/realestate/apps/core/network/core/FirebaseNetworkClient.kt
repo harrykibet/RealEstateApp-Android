@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
@@ -15,7 +15,7 @@ class FirebaseNetworkClient @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val retryPolicy: IRetryPolicy,
     private val exceptionMapper: IExceptionMapper,
-    private val logger: LoggerInterface
+    private val logger: ILogger
 ) : INetworkClient {
 
 

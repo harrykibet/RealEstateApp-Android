@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class AnalyticsTracker @Inject constructor(
     private val remoteDataSource: IAnalyticsRemoteDataSource,
-    private val logger: LoggerInterface
+    private val logger: ILogger
 ) : IAnalyticsTracker {
 
 
@@ -34,8 +34,8 @@ class AnalyticsTracker @Inject constructor(
             is AppResult.Error -> {
 
                 logger.e(
-                    "Analytics logging failed",
-                    result.exception
+                    message = "Analytics logging failed",
+                    throwable = result.exception
                 )
             }
         }
@@ -57,8 +57,8 @@ class AnalyticsTracker @Inject constructor(
             is AppResult.Error -> {
 
                 logger.e(
-                    "Analytics logging failed",
-                    result.exception
+                    message = "Analytics logging failed",
+                    throwable = result.exception
                 )
             }
         }

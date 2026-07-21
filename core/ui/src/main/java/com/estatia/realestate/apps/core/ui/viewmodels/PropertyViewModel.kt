@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,7 +26,7 @@ enum class LikeStatus {
 class PropertyViewModel @Inject constructor(
     private val api: IPropertyRepository,
     authApi: IAuthRepository,
-    private val logger: LoggerInterface
+    private val logger: ILogger,
 ) : ViewModel() {
 
     private  val currentUserId: String? = authApi.getCurrentUserId()
@@ -39,18 +41,16 @@ class PropertyViewModel @Inject constructor(
     val likedProperties: LiveData<List<PropertyDomainModel>> get() = _likedProperties
 
     init {
-        loadLikedProperties{ exception ->
-            log("Error initializing loading of liked properties: ${exception.message}")
-        }
+        loadLikedProperties()
     }
 
     // Load liked properties for the current user
-    fun loadLikedProperties(onFailure: (Exception) -> Unit) {
+    fun loadLikedProperties() {
         if (currentUserId != null) {
             viewModelScope.launch {
                 try {
-                    val likedProperties = api.fetchLikedProperties(currentUserId, onFailure)
-                    _likedProperties.postValue(likedProperties!!)
+                    val result = api.fetchLikedProperties(currentUserId)
+                    _likedProperties.postValue(result.getOrThrow())
                 } catch (e: Exception) {
                     log("Error loading liked properties: ${e.message}")
                 }
@@ -59,7 +59,7 @@ class PropertyViewModel @Inject constructor(
     }
 
     // Toggle like/unlike status for a property
-    fun toggleLikeProperty(propertyId: String, onFailure: (Exception) -> Unit) {
+    fun toggleLikeProperty(propertyId: String) {
         val userId = currentUserId ?: return
 
         viewModelScope.launch {
@@ -67,23 +67,28 @@ class PropertyViewModel @Inject constructor(
                 _likedProperties.value?.any { it.id.value == propertyId } == true
 
             try {
-                val success = if (isCurrentlyLiked) {
-                    api.unlikeProperty(userId, propertyId, onFailure)
+                val result = if (isCurrentlyLiked) {
+                    api.unlikeProperty(userId, propertyId)
                 } else {
-                    api.likeProperty(userId, propertyId, onFailure)
+                    api.likeProperty(userId, propertyId)
                 }
 
-                if (success) {
-                    _likedStatus.value =
-                        if (isCurrentlyLiked) LikeStatus.UNLIKE_SUCCESS
-                        else LikeStatus.LIKE_SUCCESS
+                when (result) {
+                    is AppResult.Success -> {
+                        _likedStatus.value =
+                            if (isCurrentlyLiked) LikeStatus.UNLIKE_SUCCESS
+                            else LikeStatus.LIKE_SUCCESS
 
-                    // Refresh source of truth
-                    loadLikedProperties(onFailure)
-                } else {
-                    _likedStatus.value =
-                        if (isCurrentlyLiked) LikeStatus.UNLIKE_ERROR
-                        else LikeStatus.LIKE_ERROR
+                        // Refresh source of truth
+                        loadLikedProperties()
+                    }
+                    is AppResult.Error -> {
+                        _likedStatus.value =
+                            if (isCurrentlyLiked) LikeStatus.UNLIKE_ERROR
+                            else LikeStatus.LIKE_ERROR
+                        
+                        log("Error updating like state: ${result.exception.message}")
+                    }
                 }
 
             } catch (e: Exception) {
@@ -98,14 +103,16 @@ class PropertyViewModel @Inject constructor(
 
 
     // Fetch a single property by its ID
-    fun fetchPropertyById(propertyId: String, onFailure: (Exception) -> Unit) {
+    fun fetchPropertyById(propertyId: String) {
         viewModelScope.launch {
             try {
-                val property = api.getPropertyById(propertyId, onFailure)
-                if (property != null) {
-                    _propertyLiveData.value = property
-                } else {
-                    log("Property not found")
+                when (val result = api.getPropertyById(propertyId)) {
+                    is AppResult.Success -> {
+                        _propertyLiveData.value = result.data
+                    }
+                    is AppResult.Error -> {
+                        log("Failed to fetch property: ${result.exception.message}")
+                    }
                 }
             } catch (e: Exception) {
                 log("Failed to fetch property: ${e.message}")
@@ -114,6 +121,6 @@ class PropertyViewModel @Inject constructor(
     }
 
     private fun log(message: String) {
-        logger.e("PropertyViewModel: $message")
+        logger.e(tag = "PropertyViewModel", message = message)
     }
 }

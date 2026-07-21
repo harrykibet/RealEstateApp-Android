@@ -6,6 +6,8 @@ import com.estatia.realestate.apps.core.database.SearchDatabase
 import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
+import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
+import com.estatia.realestate.apps.core.database.mappers.RoomExceptionMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,5 +46,11 @@ object RoomModule {
     @Provides
     fun provideSearchHistoryDao(searchDatabase: SearchDatabase): SearchHistoryDao {
         return searchDatabase.searchHistoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRoomExceptionMapper(): IRoomExceptionMapper {
+        return RoomExceptionMapper()
     }
 }

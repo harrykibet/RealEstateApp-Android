@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap.CompressFormat.*
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.common.system.FileUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -14,7 +14,7 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class MediaCompressor @Inject constructor(
-    private val logger: LoggerInterface
+    private val logger: ILogger
 ) : IMediaCompressor {
 
     /**
@@ -26,12 +26,12 @@ class MediaCompressor @Inject constructor(
             val file = FileUtils.getFileFromUri(context, imageUri) ?: return null
 
             val mediaFormat = MediaFileUtils.getMediaFormat(file) ?: run {
-                logger.e("Unsupported image format: ${file.extension}")
+                logger.e(message = "Unsupported image format: ${file.extension}")
                 return null
             }
 
             if (!MediaFileUtils.isImage(file)) {
-                logger.e("Not an image file: ${file.name}")
+                logger.e(message = "Not an image file: ${file.name}")
                 return null
             }
 
@@ -54,10 +54,10 @@ class MediaCompressor @Inject constructor(
                 bitmap.compress(format, 80, fos)
             }
 
-            logger.d("Image compression successful: ${compressedFile.absolutePath}")
+            logger.d(message = "Image compression successful: ${compressedFile.absolutePath}")
             compressedFile
         } catch (e: Exception) {
-            logger.e("Image compression failed: ${e.message}")
+            logger.e(message = "Image compression failed: ${e.message}", throwable = e)
             null
         }
     }
@@ -68,13 +68,13 @@ class MediaCompressor @Inject constructor(
      */
     override fun compressVideo(context: Context, videoUri: Uri, outputDir: File, callback: (File?) -> Unit) {
         val file = FileUtils.getFileFromUri(context, videoUri) ?: run {
-            logger.e("Invalid video URI")
+            logger.e(message = "Invalid video URI")
             callback(null)
             return
         }
 
         if (!MediaFileUtils.isVideo(file)) {
-            logger.e("Not a valid video file: ${file.name}")
+            logger.e(message = "Not a valid video file: ${file.name}")
             callback(null)
             return
         }
@@ -82,7 +82,6 @@ class MediaCompressor @Inject constructor(
         // Ensure the output directory exists
         if (!outputDir.exists()) outputDir.mkdirs()
 
-        val outputFile = File(outputDir, "compressed_video_${System.currentTimeMillis()}.mp4")
        // TODO("Fix FFmpeg discontinued support for Android.")
     }
 }

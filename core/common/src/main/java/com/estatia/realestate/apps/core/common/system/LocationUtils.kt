@@ -11,7 +11,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.user.UserLocation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.Locale
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class LocationUtils @Inject constructor(
     private val context: Context,
-    private val logger: LoggerInterface
+    private val logger: ILogger
 ) : ILocationUtils {
 
     override suspend fun getLocationInfo(): UserLocation {
@@ -27,7 +27,7 @@ class LocationUtils @Inject constructor(
             context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!isLocationEnabled(locationManager)) {
-            logger.e("Location services are disabled")
+            logger.e(message = "Location services are disabled")
             return unknownLocation()
         }
 
@@ -41,7 +41,7 @@ class LocationUtils @Inject constructor(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            logger.e("Location permissions are not granted")
+            logger.e(message = "Location permissions are not granted")
             return unknownLocation()
         }
 
@@ -78,7 +78,7 @@ class LocationUtils @Inject constructor(
                         }
 
                         override fun onError(errorMessage: String?) {
-                            logger.e("Geocoding failed: $errorMessage")
+                            logger.e(message = "Geocoding failed: $errorMessage")
                             cont.resume(
                                 UserLocation(
                                     country = "Unknown",

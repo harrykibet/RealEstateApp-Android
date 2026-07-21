@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network
 
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiKeyValidatorTest {
 
-    private lateinit var logger: LoggerInterface
+    private lateinit var logger: ILogger
     private lateinit var config: ConfigRepository
     private lateinit var apiKeyValidator: IApiKeyValidator
 
@@ -46,7 +46,7 @@ class ApiKeyValidatorTest {
         }
 
         Assertions.assertTrue(exception.message!!.contains("Invalid API key format for MAPS"))
-        verify { logger.e(match { it.contains("Invalid API key format for MAPS") }) }
+        verify { logger.e(message = match { it.contains("Invalid API key format for MAPS") }) }
     }
 
     @Test
@@ -55,7 +55,7 @@ class ApiKeyValidatorTest {
 
         apiKeyValidator.validate(validGoogleKey, ServiceNames.PLACES)
 
-        verify { logger.d(match { it.contains("Validated API key for service") }) }
+        verify { logger.d(message = match { it.contains("Validated API key for service") }) }
     }
 
     @Test
@@ -67,7 +67,7 @@ class ApiKeyValidatorTest {
         }
 
         Assertions.assertTrue(exception.message!!.contains("Invalid generic API key format"))
-        verify { logger.e(match { it.contains("Invalid generic API key format") }) }
+        verify { logger.e(message = match { it.contains("Invalid generic API key format") }) }
     }
 
     @Test
@@ -76,7 +76,7 @@ class ApiKeyValidatorTest {
 
         apiKeyValidator.validate(validGenericKey, null)
 
-        verify { logger.d(match { it.contains("Validated API key for service") }) }
+        verify { logger.d(message = match { it.contains("Validated API key for service") }) }
     }
 
     @Test

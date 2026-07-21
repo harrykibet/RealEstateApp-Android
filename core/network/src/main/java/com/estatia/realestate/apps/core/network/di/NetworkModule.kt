@@ -4,7 +4,7 @@ import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
@@ -92,7 +92,7 @@ object NetworkModule {
         networkStateProvider: INetworkStateProvider,
         retryPolicy: IRetryPolicy,
         exceptionMapper: IExceptionMapper,
-        logger: LoggerInterface
+        logger: ILogger
     ): INetworkClient {
         return FirebaseNetworkClient(networkStateProvider, retryPolicy, exceptionMapper, logger)
     }

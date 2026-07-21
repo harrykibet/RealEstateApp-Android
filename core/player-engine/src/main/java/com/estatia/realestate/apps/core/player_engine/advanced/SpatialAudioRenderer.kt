@@ -6,7 +6,7 @@ import android.media.Spatializer
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioSink
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import javax.inject.Inject
 
 /**
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @UnstableApi
 class SpatialAudioRenderer @Inject constructor(
     context: Context,
-    private val logger: LoggerInterface
+    private val logger: ILogger,
 ) : AudioSink.Listener {
 
     private val audioManager =
@@ -48,13 +48,13 @@ class SpatialAudioRenderer @Inject constructor(
 
     fun logSpatialAudioStatus() {
         logger.i(
-            "Spatial Audio -> supported=${isSpatialAudioSupported()}, " +
+            message = "Spatial Audio -> supported=${isSpatialAudioSupported()}, " +
                     "enabled=${isSpatialAudioEnabled()}"
         )
     }
 
     override fun onAudioSinkError(audioSinkError: Exception) {
-        logger.e("AudioSink error: ${audioSinkError.message}")
+        logger.e(message = "AudioSink error: ${audioSinkError.message}")
     }
 
     override fun onOffloadBufferEmptying() {}
@@ -68,7 +68,7 @@ class SpatialAudioRenderer @Inject constructor(
         elapsedSinceLastFeedMs: Long
     ) {
         logger.w(
-            "Audio underrun: bufferSize=$bufferSize, " +
+            message = "Audio underrun: bufferSize=$bufferSize, " +
                     "bufferSizeMs=$bufferSizeMs, elapsed=$elapsedSinceLastFeedMs"
         )
     }

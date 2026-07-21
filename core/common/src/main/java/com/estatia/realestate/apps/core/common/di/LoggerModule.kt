@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.di
 
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.common.logs.Logger
 import dagger.Binds
 import dagger.Module
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class LoggerModule {
     @Binds
     @Singleton
-    abstract fun bindLogger(logger: Logger): LoggerInterface
+    abstract fun bindLogger(logger: Logger): ILogger
 }

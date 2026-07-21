@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.database.sqlite.SQLiteDiskIOException
 import android.database.sqlite.SQLiteFullException
-import androidx.sqlite.SQLiteException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
 import javax.inject.Inject
@@ -29,9 +28,6 @@ class RoomExceptionMapper @Inject constructor() : IRoomExceptionMapper {
 
             is SQLiteFullException ->
                 DatabaseException.StorageFull(throwable)
-
-            is SQLiteException ->
-                DatabaseException.QueryFailed(throwable)
 
             is SQLException ->
                 DatabaseException.QueryFailed(throwable)

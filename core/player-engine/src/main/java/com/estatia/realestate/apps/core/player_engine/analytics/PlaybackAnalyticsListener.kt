@@ -4,7 +4,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
-import com.estatia.realestate.apps.core.common.interfaces.LoggerInterface
 import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +22,6 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
-    private val logger: LoggerInterface
 ) : AnalyticsListener {
 
     private var startupStartTime: Long = 0L
@@ -48,22 +46,18 @@ class PlaybackAnalyticsListener @Inject constructor(
                         System.currentTimeMillis() - startupStartTime
 
                     analyticsClient.logEvent(
-                        "PlaybackAnalyticsListener",
-                        EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_START,
-                        mapOf("time_ms" to startupTime.toString())
-                    ) { exception ->
-                        exception.message?.let { logger.e(it) }
-                    }
+                        message = "PlaybackAnalyticsListener",
+                        eventType = EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_START,
+                        customMetadata = mapOf("time_ms" to startupTime.toString())
+                    )
                 }
 
                 Player.STATE_BUFFERING -> {
                     analyticsClient.logEvent(
-                        "PlaybackAnalyticsListener",
-                        EventTypes.EVENT_MEDIA_PLAYER_BUFFERING_START,
-                        null
-                    ) { exception ->
-                        exception.message?.let { logger.e(it) }
-                    }
+                        message = "PlaybackAnalyticsListener",
+                        eventType = EventTypes.EVENT_MEDIA_PLAYER_BUFFERING_START,
+                        customMetadata = null
+                    )
                 }
             }
         }
