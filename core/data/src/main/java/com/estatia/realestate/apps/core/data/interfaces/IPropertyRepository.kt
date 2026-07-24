@@ -11,8 +11,8 @@ interface IPropertyRepository {
     suspend fun saveDraft(draft: PropertyDraftDomainModel): AppResult<Long>
     suspend fun getAllDrafts(): AppResult<List<PropertyDraftDomainModel>>
     suspend fun getDraftById(draftId: Long): AppResult<PropertyDraftDomainModel?>
-    suspend fun deleteDraft(draftId: Long)
-    suspend fun clearAllDrafts()
+    suspend fun deleteDraft(draftId: Long): AppResult<Unit>
+    suspend fun clearAllDrafts(): AppResult<Unit>
 
     suspend fun uploadProperty(
         property: PropertyDomainModel,

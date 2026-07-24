@@ -92,7 +92,11 @@ class CommentsRepository @Inject constructor(
                     )
 
 
-                remoteDataSource.submitComment(comment)
+                remoteDataSource
+                    .submitComment(comment)
+                    .translateCommentFailures(
+                        exceptionTranslator
+                    )
             }
         }
     }

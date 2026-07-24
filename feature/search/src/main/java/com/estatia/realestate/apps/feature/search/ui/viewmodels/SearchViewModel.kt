@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.feature.search.PlacesManager
-import com.google.android.gms.maps.GoogleMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +25,9 @@ class SearchViewModel @Inject constructor(
     private val _searchHistory = MutableLiveData<List<String>>()
     val searchHistory: LiveData<List<String>> = _searchHistory
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
 
     fun initializePlaces(context: Context) {
         placesManager.initialize(context)
@@ -32,39 +35,53 @@ class SearchViewModel @Inject constructor(
 
     fun searchProperties(query: String, limit: Int) {
         viewModelScope.launch {
-            try {
-                val results = searchRepository.searchProperties(query, limit) { exception ->
-                    // Handle failure
+            when (val result = searchRepository.searchProperties(query, limit)) {
+                is AppResult.Success -> {
+                    _searchResults.value = result.data
+                    _error.value = null
                 }
-                _searchResults.postValue(results)
-            } catch (e: Exception) {
-                // Handle error
+                is AppResult.Error -> {
+                    _error.value = result.exception.message
+                }
             }
         }
     }
 
-    // SearchViewModel.kt
     fun loadNearbyProperties(
-        map: GoogleMap,
-        userLat: Double,
-        userLng: Double,
-        onResult: (Boolean) -> Unit
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double
     ) {
         viewModelScope.launch {
-            val found = searchRepository.loadNearbyProperties(map, userLat, userLng)
-            onResult(found)
+            when (val result = searchRepository.getNearbyProperties(latitude, longitude, radiusKm)) {
+                is AppResult.Success -> {
+                    _searchResults.value = result.data
+                    _error.value = null
+                }
+                is AppResult.Error -> {
+                    _error.value = result.exception.message
+                }
+            }
         }
     }
 
     fun loadSearchHistory() {
         viewModelScope.launch {
-            _searchHistory.value = searchRepository.getSearchHistory()
+            when (val result = searchRepository.getSearchHistory()) {
+                is AppResult.Success -> {
+                    _searchHistory.value = result.data
+                }
+                is AppResult.Error -> {
+                    // Handle error if needed
+                }
+            }
         }
     }
 
     fun clearSearchHistory() {
         viewModelScope.launch {
             searchRepository.clearSearchHistory()
+            _searchHistory.value = emptyList()
         }
     }
 }

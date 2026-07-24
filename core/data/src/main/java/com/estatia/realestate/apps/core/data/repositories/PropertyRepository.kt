@@ -9,7 +9,6 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.data.util.translatePropertyFailures
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyDraftMapper
@@ -26,103 +25,44 @@ class PropertyRepository @Inject constructor(
     override suspend fun saveDraft(
         draft: PropertyDraftDomainModel
     ): AppResult<Long> {
-
-        return try {
-
-            val entity =
-                RoomPropertyDraftMapper.toEntity(draft)
-
-            AppResult.Success(
-                localDataSource.saveDraft(entity)
-            )
-
-        } catch (throwable: Throwable) {
-
-            AppResult.Error(
-                PropertyException.PropertyCreationFailed(
-                    throwable.message ?: "Failed to save draft"
-                )
-            )
-        }
+        val entity = RoomPropertyDraftMapper.toEntity(draft)
+        return localDataSource.saveDraft(entity)
+            .translatePropertyFailures(exceptionTranslator)
     }
 
-    override suspend fun getAllDrafts():
-            AppResult<List<PropertyDraftDomainModel>> {
-
-
-        return try {
-
-            val drafts =
-                localDataSource
-                    .getAllDrafts()
-                    .map(RoomPropertyDraftMapper::toDomain)
-
-
-            AppResult.Success(
-                drafts
-            )
-
-        } catch (throwable: Throwable) {
-
-
-            AppResult.Error(
-                PropertyException.PropertyDraftNotFound(
-                    throwable.message
-                        ?: "Failed to load drafts"
-                )
-            )
-        }
+    override suspend fun getAllDrafts(): AppResult<List<PropertyDraftDomainModel>> {
+        return localDataSource.getAllDrafts()
+            .map { entities ->
+                entities.map(RoomPropertyDraftMapper::toDomain)
+            }
+            .translatePropertyFailures(exceptionTranslator)
     }
 
     override suspend fun getDraftById(
         draftId: Long
     ): AppResult<PropertyDraftDomainModel?> {
-
-
-        return try {
-
-
-            val draft =
-                localDataSource
-                    .getDraftById(draftId)
-                    ?.let(
-                        RoomPropertyDraftMapper::toDomain
-                    )
-
-
-            AppResult.Success(
-                draft
-            )
-
-
-        } catch (throwable: Throwable) {
-
-
-            AppResult.Error(
-                PropertyException.PropertyDraftNotFound(
-                    throwable.message
-                        ?: "Failed to load draft"
-                )
-            )
-        }
+        return localDataSource.getDraftById(draftId)
+            .map { entity ->
+                RoomPropertyDraftMapper.toDomain(entity)
+            }
+            .translatePropertyFailures(exceptionTranslator)
     }
 
-    override suspend fun deleteDraft(draftId: Long) {
-        localDataSource.deleteDraft(draftId)
+    override suspend fun deleteDraft(draftId: Long): AppResult<Unit> {
+        return localDataSource.deleteDraft(draftId)
+            .translatePropertyFailures(exceptionTranslator)
     }
 
-    override suspend fun clearAllDrafts() {
-        localDataSource.clearAllDrafts()
+    override suspend fun clearAllDrafts(): AppResult<Unit> {
+        return localDataSource.clearAllDrafts()
+            .translatePropertyFailures(exceptionTranslator)
     }
-
-
 
     override suspend fun uploadProperty(
         property: PropertyDomainModel,
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> {
-
 
         return remoteDataSource
             .uploadProperty(
@@ -135,12 +75,10 @@ class PropertyRepository @Inject constructor(
             )
     }
 
-
     override suspend fun updateProperty(
-        propertyId:String,
-        updates:Map<String,Any>
-    ):AppResult<Unit>{
-
+        propertyId: String,
+        updates: Map<String, Any>
+    ): AppResult<Unit> {
 
         return remoteDataSource
             .updateProperty(
@@ -152,12 +90,9 @@ class PropertyRepository @Inject constructor(
             )
     }
 
-
-
     override suspend fun deleteProperty(
-        propertyId:String
-    ):AppResult<Unit>{
-
+        propertyId: String
+    ): AppResult<Unit> {
 
         return remoteDataSource
             .deleteProperty(propertyId)
@@ -166,32 +101,24 @@ class PropertyRepository @Inject constructor(
             )
     }
 
-
-
     override suspend fun getPropertyById(
-        propertyId:String
-    ):AppResult<PropertyDomainModel>{
-
+        propertyId: String
+    ): AppResult<PropertyDomainModel> {
 
         return remoteDataSource
             .getPropertyById(propertyId)
-
             .map {
                 FirestorePropertyMapper.toDomain(it)
             }
-
             .translatePropertyFailures(
                 exceptionTranslator
             )
     }
 
-
-
     override suspend fun likeProperty(
-        userId:String,
-        propertyId:String
-    ):AppResult<Unit>{
-
+        userId: String,
+        propertyId: String
+    ): AppResult<Unit> {
 
         return remoteDataSource
             .likeProperty(
@@ -203,12 +130,10 @@ class PropertyRepository @Inject constructor(
             )
     }
 
-
-
     override suspend fun unlikeProperty(
-        userId:String,
-        propertyId:String
-    ):AppResult<Unit>{
+        userId: String,
+        propertyId: String
+    ): AppResult<Unit> {
 
         return remoteDataSource.unlikeProperty(
             userId,
@@ -219,35 +144,26 @@ class PropertyRepository @Inject constructor(
             )
     }
 
-
-
     override suspend fun fetchLikedProperties(
-        userId:String
-    ):AppResult<List<PropertyDomainModel>>{
-
+        userId: String
+    ): AppResult<List<PropertyDomainModel>> {
 
         return remoteDataSource
             .fetchLikedProperties(userId)
-
             .map { properties ->
-
                 properties.map(
                     FirestorePropertyMapper::toDomain
                 )
             }
-
             .translatePropertyFailures(
                 exceptionTranslator
             )
     }
 
-
-
     override suspend fun fetchPropertiesPaginated(
         cursor: PropertyCursor?,
-        pageSize:Int
-    ):AppResult<PropertyPage>{
-
+        pageSize: Int
+    ): AppResult<PropertyPage> {
 
         return remoteDataSource
             .fetchPropertiesPaginated(
@@ -255,46 +171,35 @@ class PropertyRepository @Inject constructor(
                 pageSize
             )
             .map { remotePage ->
-
-
                 PropertyPage(
-
                     properties =
-                        remotePage.properties.map {
-                            FirestorePropertyMapper.toDomain(it)
-                        },
-
+                    remotePage.properties.map {
+                        FirestorePropertyMapper.toDomain(it)
+                    },
                     cursor =
-                        remotePage.cursor
+                    remotePage.cursor
                 )
             }
-
             .translatePropertyFailures(
                 exceptionTranslator
             )
     }
 
-
-
     override suspend fun searchProperties(
-        query:String,
-        limit:Int
-    ):AppResult<List<PropertyDomainModel>>{
-
+        query: String,
+        limit: Int
+    ): AppResult<List<PropertyDomainModel>> {
 
         return remoteDataSource
             .searchProperties(
                 query,
                 limit
             )
-
             .map { entities ->
-
                 entities.map(
                     FirestorePropertyMapper::toDomain
                 )
             }
-
             .translatePropertyFailures(
                 exceptionTranslator
             )

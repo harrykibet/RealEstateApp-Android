@@ -1,19 +1,22 @@
 package com.estatia.realestate.apps.core.data.interfaces
 
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.google.android.gms.maps.GoogleMap
 
 interface ISearchRepository {
 
     suspend fun searchProperties(
         query: String,
-        limit: Int,
-        onFailure: (Exception) -> Unit
-    ): List<PropertyDomainModel>
+        limit: Int
+    ): AppResult<List<PropertyDomainModel>>
 
-    suspend fun getSearchHistory(): List<String>
+    suspend fun getSearchHistory(): AppResult<List<String>>
 
-    suspend fun clearSearchHistory()
+    suspend fun clearSearchHistory(): AppResult<Unit>
 
-    suspend fun loadNearbyProperties(map: GoogleMap, userLat: Double, userLng: Double): Boolean
+    suspend fun getNearbyProperties(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double
+    ): AppResult<List<PropertyDomainModel>>
 }

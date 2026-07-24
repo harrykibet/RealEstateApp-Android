@@ -1,7 +1,11 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.map
+import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
+import com.estatia.realestate.apps.core.data.util.translateUserFailures
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
@@ -14,10 +18,13 @@ import javax.inject.Inject
 class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
-    private val analyticsRepository: AnalyticsTracker
+    private val exceptionTranslator: IExceptionTranslator
 ) : IUserRepository {
-    override suspend fun getUserById(userId: String): UserDomainModel {
-        return FirestoreUserProfileMapper.toDomain(remoteDataSource.getUserById(userId))
+
+    override suspend fun getUserById(userId: String): AppResult<UserDomainModel> {
+        return remoteDataSource.getUserById(userId)
+            .map(FirestoreUserProfileMapper::toDomain)
+            .translateUserFailures(exceptionTranslator)
     }
 
     override val userData: Flow<UserData> = estatiaPreferencesDataSource.userData
