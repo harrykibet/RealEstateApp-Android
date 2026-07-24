@@ -1,10 +1,10 @@
-# Tasks - Fix Repositories after AppResult Refactoring
+# Task - Replace NetworkMonitor with INetworkStateProvider
 
-- [ ] Create `translateUserFailures.kt` and `translateSearchFailures.kt`
-- [ ] Update `IPropertyRepository.kt` (return types)
-- [ ] Update `ISearchRepository.kt` (return types and parameters)
-- [ ] Fix `CommentsRepository.kt`
-- [ ] Fix `PropertyRepository.kt`
-- [ ] Fix `UserRepository.kt`
-- [ ] Fix `SearchRepository.kt`
-- [ ] Run analysis and verify
+- [ ] Delete legacy classes in `core:data`
+    - [ ] Delete `NetworkMonitor.kt`
+    - [ ] Delete `ConnectivityManagerNetworkMonitor.kt`
+- [ ] Update `DataModule.kt` (remove bindings)
+- [ ] Update `app` module
+    - [ ] Refactor `EstatiaAppState.kt` to use `INetworkStateProvider`
+    - [ ] Refactor `MainActivity.kt` to inject `INetworkStateProvider`
+- [ ] Verify changes with static analysis

@@ -22,11 +22,11 @@ import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 import com.estatia.realestate.apps.ui.rememberEstatiaAppState
 import com.estatia.realestate.apps.ui.EstatiaApp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.core.data.util.NetworkMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.estatia.realestate.apps.MainActivityViewModel.MainActivityUiState.Loading
 import com.estatia.realestate.apps.core.analytics.AnalyticsHelper
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
     lateinit var lazyStats: dagger.Lazy<JankStats>
 
     @Inject
-    lateinit var networkMonitor: NetworkMonitor
+    lateinit var networkStateProvider: INetworkStateProvider
 
     @Inject
     lateinit var timeZoneMonitor: TimeZoneMonitor
@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val appState = rememberEstatiaAppState(
-                networkMonitor = networkMonitor,
+                networkStateProvider = networkStateProvider,
                 timeZoneMonitor = timeZoneMonitor,
                 authRepository = authRepository
             )

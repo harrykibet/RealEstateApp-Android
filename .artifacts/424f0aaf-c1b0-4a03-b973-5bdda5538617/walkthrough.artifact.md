@@ -1,32 +1,42 @@
-# Walkthrough - Repository Refactoring and AppResult Enforcement
+# Walkthrough - Consolidated Network Monitoring
 
-I have fixed the compilation errors in the repository layer and standardized the error handling to use the `AppResult` pattern. This involved updating interfaces, implementations, and adding necessary translation utilities.
+I have refactored the app's network monitoring logic by replacing the legacy `NetworkMonitor` (located in `core:data`) with the more modern and granular `INetworkStateProvider` (from `core:network`). This consolidation reduces redundancy and provides better state visibility to the UI layer.
 
 ## Changes Made
 
 ### Core Data Module
 
-#### [NEW] Translation Utilities
-- [translateUserFailures.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/util/translateUserFailures.kt): Added utility to map infrastructure exceptions to domain-specific user exceptions.
-- [translateSearchFailures.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/util/translateSearchFailures.kt): Added utility to map infrastructure exceptions to domain-specific search exceptions.
+#### [DELETE] Legacy Classes
+- Deleted [NetworkMonitor.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/util/NetworkMonitor.kt) and [ConnectivityManagerNetworkMonitor.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/util/ConnectivityManagerNetworkMonitor.kt).
 
-#### [MODIFY] Repository Interfaces
-- [IPropertyRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/interfaces/IPropertyRepository.kt): Updated `deleteDraft` and `clearAllDrafts` to return `AppResult<Unit>` for consistency with the local data source.
-- [ISearchRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/interfaces/ISearchRepository.kt): Standardized all methods to return `AppResult`, removed old callback patterns, and updated `getNearbyProperties` to match the remote API.
+#### [MODIFY] [DataModule.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/di/DataModule.kt)
+- Removed the `@Binds` method for `NetworkMonitor`.
+- Cleaned up unused imports related to the deleted classes.
 
-#### [MODIFY] Repository Implementations
-- [CommentsRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/repositories/CommentsRepository.kt): Updated `submitComment` to properly handle the `AppResult` from the user repository and remote data source.
-- [PropertyRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/repositories/PropertyRepository.kt): Refactored draft-related methods to handle `AppResult` from the local database and updated remote calls to use consistent mapping.
-- [UserRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/repositories/UserRepository.kt): Fixed `getUserById` to correctly map the remote result to the domain model wrapped in `AppResult`.
-- [SearchRepository.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/data/src/main/java/com/estatia/realestate/apps/core/data/repositories/SearchRepository.kt): Completely refactored to align with the new `AppResult` signatures and mapping logic.
+### App Module
 
-### Feature Modules
+#### [MODIFY] [EstatiaAppState.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/ui/EstatiaAppState.kt)
+- Replaced the `NetworkMonitor` dependency with `INetworkStateProvider`.
+- Updated the `isOffline` state flow to observe the new granular `NetworkState`.
+- Implemented logic to map `NetworkState.NoInternet` to the `isOffline` boolean used by the UI.
 
-#### [MODIFY] Search Feature
-- [SearchViewModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/ui/viewmodels/SearchViewModel.kt): Updated to consume the new `AppResult` API and handle errors using a shared `error` LiveData.
+```kotlin
+    val isOffline = networkStateProvider.observe()
+        .map { it is NetworkState.NoInternet }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
+```
+
+#### [MODIFY] [MainActivity.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/MainActivity.kt)
+- Updated `@Inject` to use `INetworkStateProvider` instead of the legacy `NetworkMonitor`.
+- Passed the provider into `rememberEstatiaAppState` during the `setContent` block.
 
 ## Verification Results
 
 ### Static Analysis
-- Ran `analyze_file` on all modified repositories and interfaces. All critical compilation errors (return type mismatches, unresolved references, and incorrect parameters) have been resolved.
-- Verified that the mapping logic correctly bridges the Infrastructure (Entity) models to Domain models.
+- Ran `analyze_file` on `EstatiaAppState.kt`, `MainActivity.kt`, and `DataModule.kt`.
+- Confirmed all compilation errors related to missing references and type mismatches have been resolved.
+- Verified that the `app` module correctly consumes the `INetworkStateProvider` provided by the `core:network` module.

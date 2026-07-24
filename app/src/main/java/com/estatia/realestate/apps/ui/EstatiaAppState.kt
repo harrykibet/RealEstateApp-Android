@@ -15,11 +15,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import androidx.tracing.trace
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.util.NetworkMonitor
+import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.ui.TrackDisposableJank
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.navigation.TopLevelDestination
-import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
-import com.estatia.realestate.apps.core.ui.TrackDisposableJank
 import com.estatia.realestate.apps.feature.favorites.navigation.navigateToFavorites
 import com.estatia.realestate.apps.feature.profile.navigation.navigateToProfile
 import com.estatia.realestate.apps.feature.property.navigation.navigateToPropertyForm
@@ -34,7 +35,7 @@ import kotlinx.datetime.TimeZone
 
 @Composable
 fun rememberEstatiaAppState(
-    networkMonitor: NetworkMonitor,
+    networkStateProvider: INetworkStateProvider,
     timeZoneMonitor: TimeZoneMonitor,
     authRepository: IAuthRepository,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -44,14 +45,14 @@ fun rememberEstatiaAppState(
     return remember(
         navController,
         coroutineScope,
-        networkMonitor,
+        networkStateProvider,
         timeZoneMonitor,
         authRepository
     ) {
         EstatiaAppState(
             navController = navController,
             coroutineScope = coroutineScope,
-            networkMonitor = networkMonitor,
+            networkStateProvider = networkStateProvider,
             timeZoneMonitor = timeZoneMonitor,
             authRepository = authRepository
         )
@@ -62,7 +63,7 @@ fun rememberEstatiaAppState(
 class EstatiaAppState(
     val navController: NavHostController,
     coroutineScope: CoroutineScope,
-    networkMonitor: NetworkMonitor,
+    networkStateProvider: INetworkStateProvider,
     timeZoneMonitor: TimeZoneMonitor,
     val authRepository: IAuthRepository
 ) {
@@ -95,8 +96,8 @@ class EstatiaAppState(
             }
         }
 
-    val isOffline = networkMonitor.isOnline
-        .map(Boolean::not)
+    val isOffline = networkStateProvider.observe()
+        .map { it is NetworkState.NoInternet }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000),

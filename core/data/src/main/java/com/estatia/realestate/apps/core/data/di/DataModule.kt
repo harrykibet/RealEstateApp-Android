@@ -16,8 +16,6 @@ import com.estatia.realestate.apps.core.data.repositories.PropertyRepository
 import com.estatia.realestate.apps.core.data.repositories.SearchRepository
 import com.estatia.realestate.apps.core.data.repositories.SecurityRepository
 import com.estatia.realestate.apps.core.data.repositories.UserRepository
-import com.estatia.realestate.apps.core.data.util.ConnectivityManagerNetworkMonitor
-import com.estatia.realestate.apps.core.data.util.NetworkMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneBroadcastMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.google.gson.Gson
@@ -63,11 +61,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
-
-    @Binds
-    internal abstract fun bindsNetworkMonitor(
-        networkMonitor: ConnectivityManagerNetworkMonitor,
-    ): NetworkMonitor
 
     @Binds
     internal abstract fun binds(impl: TimeZoneBroadcastMonitor): TimeZoneMonitor
