@@ -44,6 +44,12 @@ private fun ApplicationExtension.applyCommon(
 
     configureCommonBuildFeatures(this)
 
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
+
     defaultConfig {
         minSdk = 28
         testInstrumentationRunner =
@@ -79,6 +85,11 @@ private fun LibraryExtension.applyCommon(
     compileSdk = 37
 
     configureCommonBuildFeatures(this)
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 
     defaultConfig {
         minSdk = 28
@@ -115,6 +126,11 @@ private fun DynamicFeatureExtension.applyCommon(
     compileSdk = 37
 
     configureCommonBuildFeatures(this)
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 
     defaultConfig {
         minSdk = 28

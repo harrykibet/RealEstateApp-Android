@@ -64,13 +64,26 @@ class CommentsViewModel @Inject constructor(
         observeJob = viewModelScope.launch(ioDispatcher) {
             update { copy(isLoading = true, error = null) }
 
-            commentsRepository.observeComments(propertyId).collect { comments ->
-                update {
-                    copy(
-                        isLoading = false,
-                        comments = comments,
-                        error = null
-                    )
+            commentsRepository.observeComments(propertyId).collect { result ->
+                when (result) {
+                    is AppResult.Success -> {
+                        update {
+                            copy(
+                                isLoading = false,
+                                comments = result.data,
+                                error = null
+                            )
+                        }
+                    }
+
+                    is AppResult.Error -> {
+                        update {
+                            copy(
+                                isLoading = false,
+                                error = result.exception.message ?: "Failed to load comments"
+                            )
+                        }
+                    }
                 }
             }
         }

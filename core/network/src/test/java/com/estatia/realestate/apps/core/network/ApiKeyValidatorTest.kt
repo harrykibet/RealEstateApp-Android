@@ -34,7 +34,7 @@ class ApiKeyValidatorTest {
         val exception = assertThrows(InvalidApiKeyException::class.java) {
             apiKeyValidator.validate("", null)
         }
-        Assertions.assertEquals("API key cannot be empty", exception.message)
+        Assertions.assertEquals("Invalid API key : API key cannot be empty + null", exception.message)
     }
 
     @Test

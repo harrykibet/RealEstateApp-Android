@@ -69,6 +69,8 @@ kotlinxCoroutines = "1.11.0"
 androidxDataStore = "1.2.1"
 protobufPlugin = "0.10.0"
 protobuf = "4.35.1"
+turbine = "1.2.1"
+junit-vintage = "6.1.2"
 
 [plugins]
 
@@ -192,6 +194,7 @@ testing = [
     "junit-jupiter",
     "kotest-runner-junit5",
     "mockk",
+    "turbine",
     "core-testing",
     "androidx-test-core-ktx",
     "hilt-android-testing",
@@ -390,6 +393,8 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 androidx-test-core = { group = "androidx.test", name = "core", version = "1.7.0" }
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
 androidx-tracing = { group = "androidx.tracing", name = "tracing", version.ref = "androidx-tracing" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit-vintage" }
 
 
 # Dokka for docs

@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.feature.property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
@@ -41,26 +42,6 @@ class AddPropertyViewModel @Inject constructor(
 
     val draft: StateFlow<AddPropertyDraft> =
         _draft.asStateFlow()
-
-
-
-    val uploadStatus: StateFlow<Boolean?> =
-        repository.uploadStatus
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                false
-            )
-
-
-    val uploadError: StateFlow<String?> =
-        repository.uploadError
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                null
-            )
-
 
 
     /**
@@ -297,35 +278,24 @@ class AddPropertyViewModel @Inject constructor(
 
 
     fun saveProperty(
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        onSuccess: (String) -> Unit
     ) {
-
-        val userId =
-            authRepository.getCurrentUserId()
-                ?: return
-
+        val userId = authRepository.getCurrentUserId() ?: return
 
         viewModelScope.launch {
-
-
             try {
+                val property = _draft.value.toDomain(userId = userId)
 
-                val property =
-                    _draft.value.toDomain(
-                        userId = userId
-                    )
-
-
-                repository.uploadProperty(
+                when (val result = repository.uploadProperty(
                     property = property,
                     imageUris = _draft.value.images,
-                    videoUris = _draft.value.videos,
-                    onFailure = onFailure
-                )
-
-
+                    videoUris = _draft.value.videos
+                )) {
+                    is AppResult.Success -> onSuccess(result.data)
+                    is AppResult.Error -> onFailure(result.exception)
+                }
             } catch (exception: Exception) {
-
                 onFailure(exception)
             }
         }

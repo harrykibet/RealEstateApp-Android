@@ -91,11 +91,7 @@ fun MapWithSearchBar(
                             placesClient = placesClient,
                             onLocationFound = { latLng ->
                                 map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
-                                if (!viewModel.loadNearbyProperties(map!!, latLng.latitude, latLng.longitude)) {
-                                    handleNoNearbyProperties(context, map!!, viewModel, zoomOutCount, maxZoomOut) {
-                                        zoomOutCount++
-                                    }
-                                }
+                                viewModel.loadNearbyProperties(latLng.latitude, latLng.longitude, 10.0)
                             },
                             onError = {
                                 Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
@@ -123,11 +119,7 @@ fun MapWithSearchBar(
                             location?.let {
                                 val latLng = LatLng(it.latitude, it.longitude)
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
-                                if (!viewModel.loadNearbyProperties(googleMap, latLng.latitude, latLng.longitude)) {
-                                    handleNoNearbyProperties(context, googleMap, viewModel, zoomOutCount, maxZoomOut) {
-                                        zoomOutCount++
-                                    }
-                                }
+                                viewModel.loadNearbyProperties(latLng.latitude, latLng.longitude, 10.0)
                             }
                         }
                     } else {
@@ -193,7 +185,7 @@ private fun handleNoNearbyProperties(
         map.animateCamera(CameraUpdateFactory.zoomOut())
         val defaultLoc = LatLng(-1.286389, 36.817223)
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultLoc, 10f))
-        viewModel.loadNearbyProperties(map, defaultLoc.latitude, defaultLoc.longitude)
+        viewModel.loadNearbyProperties(defaultLoc.latitude, defaultLoc.longitude, 10.0)
     } else {
         Toast.makeText(context, "Still no results after zooming out", Toast.LENGTH_SHORT).show()
     }

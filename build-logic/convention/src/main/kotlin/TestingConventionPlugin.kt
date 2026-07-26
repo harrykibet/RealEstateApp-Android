@@ -13,8 +13,11 @@ class TestingConventionPlugin : Plugin<Project> {
                 listOf(
                     libs.findLibrary("junit.junit").get(),
                     libs.findLibrary("junit.jupiter").get(),
+                    libs.findLibrary("junit.vintage.engine").get(),
                     libs.findLibrary("kotest.runner.junit5").get(),
                     libs.findLibrary("mockk").get(),
+                    libs.findLibrary("turbine").get(),
+                    libs.findLibrary("kotlinx-coroutines-test").get(),
                     libs.findLibrary("core.testing").get(),
                     libs.findLibrary("androidx.test.core.ktx").get(),
                     libs.findLibrary("hilt.android.testing").get(),

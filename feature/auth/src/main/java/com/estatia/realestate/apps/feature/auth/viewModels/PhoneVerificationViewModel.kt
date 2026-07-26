@@ -83,7 +83,9 @@ class PhoneVerificationViewModel @Inject constructor(
                         }
 
                         is PhoneVerificationState.Error -> {
-                            _uiState.value = PhoneVerificationUiState.Error(state.error)
+                            _uiState.value = PhoneVerificationUiState.Error(
+                                state.message ?: state.error.message ?: "Unknown error"
+                            )
                         }
 
                         PhoneVerificationState.Idle -> Unit

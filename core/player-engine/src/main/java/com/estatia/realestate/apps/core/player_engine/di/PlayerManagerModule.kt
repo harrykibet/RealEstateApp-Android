@@ -132,6 +132,10 @@ abstract class PlayerManagerModule {
 
         @Provides
         @Singleton
+        fun provideRandom(): kotlin.random.Random = kotlin.random.Random.Default
+
+        @Provides
+        @Singleton
         fun provideEnvironmentCoordinator(
             networkStateProvider: INetworkStateProvider,
             batteryManager: IBatteryManager,
