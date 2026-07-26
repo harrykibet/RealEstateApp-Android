@@ -9,14 +9,9 @@ android {
 
 dependencies {
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-
     implementation(libs.gson)
 
     implementation(libs.bundles.firebase)
-    implementation(libs.play.services.maps)
 
     implementation(libs.security.crypto.ktx)
 

@@ -7,8 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.android)
-    implementation(libs.material)
 
     implementation(libs.navigation.fragment.ktx)
 

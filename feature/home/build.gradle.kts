@@ -8,8 +8,6 @@ android {
 
 dependencies {
 
-    implementation(libs.bundles.android)
-
     implementation(projects.core.model)
     implementation(projects.core.domain)
 

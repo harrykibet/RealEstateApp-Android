@@ -7,9 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
 
     implementation(libs.androidx.credential.manager)
     implementation(libs.google.id)
