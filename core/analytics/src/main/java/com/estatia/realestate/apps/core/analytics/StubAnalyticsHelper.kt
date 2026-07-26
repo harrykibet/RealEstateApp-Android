@@ -19,9 +19,8 @@ internal class StubAnalyticsHelper @Inject constructor(
     private val analyticsRepository: IAnalyticsTracker
 ) : AnalyticsHelper {
     override suspend fun logEvent(event: FirebaseAnalyticsEvent) {
-        analyticsRepository.logEvent(event){
-            Log.e(TAG, "Error logging event: $event", it)
-        }
+        Log.d(TAG, "Received Firebase analytics event: $event")
+        analyticsRepository.logEvent(event)
     }
 
     override suspend fun logEvent(event: AnalyticsEvent) {
