@@ -12,6 +12,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class CdnHealthMonitor @Inject constructor(
+    private val latencyMeasurer: ILatencyMeasurer,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     private val ttl: Duration = 30.seconds
@@ -64,7 +65,7 @@ class CdnHealthMonitor @Inject constructor(
         }
 
         try {
-            val latency = measureLatency(endpoint.baseUrl)
+            val latency = latencyMeasurer.measure(endpoint.baseUrl, timeout)
 
             CdnHealth(
                 latencyMs = latency,
@@ -74,9 +75,7 @@ class CdnHealthMonitor @Inject constructor(
             )
 
         } catch (_: Throwable) {
-
             val failures = (previous?.failureCount ?: 0) + 1
-
             val circuitOpenUntil =
                 if (failures >= failureThreshold)
                     now + circuitOpenDuration.inWholeMilliseconds
@@ -88,26 +87,6 @@ class CdnHealthMonitor @Inject constructor(
                 lastCheckedAt = now,
                 circuitOpenUntil = circuitOpenUntil
             )
-        }
-    }
-
-    /**
-     * Direct latency probe (replaces INetworkUtils dependency).
-     * This is now owned by CDN layer, not network layer.
-     */
-    private suspend fun measureLatency(host: String): Long {
-        return try {
-            val start = System.currentTimeMillis()
-
-            withTimeout(timeout) {
-                val socket = java.net.Socket()
-                socket.connect(java.net.InetSocketAddress(host, 80), timeout.inWholeMilliseconds.toInt())
-                socket.close()
-            }
-
-            System.currentTimeMillis() - start
-        } catch (_: Throwable) {
-            throw RuntimeException("Latency probe failed")
         }
     }
 }

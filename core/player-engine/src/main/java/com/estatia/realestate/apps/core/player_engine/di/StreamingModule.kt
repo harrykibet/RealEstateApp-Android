@@ -12,6 +12,8 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
+import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +37,11 @@ annotation class PlaybackCache
 @InstallIn(SingletonComponent::class)
 @UnstableApi
 object StreamingModule {
+
+    @Provides
+    @Singleton
+    fun provideLatencyMeasurer(impl: DefaultLatencyMeasurer): ILatencyMeasurer = impl
+
     @Provides
     @Singleton
     fun provideDatabaseProvider(
