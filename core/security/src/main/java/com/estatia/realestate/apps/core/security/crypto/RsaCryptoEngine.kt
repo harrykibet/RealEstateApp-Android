@@ -2,12 +2,12 @@ package com.estatia.realestate.apps.core.security.crypto
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
+import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.IRsaCryptoEngine
 import com.estatia.realestate.apps.core.security.models.HybridEncryptedPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.security.GeneralSecurityException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -39,7 +39,8 @@ private const val GCM_TAG_LENGTH =
 
 @Singleton
 class RsaCryptoEngine @Inject constructor(
-    private val keyStoreManager: IKeyStoreManager
+    private val keyStoreManager: IKeyStoreManager,
+    private val cryptoExecutor: ICryptoExecutor
 ) : IRsaCryptoEngine {
 
 
@@ -47,18 +48,15 @@ class RsaCryptoEngine @Inject constructor(
     override suspend fun encrypt(
         data: ByteArray
     ): AppResult<HybridEncryptedPayload> =
-        withContext(Dispatchers.IO) {
-
-            try {
+        cryptoExecutor.execute(SecurityException.EncryptionFailed()) {
+            withContext(Dispatchers.IO) {
 
 
                 val publicKey =
                     keyStoreManager.getPublicKey(
                         RSA_ENCRYPTION_ALIAS
                     )
-                        ?: return@withContext AppResult.Error(
-                            SecurityException.KeyRetrievalFailed
-                        )
+                        ?: throw SecurityException.KeyRetrievalFailed
 
 
                 /*
@@ -111,27 +109,11 @@ class RsaCryptoEngine @Inject constructor(
 
 
 
-                AppResult.Success(
-                    HybridEncryptedPayload(
-                        version = 1,
-                        encryptedKey = encryptedKey,
-                        iv = aesCipher.iv,
-                        ciphertext = encryptedData
-                    )
-                )
-
-
-            } catch (e: GeneralSecurityException) {
-
-                AppResult.Error(
-                    SecurityException.EncryptionFailed(e)
-                )
-
-
-            } catch (e: Exception) {
-
-                AppResult.Error(
-                    SecurityException.EncryptionFailed(e)
+                HybridEncryptedPayload(
+                    version = 1,
+                    encryptedKey = encryptedKey,
+                    iv = aesCipher.iv,
+                    ciphertext = encryptedData
                 )
             }
         }
@@ -143,19 +125,15 @@ class RsaCryptoEngine @Inject constructor(
     override suspend fun decrypt(
         payload: HybridEncryptedPayload
     ): AppResult<ByteArray> =
-        withContext(Dispatchers.IO) {
-
-
-            try {
+        cryptoExecutor.execute(SecurityException.DecryptionFailed()) {
+            withContext(Dispatchers.IO) {
 
 
                 val privateKey =
                     keyStoreManager.getPrivateKey(
                         RSA_ENCRYPTION_ALIAS
                     )
-                        ?: return@withContext AppResult.Error(
-                            SecurityException.KeyRetrievalFailed
-                        )
+                        ?: throw SecurityException.KeyRetrievalFailed
 
 
 
@@ -208,24 +186,8 @@ class RsaCryptoEngine @Inject constructor(
 
 
 
-                AppResult.Success(
-                    aesCipher.doFinal(
-                        payload.ciphertext
-                    )
-                )
-
-
-            } catch (e: GeneralSecurityException) {
-
-                AppResult.Error(
-                    SecurityException.DecryptionFailed(e)
-                )
-
-
-            } catch (e: Exception) {
-
-                AppResult.Error(
-                    SecurityException.DecryptionFailed(e)
+                aesCipher.doFinal(
+                    payload.ciphertext
                 )
             }
         }

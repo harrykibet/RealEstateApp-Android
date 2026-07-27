@@ -17,4 +17,5 @@ interface ISecurityRepository {
     suspend fun saveToken(token: String): AppResult<Unit>
     suspend fun getToken(): AppResult<String?>
     suspend fun clearToken(): AppResult<Unit>
+    suspend fun hashWithSalt(data: ByteArray, salt: ByteArray): AppResult<ByteArray>
 }

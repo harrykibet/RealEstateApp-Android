@@ -4,6 +4,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
+import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +32,9 @@ private const val RSA_KEY_SIZE =
 
 
 @Singleton
-class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
+class AndroidKeyStoreManager @Inject constructor(
+    private val cryptoExecutor: ICryptoExecutor
+) : IKeyStoreManager {
 
 
     private val keyStore =
@@ -44,17 +47,9 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
 
     override suspend fun initialize():
             AppResult<Unit> =
-        withContext(Dispatchers.IO) {
-
-            try {
-
-                AppResult.Success(Unit)
-
-            } catch (_: Exception) {
-
-                AppResult.Error(
-                    SecurityException.KeyGenerationFailed
-                )
+        cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
+            withContext(Dispatchers.IO) {
+                // Initializing keystore is done in init block
             }
         }
 
@@ -62,10 +57,8 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
     override suspend fun generateAesKey(
         alias: String
     ): AppResult<Unit> =
-        withContext(Dispatchers.IO) {
-
-            try {
-
+        cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
+            withContext(Dispatchers.IO) {
                 KeyGenerator
                     .getInstance(
                         KeyProperties.KEY_ALGORITHM_AES,
@@ -93,16 +86,6 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
                         )
                     }
                     .generateKey()
-
-
-                AppResult.Success(Unit)
-
-
-            } catch (_: Exception) {
-
-                AppResult.Error(
-                    SecurityException.KeyGenerationFailed
-                )
             }
         }
 
@@ -131,11 +114,8 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
         alias: String,
         purposes: Int
     ): AppResult<Unit> =
-        withContext(Dispatchers.IO) {
-
-            try {
-
-
+        cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
+            withContext(Dispatchers.IO) {
                 KeyPairGenerator
                     .getInstance(
                         KeyProperties.KEY_ALGORITHM_RSA,
@@ -161,17 +141,6 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
                         )
                     }
                     .generateKeyPair()
-
-
-
-                AppResult.Success(Unit)
-
-
-            } catch (_: Exception) {
-
-                AppResult.Error(
-                    SecurityException.KeyGenerationFailed
-                )
             }
         }
 
@@ -179,34 +148,18 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
     override suspend fun rotateKey(
         alias: String
     ): AppResult<Unit> =
-        withContext(Dispatchers.IO) {
-
-            try {
-
+        cryptoExecutor.execute(SecurityException.KeyRotationFailed()) {
+            withContext(Dispatchers.IO) {
                 if (keyStore.containsAlias(alias)) {
                     keyStore.deleteEntry(alias)
                 }
-
-
-                AppResult.Success(Unit)
-
-
-            } catch (e: Exception) {
-
-                AppResult.Error(
-                    SecurityException.KeyRotationFailed(e)
-                )
             }
         }
 
     override fun getKeyPair(
-        alias:String
-    ):AppResult<KeyPair>{
-
-
+        alias: String
+    ): AppResult<KeyPair> {
         return try {
-
-
             val entry =
                 keyStore.getEntry(
                     alias,
@@ -215,35 +168,31 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
 
 
             AppResult.Success(
-
                 KeyPair(
                     entry.certificate.publicKey,
                     entry.privateKey
                 )
             )
-
-
-        }catch(_:Exception){
-
-            AppResult.Error(
-                SecurityException.KeyRetrievalFailed
-            )
+        } catch (e: Exception) {
+            AppResult.Error(SecurityException.KeyRetrievalFailed)
         }
     }
-
 
 
     override fun getSecretKey(
         alias: String
     ): SecretKey? {
 
-
-        return (
-                keyStore.getEntry(
-                    alias,
-                    null
-                ) as? KeyStore.SecretKeyEntry
-                )?.secretKey
+        return try {
+            (
+                    keyStore.getEntry(
+                        alias,
+                        null
+                    ) as? KeyStore.SecretKeyEntry
+                    )?.secretKey
+        } catch (_: Exception) {
+            null
+        }
 
     }
 
@@ -252,13 +201,16 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
         alias: String
     ): PrivateKey? {
 
-
-        return (
-                keyStore.getEntry(
-                    alias,
-                    null
-                ) as? KeyStore.PrivateKeyEntry
-                )?.privateKey
+        return try {
+            (
+                    keyStore.getEntry(
+                        alias,
+                        null
+                    ) as? KeyStore.PrivateKeyEntry
+                    )?.privateKey
+        } catch (_: Exception) {
+            null
+        }
 
     }
 
@@ -267,33 +219,29 @@ class AndroidKeyStoreManager @Inject constructor() : IKeyStoreManager {
         alias: String
     ): PublicKey? {
 
-
-        return (
-                keyStore.getEntry(
-                    alias,
-                    null
-                ) as? KeyStore.PrivateKeyEntry
-                )
-            ?.certificate
-            ?.publicKey
+        return try {
+            (
+                    keyStore.getEntry(
+                        alias,
+                        null
+                    ) as? KeyStore.PrivateKeyEntry
+                    )
+                ?.certificate
+                ?.publicKey
+        } catch (_: Exception) {
+            null
+        }
 
     }
 
     override fun deleteKey(
-        alias:String
-    ):AppResult<Unit>{
-
+        alias: String
+    ): AppResult<Unit> {
         return try {
-
             keyStore.deleteEntry(alias)
-
             AppResult.Success(Unit)
-
-        }catch(e:Exception){
-
-            AppResult.Error(
-                SecurityException.KeyRotationFailed(e)
-            )
+        } catch (e: Exception) {
+            AppResult.Error(SecurityException.KeyRotationFailed(e))
         }
     }
 

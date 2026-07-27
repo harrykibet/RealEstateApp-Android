@@ -4,40 +4,39 @@ package com.estatia.realestate.apps.core.security.crypto
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
+import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.Signature
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 private const val SIGNATURE_ALGORITHM =
     "SHA256withRSA/PSS"
 
 
-
+@Singleton
 class SignatureManager @Inject constructor(
-    private val keyStoreManager: IKeyStoreManager
+    private val keyStoreManager: IKeyStoreManager,
+    private val cryptoExecutor: ICryptoExecutor
 ) : ISignatureManager {
-
 
 
     override suspend fun sign(
         data: ByteArray,
         keyAlias: String
     ): AppResult<ByteArray> =
-        withContext(Dispatchers.IO) {
-
-
-            try {
+        cryptoExecutor.execute(SecurityException.SignatureGenerationFailed()) {
+            withContext(Dispatchers.IO) {
 
 
                 val keyPair =
                     keyStoreManager
                         .getKeyPair(keyAlias)
                         .getOrThrow()
-
 
 
                 val signer =
@@ -54,22 +53,9 @@ class SignatureManager @Inject constructor(
                 signer.update(data)
 
 
-                AppResult.Success(
-                    signer.sign()
-                )
-
-
-            } catch(e:Exception) {
-
-
-                AppResult.Error(
-                    SecurityException.SignatureGenerationFailed(e)
-                )
+                signer.sign()
             }
         }
-
-
-
 
 
     override suspend fun verify(
@@ -77,17 +63,14 @@ class SignatureManager @Inject constructor(
         signature: ByteArray,
         keyAlias: String
     ): AppResult<Boolean> =
-        withContext(Dispatchers.IO) {
-
-
-            try {
+        cryptoExecutor.execute(SecurityException.SignatureVerificationFailed()) {
+            withContext(Dispatchers.IO) {
 
 
                 val keyPair =
                     keyStoreManager
                         .getKeyPair(keyAlias)
                         .getOrThrow()
-
 
 
                 val verifier =
@@ -105,18 +88,8 @@ class SignatureManager @Inject constructor(
 
 
 
-                AppResult.Success(
-                    verifier.verify(
-                        signature
-                    )
-                )
-
-
-            } catch(e:Exception) {
-
-
-                AppResult.Error(
-                    SecurityException.SignatureVerificationFailed(e)
+                verifier.verify(
+                    signature
                 )
             }
         }

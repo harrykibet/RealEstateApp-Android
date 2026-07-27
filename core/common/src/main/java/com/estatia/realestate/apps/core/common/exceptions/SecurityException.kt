@@ -77,6 +77,12 @@ sealed class SecurityException(
             throwable
         )
 
+    data class HmacGenerationFailed(val throwable: Throwable? = null) :
+        SecurityException(
+            "HMAC generation failed",
+            throwable
+        )
+
     data class InvalidApiKey(
         val msg: String,
         val throwable: Throwable? = null

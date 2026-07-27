@@ -3,11 +3,11 @@ package com.estatia.realestate.apps.core.security.crypto
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
+import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.security.GeneralSecurityException
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
@@ -25,7 +25,8 @@ private const val GCM_TAG_LENGTH =
 
 @Singleton
 class AesGcmCryptoEngine @Inject constructor(
-    private val keyStoreManager: IKeyStoreManager
+    private val keyStoreManager: IKeyStoreManager,
+    private val cryptoExecutor: ICryptoExecutor
 ) : IAesGcmCryptoEngine {
 
 
@@ -33,16 +34,13 @@ class AesGcmCryptoEngine @Inject constructor(
     override suspend fun encrypt(
         data: ByteArray
     ): AppResult<EncryptedPayload> =
-        withContext(Dispatchers.IO) {
-
-            try {
+        cryptoExecutor.execute(SecurityException.EncryptionFailed()) {
+            withContext(Dispatchers.IO) {
 
                 val key =
                     keyStoreManager
                         .getSecretKey(AES_KEY_ALIAS)
-                        ?: return@withContext AppResult.Error(
-                            SecurityException.KeyRetrievalFailed
-                        )
+                        ?: throw SecurityException.KeyRetrievalFailed
 
 
                 val cipher =
@@ -61,25 +59,10 @@ class AesGcmCryptoEngine @Inject constructor(
                     cipher.doFinal(data)
 
 
-                AppResult.Success(
-                    EncryptedPayload(
-                        version = 1,
-                        iv = cipher.iv,
-                        ciphertext = encrypted
-                    )
-                )
-
-
-            } catch (e: GeneralSecurityException) {
-
-                AppResult.Error(
-                    SecurityException.EncryptionFailed(e)
-                )
-
-            } catch (e: Exception) {
-
-                AppResult.Error(
-                    SecurityException.EncryptionFailed(e)
+                EncryptedPayload(
+                    version = 1,
+                    iv = cipher.iv,
+                    ciphertext = encrypted
                 )
             }
         }
@@ -89,10 +72,8 @@ class AesGcmCryptoEngine @Inject constructor(
     override suspend fun decrypt(
         payload: EncryptedPayload
     ): AppResult<ByteArray> =
-        withContext(Dispatchers.IO) {
-
-            try {
-
+        cryptoExecutor.execute(SecurityException.DecryptionFailed()) {
+            withContext(Dispatchers.IO) {
 
                 require(
                     payload.iv.size == 12
@@ -102,10 +83,7 @@ class AesGcmCryptoEngine @Inject constructor(
                 val key =
                     keyStoreManager
                         .getSecretKey(AES_KEY_ALIAS)
-                        ?: return@withContext AppResult.Error(
-                            SecurityException.KeyRetrievalFailed
-                        )
-
+                        ?: throw SecurityException.KeyRetrievalFailed
 
 
                 val cipher =
@@ -124,24 +102,8 @@ class AesGcmCryptoEngine @Inject constructor(
                 )
 
 
-                AppResult.Success(
-                    cipher.doFinal(
-                        payload.ciphertext
-                    )
-                )
-
-
-            } catch (e: GeneralSecurityException) {
-
-                AppResult.Error(
-                    SecurityException.DecryptionFailed(e)
-                )
-
-
-            } catch (e: Exception) {
-
-                AppResult.Error(
-                    SecurityException.DecryptionFailed(e)
+                cipher.doFinal(
+                    payload.ciphertext
                 )
             }
         }

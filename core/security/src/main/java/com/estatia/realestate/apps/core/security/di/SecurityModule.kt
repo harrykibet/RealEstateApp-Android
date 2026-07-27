@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.security.di
 
-import android.content.SharedPreferences
 import com.estatia.realestate.apps.core.security.BuildConfigApiKeyProvider
 import com.estatia.realestate.apps.core.security.TokenLocalDataSource
 import com.estatia.realestate.apps.core.security.crypto.AesGcmCryptoEngine
@@ -12,49 +11,82 @@ import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.IRsaCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
+import com.estatia.realestate.apps.core.security.interfaces.ISecurityExceptionTranslator
+import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
+import com.estatia.realestate.apps.core.security.interfaces.IHashManager
+import com.estatia.realestate.apps.core.security.core.CryptoExecutor
+import com.estatia.realestate.apps.core.security.crypto.HashManager
 import com.estatia.realestate.apps.core.security.keystore.AndroidKeyStoreManager
+import com.estatia.realestate.apps.core.security.mappers.SecurityExceptionTranslator
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SecurityModule {
+abstract class SecurityModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideApiKeyProvider(): ApiKeyProvider =
-        BuildConfigApiKeyProvider()
+    abstract fun bindApiKeyProvider(impl: BuildConfigApiKeyProvider): ApiKeyProvider
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideTokenLocalDataSource(sharedPreferences: SharedPreferences): ITokenLocalDataSource =
-        TokenLocalDataSource(sharedPreferences)
+    abstract fun bindTokenLocalDataSource(impl: TokenLocalDataSource): ITokenLocalDataSource
 
-
-    @Provides
+    @Binds
     @Singleton
-    fun provideKeyStoreManager(): IKeyStoreManager =
-        AndroidKeyStoreManager()
+    abstract fun bindKeyStoreManager(impl: AndroidKeyStoreManager): IKeyStoreManager
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideAesCrypto(
-        keystoreManager: IKeyStoreManager
-    ): IAesGcmCryptoEngine = AesGcmCryptoEngine(keystoreManager)
+    abstract fun bindSecurityExceptionTranslator(impl: SecurityExceptionTranslator): ISecurityExceptionTranslator
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideSignatureManager(
-        keystoreManager: IKeyStoreManager
-    ): ISignatureManager = SignatureManager(keystoreManager)
+    abstract fun bindCryptoExecutor(impl: CryptoExecutor): ICryptoExecutor
 
-
-    @Provides
+    @Binds
     @Singleton
-    fun provideRsaCrypto(
-        keystoreManager: IKeyStoreManager
-    ): IRsaCryptoEngine = RsaCryptoEngine(keystoreManager)
+    abstract fun bindHashManager(impl: HashManager): IHashManager
+
+    @Binds
+    @Singleton
+    abstract fun bindAesCrypto(impl: AesGcmCryptoEngine): IAesGcmCryptoEngine
+
+    @Binds
+    @Singleton
+    abstract fun bindSignatureManager(impl: SignatureManager): ISignatureManager
+
+    @Binds
+    @Singleton
+    abstract fun bindRsaCrypto(impl: RsaCryptoEngine): IRsaCryptoEngine
+
+    companion object {
+        @Provides
+        @Singleton
+        fun provideEncryptedSharedPreferences(
+            @ApplicationContext context: Context
+        ): SharedPreferences {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            return EncryptedSharedPreferences.create(
+                context,
+                "encrypted_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
+    }
 }

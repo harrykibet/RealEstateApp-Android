@@ -7,7 +7,11 @@ import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSourc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class TokenLocalDataSource(
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class TokenLocalDataSource @Inject constructor(
     private val encryptedPrefs: SharedPreferences
 ) : ITokenLocalDataSource {
 
