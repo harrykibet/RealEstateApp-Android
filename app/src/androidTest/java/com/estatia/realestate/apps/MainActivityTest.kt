@@ -12,6 +12,6 @@ class MainActivityTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.estatia.realestate.apps", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.demo", appContext.packageName)
     }
 }

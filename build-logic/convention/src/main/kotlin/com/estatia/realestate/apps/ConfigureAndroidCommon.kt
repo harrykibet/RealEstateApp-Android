@@ -4,6 +4,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
+import org.gradle.api.Project
 
 /**
  * Common Android configuration shared across application, library,
@@ -38,6 +39,7 @@ private fun configureCommonBuildFeatures(
 }
 
 private fun ApplicationExtension.applyCommon(
+    project: Project,
     isDynamicFeature: Boolean = false
 ) {
     compileSdk = 37
@@ -71,15 +73,18 @@ private fun ApplicationExtension.applyCommon(
                 proguardFiles(
                     getDefaultProguardFile(
                         "proguard-android-optimize.txt"
-                    ),
-                    "proguard-rules.pro"
+                    )
                 )
+                if (project.file("proguard-rules.pro").exists()) {
+                    proguardFiles("proguard-rules.pro")
+                }
             }
         }
     }
 }
 
 private fun LibraryExtension.applyCommon(
+    project: Project,
     isDynamicFeature: Boolean = false
 ) {
     compileSdk = 37
@@ -112,15 +117,18 @@ private fun LibraryExtension.applyCommon(
                 proguardFiles(
                     getDefaultProguardFile(
                         "proguard-android-optimize.txt"
-                    ),
-                    "proguard-rules.pro"
+                    )
                 )
+                if (project.file("proguard-rules.pro").exists()) {
+                    proguardFiles("proguard-rules.pro")
+                }
             }
         }
     }
 }
 
 private fun DynamicFeatureExtension.applyCommon(
+    project: Project,
     isDynamicFeature: Boolean = true
 ) {
     compileSdk = 37
@@ -148,15 +156,18 @@ private fun DynamicFeatureExtension.applyCommon(
 // Public API
 
 fun ApplicationExtension.configureAndroidCommon(
+    project: Project,
     isDynamicFeatureModule: Boolean = false
-) = applyCommon(isDynamicFeatureModule)
+) = applyCommon(project, isDynamicFeatureModule)
 
 
 fun LibraryExtension.configureAndroidCommon(
+    project: Project,
     isDynamicFeatureModule: Boolean = false
-) = applyCommon(isDynamicFeatureModule)
+) = applyCommon(project, isDynamicFeatureModule)
 
 
 fun DynamicFeatureExtension.configureAndroidCommon(
+    project: Project,
     isDynamicFeatureModule: Boolean = true
-) = applyCommon(isDynamicFeatureModule)
+) = applyCommon(project, isDynamicFeatureModule)

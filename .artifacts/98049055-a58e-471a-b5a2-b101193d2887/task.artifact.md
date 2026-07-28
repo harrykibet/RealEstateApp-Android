@@ -1,0 +1,4 @@
+- [x] Create `app/proguard-rules.pro`
+- [x] Update `ConfigureAndroidCommon.kt` to handle missing ProGuard files
+- [x] Verify Gradle Sync
+- [x] Verify build with `:app:assembleDebug`

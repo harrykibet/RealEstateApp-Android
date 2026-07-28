@@ -4,6 +4,7 @@ import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.Until
@@ -25,7 +26,7 @@ class ScrollBenchmark {
 
     @Test
     fun scrollFeed() = benchmarkRule.measureRepeated(
-        packageName = "com.estatia.realestate.apps",
+        packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName,
         metrics = listOf(FrameTimingMetric()),
         iterations = 5,
         startupMode = StartupMode.COLD,

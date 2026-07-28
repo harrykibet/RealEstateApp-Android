@@ -131,6 +131,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     isDebuggable = false
                 }
             }
+
         }
     }
 }

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.test)
+    alias(libs.plugins.estatia.android.flavors)
 }
 
 android {
@@ -11,8 +12,6 @@ android {
         minSdk = 28
         targetSdk = 37
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        missingDimensionStrategy("env", "prod")
     }
 
     buildTypes {

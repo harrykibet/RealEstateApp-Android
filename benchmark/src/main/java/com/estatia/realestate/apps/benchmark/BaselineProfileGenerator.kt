@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.benchmark
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +30,7 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() = baselineProfileRule.collect(
-        packageName = "com.estatia.realestate.apps",
+        packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName,
         // Check if there are any activities that need to be skipped or handled differently
         includeInStartupProfile = true
     ) {

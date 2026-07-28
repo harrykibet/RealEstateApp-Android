@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import com.estatia.realestate.apps.configureFlavors
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +17,12 @@ class AndroidFlavorsConventionPlugin : Plugin<Project> {
 
         pluginManager.withPlugin("com.android.library") {
             extensions.configure<LibraryExtension> {
+                configureFlavors(this)
+            }
+        }
+
+        pluginManager.withPlugin("com.android.test") {
+            extensions.configure<TestExtension> {
                 configureFlavors(this)
             }
         }

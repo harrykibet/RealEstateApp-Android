@@ -19,6 +19,6 @@ class AuthInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.rentalapp.feature_auth.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.feature.auth.test", appContext.packageName)
     }
 }

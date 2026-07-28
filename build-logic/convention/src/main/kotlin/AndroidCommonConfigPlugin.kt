@@ -21,6 +21,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             // Resolve Protobuf duplicate class conflict
             configurations.all {
                 exclude(group = "com.google.protobuf", module = "protobuf-lite")
+                exclude(group = "com.google.firebase", module = "protolite-well-known-types")
                 resolutionStrategy {
                     force(libs.findLibrary("protobuf.javalite").get())
                 }
@@ -29,18 +30,18 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             when {
                 isAppModule -> {
                     extensions.configure<ApplicationExtension> {
-                        configureAndroidCommon()
+                        configureAndroidCommon(this@with)
                     }
                 }
                 isDynamicFeatureModule -> {
                     extensions.configure<DynamicFeatureExtension> {
-                        configureAndroidCommon(isDynamicFeatureModule = true)
+                        configureAndroidCommon(this@with, isDynamicFeatureModule = true)
                     }
                 }
                 else -> {
                     pluginManager.apply("com.android.library")
                     extensions.configure<LibraryExtension> {
-                        configureAndroidCommon()
+                        configureAndroidCommon(this@with)
                     }
                 }
             }

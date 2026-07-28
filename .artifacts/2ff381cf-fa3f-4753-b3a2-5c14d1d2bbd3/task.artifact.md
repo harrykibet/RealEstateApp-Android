@@ -1,0 +1,3 @@
+- `[x]` Update `app/proguard-rules.pro` with `-dontwarn` rules for Firestore, Micrometer, OpenTelemetry, and SLF4J.
+- `[x]` Verify the fix by running `./gradlew :app:minifyDemoBenchmarkWithR8`.
+- `[x]` Create walkthrough artifact.

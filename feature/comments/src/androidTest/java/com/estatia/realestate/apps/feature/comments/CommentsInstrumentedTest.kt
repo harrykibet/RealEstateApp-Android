@@ -20,7 +20,7 @@ class CommentsInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_comments.test",
+            "com.estatia.realestate.apps.feature.comments.test",
             appContext.packageName
         )
     }
