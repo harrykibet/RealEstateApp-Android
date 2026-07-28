@@ -1,0 +1,2 @@
+- [x] Increase Gradle heap size in `gradle.properties`
+- [x] Verify the fix by running the failing Gradle task

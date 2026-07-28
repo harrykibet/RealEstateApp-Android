@@ -2,9 +2,11 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.estatia.realestate.apps.configureAndroidCommon
+import com.estatia.realestate.apps.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -15,6 +17,14 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
         with(target) {
             val isAppModule = plugins.hasPlugin("com.android.application")
             val isDynamicFeatureModule = plugins.hasPlugin("com.android.dynamic-feature")
+
+            // Resolve Protobuf duplicate class conflict
+            configurations.all {
+                exclude(group = "com.google.protobuf", module = "protobuf-lite")
+                resolutionStrategy {
+                    force(libs.findLibrary("protobuf.javalite").get())
+                }
+            }
 
             when {
                 isAppModule -> {
