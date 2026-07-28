@@ -35,8 +35,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.theme.supportsDynamicTheming
@@ -55,7 +57,13 @@ import com.estatia.realestate.apps.feature.settings.R.string
 @Composable
 fun SettingsDialog(
     onDismiss: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    ),
 ) {
     val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
     SettingsDialog(

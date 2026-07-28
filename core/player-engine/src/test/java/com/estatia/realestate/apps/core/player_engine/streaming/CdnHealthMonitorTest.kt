@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -14,7 +14,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class CdnHealthMonitorTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var measurer: ILatencyMeasurer
     private lateinit var monitor: CdnHealthMonitor
     private val endpoint = CdnEndpoint("Test", "127.0.0.1")
@@ -26,7 +26,7 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `getHealth performs measurement on first call`() = runTest {
+    fun `getHealth performs measurement on first call`() = runTest(testDispatcher) {
         coEvery { measurer.measure(any(), any()) } returns 50L
 
         val health = monitor.getHealth(endpoint)
@@ -37,7 +37,7 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `getHealth returns cached value within TTL`() = runTest {
+    fun `getHealth returns cached value within TTL`() = runTest(testDispatcher) {
         coEvery { measurer.measure(any(), any()) } returns 50L
 
         val health1 = monitor.getHealth(endpoint)
@@ -47,7 +47,7 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `getHealth records failure when measurement throws`() = runTest {
+    fun `getHealth records failure when measurement throws`() = runTest(testDispatcher) {
         coEvery { measurer.measure(any(), any()) } throws RuntimeException("Network Error")
 
         val health = monitor.getHealth(endpoint)

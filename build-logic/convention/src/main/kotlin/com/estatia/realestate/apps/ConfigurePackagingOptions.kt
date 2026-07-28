@@ -19,8 +19,15 @@ fun configurePackagingOptions(project: Project) {
             "/META-INF/{AL2.0,LGPL2.1}"
         )
         when (dsl) {
-            is ApplicationExtension -> dsl.packaging.resources.excludes += excludes
-            is LibraryExtension -> dsl.packaging.resources.excludes += excludes
+            is ApplicationExtension -> {
+                dsl.packaging.resources.excludes += excludes
+                dsl.packaging.jniLibs.useLegacyPackaging = false
+            }
+
+            is LibraryExtension -> {
+                dsl.packaging.resources.excludes += excludes
+                dsl.packaging.jniLibs.useLegacyPackaging = false
+            }
         }
     }
 }

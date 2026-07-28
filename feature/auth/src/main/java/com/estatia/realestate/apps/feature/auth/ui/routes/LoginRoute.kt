@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
 import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
 import android.widget.Toast
@@ -13,6 +12,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -22,7 +24,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoute(
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    ),
     onNavigateToHome: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit

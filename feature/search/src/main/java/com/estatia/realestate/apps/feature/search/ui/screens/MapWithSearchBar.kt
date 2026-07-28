@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import com.google.android.libraries.places.api.Places
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.LocationServices
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,17 +37,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import com.estatia.realestate.apps.feature.search.BuildConfig
 
 @Composable
 fun MapWithSearchBar(
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    )
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current

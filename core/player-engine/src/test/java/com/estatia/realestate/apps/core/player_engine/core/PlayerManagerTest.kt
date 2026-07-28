@@ -92,7 +92,7 @@ class PlayerManagerTest {
         environmentFlow.value = environmentFlow.value.copy(isMetered = true)
 
         // Then (wait for collection)
-        testScope.testScheduler.advanceUntilIdle()
-        verify { pool.updateMaxPoolSize(5, any()) }
+        // We use verify with timeout because PlayerManager uses a real background thread (playerDispatcher)
+        verify(timeout = 2000) { pool.updateMaxPoolSize(5, any()) }
     }
 }

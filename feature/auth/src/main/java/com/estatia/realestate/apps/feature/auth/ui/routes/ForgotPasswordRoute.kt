@@ -2,8 +2,10 @@ package com.estatia.realestate.apps.feature.auth.ui.routes
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.feature.auth.state.ForgotPasswordAction
 import com.estatia.realestate.apps.feature.auth.ui.screens.ForgotPasswordDialog
 import com.estatia.realestate.apps.feature.auth.viewModels.ForgotPasswordViewModel
@@ -11,7 +13,13 @@ import com.estatia.realestate.apps.feature.auth.viewModels.ForgotPasswordViewMod
 @Composable
 fun ForgotPasswordRoute(
     onBack: () -> Unit,
-    viewModel: ForgotPasswordViewModel = hiltViewModel()
+    viewModel: ForgotPasswordViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    )
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.ui.screens.CommentsScreen
@@ -16,7 +18,13 @@ import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewMo
 fun CommentsRoute(
     propertyId: String,
     onBack: () -> Unit,
-    viewModel: CommentsViewModel = hiltViewModel()
+    viewModel: CommentsViewModel = hiltViewModel(
+        checkNotNull<ViewModelStoreOwner>(
+            LocalViewModelStoreOwner.current
+        ) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }, null
+    )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }

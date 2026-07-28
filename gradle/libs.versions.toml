@@ -59,6 +59,7 @@ okhttp3 = "5.4.0"
 retrofit2 = "3.0.0"
 truth = "1.4.5"
 benchmarkMacroJunit4 = "1.4.1"
+baselineprofile = "1.4.1"
 profileinstaller = "1.4.1"
 sonarqube = "7.3.1.8318"
 kotlinxSerializationJson = "1.11.0"
@@ -178,7 +179,6 @@ media3 = [
     "media3-datasource",
     "media3-datasource-okhttp",
     "media3-decoder",
-    "media3-datasource-rtmp",
     "media3-effect",
     "media3-exoplayer",
     "media3-exoplayer-dash",
@@ -372,7 +372,6 @@ media3-exoplayer-dash = { group = "androidx.media3", name = "media3-exoplayer-da
 media3-exoplayer-rtsp = { group = "androidx.media3", name = "media3-exoplayer-rtsp", version.ref = "androidx-media3" }
 media3-effect = { group = "androidx.media3", name = "media3-effect", version.ref = "androidx-media3" }
 media3-transformer = { group = "androidx.media3", name = "media3-transformer", version.ref = "androidx-media3" }
-media3-datasource-rtmp = { group = "androidx.media3", name = "media3-datasource-rtmp", version.ref = "androidx-media3" }
 media3-exoplayer-workmanager = { group = "androidx.media3", name = "media3-exoplayer-workmanager", version.ref = "androidx-media3" }
 
 
@@ -424,5 +423,3 @@ ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devt
 room-gradle-plugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
 sonarqube-gradle-plugin = { group = "org.sonarqube", name = "org.sonarqube.gradle.plugin", version.ref = "sonarqube" }
 dokka-gradle-plugin = {group = "org.jetbrains.dokka", name = "dokka-gradle-plugin", version.ref = "dokka"}
-
-
