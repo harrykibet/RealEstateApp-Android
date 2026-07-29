@@ -20,7 +20,7 @@ class IntelligenceInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.machine_learning.test",
+            "com.estatia.realestate.apps.feature.intelligence",
             appContext.packageName
         )
     }

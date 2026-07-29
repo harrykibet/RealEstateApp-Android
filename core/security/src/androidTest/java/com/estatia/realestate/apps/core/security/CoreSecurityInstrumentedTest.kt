@@ -19,6 +19,6 @@ class CoreSecurityInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.real_estate_app.security.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.core.security", appContext.packageName)
     }
 }

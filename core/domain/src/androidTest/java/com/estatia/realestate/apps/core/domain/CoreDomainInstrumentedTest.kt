@@ -19,6 +19,6 @@ class CoreDomainInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.real_estate_app.core_domain.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.core.domain", appContext.packageName)
     }
 }

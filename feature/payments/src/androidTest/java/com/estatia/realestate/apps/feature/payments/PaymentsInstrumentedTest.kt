@@ -20,7 +20,7 @@ class PaymentsInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_payments.test",
+            "com.estatia.realestate.apps.feature.payments",
             appContext.packageName
         )
     }

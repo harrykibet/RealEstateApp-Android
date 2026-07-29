@@ -20,7 +20,7 @@ class AnalyticsInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_analytics.test",
+            "com.estatia.realestate.apps.core.analytics",
             appContext.packageName
         )
     }

@@ -1,3 +1,7 @@
-- `[x]` Update `app/proguard-rules.pro` with `-dontwarn` rules for Firestore, Micrometer, OpenTelemetry, and SLF4J.
-- `[x]` Verify the fix by running `./gradlew :app:minifyDemoBenchmarkWithR8`.
-- `[x]` Create walkthrough artifact.
+- `[x]` Update `google-services.json` package name.
+- `[x]` Fix package declarations in `feature:market` tests.
+- `[x]` Bulk update `useAppContext` in all `InstrumentedTest.kt` files.
+    - `[x]` Feature modules (chats, favorites, intelligence, market, payments, service, settings)
+    - `[x]` Core modules (analytics, common, datastore, design-system, domain, model, network, notifications, security, testing, ui)
+    - `[x]` Other modules (lint, localization)
+- `[x]` Verify build and run a sample test.

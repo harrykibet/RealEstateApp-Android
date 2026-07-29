@@ -19,6 +19,6 @@ class ServiceInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.real_estate_app.feature_service.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.feature.service", appContext.packageName)
     }
 }

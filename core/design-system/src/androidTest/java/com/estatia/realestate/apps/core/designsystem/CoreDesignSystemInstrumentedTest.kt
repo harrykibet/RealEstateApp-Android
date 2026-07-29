@@ -20,7 +20,7 @@ class CoreDesignSystemInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.core_design_system.test",
+            "com.estatia.realestate.apps.core.designsystem",
             appContext.packageName
         )
     }

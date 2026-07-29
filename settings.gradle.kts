@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -67,7 +69,3 @@ include(":feature:favorites")
 include(":feature:comments")
 include(":feature:settings")
 include(":feature:service")
-
-
-
-

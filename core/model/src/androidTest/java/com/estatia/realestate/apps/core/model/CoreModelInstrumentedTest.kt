@@ -19,6 +19,6 @@ class CoreModelInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.real_estate_app.core_model.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.core.model", appContext.packageName)
     }
 }

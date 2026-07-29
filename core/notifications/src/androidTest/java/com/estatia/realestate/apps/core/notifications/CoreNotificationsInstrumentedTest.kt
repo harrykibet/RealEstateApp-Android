@@ -20,7 +20,7 @@ class CoreNotificationsInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_notifications.test",
+            "com.estatia.realestate.apps.core.notifications",
             appContext.packageName
         )
     }

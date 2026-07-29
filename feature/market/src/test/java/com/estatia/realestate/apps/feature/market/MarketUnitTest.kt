@@ -1,4 +1,4 @@
-package com.application.real_estate_app.feature_market
+package com.estatia.realestate.apps.feature.market
 
 import org.junit.Test
 

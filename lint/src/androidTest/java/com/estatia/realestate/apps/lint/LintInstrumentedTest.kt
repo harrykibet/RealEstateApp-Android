@@ -19,6 +19,6 @@ class LintInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.application.real_estate_app.lint.test", appContext.packageName)
+        assertEquals("com.estatia.realestate.apps.lint", appContext.packageName)
     }
 }

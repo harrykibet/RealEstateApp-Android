@@ -1,4 +1,4 @@
-package com.application.real_estate_app.feature_market
+package com.estatia.realestate.apps.feature.market
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -20,7 +20,7 @@ class MarketInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_marketplace.test",
+            "com.estatia.realestate.apps.feature.market",
             appContext.packageName
         )
     }

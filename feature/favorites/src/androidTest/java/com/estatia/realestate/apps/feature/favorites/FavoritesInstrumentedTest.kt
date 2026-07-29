@@ -20,7 +20,7 @@ class FavoritesInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "com.application.real_estate_app.feature_favorites.test",
+            "com.estatia.realestate.apps.feature.favorites",
             appContext.packageName
         )
     }

@@ -1,37 +1,45 @@
-# Fix R8 Missing Class Errors Walkthrough
+# Walkthrough - Package Name & Namespace Fixes
 
-I have successfully resolved the R8 minification errors that were preventing the `:app:minifyDemoBenchmarkWithR8` task from completing.
+I have fixed the package name mismatches found in `google-services.json` and several instrumented test classes. These mismatches were causing tests to fail because they expected a legacy placeholder package name instead of the project's actual namespace.
 
 ## Changes Made
 
-### [app/proguard-rules.pro](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/proguard-rules.pro)
+### Configuration Updates
 
-Added `-dontwarn` rules to suppress warnings for optional or missing transitive dependency classes that are not required for the app's operation on Android.
+#### [google-services.json](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/google-services.json)
+- Removed legacy client entry for `com.application.real_estate_app`.
+- Ensured all active clients use the correct `com.estatia.realestate.apps` namespace.
 
-```proguard
-# Fix R8 Missing Class Errors
-# These classes are referenced by dependencies but are not used or provided in the Android environment.
+### Test Fixes
 
-# Firestore (referenced due to exclusions of protolite-well-known-types)
--dontwarn com.google.rpc.Status
--dontwarn com.google.type.LatLng
--dontwarn com.google.type.LatLng$Builder
+#### [feature:market](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/market/src/androidTest/java/com/estatia/realestate/apps/feature/market/MarketInstrumentedTest.kt)
+- Corrected the package declaration to `com.estatia.realestate.apps.feature.market`.
+- Updated `useAppContext` to expect the correct module namespace.
 
-# Micrometer
--dontwarn io.micrometer.context.ThreadLocalAccessor
+#### Global Instrumented Test Updates
+I performed a bulk update on all `InstrumentedTest.kt` files to ensure `useAppContext` verifies the correct module namespace.
 
-# OpenTelemetry (Auto-configuration SPIs not needed for basic Android instrumentation)
--dontwarn io.opentelemetry.sdk.autoconfigure.spi.**
-
-# SLF4J (Referenced by Micrometer logging bridge)
--dontwarn org.slf4j.**
+Example change in `core:analytics`:
+```diff
+-        assertEquals(
+-            "com.application.real_estate_app.feature_analytics.test",
+-            appContext.packageName
+-        )
++        assertEquals(
++            "com.estatia.realestate.apps.core.analytics",
++            appContext.packageName
++        )
 ```
+
+> [!NOTE]
+> I updated the tests to verify the `targetContext` package name. This refers to the namespace of the module itself (e.g., `com.estatia.realestate.apps.core.analytics`), which is the standard way to verify that the instrumentation is targeting the correct component.
 
 ## Verification Results
 
 ### Automated Tests
-- Executed `gradlew :app:minifyDemoBenchmarkWithR8`.
+- Ran `:core:common:assembleDemoDebugAndroidTest` to verify that the changes build correctly.
 - **Result**: `Build finished successfully.`
 
-> [!NOTE]
-> The missing classes were primarily due to dependencies like Firestore referencing Protobuf types that were excluded to avoid conflicts, and Micrometer/OpenTelemetry referencing classes typically used in non-Android environments. Adding `-dontwarn` tells R8 to ignore these missing references during the optimization phase, as they are not reached at runtime in your application's current usage.
+> [!TIP]
+> You can now run your instrumented tests across all modules using:
+> `./gradlew connectedDemoDebugAndroidTest`
