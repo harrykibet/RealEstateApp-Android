@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
@@ -24,7 +24,7 @@ fun BasicDetailsForm() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        EstatiaText(
             text = "Enter a short, clear title for the property (e.g., '2 Bedroom Apartment in Kilimani')",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -38,7 +38,7 @@ fun BasicDetailsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        Text(
+        EstatiaText(
             text = "Provide a detailed description (include amenities, location benefits, etc.)",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -53,7 +53,7 @@ fun BasicDetailsForm() {
         )
         Spacer(Modifier.height(24.dp))
 
-        Text(
+        EstatiaText(
             text = "Enter the price in KES (e.g., 20000). Avoid adding currency symbols.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

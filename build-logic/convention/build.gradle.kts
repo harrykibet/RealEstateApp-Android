@@ -89,5 +89,9 @@ gradlePlugin {
             id = libs.plugins.estatia.android.core.get().pluginId
             implementationClass = "AndroidCoreConventionPlugin"
         }
+        register("androidLint") {
+            id = "estatia.android.lint"
+            implementationClass = "LintConventionPlugin"
+        }
     }
 }

@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -50,6 +49,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.GradientColors
 import com.estatia.realestate.apps.core.designsystem.theme.LocalGradientColors
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaGradientBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTopAppBar
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaNavigationSuiteScaffold
 import kotlin.reflect.KClass
@@ -150,7 +150,7 @@ internal fun EstatiaApp(
                             contentDescription = null,
                         )
                     },
-                    label = { Text(stringResource(destination.iconTextId)) },
+                    label = { EstatiaText(stringResource(destination.iconTextId)) },
                     modifier =
                         Modifier
                             .testTag("EstatiaNavItem")

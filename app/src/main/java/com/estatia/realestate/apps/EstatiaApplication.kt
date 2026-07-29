@@ -49,8 +49,11 @@ class EstatiaApplication : Application()  {
 
 
     private fun configureGlobalExceptionHandler() {
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             handleUncaughtException(thread, throwable)
+            defaultHandler?.uncaughtException(thread, throwable)
         }
 
         CoroutineExceptionHandler { _, throwable ->

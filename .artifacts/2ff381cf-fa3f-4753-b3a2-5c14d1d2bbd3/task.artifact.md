@@ -1,7 +1,10 @@
-- `[x]` Update `google-services.json` package name.
-- `[x]` Fix package declarations in `feature:market` tests.
-- `[x]` Bulk update `useAppContext` in all `InstrumentedTest.kt` files.
-    - `[x]` Feature modules (chats, favorites, intelligence, market, payments, service, settings)
-    - `[x]` Core modules (analytics, common, datastore, design-system, domain, model, network, notifications, security, testing, ui)
-    - `[x]` Other modules (lint, localization)
-- `[x]` Verify build and run a sample test.
+- `[x]` Create `EstatiaText` in `core:design-system`
+- `[x]` Refactor `core:design-system` components to use `EstatiaText`
+- `[x]` Refactor `core:ui` components to use `EstatiaText`
+- `[x]` Refactor feature modules to use `EstatiaText` and `EstatiaButton`
+    - `[x]` `:feature:auth`
+    - `[x]` `:feature:home`
+    - `[x]` `:feature:property`
+    - `[x]` `:feature:search`
+    - `[x]` Other feature modules
+- `[x]` Verify with project-wide lint check

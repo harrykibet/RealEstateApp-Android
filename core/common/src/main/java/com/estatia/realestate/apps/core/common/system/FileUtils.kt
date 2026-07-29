@@ -7,6 +7,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.common.media.MediaFileUtils.getMediaFilePathFromContentUri
 import java.io.File
 import java.io.FileOutputStream
@@ -59,7 +60,7 @@ object FileUtils {
                 val contentUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     MediaStore.Downloads.EXTERNAL_CONTENT_URI
                 } else {
-                    Uri.parse("content://downloads/public_downloads")
+                    "content://downloads/public_downloads".toUri()
                 }
                 getMediaFilePathFromContentUri(context, contentUri, docId)
             }

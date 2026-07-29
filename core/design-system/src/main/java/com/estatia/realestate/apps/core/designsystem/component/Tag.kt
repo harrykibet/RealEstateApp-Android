@@ -1,16 +1,17 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaTopicTag(
     modifier: Modifier = Modifier,
@@ -50,7 +51,7 @@ fun EstatiaTopicTag(
 fun TagPreview() {
     EstatiaTheme {
         EstatiaTopicTag(followed = true, onClick = {}) {
-            Text("Topic".uppercase())
+            EstatiaText("Topic".uppercase())
         }
     }
 }

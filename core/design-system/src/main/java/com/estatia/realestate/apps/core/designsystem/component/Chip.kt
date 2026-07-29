@@ -7,7 +7,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -96,7 +95,7 @@ fun ChipPreview() {
     EstatiaTheme {
         EstatiaBackground(modifier = Modifier.size(80.dp, 20.dp)) {
             EstatiaFilterChip(selected = true, onSelectedChange = {}) {
-                Text("Chip")
+                EstatiaText("Chip")
             }
         }
     }

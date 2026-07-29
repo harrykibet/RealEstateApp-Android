@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.notifications.R.string
+import com.estatia.realestate.apps.core.notifications.R.plurals
 import com.estatia.realestate.apps.core.notifications.R.drawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -59,8 +60,9 @@ internal class SystemTrayNotifier @Inject constructor(
                 }
             }
             val summaryNotification = createPropertiesNotification {
-                val title = getString(
-                    string.core_notifications_properties_notification_group_summary,
+                val title = resources.getQuantityString(
+                    plurals.core_notifications_properties_notification_group_summary,
+                    truncatedProperties.size,
                     truncatedProperties.size,
                 )
                 setContentTitle(title)

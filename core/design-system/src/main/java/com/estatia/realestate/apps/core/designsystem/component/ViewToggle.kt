@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -9,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,6 +30,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
  * @param compactText The text label content to show in expanded mode.
  * @param expandedText The text label content to show in compact mode.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaViewToggleButton(
     expanded: Boolean,
@@ -101,8 +102,8 @@ fun ViewTogglePreviewExpanded() {
             EstatiaViewToggleButton(
                 expanded = true,
                 onExpandedChange = { },
-                compactText = { Text(text = "Compact view") },
-                expandedText = { Text(text = "Expanded view") },
+                compactText = { EstatiaText(text = "Compact view") },
+                expandedText = { EstatiaText(text = "Expanded view") },
             )
         }
     }
@@ -116,8 +117,8 @@ fun ViewTogglePreviewCompact() {
             EstatiaViewToggleButton(
                 expanded = false,
                 onExpandedChange = { },
-                compactText = { Text(text = "Compact view") },
-                expandedText = { Text(text = "Expanded view") },
+                compactText = { EstatiaText(text = "Compact view") },
+                expandedText = { EstatiaText(text = "Expanded view") },
             )
         }
     }

@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -26,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
@@ -91,7 +91,7 @@ private fun PropertyItem(
                 }
 
                 is PlayerUiState.Error -> {
-                    Text(
+                    EstatiaText(
                         text = state.message ?: "Playback error",
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Center)
@@ -128,7 +128,7 @@ private fun PropertyItem(
                 .padding(start = 16.dp, bottom = 24.dp)
                 .fillMaxWidth(0.75f)
         ) {
-            Text(
+            EstatiaText(
                 text = property.title,
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
@@ -137,7 +137,7 @@ private fun PropertyItem(
 
             property.description?.let {
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(
+                EstatiaText(
                     text = it,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,

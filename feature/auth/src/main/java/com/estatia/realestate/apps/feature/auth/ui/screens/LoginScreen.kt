@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.feature.auth.ui.screens
 
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,13 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaOutlinedButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.GoogleSignInButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
@@ -64,7 +61,7 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
+        EstatiaText(
             text = stringResource(R.string.real_estate_app),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontSize = 20.sp,
@@ -87,7 +84,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
+        EstatiaText(
             text = stringResource(R.string.a_complete_solution_to_property_owners_and_tenants),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 16.sp,
@@ -120,14 +117,12 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
+        EstatiaButton(
             onClick = onLoginClick,
             enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            elevation = ButtonDefaults.buttonElevation(6.dp)
+                .height(50.dp)
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
@@ -136,10 +131,10 @@ fun LoginScreen(
                     color = Color.White
                 )
             } else {
-                Text("Login")
+                EstatiaText("Login")
             }
         }
-        Text(
+        EstatiaText(
             text = stringResource(R.string.login),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
@@ -155,13 +150,11 @@ fun LoginScreen(
 
     Spacer(modifier = Modifier.height(24.dp))
 
-    OutlinedButton(
+    EstatiaOutlinedButton(
         onClick = onSignUpClick,
-        modifier = Modifier.fillMaxWidth(0.6f),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        modifier = Modifier.fillMaxWidth(0.6f)
     ) {
-        Text(
+        EstatiaText(
             text = stringResource(R.string.sign_up),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium
@@ -170,7 +163,7 @@ fun LoginScreen(
 
     Spacer(modifier = Modifier.height(32.dp))
 
-    Text(
+    EstatiaText(
         text = stringResource(R.string.forgot_password),
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,

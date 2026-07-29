@@ -28,8 +28,7 @@ fun PhoneVerificationRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.attachActivity(activity)
-        viewModel.startPhoneNumberVerification()
+        viewModel.startPhoneNumberVerification(activity)
     }
 
     if (uiState is PhoneVerificationUiState.Success) {
@@ -46,7 +45,7 @@ fun PhoneVerificationRoute(
             }
         },
         onResend = {
-            viewModel.resendCode()
+            viewModel.resendCode(activity)
         },
         onDismiss = onDismiss
     )

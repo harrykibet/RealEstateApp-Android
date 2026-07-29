@@ -1,16 +1,21 @@
 plugins {
-    alias(libs.plugins.estatia.android.config)
-    alias(libs.plugins.estatia.android.testing)
-    alias(libs.plugins.estatia.hilt)
+    alias(libs.plugins.org.jetbrains.kotlin.jvm)
 }
 
-android {
-    namespace = "com.estatia.realestate.apps.lint"
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
+    compileOnly(libs.android.lint.api)
+    compileOnly(libs.android.lint.checks)
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
+    testImplementation(libs.android.lint.tests)
+}
+
+tasks.withType<org.gradle.jvm.tasks.Jar> {
+    manifest {
+        attributes("Lint-Registry-v2" to "com.estatia.realestate.apps.lint.EstatiaIssueRegistry")
+    }
 }

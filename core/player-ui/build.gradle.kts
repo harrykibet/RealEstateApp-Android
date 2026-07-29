@@ -14,4 +14,5 @@ dependencies {
     implementation(projects.core.playerEngine)
     implementation(projects.core.domain)
     implementation(projects.core.model)
+    implementation(projects.core.designSystem)
 }

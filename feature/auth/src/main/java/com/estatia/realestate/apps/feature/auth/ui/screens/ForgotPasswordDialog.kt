@@ -5,17 +5,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.state.ForgotPasswordUiState
@@ -31,7 +31,7 @@ fun ForgotPasswordDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(
+            EstatiaText(
                 text = "Reset password",
                 style = MaterialTheme.typography.headlineSmall
             )
@@ -51,8 +51,8 @@ fun ForgotPasswordDialog(
             )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+            EstatiaTextButton(onClick = onDismiss) {
+                EstatiaText("Cancel")
             }
         }
     )
@@ -84,7 +84,7 @@ private fun ForgotPasswordContent(
         }
 
         is ForgotPasswordUiState.Success -> {
-            Text(
+            EstatiaText(
                 text = "A password reset link has been sent to\n${state.email}",
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -97,7 +97,7 @@ private fun ForgotPasswordContent(
                     enabled = true,
                     onEmailChange = onEmailChange
                 )
-                Text(
+                EstatiaText(
                     text = state.message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
@@ -116,7 +116,7 @@ private fun EmailInput(
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
-        label = { Text("Email address") },
+        label = { EstatiaText("Email address") },
         modifier = Modifier.fillMaxWidth(),
         enabled = enabled,
         singleLine = true
@@ -133,23 +133,23 @@ private fun ForgotPasswordConfirmButton(
     when (state) {
         is ForgotPasswordUiState.Idle,
         is ForgotPasswordUiState.Error -> {
-            Button(onClick = onSubmit) {
-                Text("Send reset link")
+            EstatiaButton(onClick = onSubmit) {
+                EstatiaText("Send reset link")
             }
         }
 
         is ForgotPasswordUiState.Loading -> {
-            Button(
+            EstatiaButton(
                 onClick = {},
                 enabled = false
             ) {
-                Text("Sending…")
+                EstatiaText("Sending…")
             }
         }
 
         is ForgotPasswordUiState.Success -> {
-            Button(onClick = onDismiss) {
-                Text("Done")
+            EstatiaButton(onClick = onDismiss) {
+                EstatiaText("Done")
             }
         }
     }

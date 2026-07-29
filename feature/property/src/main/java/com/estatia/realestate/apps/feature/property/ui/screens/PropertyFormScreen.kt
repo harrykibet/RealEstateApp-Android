@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -25,6 +24,7 @@ import com.estatia.realestate.apps.core.designsystem.component.MockExtraDetailsF
 import com.estatia.realestate.apps.core.designsystem.component.MockLocationInfoForm
 import com.estatia.realestate.apps.core.designsystem.component.MockMediaUploadsForm
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 
 @Composable
 fun PropertyFormScreen(isPreview: Boolean = false) {
@@ -40,7 +40,7 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
     var currentStep by rememberSaveable { mutableIntStateOf(0) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Add Property", style = MaterialTheme.typography.headlineSmall)
+        EstatiaText("Add Property", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(16.dp))
 
         EstatiaSectionCard(title = sections[currentStep]) {

@@ -22,14 +22,14 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +39,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.theme.supportsDynamicTheming
@@ -84,7 +85,8 @@ fun SettingsDialog(
     onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
+    val windowInfo = LocalWindowInfo.current
+    val density = LocalDensity.current
 
     /**
      * usePlatformDefaultWidth = false is use as a temporary fix to allow
@@ -95,10 +97,10 @@ fun SettingsDialog(
      */
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
+        modifier = Modifier.widthIn(max = with(density) { windowInfo.containerSize.width.toDp() } - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {
-            Text(
+            EstatiaText(
                 text = stringResource(string.feature_settings_title),
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -108,7 +110,7 @@ fun SettingsDialog(
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 when (settingsUiState) {
                     Loading -> {
-                        Text(
+                        EstatiaText(
                             text = stringResource(string.feature_settings_loading),
                             modifier = Modifier.padding(vertical = 16.dp),
                         )
@@ -134,7 +136,7 @@ fun SettingsDialog(
                 onClick = onDismiss,
                 modifier = Modifier.padding(horizontal = 8.dp),
             ) {
-                Text(
+                EstatiaText(
                     text = stringResource(string.feature_settings_dismiss_dialog_button_text),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
@@ -205,7 +207,7 @@ private fun ColumnScope.SettingsPanel(
 
 @Composable
 private fun SettingsDialogSectionTitle(text: String) {
-    Text(
+    EstatiaText(
         text = text,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
@@ -234,7 +236,7 @@ fun SettingsDialogThemeChooserRow(
             onClick = null,
         )
         Spacer(Modifier.width(8.dp))
-        Text(text)
+        EstatiaText(text)
     }
 }
 
@@ -252,19 +254,19 @@ private fun LinksPanel() {
         EstatiaTextButton(
             onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
         ) {
-            Text(text = stringResource(string.feature_settings_privacy_policy))
+            EstatiaText(text = stringResource(string.feature_settings_privacy_policy))
         }
         val context = LocalContext.current
 
         EstatiaTextButton(
             onClick = { uriHandler.openUri(BRAND_GUIDELINES_URL) },
         ) {
-            Text(text = stringResource(string.feature_settings_brand_guidelines))
+            EstatiaText(text = stringResource(string.feature_settings_brand_guidelines))
         }
         EstatiaTextButton(
             onClick = { uriHandler.openUri(FEEDBACK_URL) },
         ) {
-            Text(text = stringResource(string.feature_settings_feedback))
+            EstatiaText(text = stringResource(string.feature_settings_feedback))
         }
     }
 }

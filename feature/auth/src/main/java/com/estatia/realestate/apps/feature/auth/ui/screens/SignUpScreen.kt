@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
@@ -18,6 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -41,7 +43,7 @@ fun SignUpScreen(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
 
-        Text(
+        EstatiaText(
             text = stringResource(id = R.string.create_new_account),
             style = MaterialTheme.typography.headlineMedium
         )
@@ -83,7 +85,7 @@ fun SignUpScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Text(
+        EstatiaText(
             text = state.userType.ifEmpty {
                 stringResource(id = R.string.select_user_type)
             },
@@ -103,19 +105,18 @@ fun SignUpScreen(
         )
 
         if (state.error != null) {
-            Text(
+            EstatiaText(
                 text = state.error,
                 color = MaterialTheme.colorScheme.error
             )
         }
 
-        Button(
+        EstatiaButton(
             onClick = { onAction(SignUpAction.Submit) },
             enabled = !state.isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(52.dp),
-            shape = RoundedCornerShape(24.dp)
+                .height(52.dp)
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
@@ -123,12 +124,12 @@ fun SignUpScreen(
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text(stringResource(id = R.string.sign_up))
+                EstatiaText(stringResource(id = R.string.sign_up))
             }
         }
 
-        TextButton(onClick = onAlreadyHaveAccountClick) {
-            Text(stringResource(id = R.string.already_have_an_account_log_in))
+        EstatiaTextButton(onClick = onAlreadyHaveAccountClick) {
+            EstatiaText(stringResource(id = R.string.already_have_an_account_log_in))
         }
     }
 }
@@ -168,7 +169,7 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Tenant") }
+            text = { EstatiaText(text = "Tenant") }
         )
 
         // Landlord Option
@@ -195,7 +196,7 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Landlord") }
+            text = { EstatiaText(text = "Landlord") }
         )
 
         // Agent Option
@@ -222,7 +223,7 @@ fun UserTypeDropdownMenu(
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { Text(text = "Agent") }
+            text = { EstatiaText(text = "Agent") }
         )
     }
 }

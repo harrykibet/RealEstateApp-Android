@@ -53,7 +53,7 @@ fun GoogleSignInButton(
                     tint = Color.Unspecified
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
+                EstatiaText(
                     text = "Sign in with Google",
                     fontSize = 14.sp,
                     color = Color.Black.copy(alpha = if (enabled) 1f else 0.5f)

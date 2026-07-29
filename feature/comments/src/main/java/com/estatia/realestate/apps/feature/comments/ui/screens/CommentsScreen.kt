@@ -18,7 +18,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -74,7 +74,7 @@ fun CommentsScreen(
                     onValueChange = {
                         onAction(CommentsAction.InputChanged(it))
                     },
-                    placeholder = { Text("Write a comment…") }
+                    placeholder = { EstatiaText("Write a comment…") }
                 )
 
 
@@ -97,9 +97,9 @@ fun CommentItem(comment: CommentDomainModel) {
             .fillMaxWidth()
             .padding(12.dp)
     ) {
-        Text(comment.authorName, fontWeight = FontWeight.Bold)
+        EstatiaText(comment.authorName, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(4.dp))
-        Text(comment.message)
+        EstatiaText(comment.message)
     }
 }
 

@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -103,7 +104,7 @@ object MediaFileUtils {
     private fun getLegacyDownloadFilePath(context: Context, docId: String): Uri? {
         return try {
             val contentUri = ContentUris.withAppendedId(
-                Uri.parse("content://downloads/public_downloads"),
+                "content://downloads/public_downloads".toUri(),
                 docId.toLong()
             )
             contentUri

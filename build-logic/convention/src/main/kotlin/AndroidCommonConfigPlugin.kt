@@ -46,6 +46,8 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                 }
             }
 
+            pluginManager.apply("estatia.android.lint")
+
             // ✅ REMOVED: pluginManager.apply("org.jetbrains.kotlin.android")
             // AGP 9.x bundles Kotlin support — applying this plugin explicitly is now fatal.
 

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +13,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,6 +31,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
  * content.
  * @param content The button content.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaButton(
     onClick: () -> Unit,
@@ -61,6 +62,7 @@ fun EstatiaButton(
  * @param text The button text label content.
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaButton(
     onClick: () -> Unit,
@@ -97,6 +99,7 @@ fun EstatiaButton(
  * content.
  * @param content The button content.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaOutlinedButton(
     onClick: () -> Unit,
@@ -137,6 +140,7 @@ fun EstatiaOutlinedButton(
  * @param text The button text label content.
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaOutlinedButton(
     onClick: () -> Unit,
@@ -171,6 +175,7 @@ fun EstatiaOutlinedButton(
  * clickable and will appear disabled to accessibility services.
  * @param content The button content.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaTextButton(
     onClick: () -> Unit,
@@ -199,6 +204,7 @@ fun EstatiaTextButton(
  * @param text The button text label content.
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
+@SuppressLint("DesignSystemUsage")
 @Composable
 fun EstatiaTextButton(
     onClick: () -> Unit,
@@ -254,7 +260,7 @@ private fun EstatiaButtonContent(
 fun EstatiaButtonPreview() {
     EstatiaTheme {
         EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            EstatiaButton(onClick = {}, text = { Text("Test button") })
+            EstatiaButton(onClick = {}, text = { EstatiaText("Test button") })
         }
     }
 }
@@ -264,7 +270,7 @@ fun EstatiaButtonPreview() {
 fun EstatiaOutlinedButtonPreview() {
     EstatiaTheme {
         EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            EstatiaOutlinedButton(onClick = {}, text = { Text("Test button") })
+            EstatiaOutlinedButton(onClick = {}, text = { EstatiaText("Test button") })
         }
     }
 }
@@ -276,7 +282,7 @@ fun EstatiaButtonLeadingIconPreview() {
         EstatiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
             EstatiaButton(
                 onClick = {},
-                text = { Text("Test button") },
+                text = { EstatiaText("Test button") },
                 leadingIcon = { Icon(imageVector = EstatiaIcons.Add, contentDescription = null) },
             )
         }

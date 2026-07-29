@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
@@ -46,7 +46,7 @@ fun MediaUploadsForm() {
         Spacer(Modifier.height(24.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Videos Available")
+            EstatiaText("Videos Available")
             Spacer(Modifier.width(8.dp))
             Checkbox(
                 checked = false,

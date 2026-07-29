@@ -26,7 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.google.android.libraries.places.api.Places
 import com.google.android.gms.location.LocationServices
 import androidx.compose.runtime.rememberCoroutineScope
@@ -84,7 +84,7 @@ fun MapWithSearchBar(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search location") },
+            placeholder = { EstatiaText("Search location") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),

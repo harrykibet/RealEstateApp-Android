@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +18,7 @@ fun PropertyInfoOverlay(
 ) {
     Column(modifier = modifier) {
 
-        Text(
+        EstatiaText(
             text = property.title,
             style = MaterialTheme.typography.titleMedium,
             color = Color.White,
@@ -27,7 +27,7 @@ fun PropertyInfoOverlay(
 
         property.description?.let {
             Spacer(modifier = Modifier.height(6.dp))
-            Text(
+            EstatiaText(
                 text = it,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White,

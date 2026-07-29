@@ -11,7 +11,6 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
@@ -282,7 +281,7 @@ fun EstatiaNavigationBarPreview() {
                             contentDescription = item,
                         )
                     },
-                    label = { Text(item) },
+                    label = { EstatiaText(item) },
                     selected = index == 0,
                     onClick = { },
                 )
@@ -327,7 +326,7 @@ fun EstatiaNavigationRailPreview() {
                             contentDescription = item,
                         )
                     },
-                    label = { Text(item) },
+                    label = { EstatiaText(item) },
                     selected = index == 0,
                     onClick = { },
                 )

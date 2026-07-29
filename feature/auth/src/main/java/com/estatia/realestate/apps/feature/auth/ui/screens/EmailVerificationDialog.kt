@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -40,7 +40,7 @@ fun EmailVerificationDialog(
         onDismissRequest = {}, // 🔐 auth-critical → not dismissible
         confirmButton = {},
         title = {
-            Text(
+            EstatiaText(
                 text = "Verify your email",
                 style = MaterialTheme.typography.titleLarge
             )
@@ -65,7 +65,7 @@ private fun EmailVerificationContent(
 
         EmailVerificationUiState.Idle -> {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
+                EstatiaText(
                     text = "We need to verify your email address to continue.",
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -73,7 +73,7 @@ private fun EmailVerificationContent(
                     onClick = onSendEmail,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Send verification email")
+                    EstatiaText("Send verification email")
                 }
             }
         }
@@ -86,13 +86,13 @@ private fun EmailVerificationContent(
             ) {
                 CircularProgressIndicator()
                 Spacer(Modifier.height(12.dp))
-                Text("Please wait…")
+                EstatiaText("Please wait…")
             }
         }
 
         EmailVerificationUiState.EmailSent -> {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
+                EstatiaText(
                     text = "We’ve sent a verification email. Please check your inbox.",
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -101,21 +101,21 @@ private fun EmailVerificationContent(
                     onClick = onCheckVerification,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("I’ve verified my email")
+                    EstatiaText("I’ve verified my email")
                 }
 
                 EstatiaTextButton(
                     onClick = onSendEmail,
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("Resend email")
+                    EstatiaText("Resend email")
                 }
             }
         }
 
         is EmailVerificationUiState.Error -> {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
+                EstatiaText(
                     text = uiState.message,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -124,7 +124,7 @@ private fun EmailVerificationContent(
                     onClick = onSendEmail,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Try again")
+                    EstatiaText("Try again")
                 }
             }
         }

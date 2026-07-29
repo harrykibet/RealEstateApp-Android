@@ -17,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +61,7 @@ fun EstatiaTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            label = { Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            label = { EstatiaText(label, color = MaterialTheme.colorScheme.onSurfaceVariant) },
             singleLine = singleLine,
             shape = shape,
             keyboardOptions = keyboardOptions,

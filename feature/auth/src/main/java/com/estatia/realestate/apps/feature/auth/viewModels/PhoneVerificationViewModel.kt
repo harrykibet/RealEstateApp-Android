@@ -42,14 +42,8 @@ class PhoneVerificationViewModel @Inject constructor(
 
     private var countdownJob: Job? = null
 
-    private var activity: Activity? = null
-
     init {
         startCountdown()
-    }
-
-    fun attachActivity(activity: Activity) {
-        this.activity = activity
     }
 
     private fun startCountdown() {
@@ -63,13 +57,11 @@ class PhoneVerificationViewModel @Inject constructor(
         }
     }
 
-    fun startPhoneNumberVerification() {
-        val act = activity ?: return
-
+    fun startPhoneNumberVerification(activity: Activity) {
         _uiState.value = PhoneVerificationUiState.SendingCode
 
         viewModelScope.launch(ioDispatcher) {
-            authRepository.startPhoneNumberVerification(phoneNumber, act)
+            authRepository.startPhoneNumberVerification(phoneNumber, activity)
                 .collect { state ->
                     when (state) {
                         is PhoneVerificationState.CodeSent -> {
@@ -99,17 +91,15 @@ class PhoneVerificationViewModel @Inject constructor(
         signInWithCode(verificationId, code)
     }
 
-    fun resendCode() {
+    fun resendCode(activity: Activity) {
         _uiState.value = PhoneVerificationUiState.Verifying
-
-        val act = activity ?: return
 
         viewModelScope.launch(ioDispatcher) {
             when (
                 val result =
                     authRepository.resendVerificationCode(
                         phoneNumber,
-                        act
+                        activity
                     )
             ) {
                 is AppResult.Success -> {

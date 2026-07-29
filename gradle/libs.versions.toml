@@ -1,7 +1,7 @@
 [versions]
 
 androidGradlePlugin = "9.3.1"
-androidTools = "32.2.1"
+androidTools = "32.3.1"
 androidx-activity = "1.13.0"
 androidx-appcompat = "1.7.1"
 androidx-arch-core = "2.2.0"
@@ -416,6 +416,9 @@ leakcanary-android-instrumentation = { group = "com.squareup.leakcanary", name =
 # Dependencies of the included build-logic
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+android-lint-api = { group = "com.android.tools.lint", name = "lint-api", version.ref = "androidTools" }
+android-lint-checks = { group = "com.android.tools.lint", name = "lint-checks", version.ref = "androidTools" }
+android-lint-tests = { group = "com.android.tools.lint", name = "lint-tests", version.ref = "androidTools" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 firebase-crashlytics-gradle-plugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
 firebase-performance-gradle-plugin = { group = "com.google.firebase", name = "perf-plugin", version.ref = "firebasePerfPlugin" }

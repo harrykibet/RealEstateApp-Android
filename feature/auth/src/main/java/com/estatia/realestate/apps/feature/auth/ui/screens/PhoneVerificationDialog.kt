@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextButton
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -52,7 +52,7 @@ fun PhoneVerificationDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                Text(
+                EstatiaText(
                     text = stringResource(
                         R.string.verification_code_sent,
                         phoneNumber
@@ -62,7 +62,7 @@ fun PhoneVerificationDialog(
                 OutlinedTextField(
                     value = code,
                     onValueChange = { code = it },
-                    label = { Text(stringResource(R.string.verification_code)) },
+                    label = { EstatiaText(stringResource(R.string.verification_code)) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
@@ -72,7 +72,7 @@ fun PhoneVerificationDialog(
                 when (uiState) {
 
                     is PhoneVerificationUiState.Countdown -> {
-                        Text(
+                        EstatiaText(
                             text = stringResource(
                                 R.string.code_expires_in,
                                 uiState.secondsLeft / 60,
@@ -83,14 +83,14 @@ fun PhoneVerificationDialog(
                     }
 
                     PhoneVerificationUiState.Expired -> {
-                        Text(
+                        EstatiaText(
                             text = stringResource(R.string.code_expired),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
 
                     is PhoneVerificationUiState.Error -> {
-                        Text(
+                        EstatiaText(
                             text = uiState.message,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -111,7 +111,7 @@ fun PhoneVerificationDialog(
                             modifier = Modifier.size(18.dp)
                         )
                     } else {
-                        Text(stringResource(R.string.verify))
+                        EstatiaText(stringResource(R.string.verify))
                     }
                 }
 
@@ -120,7 +120,7 @@ fun PhoneVerificationDialog(
                         onClick = onResend,
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text(stringResource(R.string.resend_code))
+                        EstatiaText(stringResource(R.string.resend_code))
                     }
                 }
             }

@@ -2,5 +2,8 @@
 <resources>
     <string name="core_notifications_properties_notification_channel_name">Property updates</string>
     <string name="core_notifications_properties_notification_channel_description">The latest updates about trending properties</string>
-    <string name="core_notifications_properties_notification_group_summary">%1$d property updates</string>
+    <plurals name="core_notifications_properties_notification_group_summary">
+        <item quantity="one">%1$d property update</item>
+        <item quantity="other">%1$d property updates</item>
+    </plurals>
 </resources>
