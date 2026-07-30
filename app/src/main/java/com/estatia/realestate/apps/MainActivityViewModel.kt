@@ -2,6 +2,7 @@ package com.estatia.realestate.apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
@@ -9,16 +10,20 @@ import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    userDataRepository: IUserRepository
+    userDataRepository: IUserRepository,
+    authRepository: IAuthRepository
 ) : ViewModel() {
-    val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
-        MainActivityUiState.Success(it)
+    val uiState: StateFlow<MainActivityUiState> = combine(
+        userDataRepository.userData,
+        authRepository.isUserAuthenticated()
+    ) { userData, isAuthenticated ->
+        MainActivityUiState.Success(userData, isAuthenticated)
     }.stateIn(
         scope = viewModelScope,
         initialValue = MainActivityUiState.Loading,
@@ -28,7 +33,10 @@ class MainActivityViewModel @Inject constructor(
     sealed interface MainActivityUiState {
         data object Loading : MainActivityUiState
 
-        data class Success(val userData: UserData) : MainActivityUiState {
+        data class Success(
+            val userData: UserData,
+            val isAuthenticated: Boolean
+        ) : MainActivityUiState {
             override val shouldDisableDynamicTheming = !userData.useDynamicColor
 
             override val shouldUseAndroidTheme: Boolean = when (userData.themeBrand) {

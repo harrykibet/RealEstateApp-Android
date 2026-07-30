@@ -1,46 +1,60 @@
-# Implementation Plan - Resolve Lint Errors and Optimize Configuration
+# Implementation Plan - Fix App Navigation and Auth Wiring
 
-This plan addresses the current lint errors that are blocking the build and optimizes the lint configuration to prevent unfixable warnings from 3rd-party dependencies.
+This plan addresses the incorrect navigation start destination logic in the app module and ensures the authentication state is correctly handled during app launch to prevent potential crashes and unauthorized access to the home screen.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> I am disabling `checkDependencies` in the `LintConventionPlugin`. This prevents Lint from scanning transitive 3rd-party JARs (like BouncyCastle), which currently produces security warnings we cannot fix. This is a common practice in large projects to reduce noise and build times.
+> I am introducing a `Boolean?` state for authentication in `EstatiaAppState` and `MainActivityViewModel`. This allows the app to distinguish between "Loading/Checking Auth" (`null`) and "Definitely Unauthenticated" (`false`).
+>
+> I will also hide the Bottom Navigation Bar/Navigation Rail when the user is not authenticated.
 
 ## Proposed Changes
 
-### [Build Logic]
+### [Core: Data]
+- No changes needed to `IAuthRepository` as it already provides `isUserAuthenticated(): Flow<Boolean>`.
 
-#### [MODIFY] [LintConventionPlugin.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/build-logic/convention/src/main/kotlin/LintConventionPlugin.kt)
-- Change `checkDependencies = true` to `checkDependencies = false` to avoid scanning external JARs for lint violations.
+### [App: ViewModel]
 
-### [Core: Common]
+#### [MODIFY] [MainActivityViewModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/MainActivityViewModel.kt)
+- Inject `IAuthRepository`.
+- Combine `userData` and `isUserAuthenticated` into the `uiState`.
+- Update `MainActivityUiState` to include `isAuthenticated`.
+- This ensures the splash screen stays visible until the auth state is determined.
 
-#### [MODIFY] [FileUtils.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/common/src/main/java/com/estatia/realestate/apps/core/common/system/FileUtils.kt)
-- Replace `Uri.parse(...)` with the KTX extension `.toUri()` to satisfy the `UseKtx` check.
+### [App: UI State]
 
-### [Core: Notifications]
+#### [MODIFY] [EstatiaAppState.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/ui/EstatiaAppState.kt)
+- Change `isUserAuthenticated` to `StateFlow<Boolean?>` with `initialValue = null`.
+- Update logic to correctly reflect the current authentication status.
 
-#### [MODIFY] [strings.xml](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/notifications/src/main/res/values/strings.xml)
-- Convert `core_notifications_properties_notification_group_summary` from a `<string>` to a `<plurals>` resource to resolve the `PluralsCandidate` warning.
+### [App: Navigation]
 
-### [Core: Design System]
+#### [MODIFY] [EstatiaNavHost.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/navigation/EstatiaNavHost.kt)
+- Change `isUserAuthenticated` parameter to `Boolean?`.
+- Return early if `isUserAuthenticated` is `null`.
+- Fix the `startDestination` to use the dynamic variable:
+  - `HomeBaseRoute` if authenticated.
+  - `AuthRoutes.GRAPH` (the auth navigation graph) if unauthenticated.
+- Add a `LaunchedEffect` to handle automatic redirection if the auth state changes (e.g., auto-logout).
 
-#### [NEW] [google.png](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/design-system/src/main/res/drawable-nodpi/google.png)
-#### [DELETE] [google.png](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/design-system/src/main/res/drawable/google.png)
-- Move the density-independent bitmap from `drawable/` to `drawable-nodpi/` to satisfy the `IconLocation` check.
+#### [MODIFY] [EstatiaApp.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/ui/EstatiaApp.kt)
+- Hide the `EstatiaNavigationSuiteScaffold` (bottom bar/rail) if `isUserAuthenticated` is `false`.
+- Ensure the app waits for a non-null auth state before rendering the main content.
 
-### [App Module]
+### [Feature: Profile]
 
-#### [MODIFY] [AndroidManifest.xml](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/AndroidManifest.xml)
-- Add `tools:targetApi="33"` to the `application` tag to suppress the `UnusedAttribute` warning for `enableOnBackInvokedCallback`.
+#### [MODIFY] [ProfileNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/profile/src/main/java/com/estatia/realestate/apps/feature/profile/navigation/ProfileNavigation.kt)
+- Update `profileGraph` to accept an `onLogoutClick` callback.
+- Pass this callback to the `ProfileScreen`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `./gradlew lintDemoDebug` on the root project.
-- **Success Criteria**: The build should finish successfully with 0 errors.
+- None planned for this architectural change, as it mostly involves wiring.
 
 ### Manual Verification
-- Verify that notifications still display correctly with the new plurals resource.
-- Verify that the Google sign-in button still shows its icon.
+1.  **Fresh Install / Logged Out**: Verify the app launches directly to the Login screen and no bottom bar is visible.
+2.  **Login**: Verify that clicking login successfully navigates to the Home screen and the bottom bar appears.
+3.  **Auto-Login**: Verify that if a user is already logged in, the app launches directly to the Home screen (after the splash screen).
+4.  **Logout**: Verify that triggering a logout (once wired) sends the user back to the Login screen and hides the bottom bar.

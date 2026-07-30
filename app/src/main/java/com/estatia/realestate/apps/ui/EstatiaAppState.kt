@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 
 @Composable
@@ -62,17 +63,17 @@ fun rememberEstatiaAppState(
 @Stable
 class EstatiaAppState(
     val navController: NavHostController,
-    coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     networkStateProvider: INetworkStateProvider,
     timeZoneMonitor: TimeZoneMonitor,
     val authRepository: IAuthRepository
 ) {
     private val previousDestination = mutableStateOf<NavDestination?>(null)
 
-    val isUserAuthenticated = authRepository.isUserAuthenticated().stateIn(
+    val isUserAuthenticated: StateFlow<Boolean?> = authRepository.isUserAuthenticated().stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = false,
+        initialValue = null,
     )
 
     val currentDestination: NavDestination?
@@ -157,6 +158,12 @@ class EstatiaAppState(
     }
 
     fun navigateToSearch() = navController.navigateToSearch()
+
+    fun signOut() {
+        coroutineScope.launch {
+            authRepository.signOut()
+        }
+    }
 }
 
 /**

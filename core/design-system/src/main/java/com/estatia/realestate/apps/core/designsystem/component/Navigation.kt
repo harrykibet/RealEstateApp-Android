@@ -18,6 +18,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemCo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -170,10 +171,10 @@ fun EstatiaNavigationSuiteScaffold(
     navigationSuiteItems: EstatiaNavigationSuiteScope.() -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
+    layoutType: NavigationSuiteType = NavigationSuiteScaffoldDefaults
+        .calculateFromAdaptiveInfo(windowAdaptiveInfo),
     content: @Composable () -> Unit,
 ) {
-    val layoutType = NavigationSuiteScaffoldDefaults
-        .calculateFromAdaptiveInfo(windowAdaptiveInfo)
     val navigationSuiteItemColors = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
             selectedIconColor = EstatiaNavigationDefaults.navigationSelectedItemColor(),

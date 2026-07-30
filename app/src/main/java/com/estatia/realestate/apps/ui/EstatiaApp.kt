@@ -22,6 +22,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,6 +123,9 @@ internal fun EstatiaApp(
 
     val isUserAuthenticated by appState.isUserAuthenticated.collectAsStateWithLifecycle()
 
+    // If auth state is loading, don't show anything (Splash screen is likely still visible)
+    if (isUserAuthenticated == null) return
+
     val currentDestination = appState.currentDestination
 
     if (showSettingsDialog) {
@@ -131,34 +136,41 @@ internal fun EstatiaApp(
 
     EstatiaNavigationSuiteScaffold(
         navigationSuiteItems = {
-            appState.topLevelDestinations.forEach { destination ->
-                val hasUnread = unreadDestinations.contains(destination)
-                val selected = currentDestination
-                    .isRouteInHierarchy(destination.baseRoute)
-                item(
-                    selected = selected,
-                    onClick = { appState.navigateToTopLevelDestination(destination) },
-                    icon = {
-                        Icon(
-                            imageVector = destination.unselectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    selectedIcon = {
-                        Icon(
-                            imageVector = destination.selectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = { EstatiaText(stringResource(destination.iconTextId)) },
-                    modifier =
+            if (isUserAuthenticated == true) {
+                appState.topLevelDestinations.forEach { destination ->
+                    val hasUnread = unreadDestinations.contains(destination)
+                    val selected = currentDestination
+                        .isRouteInHierarchy(destination.baseRoute)
+                    item(
+                        selected = selected,
+                        onClick = { appState.navigateToTopLevelDestination(destination) },
+                        icon = {
+                            Icon(
+                                imageVector = destination.unselectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        selectedIcon = {
+                            Icon(
+                                imageVector = destination.selectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        label = { EstatiaText(stringResource(destination.iconTextId)) },
+                        modifier =
                         Modifier
                             .testTag("EstatiaNavItem")
                             .then(if (hasUnread) Modifier.notificationDot() else Modifier),
-                )
+                    )
+                }
             }
         },
         windowAdaptiveInfo = windowAdaptiveInfo,
+        layoutType = if (isUserAuthenticated == true) {
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
+        } else {
+            NavigationSuiteType.None
+        }
     ) {
         Scaffold(
             modifier = modifier.semantics {

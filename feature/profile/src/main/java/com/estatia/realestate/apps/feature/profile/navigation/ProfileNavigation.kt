@@ -15,11 +15,12 @@ import kotlinx.serialization.Serializable
 fun NavController.navigateToProfile(navOptions: NavOptions? = null) = navigate(ProfileRoute, navOptions)
 
 fun NavGraphBuilder.profileGraph(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     navigation<ProfileBaseRoute>(startDestination = ProfileRoute) {
         composable<ProfileRoute> {
-            ProfileScreen()
+            ProfileScreen(onLogoutClick = onLogoutClick)
         }
     }
 }

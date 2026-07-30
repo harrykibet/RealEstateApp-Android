@@ -1,39 +1,31 @@
-# Resolve Design System Lint Violations Walkthrough
+# Fix App Navigation and Auth Wiring Walkthrough
 
-I have successfully standardized the typography and button components across the entire project to comply with the new custom design system lint rules.
+I have corrected the navigation logic to ensure that users are directed to the appropriate start destination based on their authentication status. This prevents unauthenticated users from accessing the home screen and eliminates potential crashes.
 
 ## Changes Made
 
-### 1. Created `EstatiaText`
-Introduced a project-wide standard text component that wraps Material 3 `Text`.
-- **File**: `core/design-system/src/main/java/com/estatia/realestate/apps/core/designsystem/component/Text.kt`
+### 1. Robust Auth State in ViewModel
+Updated `MainActivityViewModel` to track authentication status alongside user preferences. The Splash Screen now remains visible until the app definitively knows if the user is logged in or not.
 
-### 2. Systematic Refactoring
-Replaced all usages of `androidx.compose.material3.Text` and `Button` (including `OutlinedButton` and `TextButton`) with their `Estatia` equivalents in the following areas:
+### 2. Dynamic Navigation Start Destination
+Refactored `EstatiaNavHost` to use a dynamic `startDestination`:
+- **Authenticated**: Starts at `HomeBaseRoute`.
+- **Unauthenticated**: Starts at `AuthRoutes.GRAPH` (Login/Sign-up flow).
+- **Redirection**: Added a global `LaunchedEffect` that automatically kicks the user back to the login screen if their session expires or they log out.
 
-- **Core Design System**: Updated `Button.kt`, `Card.kt`, `Chip.kt`, `EstatiaTextField.kt`, `FeedActionButton.kt`, `GoogleSignInButton.kt`, `Navigation.kt`, `Tabs.kt`, `Tag.kt`, `TopAppBar.kt`, and `ViewToggle.kt`.
-- **Core UI**: Updated `PropertyFeedItem.kt`, `PropertyInfoOverlay.kt`, and `PropertyItem.kt`.
-- **Feature Modules**:
-    - `:feature:auth`: Refactored `EmailVerificationDialog.kt`, `ForgotPasswordDialog.kt`, `LoginScreen.kt`, `PhoneVerificationDialog.kt`, and `SignUpScreen.kt`.
-    - `:feature:comments`: Refactored `CommentsScreen.kt`.
-    - `:feature:profile`: Refactored `ProfileScreen.kt`.
-    - `:feature:property`: Refactored `AvailabilityStatusForm.kt`, `BasicDetailsForm.kt`, `MediaUploadsForm.kt`, and `PropertyFormScreen.kt`.
-    - `:feature:search`: Refactored `MapWithSearchBar.kt`.
-    - `:feature:settings`: Refactored `SettingsDialog.kt`.
-- **App Module**: Updated `EstatiaApp.kt` navigation items.
+### 3. UI Context Awareness
+Updated `EstatiaApp` to hide the Bottom Navigation Bar and Navigation Rail when the user is not authenticated. This ensures a clean "Auth-only" UI for login and registration.
 
-### 3. Dependency Management
-Added `core:designSystem` as a dependency to `core:player-ui` to allow the usage of `EstatiaText` in video feed error states.
+### 4. Wired Logout Functionality
+- Added a `signOut` method to `EstatiaAppState` that triggers the auth repository.
+- Wired the "Logout" button on the **Profile Screen** to trigger this global sign-out action.
 
 ## Verification Results
 
-### Automated Tests
-Ran lint checks across major modules (`:feature:auth`, `:core:ui`, `:app`).
-- **Result**: `DesignSystemUsage` violations have been resolved in the refactored files.
-- **Note**: The build still reports other unrelated lint issues (like `TrustAllX509TrustManager` in BouncyCastle or `UnusedAttribute` in Manifests), but the design system compliance goal has been met for the UI layer.
-
 ### Manual Verification
-Visual consistency was maintained by ensuring all `Estatia` wrappers pass-through existing styling parameters (colors, styles, modifiers) to the underlying Material components.
+- **Cold Start (Logged Out)**: Verified the app displays the splash screen, then transitions directly to the Login screen with no bottom bar visible.
+- **Login Flow**: Verified that successful authentication triggers a smooth transition to the Home screen and reveals the navigation menus.
+- **Logout Flow**: Verified that clicking "Logout" in the Profile tab immediately redirects to the Login screen and clears the navigation state.
 
 > [!TIP]
-> The custom lint rule is now fully integrated. Future development using raw Material 3 `Text` or `Button` will be flagged in the IDE, ensuring your design system remains the single source of truth.
+> The app now handles the "Auth-Home transition" at the architectural level. You no longer need to worry about manually checking auth status on every screen.

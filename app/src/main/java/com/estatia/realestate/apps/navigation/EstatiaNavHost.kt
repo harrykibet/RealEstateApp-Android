@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.feature.auth.navigation.authGraph
 import com.estatia.realestate.apps.feature.home.navigation.homeGraph
@@ -19,18 +20,29 @@ import com.estatia.realestate.apps.ui.EstatiaAppState
 @Composable
 fun EstatiaNavHost(
     appState: EstatiaAppState,
-    isUserAuthenticated: Boolean,
+    isUserAuthenticated: Boolean?,
     modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
 
-    // Determine the dynamic start destination
-    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthRoutes.LOGIN
+    // If auth state is still loading, show nothing (Splash screen is likely still visible)
+    if (isUserAuthenticated == null) return
 
+    // Determine the dynamic start destination
+    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthRoutes.GRAPH
+
+    // Global redirection logic
+    LaunchedEffect(isUserAuthenticated) {
+        if (!isUserAuthenticated) {
+            navController.navigate(AuthRoutes.GRAPH) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = HomeBaseRoute,
+        startDestination = startDestination,
         modifier = modifier,
     ) {
 
@@ -51,7 +63,10 @@ fun EstatiaNavHost(
             onBackClick = navController::popBackStack
         )
 
-        profileGraph(onBackClick = navController::popBackStack)
+        profileGraph(
+            onBackClick = navController::popBackStack,
+            onLogoutClick = appState::signOut
+        )
 
         searchGraph(onBackClick = navController::popBackStack)
 

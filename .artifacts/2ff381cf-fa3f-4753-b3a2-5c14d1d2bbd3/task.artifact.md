@@ -1,10 +1,6 @@
-- `[x]` Create `EstatiaText` in `core:design-system`
-- `[x]` Refactor `core:design-system` components to use `EstatiaText`
-- `[x]` Refactor `core:ui` components to use `EstatiaText`
-- `[x]` Refactor feature modules to use `EstatiaText` and `EstatiaButton`
-    - `[x]` `:feature:auth`
-    - `[x]` `:feature:home`
-    - `[x]` `:feature:property`
-    - `[x]` `:feature:search`
-    - `[x]` Other feature modules
-- `[x]` Verify with project-wide lint check
+- [x] Update `MainActivityViewModel.kt` to include authentication state
+- [x] Update `EstatiaAppState.kt` to use `Boolean?` for auth status
+- [x] Refactor `EstatiaNavHost.kt` for dynamic start destination and auth redirection
+- [x] Update `EstatiaApp.kt` to hide navigation components when unauthenticated
+- [x] Wire logout functionality in `ProfileNavigation.kt` and `ProfileScreen.kt`
+- [x] Verify navigation flows for both authenticated and unauthenticated users
