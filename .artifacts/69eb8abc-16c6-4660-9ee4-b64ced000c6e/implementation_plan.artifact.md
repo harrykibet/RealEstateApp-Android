@@ -1,45 +1,45 @@
-# Migration of Encrypted Local Storage to Jetpack DataStore
+# Refactor Feature Navigation: Separate Routes and Navigation
 
-The `EncryptedSharedPreferences` and `MasterKey` APIs from the `androidx.security:security-crypto` library are now deprecated in modern Android development (as of July 2026). The recommended replacement is to use **Jetpack DataStore** combined with the **Android Keystore** or **Tink** for encryption.
-
-This plan outlines the migration of the authentication token storage from the deprecated `EncryptedSharedPreferences` to a secure `DataStore` implementation in the `:core:security` module.
+This plan aims to standardize the navigation package structure across all feature modules to follow the `:feature:auth` pattern. This involves splitting merged `*Navigation.kt` files into separate `*Navigation.kt` (graph and functions) and `*Routes.kt` (serializable route objects) files.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> This change involves a major architectural shift for local sensitive data storage. While it resolves all deprecation warnings, it changes how tokens are stored and accessed.
-> - **Migration**: A one-time migration will be implemented to move existing tokens from `EncryptedSharedPreferences` to the new `DataStore`.
-> - **Dependency Change**: Adds `androidx.datastore:datastore-preferences` to the project.
-> - **Encryption**: We will use the existing `IAesGcmCryptoEngine` (which utilizes the Android Keystore) to encrypt tokens before they are persisted in `DataStore`.
+> [!NOTE]
+> This is a structural refactoring that does not change navigation logic. It improves code organization and consistency.
 
 ## Proposed Changes
 
-### [Component] Dependency Management
+### [Component] Navigation Standardization
 
-#### [MODIFY] [libs.versions.toml](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/gradle/libs.versions.toml)
-- Add `androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }`.
+#### [MODIFY] [CommentsNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/navigation/CommentsNavigation.kt) & [NEW] [CommentsRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/navigation/CommentsRoutes.kt)
+- Rename `CommentRoutes.kt` to `CommentsRoutes.kt` for consistency.
+- Ensure all `@Serializable` routes are in `CommentsRoutes.kt`.
 
-#### [MODIFY] [build.gradle.kts (:core:security)](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/security/build.gradle.kts)
-- Add `implementation(libs.androidx.datastore.preferences)`.
+#### [MODIFY] [HomeNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeNavigation.kt) & [NEW] [HomeRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeRoutes.kt)
+- Move `HomeRoute`, `HomeBaseRoute`, and `PropertyDetailRoute` to `HomeRoutes.kt`.
+- Clean up `HomeNavigation.kt`.
 
-### [Component] Security & Data Persistence
+#### [MODIFY] [FavoritesNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesNavigation.kt) & [NEW] [FavoritesRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesRoutes.kt)
+- Move `FavoritesRoute` and `FavoritesBaseRoute` to `FavoritesRoutes.kt`.
+- Clean up `FavoritesNavigation.kt`.
 
-#### [MODIFY] [SecurityModule.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/security/src/main/java/com/estatia/realestate/apps/core/security/di/SecurityModule.kt)
-- Remove the deprecated `provideEncryptedSharedPreferences` function.
-- Add a new `@Provides` function to initialize and provide a `DataStore<Preferences>` for secure token storage, including migration logic from the old `EncryptedSharedPreferences`.
-- Suppress "unused" warnings for `@Binds` methods that are identified as unused by the IDE (standard practice for Dagger modules).
+#### [MODIFY] [ProfileNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/profile/src/main/java/com/estatia/realestate/apps/feature/profile/navigation/ProfileNavigation.kt) & [NEW] [ProfileRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/profile/src/main/java/com/estatia/realestate/apps/feature/profile/navigation/ProfileRoutes.kt)
+- Move `ProfileRoute` and `ProfileBaseRoute` to `ProfileRoutes.kt`.
+- Clean up `ProfileNavigation.kt`.
 
-#### [MODIFY] [TokenLocalDataSource.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/security/src/main/java/com/estatia/realestate/apps/core/security/TokenLocalDataSource.kt)
-- Update the constructor to accept `DataStore<Preferences>` and `IAesGcmCryptoEngine`.
-- Refactor `saveToken`, `getToken`, and `clearToken` to use `DataStore` and encrypt/decrypt data using `IAesGcmCryptoEngine`.
-- Token data will be stored as a Base64-encoded string containing both the Initialization Vector (IV) and the ciphertext.
+#### [MODIFY] [PropertyNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/navigation/PropertyNavigation.kt) & [NEW] [PropertyRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/navigation/PropertyRoutes.kt)
+- Move `PropertyRoute` and `PropertyBaseRoute` to `PropertyRoutes.kt`.
+- Clean up `PropertyNavigation.kt`.
+
+#### [MODIFY] [SearchNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/navigation/SearchNavigation.kt) & [NEW] [SearchRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/navigation/SearchRoutes.kt)
+- Move `SearchRoute` and `SearchBaseRoute` to `SearchRoutes.kt`.
+- Clean up `SearchNavigation.kt`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `./gradlew :core:security:assembleDebug` to ensure it builds correctly.
-- Verify that `analyze_file` no longer reports deprecation warnings for `SecurityModule.kt`.
+- Run `./gradlew :app:assembleDebug` to ensure no broken references or missing imports.
+- Use `analyze_file` to verify that the split files are correct.
 
 ### Manual Verification
-- Verify that authentication tokens are correctly persisted and retrieved during login/logout flows.
-- Verify that existing tokens are correctly migrated upon first app launch after this change.
+- Verify that navigation still works correctly in the app by navigating between top-level destinations.

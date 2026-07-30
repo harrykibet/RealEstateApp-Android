@@ -33,7 +33,7 @@ enum class TopLevelDestination(
         iconTextId = R.string.home,
         titleTextId = R.string.home,
         route = HomeRoute::class,
-        baseRoute = HomeBaseRoute::class
+        baseRoute = HomeBaseRoute::class,
     ),
     SEARCH(
         selectedIcon = EstatiaIcons.Search,

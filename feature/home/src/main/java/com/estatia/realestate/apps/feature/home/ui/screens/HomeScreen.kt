@@ -10,6 +10,8 @@ import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 
 @Composable
 internal fun HomeRoute(
+    onNavigateToPropertyDetail: (String) -> Unit,
+    onCommentClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(
         viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -25,10 +27,10 @@ internal fun HomeRoute(
             // viewModel.toggleLike(it)
         },
 
-        onCommentClick = {
-            // viewModel.openComments(it)
+        onCommentClick = { property ->
+            onCommentClick(property.id.value)
         },
-    ) {
-        // viewModel.shareProperty(it)
+    ) { property ->
+        onNavigateToPropertyDetail(property.id.value)
     }
 }

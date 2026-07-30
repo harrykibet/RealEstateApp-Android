@@ -14,35 +14,34 @@ fun NavGraphBuilder.authGraph(
     navController: NavController,
     onAuthenticated: () -> Unit
 ) {
-    navigation(
-        route = AuthRoutes.GRAPH,
-        startDestination = AuthRoutes.LOGIN
+    navigation<AuthGraphRoute>(
+        startDestination = LoginRoute
     ) {
 
-        composable(AuthRoutes.LOGIN) {
+        composable<LoginRoute> {
             LoginRoute(
                 onNavigateToHome = onAuthenticated,
                 onNavigateToSignUp = {
-                    navController.navigate(AuthRoutes.SIGN_UP)
+                    navController.navigate(SignUpRoute)
                 },
                 onNavigateToForgotPassword = {
-                    navController.navigate(AuthRoutes.FORGOT_PASSWORD)
+                    navController.navigate(ForgotPasswordRoute)
                 }
             )
         }
 
-        composable(AuthRoutes.SIGN_UP) {
+        composable<SignUpRoute> {
             SignUpRoute(
                 onEmailVerification = {
-                    navController.navigate(AuthRoutes.EMAIL_VERIFICATION) {
-                        popUpTo(AuthRoutes.SIGN_UP) { inclusive = true }
+                    navController.navigate(EmailVerificationRoute) {
+                        popUpTo(SignUpRoute) { inclusive = true }
                     }
                 },
                 onPhoneVerification = { phoneNumber ->
                     navController.currentBackStackEntry?.savedStateHandle?.set(
                         "phoneNumber", phoneNumber
                     )
-                    navController.navigate(AuthRoutes.PHONE_VERIFICATION)
+                    navController.navigate(PhoneVerificationRoute)
                 },
                 onAlreadyHaveAccount = {
                     navController.popBackStack()
@@ -50,19 +49,19 @@ fun NavGraphBuilder.authGraph(
             )
         }
 
-        composable(AuthRoutes.FORGOT_PASSWORD) {
+        composable<ForgotPasswordRoute> {
             ForgotPasswordRoute(
                 onBack = { navController.popBackStack() }
             )
         }
 
-        composable(AuthRoutes.EMAIL_VERIFICATION) {
+        composable<EmailVerificationRoute> {
             EmailVerificationRoute(
                 onVerified = onAuthenticated
             )
         }
 
-        composable(route = AuthRoutes.PHONE_VERIFICATION) {
+        composable<PhoneVerificationRoute> {
             PhoneVerificationRoute(
                 onDismiss = onAuthenticated
             )

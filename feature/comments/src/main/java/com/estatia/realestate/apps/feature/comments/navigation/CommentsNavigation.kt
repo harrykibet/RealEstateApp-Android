@@ -1,34 +1,28 @@
 package com.estatia.realestate.apps.feature.comments.navigation
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import androidx.navigation.navArgument
-import com.estatia.realestate.apps.feature.comments.ui.routes.CommentsRoute
+import androidx.navigation.toRoute
+import com.estatia.realestate.apps.feature.comments.ui.routes.CommentsRoute as CommentsRouteScreen
+
+fun NavController.navigateToComments(propertyId: String, navOptions: NavOptions? = null) =
+    navigate(route = CommentsRoute(propertyId), navOptions)
 
 fun NavGraphBuilder.commentsGraph(
     onBackClick: () -> Unit
 ) {
-    navigation(
-        route = CommentsRoutes.GRAPH,
-        startDestination = "${CommentsRoutes.COMMENTS}/{propertyId}"
+    navigation<CommentsBaseRoute>(
+        startDestination = CommentsRoute::class
     ) {
 
-        composable(
-            route = "${CommentsRoutes.COMMENTS}/{propertyId}",
-            arguments = listOf(
-                navArgument("propertyId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val propertyId =
-                backStackEntry.arguments?.getString("propertyId")
-                    ?: return@composable
+        composable<CommentsRoute> { backStackEntry ->
+            val route: CommentsRoute = backStackEntry.toRoute()
 
-            CommentsRoute(
-                propertyId = propertyId,
+            CommentsRouteScreen(
+                propertyId = route.propertyId,
                 onBack = onBackClick
             )
         }

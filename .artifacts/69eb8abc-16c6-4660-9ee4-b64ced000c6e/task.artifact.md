@@ -1,11 +1,19 @@
-- [x] Update dependencies
-    - [x] Add `androidx-datastore-preferences` to `libs.versions.toml`
-    - [x] Add dependency to `:core:security/build.gradle.kts`
-- [x] Refactor `TokenLocalDataSource.kt`
-    - [x] Inject `DataStore<Preferences>` and `IAesGcmCryptoEngine`
-    - [x] Implement encryption/decryption logic for token storage
-- [x] Update `SecurityModule.kt`
-    - [x] Provide `DataStore<Preferences>` with migration logic
-    - [x] Remove deprecated `provideEncryptedSharedPreferences`
-    - [x] Add `@Suppress("unused")` to `@Binds` methods
-- [x] Verify build and fix any issues
+- [x] Refactor `:feature:comments` navigation
+    - [x] Rename `CommentRoutes.kt` to `CommentsRoutes.kt`
+- [x] Refactor `:feature:home` navigation
+    - [x] Create `HomeRoutes.kt`
+    - [x] Update `HomeNavigation.kt`
+- [x] Refactor `:feature:favorites` navigation
+    - [x] Create `FavoritesRoutes.kt`
+    - [x] Update `FavoritesNavigation.kt`
+- [x] Refactor `:feature:profile` navigation
+    - [x] Create `ProfileRoutes.kt`
+    - [x] Update `ProfileNavigation.kt`
+- [x] Refactor `:feature:property` navigation
+    - [x] Create `PropertyRoutes.kt`
+    - [x] Update `PropertyNavigation.kt`
+- [x] Refactor `:feature:search` navigation
+    - [x] Create `SearchRoutes.kt`
+    - [x] Update `SearchNavigation.kt`
+- [x] Update cross-module references (if any)
+- [x] Verify build

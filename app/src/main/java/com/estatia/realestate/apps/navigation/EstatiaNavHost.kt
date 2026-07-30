@@ -3,13 +3,15 @@ package com.estatia.realestate.apps.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import com.estatia.realestate.apps.feature.auth.navigation.AuthGraphRoute
+import com.estatia.realestate.apps.feature.auth.navigation.LoginRoute
 import com.estatia.realestate.apps.feature.auth.navigation.authGraph
 import com.estatia.realestate.apps.feature.home.navigation.homeGraph
 import com.estatia.realestate.apps.feature.profile.navigation.profileGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import com.estatia.realestate.apps.feature.auth.navigation.AuthRoutes
 import com.estatia.realestate.apps.feature.comments.navigation.commentsGraph
+import com.estatia.realestate.apps.feature.comments.navigation.navigateToComments
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
@@ -29,12 +31,12 @@ fun EstatiaNavHost(
     if (isUserAuthenticated == null) return
 
     // Determine the dynamic start destination
-    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthRoutes.GRAPH
+    val startDestination: Any = if (isUserAuthenticated) HomeBaseRoute else AuthGraphRoute
 
     // Global redirection logic
     LaunchedEffect(isUserAuthenticated) {
         if (!isUserAuthenticated) {
-            navController.navigate(AuthRoutes.GRAPH) {
+            navController.navigate(AuthGraphRoute) {
                 popUpTo(0) { inclusive = true }
             }
         }
@@ -50,7 +52,7 @@ fun EstatiaNavHost(
             onAuthenticated = {
                 // Navigate to the home graph after successful login
                 navController.navigateToHome(
-                    navOptions = navOptions { popUpTo(AuthRoutes.LOGIN) { inclusive = true } }
+                    navOptions = navOptions { popUpTo(LoginRoute) { inclusive = true } }
                 )
             },
             navController = navController
@@ -60,12 +62,15 @@ fun EstatiaNavHost(
             onNavigateToPropertyDetail = { propertyId ->
                 navController.navigateToPropertyDetail(propertyId)
             },
-            onBackClick = navController::popBackStack
+            onCommentClick = { propertyId ->
+                navController.navigateToComments(propertyId)
+            },
+            onBackClick = navController::popBackStack,
         )
 
         profileGraph(
             onBackClick = navController::popBackStack,
-            onLogoutClick = appState::signOut
+            onLogoutClick = appState::signOut,
         )
 
         searchGraph(onBackClick = navController::popBackStack)
