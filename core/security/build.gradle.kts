@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.security.crypto.ktx)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(projects.core.common)
 

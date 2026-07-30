@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -67,7 +66,7 @@ fun EstatiaApp(
 ) {
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.HOME
-    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+    var showSettingsDialog by rememberSaveable { mutableStateOf(value = false) }
 
     EstatiaBackground(modifier = modifier) {
         EstatiaGradientBackground(
@@ -128,6 +127,8 @@ internal fun EstatiaApp(
 
     val currentDestination = appState.currentDestination
 
+    val notificationDotColor = MaterialTheme.colorScheme.tertiary
+
     if (showSettingsDialog) {
         SettingsDialog(
             onDismiss = { onSettingsDismissed() },
@@ -160,7 +161,13 @@ internal fun EstatiaApp(
                         modifier =
                         Modifier
                             .testTag("EstatiaNavItem")
-                            .then(if (hasUnread) Modifier.notificationDot() else Modifier),
+                            .then(
+                                if (hasUnread) {
+                                    Modifier.notificationDot(notificationDotColor)
+                                } else {
+                                    Modifier
+                                },
+                            ),
                     )
                 }
             }
@@ -170,7 +177,7 @@ internal fun EstatiaApp(
             NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
         } else {
             NavigationSuiteType.None
-        }
+        },
     ) {
         Scaffold(
             modifier = modifier.semantics {
@@ -233,7 +240,7 @@ internal fun EstatiaApp(
                 ) {
                     EstatiaNavHost(
                         appState = appState,
-                        isUserAuthenticated = isUserAuthenticated
+                        isUserAuthenticated = isUserAuthenticated,
                     )
                 }
 
@@ -244,23 +251,20 @@ internal fun EstatiaApp(
     }
 }
 
-private fun Modifier.notificationDot(): Modifier =
-    composed {
-        val tertiaryColor = MaterialTheme.colorScheme.tertiary
-        drawWithContent {
-            drawContent()
-            drawCircle(
-                tertiaryColor,
-                radius = 5.dp.toPx(),
-                // This is based on the dimensions of the NavigationBar's "indicator pill";
-                // however, its parameters are private, so we must depend on them implicitly
-                // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
-                center = center + Offset(
-                    64.dp.toPx() * .45f,
-                    32.dp.toPx() * -.45f - 6.dp.toPx(),
-                ),
-            )
-        }
+private fun Modifier.notificationDot(color: Color): Modifier =
+    drawWithContent {
+        drawContent()
+        drawCircle(
+            color,
+            radius = 5.dp.toPx(),
+            // This is based on the dimensions of the NavigationBar's "indicator pill";
+            // however, its parameters are private, so we must depend on them implicitly
+            // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
+            center = center + Offset(
+                64.dp.toPx() * .45f,
+                (32.dp.toPx() * -.45f) - 6.dp.toPx(),
+            ),
+        )
     }
 
 private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =

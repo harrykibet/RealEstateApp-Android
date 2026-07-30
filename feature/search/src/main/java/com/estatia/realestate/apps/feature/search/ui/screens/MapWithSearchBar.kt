@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.feature.search.ui.screens
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,13 +31,11 @@ import com.google.android.gms.location.LocationServices
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
@@ -50,15 +47,12 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun MapWithSearchBar(
     viewModel: SearchViewModel = hiltViewModel(
-        checkNotNull<ViewModelStoreOwner>(
-            LocalViewModelStoreOwner.current
-        ) {
-                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-            }, null
-    )
+        viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        },
+    ),
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
@@ -67,8 +61,6 @@ fun MapWithSearchBar(
     val coroutineScope = rememberCoroutineScope()
 
     var map by remember { mutableStateOf<GoogleMap?>(null) }
-    var zoomOutCount by remember { mutableIntStateOf(0) }
-    val maxZoomOut = 1
 
     // Initialize Places
     LaunchedEffect(Unit) {
@@ -98,44 +90,46 @@ fun MapWithSearchBar(
                             placesClient = placesClient,
                             onLocationFound = { latLng ->
                                 map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
-                                viewModel.loadNearbyProperties(latLng.latitude, latLng.longitude, 10.0)
+                                viewModel.loadNearbyProperties(
+                                    latLng.latitude,
+                                    latLng.longitude,
+                                    10.0,
+                                )
                             },
-                            onError = {
-                                Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
-                            }
-                        )
+                        ) {
+                            Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
-            )
+                },
+            ),
         )
 
         // MapView
         AndroidView(
             factory = { mapView },
             modifier = Modifier.fillMaxSize(),
-            update = {
-                mapView.getMapAsync { googleMap ->
-                    map = googleMap
+        ) {
+            mapView.getMapAsync { googleMap ->
+                map = googleMap
 
-                    // Enable location if permitted
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        googleMap.isMyLocationEnabled = true
-                        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                            location?.let {
-                                val latLng = LatLng(it.latitude, it.longitude)
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
-                                viewModel.loadNearbyProperties(latLng.latitude, latLng.longitude, 10.0)
-                            }
+                // Enable location if permitted
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    googleMap.isMyLocationEnabled = true
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        location?.let {
+                            val latLng = LatLng(it.latitude, it.longitude)
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
+                            viewModel.loadNearbyProperties(latLng.latitude, latLng.longitude, 10.0)
                         }
-                    } else {
-                        // You may use Accompanist Permissions or ActivityResultLauncher here
-                        Toast.makeText(context, "Location permission not granted", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    // You may use Accompanist Permissions or ActivityResultLauncher here
+                    Toast.makeText(context, "Location permission not granted", Toast.LENGTH_SHORT).show()
                 }
             }
-        )
+        }
     }
 }
 
@@ -143,7 +137,7 @@ private suspend fun searchForLocation(
     query: String,
     placesClient: PlacesClient,
     onLocationFound: (LatLng) -> Unit,
-    onError: (String) -> Unit
+    onError: (String) -> Unit,
 ) {
     try {
         val predictionResponse = placesClient
@@ -176,27 +170,6 @@ private suspend fun searchForLocation(
     }
 }
 
-
-
-private fun handleNoNearbyProperties(
-    context: Context,
-    map: GoogleMap,
-    viewModel: SearchViewModel,
-    zoomOutCount: Int,
-    maxZoomOut: Int,
-    onZoomOut: () -> Unit
-) {
-    if (zoomOutCount < maxZoomOut) {
-        onZoomOut()
-        Toast.makeText(context, "No nearby properties", Toast.LENGTH_SHORT).show()
-        map.animateCamera(CameraUpdateFactory.zoomOut())
-        val defaultLoc = LatLng(-1.286389, 36.817223)
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultLoc, 10f))
-        viewModel.loadNearbyProperties(defaultLoc.latitude, defaultLoc.longitude, 10.0)
-    } else {
-        Toast.makeText(context, "Still no results after zooming out", Toast.LENGTH_SHORT).show()
-    }
-}
 
 @Composable
 fun rememberMapViewWithLifecycle(): MapView {

@@ -31,21 +31,21 @@ import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 fun SignUpScreen(
     state: SignUpFormState,
     onAction: (SignUpAction) -> Unit,
-    onAlreadyHaveAccountClick: () -> Unit
+    onAlreadyHaveAccountClick: () -> Unit,
 ) {
-    var expandedDropdown by remember { mutableStateOf(false) }
+    var expandedDropdown by remember { mutableStateOf(value = false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
 
         EstatiaText(
             text = stringResource(id = R.string.create_new_account),
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
         )
 
         EstatiaTextField(
@@ -54,7 +54,7 @@ fun SignUpScreen(
                 onAction(SignUpAction.UserNameChanged(it))
             },
             label = stringResource(id = R.string.username),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         EstatiaTextField(
@@ -63,7 +63,7 @@ fun SignUpScreen(
                 onAction(SignUpAction.EmailChanged(it))
             },
             label = stringResource(id = R.string.email_address),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         EstatiaTextField(
@@ -72,7 +72,7 @@ fun SignUpScreen(
                 onAction(SignUpAction.PhoneChanged(it))
             },
             label = stringResource(id = R.string.phone_number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         EstatiaTextField(
@@ -82,7 +82,7 @@ fun SignUpScreen(
             },
             label = stringResource(id = R.string.password2),
             isPassword = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         EstatiaText(
@@ -92,22 +92,21 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expandedDropdown = true }
-                .padding(16.dp)
+                .padding(16.dp),
         )
 
         UserTypeDropdownMenu(
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
-            onSelectUserType = {
-                onAction(SignUpAction.UserTypeChanged(it))
-                expandedDropdown = false
-            }
-        )
+        ) {
+            onAction(SignUpAction.UserTypeChanged(it))
+            expandedDropdown = false
+        }
 
-        if (state.error != null) {
+        state.error?.let { error ->
             EstatiaText(
-                text = state.error,
-                color = MaterialTheme.colorScheme.error
+                text = error,
+                color = MaterialTheme.colorScheme.error,
             )
         }
 
@@ -116,12 +115,12 @@ fun SignUpScreen(
             enabled = !state.isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(52.dp)
+                .height(52.dp),
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
                     strokeWidth = 2.dp,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             } else {
                 EstatiaText(stringResource(id = R.string.sign_up))
@@ -139,7 +138,7 @@ fun SignUpScreen(
 fun UserTypeDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    onSelectUserType: (String) -> Unit
+    onSelectUserType: (String) -> Unit,
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -244,8 +243,7 @@ fun SignUpScreenLightPreview() {
             SignUpScreen(
                 state = SignUpFormState(),
                 onAction = {},
-                onAlreadyHaveAccountClick = {}
-            )
+            ) { }
         }
     }
 }
@@ -265,8 +263,7 @@ fun SignUpScreenDarkPreview() {
             SignUpScreen(
                 state = SignUpFormState(),
                 onAction = {},
-                onAlreadyHaveAccountClick = {}
-            )
+            ) { }
         }
     }
 }

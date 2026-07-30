@@ -14,12 +14,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
-    private val remoteDataSource: IAuthRemoteDataSource
+    private val remoteDataSource: IAuthRemoteDataSource,
 ) : IAuthRepository {
 
     override suspend fun createOrUpdateUserProfile(
         userId: String,
-        user: UserDomainModel
+        user: UserDomainModel,
     ): AppResult<Unit> {
         val firestoreUser = FirestoreUserProfileMapper.toEntity(user)
         return remoteDataSource.createOrUpdateUserProfile(userId, firestoreUser)
@@ -27,7 +27,7 @@ class AuthRepository @Inject constructor(
 
     override suspend fun signUpWithEmail(
         email: String,
-        password: String
+        password: String,
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signUpWithEmail(email, password)
             .map { firebaseUser ->
@@ -37,7 +37,7 @@ class AuthRepository @Inject constructor(
 
     override suspend fun signInWithEmail(
         email: String,
-        password: String
+        password: String,
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signInWithEmail(email, password)
             .map { firebaseUser ->
@@ -58,7 +58,7 @@ class AuthRepository @Inject constructor(
     }
 
     override suspend fun signInWithGoogle(
-        idToken: String
+        idToken: String,
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource
             .signInWithGoogle(idToken)
@@ -68,7 +68,7 @@ class AuthRepository @Inject constructor(
     }
 
     override suspend fun sendPasswordResetEmail(
-        email: String
+        email: String,
     ): AppResult<Unit> {
         return remoteDataSource.sendPasswordResetEmail(email)
     }
@@ -87,21 +87,21 @@ class AuthRepository @Inject constructor(
 
     override fun startPhoneNumberVerification(
         phoneNumber: String,
-        activity: Activity
+        activity: Activity,
     ): Flow<PhoneVerificationState> {
         return remoteDataSource.startPhoneNumberVerification(phoneNumber, activity)
     }
 
     override suspend fun verifyPhoneCode(
         verificationId: String,
-        code: String
+        code: String,
     ): AppResult<Unit> {
         return remoteDataSource.verifyPhoneCode(verificationId, code)
     }
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
-        activity: Activity
+        activity: Activity,
     ): AppResult<String> {
         return remoteDataSource.resendVerificationCode(phoneNumber, activity)
     }

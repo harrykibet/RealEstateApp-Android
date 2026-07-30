@@ -1,0 +1,11 @@
+- [x] Update dependencies
+    - [x] Add `androidx-datastore-preferences` to `libs.versions.toml`
+    - [x] Add dependency to `:core:security/build.gradle.kts`
+- [x] Refactor `TokenLocalDataSource.kt`
+    - [x] Inject `DataStore<Preferences>` and `IAesGcmCryptoEngine`
+    - [x] Implement encryption/decryption logic for token storage
+- [x] Update `SecurityModule.kt`
+    - [x] Provide `DataStore<Preferences>` with migration logic
+    - [x] Remove deprecated `provideEncryptedSharedPreferences`
+    - [x] Add `@Suppress("unused")` to `@Binds` methods
+- [x] Verify build and fix any issues

@@ -37,8 +37,8 @@ fun DynamicAsyncImage(
     placeholder: Painter = painterResource(R.drawable.google),
 ) {
     val iconTint = LocalTintTheme.current.iconTint
-    var isLoading by remember { mutableStateOf(true) }
-    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(value = true) }
+    var isError by remember { mutableStateOf(value = false) }
     val imageLoader = rememberAsyncImagePainter(
         model = imageUrl,
         onState = { state ->

@@ -48,10 +48,7 @@ fun NavGraphBuilder.homeGraph(
                 },
             ),
         ) {
-            HomeRoute(
-                onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-                onBackClick = onBackClick
-            )
+            HomeRoute()
         }
     }
 }

@@ -120,14 +120,14 @@ class MainActivity : ComponentActivity() {
             val appState = rememberEstatiaAppState(
                 networkStateProvider = networkStateProvider,
                 timeZoneMonitor = timeZoneMonitor,
-                authRepository = authRepository
+                authRepository = authRepository,
             )
 
             val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
 
             CompositionLocalProvider(
                 LocalAnalyticsHelper provides analyticsHelper,
-                LocalTimeZone provides currentTimeZone
+                LocalTimeZone provides currentTimeZone,
             ) {
                 EstatiaTheme(
                     darkTheme = themeSettings.darkTheme,
