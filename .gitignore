@@ -32,12 +32,10 @@ my-firebase-admin-app/
 build/
 build-logic/.kotlin/errors
 captures/
-app/Prod/debug/
-app/Prod/release/
-app/Demo/
+app/Prod/
 app/build/
 .externalNativeBuild/
-.kotlin/sessions/u
+.kotlin/
 .cxx/
 
 # Misc
@@ -50,12 +48,7 @@ java_pid4268.hprof
 *.hprof
 *.log
 large_assets/
+.run/
+.artifacts/
 
-AppKeyStore/keystore.jks
-AppKeyStore/*.jks
-AppKeyStore/*.p12
 AppKeyStore/
-# debug.keystore is generated at runtime so can also be gitignored
-AppKeyStore/debug.keystore
-
-/.kotlin/
