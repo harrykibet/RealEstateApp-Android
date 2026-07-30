@@ -32,6 +32,10 @@ my-firebase-admin-app/
 build/
 build-logic/.kotlin/errors
 captures/
+app/Prod/debug/
+app/Prod/release/
+app/Demo/
+app/build/
 .externalNativeBuild/
 .kotlin/sessions/u
 .cxx/
@@ -41,6 +45,7 @@ dependencies_tree.txt
 dependency_tree.txt
 java_pid4268.hprof
 *.apk
+*.aab
 *.mp4
 *.hprof
 *.log
@@ -49,6 +54,7 @@ large_assets/
 AppKeyStore/keystore.jks
 AppKeyStore/*.jks
 AppKeyStore/*.p12
+AppKeyStore/
 # debug.keystore is generated at runtime so can also be gitignored
 AppKeyStore/debug.keystore
 
