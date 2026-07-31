@@ -11,6 +11,8 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.playerUi)
+    implementation(projects.feature.comments)
+    implementation(projects.feature.property)
 
     implementation(libs.bundles.navigation)
 

@@ -16,7 +16,6 @@ fun NavGraphBuilder.favoritesGraph() {
             FavoritesScreen(
                 favoriteProperties = emptyList(),
                 onLikeClick = {},
-                onCommentClick = {},
                 onShareClick = {},
                 onPropertyClick = {},
             )

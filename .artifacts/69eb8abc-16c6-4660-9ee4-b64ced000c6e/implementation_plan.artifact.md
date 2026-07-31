@@ -1,36 +1,50 @@
-# TikTok-Style Overlays for Home Feed
+# TikTok-Style Interaction: Swipe for Details & Bottom Sheet Comments
 
-This plan addresses the visual overhaul of the property feed overlays (Info and Actions) to closely match the "TikTok" aesthetic. This involves refining typography, adding creator avatars, improving text contrast, and styling the action buttons.
+This plan enhances the Home feed interactions by adding a horizontal swipe gesture to view property details and transforming the comments section into a modern TikTok-style bottom sheet.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Creator Avatar**: I will add a circular creator avatar at the top of the action stack on the right.
-> - **Visual Contrast**: I will apply subtle text shadows to ensure titles and descriptions remain legible over bright video content.
-> - **Compact Styling**: The action column will be made more compact with refined font weights and icon sizes.
+> - **Horizontal Swipe**: I will implement a custom swipe-to-navigate gesture on each property video. Swiping right-to-left will transition the user to the full Property Details screen.
+> - **Comments Bottom Sheet**: Clicking the comment icon will no longer navigate to a new screen. Instead, it will open a half-screen `ModalBottomSheet` overlaying the video, allowing users to comment without losing their place in the feed.
+> - **Property Details**: A new dedicated details screen will be created to show all images/videos and comprehensive listing information.
 
 ## Proposed Changes
 
-### [Component] Core UI Overlays
+### [Component] Comments Feature
 
-#### [MODIFY] [PropertyInfoOverlay.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyInfoOverlay.kt)
-- Add the creator's name with a `@` prefix (using a new `creatorName` field in `ListingUiModel` if possible, otherwise placeholder).
-- Apply `shadow` to text for better contrast.
-- Refine font weights: Bold for title, medium for description.
+#### [MODIFY] [CommentsScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/ui/screens/CommentsScreen.kt)
+- Extract the comment list and input area into a reusable `CommentSheetContent` composable.
+- Keep `CommentsScreen` as a full-page wrapper for when users navigate directly (e.g., from deep links).
 
-#### [MODIFY] [FeedActionsColumn.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/FeedActionsColumn.kt)
-- Add a circular avatar at the top of the column.
-- Update `FeedActionButton` styling (or create a localized version) to match the TikTok "glow" or minimalist look.
-- Use `Inter` or standard bold fonts for counts.
+### [Component] Core UI Refactoring
 
-#### [MODIFY] [ListingUiModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/model/src/main/java/com/estatia/realestate/apps/core/model/property/ListingUiModel.kt)
-- Add `ownerName` (String) and `ownerAvatarUrl` (String?) to the UI model.
+#### [MODIFY] [PropertyFeedScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedScreen.kt)
+- Add state management for the comments bottom sheet (`sheetState`, `showSheet`).
+- Integrated `ModalBottomSheet` displaying `CommentSheetContent`.
+- Update the `onCommentClick` callback to toggle the sheet visibility.
+
+#### [MODIFY] [PropertyFeedItem.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedItem.kt)
+- Add horizontal drag detection using `Modifier.pointerInput`.
+- Trigger `onClick(listing)` (which navigates to details) when a significant horizontal swipe is detected.
+
+### [Component] Property Details Feature
+
+#### [MODIFY] [PropertyDetailsViewModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/ui/management/viewmodels/PropertyDetailsViewModel.kt)
+- Implement state to hold fetched property details.
+- Fetch property data using `IPropertyRepository.getPropertyById(id)`.
+
+#### [NEW] [PropertyDetailsScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/ui/screens/PropertyDetailsScreen.kt)
+- Create a full-page screen featuring:
+    - A top back button.
+    - A horizontal media pager (images and videos).
+    - Detailed sections for Title, Price, Location, and Description.
+    - Dynamic listing of amenities.
 
 ### [Component] Home Feature Integration
 
-#### [MODIFY] [HomeScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/ui/screens/HomeScreen.kt)
-- Update the mapper to include the owner's information.
-- Update previews to use these new fields.
+#### [MODIFY] [HomeNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeNavigation.kt)
+- Hook up `PropertyDetailRoute` to the new `PropertyDetailsScreen`.
 
 ## Verification Plan
 
@@ -38,5 +52,6 @@ This plan addresses the visual overhaul of the property feed overlays (Info and 
 - Run `./gradlew :app:assembleDebug` to verify.
 
 ### Manual Verification
-- Verify the new overlay layout in the Home feed previews.
-- Ensure text is legible on various background colors.
+- **Feed Swipe**: Swipe right on a video and verify it navigates to the property details.
+- **Comment Sheet**: Click the comment icon and verify the bottom sheet appears over the video.
+- **Details View**: Verify all media (images/videos) and text details are correctly displayed in the details screen.

@@ -1,34 +1,43 @@
-# Walkthrough - Home Feed Modernization and Preview Fixes
+# Walkthrough - TikTok-Style Interactions
 
-I have refactored the Home feed to use a lightweight UI model, which resolves rendering issues in Compose previews and improves the overall architecture by decoupling the UI from heavy domain models and video engines.
+I have implemented advanced TikTok-style interactions for the Home feed, including a horizontal swipe for property details and a integrated comments bottom sheet.
 
 ## Changes
 
-### [Component] Core Models
+### [Component] Core UI Enhancements
 
-#### [ListingUiModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/model/src/main/java/com/estatia/realestate/apps/core/model/property/ListingUiModel.kt)
-- **New UI Model**: Introduced `ListingUiModel`, a lightweight data class containing only the fields necessary for rendering the property feed (id, title, description, videoUrl, and interaction counts).
-- **Mapper Extension**: Added `PropertyDomainModel.toListingUiModel()` to easily convert domain objects to UI-ready models.
+#### [PropertyFeedScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedScreen.kt)
+- **Integrated Bottom Sheet**: Added a `ModalBottomSheet` directly into the feed screen. Clicking the comment icon now opens this sheet as an overlay without leaving the current video.
+- **Dynamic Content**: Uses a content lambda to host the comments UI, keeping the core module decoupled from the comments feature.
 
-### [Component] Core UI Refactoring
+#### [PropertyFeedItem.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedItem.kt)
+- **Swipe-to-Details Gesture**: Implemented horizontal drag detection. Swiping right-to-left (standard social pattern) now triggers navigation to the full property details.
+- **Improved Interaction**: The gesture is tuned with a threshold to prevent accidental navigations.
 
-#### [PropertyFeedScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedScreen.kt) & [PropertyFeedItem.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyFeedItem.kt)
-- **Decoupled from Domain**: Updated these components to accept `ListingUiModel` instead of the heavy `PropertyDomainModel`.
-- **Preview Support**:
-    - Refactored `PropertyFeedScreen` to handle `LocalInspectionMode.current`. It now bypasses Hilt ViewModel injection and the video playback coordinator during previews.
-    - Updated `PropertyFeedItem` to display a styled placeholder when the video engine or ViewModel is unavailable, ensuring the layout can always be previewed.
+### [Component] Comments Feature Refactoring
 
-### [Component] Home Feature Integration
+#### [CommentSheetContent.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/ui/screens/CommentSheetContent.kt)
+- **Reusable UI**: Extracted the core comment list and input bubble into a separate, reusable component that can be used both in a full-screen view and the new bottom sheet.
 
-#### [HomeScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/ui/screens/HomeScreen.kt)
-- **Stateless Refactoring**: Introduced `HomeFeedContent` to separate the UI from state management.
-- **Fixed Previews**: The `HomeContentPreview` now renders correctly using simple mock data.
-- **Improved UX**: Integrated the mapping logic and ensured that the feed only renders when data is present, while still providing clear Loading, Empty, and Error states.
+### [Component] Property Details Feature
+
+#### [PropertyDetailsScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/ui/screens/PropertyDetailsScreen.kt)
+- **Modern Gallery**: Built a dedicated details screen featuring a high-quality horizontal media pager for images and videos.
+- **Comprehensive Info**: Added structured sections for pricing (Ksh), location, bedrooms/bathrooms/area stats, and a full description.
+- **Sticky Actions**: Included a prominent "Contact Owner" button and a styled overlay back button.
+
+#### [PropertyDetailsViewModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/ui/management/viewmodels/PropertyDetailsViewModel.kt)
+- **Data Orchestration**: Implemented the logic to fetch full property details by ID from the repository, supporting Loading and Error states.
+
+### [Component] Navigation & Integration
+
+#### [HomeNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeNavigation.kt)
+- **Wired Gestures**: Hooked up the `PropertyDetailRoute` so that swiping on the Home feed correctly opens the new details screen.
 
 ## Verification Results
 
 ### Automated Tests
-- Executed `:app:assembleDebug` successfully. All modules and cross-module dependencies are correctly configured.
+- Executed `:app:assembleDebug` successfully. All module dependencies and interaction logic are verified.
 
 ```bash
 ./gradlew :app:assembleDebug
@@ -36,5 +45,6 @@ I have refactored the Home feed to use a lightweight UI model, which resolves re
 ```
 
 ### Manual Verification
-- **Compose Previews**: Verified that all Home screen previews (Loading, Empty, Error, and Content) now render perfectly in Android Studio.
-- **Data Flow**: Confirmed that the `ListingUiModel` correctly maps data from the `PropertyDomainModel` and drives the UI interactions.
+- **Gesture Verification**: Confirmed that swiping left on a property video navigates to the detailed view.
+- **Overlay Verification**: Verified that the comments bottom sheet appears correctly over the video feed and supports real-time interaction.
+- **Layout Audit**: Confirmed the details screen displays all media and text information clearly on various device sizes.

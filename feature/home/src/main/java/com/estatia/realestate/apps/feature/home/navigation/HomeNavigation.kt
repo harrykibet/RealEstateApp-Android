@@ -6,7 +6,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 import com.estatia.realestate.apps.feature.home.ui.screens.HomeRoute as HomeRouteScreen
+import com.estatia.realestate.apps.feature.property.ui.screens.PropertyDetailsRoute
 
 fun NavController.navigateToHome(navOptions: NavOptions? = null) =
     navigate(route = HomeRoute, navOptions)
@@ -17,7 +19,6 @@ fun NavController.navigateToPropertyDetail(propertyId: String) =
 fun NavGraphBuilder.homeGraph(
     onBackClick: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
-    onCommentClick: (String) -> Unit,
 ) {
     navigation<HomeBaseRoute>(startDestination = HomeRoute) {
         composable<HomeRoute>(
@@ -36,12 +37,15 @@ fun NavGraphBuilder.homeGraph(
         ) {
             HomeRouteScreen(
                 onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-                onCommentClick = onCommentClick,
             )
         }
 
-        composable<PropertyDetailRoute> {
-            // TODO: Implement PropertyDetailRoute screen
+        composable<PropertyDetailRoute> { backStackEntry ->
+            val route: PropertyDetailRoute = backStackEntry.toRoute()
+            PropertyDetailsRoute(
+                propertyId = route.propertyId,
+                onBackClick = onBackClick
+            )
         }
     }
 }

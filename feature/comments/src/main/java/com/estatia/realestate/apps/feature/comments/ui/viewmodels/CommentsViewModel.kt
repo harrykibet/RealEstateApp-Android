@@ -24,7 +24,7 @@ import javax.inject.Inject
 class CommentsViewModel @Inject constructor(
     private val commentsRepository: CommentsRepository,
     @param:Dispatcher(EstatiaDispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CommentsUiState())
@@ -95,13 +95,15 @@ class CommentsViewModel @Inject constructor(
         if (message.isBlank()) return
 
         viewModelScope.launch(ioDispatcher) {
+            update { copy(isSending = true) }
             when (val result = commentsRepository.submitComment(propertyId, message)) {
                 is AppResult.Success -> {
-                    update { copy(input = "") }
+                    update { copy(input = "", isSending = false) }
                     _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
 
                 is AppResult.Error -> {
+                    update { copy(isSending = false) }
                     _events.emit(
                         CommentsEvent.ShowMessage(
                             result.exception.message ?: "Failed to post comment"

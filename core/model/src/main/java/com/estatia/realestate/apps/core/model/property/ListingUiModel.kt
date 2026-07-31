@@ -8,6 +8,8 @@ data class ListingUiModel(
     val title: String,
     val description: String?,
     val videoUrl: String?,
+    val ownerName: String,
+    val ownerAvatarUrl: String?,
     val likesCount: Int,
     val commentsCount: Int,
     val sharesCount: Int,
@@ -19,6 +21,8 @@ fun PropertyDomainModel.toListingUiModel(): ListingUiModel =
         title = title,
         description = description,
         videoUrl = videoUrls.firstOrNull(),
+        ownerName = ownerName ?: "Unknown",
+        ownerAvatarUrl = null, // Placeholder as PropertyDomainModel doesn't have it yet
         likesCount = likesCount,
         commentsCount = commentsCount,
         sharesCount = sharesCount,

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,10 +15,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
@@ -38,12 +44,28 @@ fun PropertyFeedItem(
     onClick: (ListingUiModel) -> Unit = {}
 ) {
     val uiState = if (isActive && viewModel != null) { viewModel.uiState.collectAsState().value } else { null }
+    var totalDragAmount by remember { mutableFloatStateOf(0f) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .clickable { onClick(listing) }
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragEnd = {
+                        // Swipe threshold (e.g., swipe left by 100 pixels)
+                        if (totalDragAmount < -150f) {
+                            onClick(listing)
+                        }
+                        totalDragAmount = 0f
+                    },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        totalDragAmount += dragAmount
+                    }
+                )
+            }
+            .clickable { /* Toggle play/pause logic could go here */ }
     ) {
 
         val videoUrl = listing.videoUrl

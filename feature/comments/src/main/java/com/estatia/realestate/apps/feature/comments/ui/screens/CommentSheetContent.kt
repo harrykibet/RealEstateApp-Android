@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.feature.comments.ui.screens
 
-import android.content.res.Configuration
 import android.text.format.DateUtils
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,26 +21,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -54,62 +50,32 @@ import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsScreen(
+fun CommentSheetContent(
     state: CommentsUiState,
-    onBack: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     onAction: (CommentsAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    EstatiaText(
-                        text = "Comments",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                ),
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = {
-            CommentInputArea(
-                input = state.input,
-                onInputChange = { onAction(CommentsAction.InputChanged(it)) },
-                onSendClick = { onAction(CommentsAction.SendComment) },
-            )
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
-        ) {
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+    Column(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
 
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(state.comments) { comment ->
-                    CommentItem(comment)
-                }
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(state.comments) { comment ->
+                CommentItem(comment)
             }
         }
+
+        CommentInputArea(
+            input = state.input,
+            isSending = state.isSending,
+            onInputChange = { onAction(CommentsAction.InputChanged(it)) },
+            onSendClick = { onAction(CommentsAction.SendComment) },
+        )
     }
 }
 
@@ -178,6 +144,7 @@ fun CommentItem(comment: CommentDomainModel) {
 @Composable
 fun CommentInputArea(
     input: String,
+    isSending: Boolean,
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
 ) {
@@ -216,6 +183,7 @@ fun CommentInputArea(
                     value = input,
                     onValueChange = onInputChange,
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isSending,
                     textStyle = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface,
                     ),
@@ -224,18 +192,37 @@ fun CommentInputArea(
                         capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Send,
                     ),
+                    keyboardActions = KeyboardActions(
+                        onSend = { onSendClick() }
+                    ),
                 )
             }
 
-            if (input.isNotBlank()) {
-                IconButton(onClick = onSendClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Send",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+            AnimatedVisibility(
+                visible = input.isNotBlank() || isSending,
+                enter = scaleIn(),
+                exit = scaleOut(),
+            ) {
+                IconButton(
+                    onClick = onSendClick,
+                    enabled = !isSending
+                ) {
+                    if (isSending) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = "Send",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
-            } else {
+            }
+            if (input.isBlank() && !isSending) {
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }
@@ -270,18 +257,13 @@ private fun getRelativeTime(timeStamp: Long): String {
     ).toString()
 }
 
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    widthDp = 400,
-)
+@Preview(showBackground = true)
 @DevicePreviews
 @Composable
-fun CommentsScreenLightPreview() {
+fun CommentSheetContentPreview() {
     EstatiaTheme {
         EstatiaBackground {
-            CommentsScreen(
+            CommentSheetContent(
                 state = CommentsUiState(
                     comments = listOf(
                         CommentDomainModel(
@@ -301,31 +283,27 @@ fun CommentsScreenLightPreview() {
                             timeStamp = System.currentTimeMillis() - 7200000,
                         ),
                     ),
+                    input = "Looking good!",
+                    isSending = false
                 ),
-                snackbarHostState = SnackbarHostState(),
-                onAction = {},
-                onBack = {},
+                onAction = {}
             )
         }
     }
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 400,
-)
-@DevicePreviews
+@Preview(name = "Sending State", showBackground = true)
 @Composable
-fun CommentsScreenDarkPreview() {
+fun CommentSheetContentSendingPreview() {
     EstatiaTheme {
         EstatiaBackground {
-            CommentsScreen(
-                state = CommentsUiState(),
-                snackbarHostState = SnackbarHostState(),
-                onAction = {},
-                onBack = {},
+            CommentSheetContent(
+                state = CommentsUiState(
+                    comments = emptyList(),
+                    input = "Posting a comment...",
+                    isSending = true
+                ),
+                onAction = {}
             )
         }
     }

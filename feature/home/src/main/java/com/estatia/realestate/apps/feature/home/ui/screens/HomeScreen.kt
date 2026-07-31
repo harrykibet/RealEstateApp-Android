@@ -13,6 +13,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,13 +36,15 @@ import com.estatia.realestate.apps.core.model.property.toListingUiModel
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.core.ui.screens.PropertyFeedItem
 import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
+import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
+import com.estatia.realestate.apps.feature.comments.ui.screens.CommentSheetContent
+import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
-    onCommentClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(
         viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -53,7 +56,6 @@ internal fun HomeRoute(
     HomeScreen(
         state = state,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-        onCommentClick = onCommentClick,
         onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
     )
 }
@@ -62,7 +64,6 @@ internal fun HomeRoute(
 internal fun HomeScreen(
     state: HomeUiState,
     onNavigateToPropertyDetail: (String) -> Unit,
-    onCommentClick: (String) -> Unit,
     onRefresh: () -> Unit,
 ) {
     val listings = remember(state.properties) {
@@ -74,7 +75,6 @@ internal fun HomeScreen(
         isLoading = state.isLoading,
         error = state.error,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-        onCommentClick = onCommentClick,
         onRefresh = onRefresh
     )
 }
@@ -85,7 +85,6 @@ internal fun HomeFeedContent(
     isLoading: Boolean,
     error: String?,
     onNavigateToPropertyDetail: (String) -> Unit,
-    onCommentClick: (String) -> Unit,
     onRefresh: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -106,9 +105,19 @@ internal fun HomeFeedContent(
             PropertyFeedScreen(
                 listings = listings,
                 onLikeClick = { /* TODO */ },
-                onCommentClick = { listing -> onCommentClick(listing.id) },
                 onShareClick = { /* TODO */ },
-                onPropertyClick = { listing -> onNavigateToPropertyDetail(listing.id) }
+                onPropertyClick = { listing -> onNavigateToPropertyDetail(listing.id) },
+                commentsContent = { propertyId ->
+                    val commentsViewModel: CommentsViewModel = hiltViewModel()
+                    LaunchedEffect(propertyId) {
+                        commentsViewModel.onAction(CommentsAction.Load(propertyId))
+                    }
+                    val commentsState by commentsViewModel.state.collectAsState()
+                    CommentSheetContent(
+                        state = commentsState,
+                        onAction = commentsViewModel::onAction
+                    )
+                }
             )
         }
     }
@@ -204,7 +213,6 @@ fun HomeLoadingPreview() {
                 isLoading = true,
                 error = null,
                 onNavigateToPropertyDetail = {},
-                onCommentClick = {},
                 onRefresh = {},
             )
         }
@@ -222,7 +230,6 @@ fun HomeEmptyPreview() {
                 isLoading = false,
                 error = null,
                 onNavigateToPropertyDetail = {},
-                onCommentClick = {},
                 onRefresh = {},
             )
         }
@@ -240,7 +247,6 @@ fun HomeErrorPreview() {
                 isLoading = false,
                 error = "Connection timeout. Please check your internet.",
                 onNavigateToPropertyDetail = {},
-                onCommentClick = {},
                 onRefresh = {},
             )
         }
@@ -260,6 +266,8 @@ fun HomeContentPreview() {
                         title = "Modern Apartment",
                         description = "Luxury living in the heart of the city.",
                         videoUrl = null,
+                        ownerName = "jane_doe",
+                        ownerAvatarUrl = null,
                         likesCount = 120,
                         commentsCount = 45,
                         sharesCount = 12
@@ -268,7 +276,6 @@ fun HomeContentPreview() {
                 isLoading = false,
                 error = null,
                 onNavigateToPropertyDetail = {},
-                onCommentClick = {},
                 onRefresh = {},
             )
         }
@@ -285,6 +292,8 @@ fun ListingItemPreview() {
                 title = "Modern Apartment",
                 description = "Luxury living in the heart of the city.",
                 videoUrl = null,
+                ownerName = "jane_doe",
+                ownerAvatarUrl = null,
                 likesCount = 120,
                 commentsCount = 45,
                 sharesCount = 12

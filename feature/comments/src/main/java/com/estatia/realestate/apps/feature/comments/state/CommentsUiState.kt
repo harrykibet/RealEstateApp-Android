@@ -6,5 +6,6 @@ data class CommentsUiState(
     val isLoading: Boolean = false,
     val comments: List<CommentDomainModel> = emptyList(),
     val input: String = "",
-    val error: String? = null
+    val error: String? = null,
+    val isSending: Boolean = false,
 )
