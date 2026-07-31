@@ -3,14 +3,32 @@ package com.estatia.realestate.apps.feature.auth.ui.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Work
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +56,7 @@ fun SignUpScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -142,7 +161,7 @@ fun UserTypeDropdownMenu(
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
         // Tenant Option
         DropdownMenuItem(
@@ -164,11 +183,11 @@ fun UserTypeDropdownMenu(
                 leadingIconColor = MaterialTheme.colorScheme.onSurface,
                 trailingIconColor = MaterialTheme.colorScheme.primaryContainer,
                 disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { EstatiaText(text = "Tenant") }
+            text = { EstatiaText(text = "Tenant") },
         )
 
         // Landlord Option
@@ -191,11 +210,11 @@ fun UserTypeDropdownMenu(
                 leadingIconColor = MaterialTheme.colorScheme.onSurface,
                 trailingIconColor = MaterialTheme.colorScheme.primaryContainer,
                 disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { EstatiaText(text = "Landlord") }
+            text = { EstatiaText(text = "Landlord") },
         )
 
         // Agent Option
@@ -218,11 +237,11 @@ fun UserTypeDropdownMenu(
                 leadingIconColor = MaterialTheme.colorScheme.onSurface,
                 trailingIconColor = MaterialTheme.colorScheme.primaryContainer,
                 disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
             ),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             interactionSource = remember { MutableInteractionSource() },
-            text = { EstatiaText(text = "Agent") }
+            text = { EstatiaText(text = "Agent") },
         )
     }
 }
@@ -232,7 +251,7 @@ fun UserTypeDropdownMenu(
     name = "Light Mode",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO,
-    widthDp = 400
+    widthDp = 400,
 )
 
 @DevicePreviews
@@ -252,7 +271,7 @@ fun SignUpScreenLightPreview() {
     name = "Dark Mode",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 400
+    widthDp = 400,
 )
 
 @DevicePreviews
@@ -267,4 +286,3 @@ fun SignUpScreenDarkPreview() {
         }
     }
 }
-

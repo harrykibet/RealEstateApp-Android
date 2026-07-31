@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import android.R.string.untitled
 import androidx.annotation.StringRes
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,34 +20,42 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EstatiaTopAppBar(
-    @StringRes titleRes: Int,
-    navigationIcon: ImageVector,
-    navigationIconContentDescription: String,
-    actionIcon: ImageVector,
-    actionIconContentDescription: String,
     modifier: Modifier = Modifier,
+    @StringRes titleRes: Int? = null,
+    navigationIcon: ImageVector? = null,
+    navigationIconContentDescription: String? = null,
+    actionIcon: ImageVector? = null,
+    actionIconContentDescription: String? = null,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
-        title = { EstatiaText(text = stringResource(id = titleRes)) },
+        title = {
+            titleRes?.let {
+                EstatiaText(text = stringResource(id = it))
+            }
+        },
         navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    imageVector = navigationIcon,
-                    contentDescription = navigationIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            if (navigationIcon != null && navigationIconContentDescription != null) {
+                IconButton(onClick = onNavigationClick) {
+                    Icon(
+                        imageVector = navigationIcon,
+                        contentDescription = navigationIconContentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         },
         actions = {
-            IconButton(onClick = onActionClick) {
-                Icon(
-                    imageVector = actionIcon,
-                    contentDescription = actionIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            if (actionIcon != null && actionIconContentDescription != null) {
+                IconButton(onClick = onActionClick) {
+                    Icon(
+                        imageVector = actionIcon,
+                        contentDescription = actionIconContentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         },
         colors = colors,
@@ -62,7 +69,7 @@ fun EstatiaTopAppBar(
 private fun ReaTopAppBarPreview() {
     EstatiaTheme {
         EstatiaTopAppBar(
-            titleRes = untitled,
+            titleRes = android.R.string.untitled,
             navigationIcon = EstatiaIcons.Search,
             navigationIconContentDescription = "Navigation icon",
             actionIcon = EstatiaIcons.MoreVert,

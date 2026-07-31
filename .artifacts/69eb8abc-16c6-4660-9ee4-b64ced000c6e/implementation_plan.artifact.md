@@ -1,40 +1,42 @@
-# Fix Identified App Crashes: Navigation and Places Initialization
+# TikTok-Style Overlays for Home Feed
 
-This plan addresses two critical crashes identified in recent app runs:
-1. `IllegalArgumentException`: Destination with route `FavoritesRoute` cannot be found.
-2. `IllegalStateException`: Places must be initialized first.
+This plan addresses the visual overhaul of the property feed overlays (Info and Actions) to closely match the "TikTok" aesthetic. This involves refining typography, adding creator avatars, improving text contrast, and styling the action buttons.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Navigation Change**: Standardizing `:feature:favorites` to use a nested navigation graph.
-> - **Application Change**: Moving Google Places initialization to the `EstatiaApplication` class to ensure it's available before any UI component attempts to create a `PlacesClient`.
+> - **Creator Avatar**: I will add a circular creator avatar at the top of the action stack on the right.
+> - **Visual Contrast**: I will apply subtle text shadows to ensure titles and descriptions remain legible over bright video content.
+> - **Compact Styling**: The action column will be made more compact with refined font weights and icon sizes.
 
 ## Proposed Changes
 
-### [Component] App Initialization
+### [Component] Core UI Overlays
 
-#### [MODIFY] [EstatiaApplication.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/EstatiaApplication.kt)
-- Inject `PlacesManager`.
-- Call `placesManager.initialize(this)` in `onCreate`.
+#### [MODIFY] [PropertyInfoOverlay.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/PropertyInfoOverlay.kt)
+- Add the creator's name with a `@` prefix (using a new `creatorName` field in `ListingUiModel` if possible, otherwise placeholder).
+- Apply `shadow` to text for better contrast.
+- Refine font weights: Bold for title, medium for description.
 
-### [Component] Search Feature
+#### [MODIFY] [FeedActionsColumn.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/ui/src/main/java/com/estatia/realestate/apps/core/ui/screens/FeedActionsColumn.kt)
+- Add a circular avatar at the top of the column.
+- Update `FeedActionButton` styling (or create a localized version) to match the TikTok "glow" or minimalist look.
+- Use `Inter` or standard bold fonts for counts.
 
-#### [MODIFY] [MapWithSearchBar.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/ui/screens/MapWithSearchBar.kt)
-- Remove the `LaunchedEffect` that was previously initializing Places (now handled in Application).
-- Ensure `PlacesClient` is created safely.
+#### [MODIFY] [ListingUiModel.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/model/src/main/java/com/estatia/realestate/apps/core/model/property/ListingUiModel.kt)
+- Add `ownerName` (String) and `ownerAvatarUrl` (String?) to the UI model.
 
-### [Component] Favorites Feature
+### [Component] Home Feature Integration
 
-#### [MODIFY] [FavoritesNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesNavigation.kt)
-- Wrap the `composable<FavoritesRoute>` in a `navigation<FavoritesBaseRoute>(startDestination = FavoritesRoute)` block. This ensures that the navigation graph structure matches the definitions in `TopLevelDestination`.
+#### [MODIFY] [HomeScreen.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/ui/screens/HomeScreen.kt)
+- Update the mapper to include the owner's information.
+- Update previews to use these new fields.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `./gradlew :app:assembleDebug` to ensure all changes are valid.
+- Run `./gradlew :app:assembleDebug` to verify.
 
 ### Manual Verification
-- Launch the app and verify:
-    - Navigating to the **Favorites** screen from the bottom bar no longer crashes.
-    - Navigating to the **Search** screen (Map) no longer crashes with "Places must be initialized first".
+- Verify the new overlay layout in the Home feed previews.
+- Ensure text is legible on various background colors.

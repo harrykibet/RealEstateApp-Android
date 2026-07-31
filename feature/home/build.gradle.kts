@@ -10,6 +10,7 @@ dependencies {
 
     implementation(projects.core.model)
     implementation(projects.core.domain)
+    implementation(projects.core.playerUi)
 
     implementation(libs.bundles.navigation)
 

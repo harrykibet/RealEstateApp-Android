@@ -1,0 +1,343 @@
+package com.estatia.realestate.apps.feature.settings
+
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
+import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.designsystem.theme.supportsDynamicTheming
+import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
+import com.estatia.realestate.apps.core.model.utils.ThemeBrand
+import com.estatia.realestate.apps.core.ui.DevicePreviews
+import com.estatia.realestate.apps.core.ui.TrackScreenViewEvent
+
+@Composable
+fun SettingsScreen(
+    onBackClick: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel(
+        viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        },
+    ),
+) {
+    val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
+
+    SettingsScreen(
+        settingsUiState = settingsUiState,
+        onBackClick = onBackClick,
+        onChangeThemeBrand = viewModel::updateThemeBrand,
+        onChangeDynamicColorPreference = viewModel::updateDynamicColorPreference,
+        onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SettingsScreen(
+    settingsUiState: SettingsUiState,
+    onBackClick: () -> Unit,
+    onChangeThemeBrand: (ThemeBrand) -> Unit,
+    onChangeDynamicColorPreference: (Boolean) -> Unit,
+    onChangeDarkThemeConfig: (DarkThemeConfig) -> Unit,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    EstatiaText(
+                        text = stringResource(R.string.feature_settings_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                ),
+            )
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            when (val state = settingsUiState) {
+                SettingsUiState.Loading -> {
+                    EstatiaText(
+                        text = stringResource(R.string.feature_settings_loading),
+                        modifier = Modifier.padding(16.dp),
+                    )
+                }
+
+                is SettingsUiState.Success -> {
+                    SettingsContent(
+                        settings = state.settings,
+                        supportDynamicColor = supportsDynamicTheming(),
+                        onChangeThemeBrand = onChangeThemeBrand,
+                        onChangeDynamicColorPreference = onChangeDynamicColorPreference,
+                        onChangeDarkThemeConfig = onChangeDarkThemeConfig,
+                    )
+                }
+            }
+
+            SettingsSectionTitle(text = "Support")
+            SettingsNavigationRow(
+                text = stringResource(R.string.feature_settings_privacy_policy),
+                onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
+            )
+            SettingsNavigationRow(
+                text = stringResource(R.string.feature_settings_brand_guidelines),
+                onClick = { uriHandler.openUri(BRAND_GUIDELINES_URL) },
+            )
+            SettingsNavigationRow(
+                text = stringResource(R.string.feature_settings_feedback),
+                onClick = { uriHandler.openUri(FEEDBACK_URL) },
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+    TrackScreenViewEvent(screenName = "Settings")
+}
+
+@Composable
+private fun SettingsContent(
+    settings: UserEditableSettings,
+    supportDynamicColor: Boolean,
+    onChangeThemeBrand: (ThemeBrand) -> Unit,
+    onChangeDynamicColorPreference: (Boolean) -> Unit,
+    onChangeDarkThemeConfig: (DarkThemeConfig) -> Unit,
+) {
+    SettingsSectionTitle(text = stringResource(R.string.feature_settings_theme))
+    Column(Modifier.selectableGroup()) {
+        SettingsSelectionRow(
+            text = stringResource(R.string.feature_settings_brand_default),
+            selected = settings.brand == ThemeBrand.DEFAULT,
+            onClick = { onChangeThemeBrand(ThemeBrand.DEFAULT) },
+        )
+        SettingsSelectionRow(
+            text = stringResource(R.string.feature_settings_brand_android),
+            selected = settings.brand == ThemeBrand.ANDROID,
+            onClick = { onChangeThemeBrand(ThemeBrand.ANDROID) },
+        )
+    }
+
+    AnimatedVisibility(visible = settings.brand == ThemeBrand.DEFAULT && supportDynamicColor) {
+        Column {
+            SettingsSectionTitle(text = stringResource(R.string.feature_settings_dynamic_color_preference))
+            SettingsSwitchRow(
+                text = "Use Dynamic Color",
+                checked = settings.useDynamicColor,
+                onCheckedChange = onChangeDynamicColorPreference,
+            )
+        }
+    }
+
+    SettingsSectionTitle(text = stringResource(R.string.feature_settings_dark_mode_preference))
+    Column(Modifier.selectableGroup()) {
+        SettingsSelectionRow(
+            text = stringResource(R.string.feature_settings_dark_mode_config_system_default),
+            selected = settings.darkThemeConfig == DarkThemeConfig.FOLLOW_SYSTEM,
+            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.FOLLOW_SYSTEM) },
+        )
+        SettingsSelectionRow(
+            text = stringResource(R.string.feature_settings_dark_mode_config_light),
+            selected = settings.darkThemeConfig == DarkThemeConfig.LIGHT,
+            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.LIGHT) },
+        )
+        SettingsSelectionRow(
+            text = stringResource(R.string.feature_settings_dark_mode_config_dark),
+            selected = settings.darkThemeConfig == DarkThemeConfig.DARK,
+            onClick = { onChangeDarkThemeConfig(DarkThemeConfig.DARK) },
+        )
+    }
+}
+
+@Composable
+private fun SettingsSectionTitle(text: String) {
+    EstatiaText(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+        fontWeight = FontWeight.Bold,
+    )
+}
+
+@Composable
+private fun SettingsNavigationRow(
+    text: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        EstatiaText(text = text, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+@Composable
+private fun SettingsSelectionRow(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = selected,
+                role = Role.RadioButton,
+                onClick = onClick,
+            )
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        EstatiaText(text = text, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        RadioButton(
+            selected = selected,
+            onClick = null,
+        )
+    }
+}
+
+@Composable
+private fun SettingsSwitchRow(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        EstatiaText(text = text, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
+    }
+}
+
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 400,
+)
+@DevicePreviews
+@Composable
+fun SettingsScreenLightPreview() {
+    EstatiaTheme {
+        EstatiaBackground {
+            SettingsScreen(
+                settingsUiState = SettingsUiState.Success(
+                    UserEditableSettings(
+                        brand = ThemeBrand.DEFAULT,
+                        useDynamicColor = true,
+                        darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
+                    ),
+                ),
+                onBackClick = {},
+                onChangeThemeBrand = {},
+                onChangeDynamicColorPreference = {},
+                onChangeDarkThemeConfig = {},
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 400,
+)
+@DevicePreviews
+@Composable
+fun SettingsScreenDarkPreview() {
+    EstatiaTheme {
+        EstatiaBackground {
+            SettingsScreen(
+                settingsUiState = SettingsUiState.Success(
+                    UserEditableSettings(
+                        brand = ThemeBrand.DEFAULT,
+                        useDynamicColor = true,
+                        darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
+                    ),
+                ),
+                onBackClick = {},
+                onChangeThemeBrand = {},
+                onChangeDynamicColorPreference = {},
+                onChangeDarkThemeConfig = {},
+            )
+        }
+    }
+}
+
+private const val PRIVACY_POLICY_URL = "https://policies.google.com/privacy"
+private const val BRAND_GUIDELINES_URL = "https://developer.android.com/distribute/marketing-tools/brand-guidelines"
+private const val FEEDBACK_URL = "https://goo.gle/nia-app-feedback"

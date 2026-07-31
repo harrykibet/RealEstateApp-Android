@@ -3,8 +3,11 @@ package com.estatia.realestate.apps.feature.property.ui.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +42,12 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
 
     var currentStep by rememberSaveable { mutableIntStateOf(0) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
         EstatiaText("Add Property", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(16.dp))
 
@@ -62,6 +70,8 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
             onPrevious = { if (currentStep > 0) currentStep-- },
             onNext = { if (currentStep < sections.lastIndex) currentStep++ }
         )
+        
+        Spacer(Modifier.height(16.dp))
     }
 }
 

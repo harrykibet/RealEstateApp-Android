@@ -1,11 +1,9 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
-
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -50,22 +50,22 @@ fun LoginScreen(
     onSignUpClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onGoogleSignInClick: () -> Unit = {},
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         EstatiaText(
             text = stringResource(R.string.real_estate_app),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             ),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
@@ -79,7 +79,7 @@ fun LoginScreen(
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -89,20 +89,21 @@ fun LoginScreen(
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 16.sp,
                 lineHeight = 22.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             ),
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.fillMaxWidth(0.9f)
+            modifier = Modifier.fillMaxWidth(0.9f),
         )
 
         Spacer(modifier = Modifier.height(40.dp))
+
         EstatiaTextField(
             value = email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.email_or_phone_number),
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .padding(vertical = 4.dp)
+                .padding(vertical = 4.dp),
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -112,7 +113,7 @@ fun LoginScreen(
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
             modifier = Modifier.fillMaxWidth(0.9f),
-            isPassword = true
+            isPassword = true,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -122,67 +123,62 @@ fun LoginScreen(
             enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
-                .height(50.dp)
+                .height(50.dp),
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
-                    color = Color.White
+                    color = Color.White,
                 )
             } else {
                 EstatiaText("Login")
             }
         }
-        EstatiaText(
-            text = stringResource(R.string.login),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        GoogleSignInButton(
+            isLoading = isLoading,
+            enabled = !isLoading,
+            onClick = onGoogleSignInClick,
         )
-    }
 
-    Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-    GoogleSignInButton(
-        isLoading = isLoading,
-        enabled = !isLoading,
-        onClick = onGoogleSignInClick)
+        EstatiaOutlinedButton(
+            onClick = onSignUpClick,
+            modifier = Modifier.fillMaxWidth(0.6f),
+        ) {
+            EstatiaText(
+                text = stringResource(R.string.sign_up),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
 
-    Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-    EstatiaOutlinedButton(
-        onClick = onSignUpClick,
-        modifier = Modifier.fillMaxWidth(0.6f)
-    ) {
         EstatiaText(
-            text = stringResource(R.string.sign_up),
+            text = stringResource(R.string.forgot_password),
+            fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clickable(onClick = onForgotPasswordClick)
+                .padding(vertical = 8.dp),
         )
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
-
-    Spacer(modifier = Modifier.height(32.dp))
-
-    EstatiaText(
-        text = stringResource(R.string.forgot_password),
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .clickable(onClick = onForgotPasswordClick)
-            .padding(vertical = 8.dp)
-    )
-
-    Spacer(modifier = Modifier.height(10.dp))
 }
 
 @Preview(
     name = "Light Mode",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO,
-    widthDp = 400
+    widthDp = 400,
 )
-
 @DevicePreviews
 @Composable
 fun LoginScreenLight() {
@@ -196,7 +192,7 @@ fun LoginScreenLight() {
                 onLoginClick = {},
                 onSignUpClick = {},
                 onForgotPasswordClick = {},
-                onGoogleSignInClick = {}
+                onGoogleSignInClick = {},
             )
         }
     }
@@ -206,9 +202,8 @@ fun LoginScreenLight() {
     name = "Dark Mode",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 400
+    widthDp = 400,
 )
-
 @DevicePreviews
 @Composable
 fun LoginScreenDark() {
@@ -222,12 +217,8 @@ fun LoginScreenDark() {
                 onLoginClick = {},
                 onSignUpClick = {},
                 onForgotPasswordClick = {},
-                onGoogleSignInClick = {}
+                onGoogleSignInClick = {},
             )
         }
     }
 }
-
-
-
-

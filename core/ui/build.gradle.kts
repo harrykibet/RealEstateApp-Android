@@ -28,7 +28,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(projects.core.common)
-    implementation(projects.core.playerUi)
+    api(projects.core.playerUi)
     implementation(projects.core.designSystem)
     api(projects.core.analytics)
 }

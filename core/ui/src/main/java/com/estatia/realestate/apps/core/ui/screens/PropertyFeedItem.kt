@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -19,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -27,23 +29,42 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 
 @Composable
 fun PropertyFeedItem(
-    property: PropertyDomainModel,
-    viewModel: VideoPlaybackViewModel,
+    listing: ListingUiModel,
+    viewModel: VideoPlaybackViewModel?,
     isActive: Boolean,
-    onLikeClick: (PropertyDomainModel) -> Unit,
-    onCommentClick: (PropertyDomainModel) -> Unit,
-    onShareClick: (PropertyDomainModel) -> Unit
+    onLikeClick: (ListingUiModel) -> Unit,
+    onCommentClick: (ListingUiModel) -> Unit,
+    onShareClick: (ListingUiModel) -> Unit,
+    onClick: (ListingUiModel) -> Unit = {}
 ) {
-    val uiState = if (isActive) { viewModel.uiState.collectAsState().value } else { null }
+    val uiState = if (isActive && viewModel != null) { viewModel.uiState.collectAsState().value } else { null }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .clickable { onClick(listing) }
+    ) {
 
-        EngineVideoPlayer(
-            mediaId = property.videoUrls.first(),
-            mediaType = MediaType.VOD,
-            modifier = Modifier.fillMaxSize(),
-            viewModel = viewModel
-        )
+        val videoUrl = listing.videoUrl
+        if (videoUrl != null && viewModel != null) {
+            EngineVideoPlayer(
+                mediaId = videoUrl,
+                mediaType = MediaType.VOD,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel
+            )
+        } else {
+            // Placeholder for preview or missing video
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                EstatiaText("Video Placeholder")
+            }
+        }
 
         // ---------------------------------------
         // Playback UI Overlay (ONLY if active)
@@ -103,7 +124,7 @@ fun PropertyFeedItem(
         // ---------------------------------------
 
         PropertyInfoOverlay(
-            property = property,
+            listing = listing,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 16.dp, bottom = 24.dp)
@@ -111,7 +132,7 @@ fun PropertyFeedItem(
         )
 
         FeedActionsColumn(
-            property = property,
+            listing = listing,
             onLikeClick = onLikeClick,
             onCommentClick = onCommentClick,
             onShareClick = onShareClick,

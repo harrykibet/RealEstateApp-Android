@@ -18,6 +18,8 @@ import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
 import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionGraph
 import com.estatia.realestate.apps.feature.search.navigation.searchGraph
+import com.estatia.realestate.apps.feature.settings.navigation.settingsGraph
+import com.estatia.realestate.apps.feature.settings.navigation.navigateToSettings
 import com.estatia.realestate.apps.ui.EstatiaAppState
 
 @Composable
@@ -72,6 +74,9 @@ fun EstatiaNavHost(
         profileGraph(
             onBackClick = navController::popBackStack,
             onLogoutClick = appState::signOut,
+            onSettingsClick = {
+                navController.navigateToSettings()
+            },
         )
 
         searchGraph(onBackClick = navController::popBackStack)
@@ -81,6 +86,7 @@ fun EstatiaNavHost(
         favoritesGraph()
 
         propertyAdditionGraph(onBackClick = navController::popBackStack)
+
+        settingsGraph(onBackClick = navController::popBackStack)
     }
 }
-

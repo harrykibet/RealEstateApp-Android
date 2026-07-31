@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +26,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.domain.interfaces.MediaType
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
@@ -36,12 +35,13 @@ import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewMo
 @Composable
 private fun PropertyItem(
     modifier: Modifier = Modifier,
-    property: PropertyDomainModel,
+    listing: ListingUiModel,
+    imageUrls: List<String> = emptyList(), // Images are extra for full item
     viewModel: VideoPlaybackViewModel = hiltViewModel(),
     isActive: Boolean, // 👈 important for state overlays
-    onLikeClick: (PropertyDomainModel) -> Unit,
-    onCommentClick: (PropertyDomainModel) -> Unit,
-    onShareClick: (PropertyDomainModel) -> Unit
+    onLikeClick: (ListingUiModel) -> Unit,
+    onCommentClick: (ListingUiModel) -> Unit,
+    onShareClick: (ListingUiModel) -> Unit
 ) {
     // Collect player UI state only if active
     val uiState = if (isActive) {
@@ -55,15 +55,16 @@ private fun PropertyItem(
         // ------------------------
         // MEDIA
         // ------------------------
-        if (property.videosAvailable && property.videoUrls.isNotEmpty()) {
+        val videoUrl = listing.videoUrl
+        if (videoUrl != null) {
             EngineVideoPlayer(
-                mediaId = property.videoUrls.first(),
+                mediaId = videoUrl,
                 mediaType = MediaType.VOD,
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel
             )
         } else {
-            ImagePager(property.imageUrls)
+            ImagePager(imageUrls)
         }
 
         // ------------------------
@@ -122,35 +123,19 @@ private fun PropertyItem(
         // ------------------------
         // PROPERTY INFO
         // ------------------------
-        Column(
+        PropertyInfoOverlay(
+            listing = listing,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 16.dp, bottom = 24.dp)
                 .fillMaxWidth(0.75f)
-        ) {
-            EstatiaText(
-                text = property.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
-                maxLines = 2
-            )
-
-            property.description?.let {
-                Spacer(modifier = Modifier.height(6.dp))
-                EstatiaText(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                    maxLines = 3
-                )
-            }
-        }
+        )
 
         // ------------------------
         // ACTION BUTTONS
         // ------------------------
         FeedActionsColumn(
-            property = property,
+            listing = listing,
             onLikeClick = onLikeClick,
             onCommentClick = onCommentClick,
             onShareClick = onShareClick,

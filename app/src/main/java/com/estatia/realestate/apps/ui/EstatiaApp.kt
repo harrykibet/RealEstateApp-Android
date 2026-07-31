@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -26,10 +25,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -56,7 +52,6 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaNavigation
 import kotlin.reflect.KClass
 import com.estatia.realestate.apps.feature.settings.R as settingsR
 import com.estatia.realestate.apps.R
-import com.estatia.realestate.apps.feature.settings.SettingsDialog
 
 @Composable
 fun EstatiaApp(
@@ -66,7 +61,6 @@ fun EstatiaApp(
 ) {
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.HOME
-    var showSettingsDialog by rememberSaveable { mutableStateOf(value = false) }
 
     EstatiaBackground(modifier = modifier) {
         EstatiaGradientBackground(
@@ -94,9 +88,6 @@ fun EstatiaApp(
             EstatiaApp(
                 appState = appState,
                 snackbarHostState = snackbarHostState,
-                showSettingsDialog = showSettingsDialog,
-                onSettingsDismissed = { showSettingsDialog = false },
-                onTopAppBarActionClick = { showSettingsDialog = true },
                 windowAdaptiveInfo = windowAdaptiveInfo,
             )
         }
@@ -111,9 +102,6 @@ fun EstatiaApp(
 internal fun EstatiaApp(
     appState: EstatiaAppState,
     snackbarHostState: SnackbarHostState,
-    showSettingsDialog: Boolean,
-    onSettingsDismissed: () -> Unit,
-    onTopAppBarActionClick: () -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -128,12 +116,6 @@ internal fun EstatiaApp(
     val currentDestination = appState.currentDestination
 
     val notificationDotColor = MaterialTheme.colorScheme.tertiary
-
-    if (showSettingsDialog) {
-        SettingsDialog(
-            onDismiss = { onSettingsDismissed() },
-        )
-    }
 
     EstatiaNavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -193,7 +175,7 @@ internal fun EstatiaApp(
                 )
             },
         ) { padding ->
-            Column(
+            Box(
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -204,48 +186,27 @@ internal fun EstatiaApp(
                         ),
                     ),
             ) {
-                //Show the top app bar on top level destinations.
-                val destination = appState.currentTopLevelDestination
-                var shouldShowTopAppBar = false
+                EstatiaNavHost(
+                    appState = appState,
+                    isUserAuthenticated = isUserAuthenticated,
+                )
 
-                if (destination != null) {
-                    shouldShowTopAppBar = true
+                val destination = appState.currentTopLevelDestination
+                if (destination != null && destination.showSearch) {
                     EstatiaTopAppBar(
-                        titleRes = destination.titleTextId,
+                        modifier = Modifier.windowInsetsPadding(
+                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
+                        ),
                         navigationIcon = EstatiaIcons.Search,
                         navigationIconContentDescription = stringResource(
                             id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                         ),
-                        actionIcon = EstatiaIcons.Settings,
-                        actionIconContentDescription = stringResource(
-                            id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
-                        ),
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
                         ),
-                        onActionClick = { onTopAppBarActionClick() },
                         onNavigationClick = { appState.navigateToSearch() },
                     )
                 }
-
-                Box(
-                    // Workaround for https://issuetracker.google.com/338478720
-                    modifier = Modifier.consumeWindowInsets(
-                        if (shouldShowTopAppBar) {
-                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-                        } else {
-                            WindowInsets(0, 0, 0, 0)
-                        },
-                    ),
-                ) {
-                    EstatiaNavHost(
-                        appState = appState,
-                        isUserAuthenticated = isUserAuthenticated,
-                    )
-                }
-
-                // TODO: We may want to add padding or spacer when the snackbar is shown so that
-                //  content doesn't display behind it.
             }
         }
     }

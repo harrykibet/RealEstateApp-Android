@@ -9,23 +9,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.ListingUiModel
 
 @Composable
 fun PropertyInfoOverlay(
-    property: PropertyDomainModel,
+    listing: ListingUiModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
 
         EstatiaText(
-            text = property.title,
+            text = listing.title,
             style = MaterialTheme.typography.titleMedium,
             color = Color.White,
             maxLines = 2
         )
 
-        property.description?.let {
+        listing.description?.let {
             Spacer(modifier = Modifier.height(6.dp))
             EstatiaText(
                 text = it,

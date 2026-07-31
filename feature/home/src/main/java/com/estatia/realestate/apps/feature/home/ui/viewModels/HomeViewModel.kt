@@ -25,6 +25,10 @@ class HomeViewModel @Inject constructor(
     private var cursor: PropertyCursor? = null
     private var canLoadMore = true
 
+    init {
+        fetchProperties(isFirstLoad = true, pageSize = 20)
+    }
+
     fun fetchProperties(isFirstLoad: Boolean, pageSize: Int) {
         if (isFirstLoad) {
             cursor = null
