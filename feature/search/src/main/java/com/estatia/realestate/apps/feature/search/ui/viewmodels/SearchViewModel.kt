@@ -1,65 +1,51 @@
 package com.estatia.realestate.apps.feature.search.ui.viewmodels
 
-import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.estatia.realestate.apps.feature.search.PlacesManager
+import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,
-    private val placesManager: PlacesManager
 ) : ViewModel() {
 
-    private val _searchResults = MutableLiveData<List<PropertyDomainModel>>()
-    val searchResults: LiveData<List<PropertyDomainModel>> = _searchResults
+    private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    private val _searchHistory = MutableLiveData<List<String>>()
-    val searchHistory: LiveData<List<String>> = _searchHistory
-
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
-
-
-    fun initializePlaces(context: Context) {
-        placesManager.initialize(context)
+    init {
+        loadSearchHistory()
     }
 
-    fun searchProperties(query: String, limit: Int) {
-        viewModelScope.launch {
-            when (val result = searchRepository.searchProperties(query, limit)) {
-                is AppResult.Success -> {
-                    _searchResults.value = result.data
-                    _error.value = null
-                }
-                is AppResult.Error -> {
-                    _error.value = result.exception.message
-                }
-            }
+    fun onQueryChanged(query: String) {
+        if (query.isBlank()) {
+            loadSearchHistory()
+            return
         }
+        searchProperties(query)
     }
 
-    fun loadNearbyProperties(
-        latitude: Double,
-        longitude: Double,
-        radiusKm: Double
-    ) {
+    fun searchProperties(query: String) {
+        if (query.isBlank()) return
+        
         viewModelScope.launch {
-            when (val result = searchRepository.getNearbyProperties(latitude, longitude, radiusKm)) {
+            _uiState.value = SearchUiState.Loading
+            when (val result = searchRepository.searchProperties(query, 20)) {
                 is AppResult.Success -> {
-                    _searchResults.value = result.data
-                    _error.value = null
+                    _uiState.value = SearchUiState.Success(
+                        results = result.data,
+                        query = query,
+                    )
                 }
                 is AppResult.Error -> {
-                    _error.value = result.exception.message
+                    _uiState.value = SearchUiState.Error(result.exception.message ?: "Unknown error")
                 }
             }
         }
@@ -69,10 +55,10 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = searchRepository.getSearchHistory()) {
                 is AppResult.Success -> {
-                    _searchHistory.value = result.data
+                    _uiState.value = SearchUiState.History(result.data)
                 }
                 is AppResult.Error -> {
-                    // Handle error if needed
+                    _uiState.value = SearchUiState.History(emptyList())
                 }
             }
         }
@@ -81,7 +67,7 @@ class SearchViewModel @Inject constructor(
     fun clearSearchHistory() {
         viewModelScope.launch {
             searchRepository.clearSearchHistory()
-            _searchHistory.value = emptyList()
+            _uiState.value = SearchUiState.History(emptyList())
         }
     }
 }

@@ -2,7 +2,6 @@ package com.estatia.realestate.apps
 
 import android.app.Application
 import com.estatia.realestate.apps.core.config.repository.ConfigRepository
-import com.estatia.realestate.apps.feature.search.PlacesManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
@@ -20,20 +19,12 @@ class EstatiaApplication : Application()  {
     @Inject
     lateinit var config: ConfigRepository
 
-    @Inject
-    lateinit var placesManager: PlacesManager
-
     override fun onCreate() {
         super.onCreate()
         initializeFirebase()
         initializeBouncyCastle()
         configureGlobalExceptionHandler()
         initializeConfig()
-        initializePlaces()
-    }
-
-    private fun initializePlaces() {
-        placesManager.initialize(this)
     }
 
     private fun initializeConfig() {

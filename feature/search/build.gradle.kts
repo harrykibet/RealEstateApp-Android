@@ -11,12 +11,10 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(libs.bundles.play)
-    implementation(libs.maps.compose)
-
-
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.security)
     implementation(projects.core.model)
+    implementation(projects.core.ui)
+    implementation(projects.feature.comments)
 }

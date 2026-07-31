@@ -74,7 +74,10 @@ fun EstatiaNavHost(
             },
         )
 
-        searchGraph(onBackClick = navController::popBackStack)
+        searchGraph(
+            onBackClick = navController::popBackStack,
+            onNavigateToPropertyDetail = navController::navigateToPropertyDetail
+        )
 
         favoritesGraph()
 
