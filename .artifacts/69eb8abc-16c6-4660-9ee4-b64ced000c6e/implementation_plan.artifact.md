@@ -1,45 +1,40 @@
-# Refactor Feature Navigation: Separate Routes and Navigation
+# Fix Identified App Crashes: Navigation and Places Initialization
 
-This plan aims to standardize the navigation package structure across all feature modules to follow the `:feature:auth` pattern. This involves splitting merged `*Navigation.kt` files into separate `*Navigation.kt` (graph and functions) and `*Routes.kt` (serializable route objects) files.
+This plan addresses two critical crashes identified in recent app runs:
+1. `IllegalArgumentException`: Destination with route `FavoritesRoute` cannot be found.
+2. `IllegalStateException`: Places must be initialized first.
 
 ## User Review Required
 
-> [!NOTE]
-> This is a structural refactoring that does not change navigation logic. It improves code organization and consistency.
+> [!IMPORTANT]
+> - **Navigation Change**: Standardizing `:feature:favorites` to use a nested navigation graph.
+> - **Application Change**: Moving Google Places initialization to the `EstatiaApplication` class to ensure it's available before any UI component attempts to create a `PlacesClient`.
 
 ## Proposed Changes
 
-### [Component] Navigation Standardization
+### [Component] App Initialization
 
-#### [MODIFY] [CommentsNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/navigation/CommentsNavigation.kt) & [NEW] [CommentsRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/comments/src/main/java/com/estatia/realestate/apps/feature/comments/navigation/CommentsRoutes.kt)
-- Rename `CommentRoutes.kt` to `CommentsRoutes.kt` for consistency.
-- Ensure all `@Serializable` routes are in `CommentsRoutes.kt`.
+#### [MODIFY] [EstatiaApplication.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/app/src/main/java/com/estatia/realestate/apps/EstatiaApplication.kt)
+- Inject `PlacesManager`.
+- Call `placesManager.initialize(this)` in `onCreate`.
 
-#### [MODIFY] [HomeNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeNavigation.kt) & [NEW] [HomeRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/home/src/main/java/com/estatia/realestate/apps/feature/home/navigation/HomeRoutes.kt)
-- Move `HomeRoute`, `HomeBaseRoute`, and `PropertyDetailRoute` to `HomeRoutes.kt`.
-- Clean up `HomeNavigation.kt`.
+### [Component] Search Feature
 
-#### [MODIFY] [FavoritesNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesNavigation.kt) & [NEW] [FavoritesRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesRoutes.kt)
-- Move `FavoritesRoute` and `FavoritesBaseRoute` to `FavoritesRoutes.kt`.
-- Clean up `FavoritesNavigation.kt`.
+#### [MODIFY] [MapWithSearchBar.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/ui/screens/MapWithSearchBar.kt)
+- Remove the `LaunchedEffect` that was previously initializing Places (now handled in Application).
+- Ensure `PlacesClient` is created safely.
 
-#### [MODIFY] [ProfileNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/profile/src/main/java/com/estatia/realestate/apps/feature/profile/navigation/ProfileNavigation.kt) & [NEW] [ProfileRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/profile/src/main/java/com/estatia/realestate/apps/feature/profile/navigation/ProfileRoutes.kt)
-- Move `ProfileRoute` and `ProfileBaseRoute` to `ProfileRoutes.kt`.
-- Clean up `ProfileNavigation.kt`.
+### [Component] Favorites Feature
 
-#### [MODIFY] [PropertyNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/navigation/PropertyNavigation.kt) & [NEW] [PropertyRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/property/src/main/java/com/estatia/realestate/apps/feature/property/navigation/PropertyRoutes.kt)
-- Move `PropertyRoute` and `PropertyBaseRoute` to `PropertyRoutes.kt`.
-- Clean up `PropertyNavigation.kt`.
-
-#### [MODIFY] [SearchNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/navigation/SearchNavigation.kt) & [NEW] [SearchRoutes.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/search/src/main/java/com/estatia/realestate/apps/feature/search/navigation/SearchRoutes.kt)
-- Move `SearchRoute` and `SearchBaseRoute` to `SearchRoutes.kt`.
-- Clean up `SearchNavigation.kt`.
+#### [MODIFY] [FavoritesNavigation.kt](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/feature/favorites/src/main/java/com/estatia/realestate/apps/feature/favorites/navigation/FavoritesNavigation.kt)
+- Wrap the `composable<FavoritesRoute>` in a `navigation<FavoritesBaseRoute>(startDestination = FavoritesRoute)` block. This ensures that the navigation graph structure matches the definitions in `TopLevelDestination`.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `./gradlew :app:assembleDebug` to ensure no broken references or missing imports.
-- Use `analyze_file` to verify that the split files are correct.
+- Run `./gradlew :app:assembleDebug` to ensure all changes are valid.
 
 ### Manual Verification
-- Verify that navigation still works correctly in the app by navigating between top-level destinations.
+- Launch the app and verify:
+    - Navigating to the **Favorites** screen from the bottom bar no longer crashes.
+    - Navigating to the **Search** screen (Map) no longer crashes with "Places must be initialized first".

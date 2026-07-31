@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.android.libraries.places.api.model.Place
@@ -61,11 +60,6 @@ fun MapWithSearchBar(
     val coroutineScope = rememberCoroutineScope()
 
     var map by remember { mutableStateOf<GoogleMap?>(null) }
-
-    // Initialize Places
-    LaunchedEffect(Unit) {
-        viewModel.initializePlaces(context)
-    }
 
     val placesClient = remember { Places.createClient(context) }
 

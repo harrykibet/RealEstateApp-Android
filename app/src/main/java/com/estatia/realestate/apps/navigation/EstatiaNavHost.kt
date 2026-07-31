@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.estatia.realestate.apps.feature.comments.navigation.commentsGraph
 import com.estatia.realestate.apps.feature.comments.navigation.navigateToComments
+import com.estatia.realestate.apps.feature.favorites.navigation.favoritesGraph
 import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
@@ -76,6 +77,8 @@ fun EstatiaNavHost(
         searchGraph(onBackClick = navController::popBackStack)
 
         commentsGraph(onBackClick = navController::popBackStack)
+
+        favoritesGraph()
 
         propertyAdditionGraph(onBackClick = navController::popBackStack)
     }

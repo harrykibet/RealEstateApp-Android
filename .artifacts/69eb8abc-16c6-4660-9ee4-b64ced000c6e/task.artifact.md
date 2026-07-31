@@ -1,19 +1,6 @@
-- [x] Refactor `:feature:comments` navigation
-    - [x] Rename `CommentRoutes.kt` to `CommentsRoutes.kt`
-- [x] Refactor `:feature:home` navigation
-    - [x] Create `HomeRoutes.kt`
-    - [x] Update `HomeNavigation.kt`
-- [x] Refactor `:feature:favorites` navigation
-    - [x] Create `FavoritesRoutes.kt`
-    - [x] Update `FavoritesNavigation.kt`
-- [x] Refactor `:feature:profile` navigation
-    - [x] Create `ProfileRoutes.kt`
-    - [x] Update `ProfileNavigation.kt`
-- [x] Refactor `:feature:property` navigation
-    - [x] Create `PropertyRoutes.kt`
-    - [x] Update `PropertyNavigation.kt`
-- [x] Refactor `:feature:search` navigation
-    - [x] Create `SearchRoutes.kt`
-    - [x] Update `SearchNavigation.kt`
-- [x] Update cross-module references (if any)
+- [x] Fix Favorites Navigation
+    - [x] Update `FavoritesNavigation.kt` to use a nested graph
+- [x] Fix Places Initialization
+    - [x] Update `EstatiaApplication.kt` to initialize Places
+    - [x] Update `MapWithSearchBar.kt` to remove redundant initialization
 - [x] Verify build
