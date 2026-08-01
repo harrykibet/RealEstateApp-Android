@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.configuration
 
 import android.net.Uri
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.CdnSelector
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import javax.inject.Inject

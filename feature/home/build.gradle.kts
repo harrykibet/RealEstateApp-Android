@@ -9,12 +9,12 @@ android {
 dependencies {
 
     implementation(projects.core.model)
-    implementation(projects.core.domain)
+    implementation(projects.core.navigation)
     implementation(projects.core.playerUi)
-    implementation(projects.feature.comments)
-    implementation(projects.feature.property)
+    implementation(projects.core.playerEngine)
 
     implementation(libs.bundles.navigation)
+    implementation(libs.media3.common)
 
     implementation(libs.bundles.lifecycle)
 }

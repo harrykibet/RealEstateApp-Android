@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
-import com.estatia.realestate.apps.core.data.interfaces.DataExceptionMapper
+import com.estatia.realestate.apps.core.domain.interfaces.DataExceptionMapper
 import javax.inject.Inject
 
 class PropertyExceptionMapper @Inject constructor()

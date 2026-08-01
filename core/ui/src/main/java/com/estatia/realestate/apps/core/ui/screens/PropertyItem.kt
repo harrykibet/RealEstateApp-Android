@@ -2,10 +2,8 @@ package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -14,40 +12,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.DynamicAsyncImage
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
-import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
-import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
 
 
 @Composable
-private fun PropertyItem(
+fun PropertyItem(
     modifier: Modifier = Modifier,
     listing: ListingUiModel,
     imageUrls: List<String> = emptyList(), // Images are extra for full item
-    viewModel: VideoPlaybackViewModel = hiltViewModel(),
-    isActive: Boolean, // 👈 important for state overlays
+    playerUiState: PlayerUiState?,
     onLikeClick: (ListingUiModel) -> Unit,
     onCommentClick: (ListingUiModel) -> Unit,
-    onShareClick: (ListingUiModel) -> Unit
+    onShareClick: (ListingUiModel) -> Unit,
+    videoPlayerContent: @Composable () -> Unit
 ) {
-    // Collect player UI state only if active
-    val uiState = if (isActive) {
-        viewModel.uiState.collectAsState().value
-    } else null
-
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -57,12 +44,7 @@ private fun PropertyItem(
         // ------------------------
         val videoUrl = listing.videoUrl
         if (videoUrl != null) {
-            EngineVideoPlayer(
-                mediaId = videoUrl,
-                mediaType = MediaType.VOD,
-                modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel
-            )
+            videoPlayerContent()
         } else {
             ImagePager(imageUrls)
         }
@@ -70,7 +52,7 @@ private fun PropertyItem(
         // ------------------------
         // PLAYER UI OVERLAY
         // ------------------------
-        uiState?.let { state ->
+        playerUiState?.let { state ->
             when (state) {
 
                 PlayerUiState.Buffering -> {

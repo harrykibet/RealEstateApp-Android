@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 import javax.inject.Inject
 class DynamicBitratePolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils

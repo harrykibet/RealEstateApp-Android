@@ -13,9 +13,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,37 +24,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
+import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
+import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
+import com.estatia.realestate.apps.feature.home.ui.viewModels.playback.HomeVideoPlaybackViewModel
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.core.ui.screens.PropertyFeedItem
 import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
-import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
-import com.estatia.realestate.apps.feature.comments.ui.screens.CommentSheetContent
-import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
+import com.estatia.realestate.apps.core.ui.screens.RememberFeedPlaybackCoordinator
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(
         viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         },
     ),
+    playbackViewModel: HomeVideoPlaybackViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
+        commentsContent = commentsContent,
+        playbackViewModel = playbackViewModel,
+        onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
+        onShareClick = { /* TODO */ },
         onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
     )
 }
@@ -64,6 +72,10 @@ internal fun HomeRoute(
 internal fun HomeScreen(
     state: HomeUiState,
     onNavigateToPropertyDetail: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit,
+    playbackViewModel: HomeVideoPlaybackViewModel,
+    onLikeClick: (ListingUiModel) -> Unit,
+    onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
 ) {
     val listings = remember(state.properties) {
@@ -75,7 +87,11 @@ internal fun HomeScreen(
         isLoading = state.isLoading,
         error = state.error,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-        onRefresh = onRefresh
+        commentsContent = commentsContent,
+        playbackViewModel = playbackViewModel,
+        onLikeClick = onLikeClick,
+        onShareClick = onShareClick,
+        onRefresh = onRefresh,
     )
 }
 
@@ -85,12 +101,16 @@ internal fun HomeFeedContent(
     isLoading: Boolean,
     error: String?,
     onNavigateToPropertyDetail: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit,
+    playbackViewModel: HomeVideoPlaybackViewModel,
+    onLikeClick: (ListingUiModel) -> Unit,
+    onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLoading && listings.isEmpty()) {
             LoadingState(modifier = Modifier.align(Alignment.Center))
-        } else if (error != null && listings.isEmpty()) {
+        } else if ((error != null) && listings.isEmpty()) {
             ErrorState(
                 message = error,
                 onRetry = onRefresh,
@@ -104,20 +124,44 @@ internal fun HomeFeedContent(
         } else {
             PropertyFeedScreen(
                 listings = listings,
-                onLikeClick = { /* TODO */ },
-                onShareClick = { /* TODO */ },
-                onPropertyClick = { listing -> onNavigateToPropertyDetail(listing.id) },
-                commentsContent = { propertyId ->
-                    val commentsViewModel: CommentsViewModel = hiltViewModel()
-                    LaunchedEffect(propertyId) {
-                        commentsViewModel.onAction(CommentsAction.Load(propertyId))
-                    }
-                    val commentsState by commentsViewModel.state.collectAsState()
-                    CommentSheetContent(
-                        state = commentsState,
-                        onAction = commentsViewModel::onAction
+                playbackCoordinator = { pagerState, items ->
+                    RememberFeedPlaybackCoordinator(
+                        pagerState = pagerState,
+                        items = items,
+                        onPageVisible = playbackViewModel::onPageVisible
                     )
-                }
+                },
+                itemContent = { listing, isActive, onCommentClick ->
+                    val playerUiState by if (isActive) {
+                        playbackViewModel.uiState.collectAsStateWithLifecycle()
+                    } else {
+                        remember { mutableStateOf(null) }
+                    }
+
+                    PropertyFeedItem(
+                        listing = listing,
+                        playerUiState = playerUiState,
+                        onLikeClick = onLikeClick,
+                        onCommentClick = { onCommentClick(it.id) },
+                        onShareClick = onShareClick,
+                        videoPlayerContent = {
+                            val videoUrl = listing.videoUrl
+                            if (videoUrl != null) {
+                                EngineVideoPlayer(
+                                    mediaId = videoUrl,
+                                    mediaType = MediaType.VOD,
+                                    getPlayer = playbackViewModel::getPlayer,
+                                    onPause = { playbackViewModel.pause() },
+                                    isActive = playbackViewModel.isMediaActive(videoUrl),
+                                    modifier = Modifier.fillMaxSize(),
+                                    onClick = { onNavigateToPropertyDetail(listing.id) }
+                                )
+                            }
+                        },
+                        onClick = { onNavigateToPropertyDetail(it.id) }
+                    )
+                },
+                commentsContent = commentsContent,
             )
         }
     }
@@ -213,6 +257,10 @@ fun HomeLoadingPreview() {
                 isLoading = true,
                 error = null,
                 onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackViewModel = hiltViewModel(),
+                onLikeClick = {},
+                onShareClick = {},
                 onRefresh = {},
             )
         }
@@ -230,6 +278,10 @@ fun HomeEmptyPreview() {
                 isLoading = false,
                 error = null,
                 onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackViewModel = hiltViewModel(),
+                onLikeClick = {},
+                onShareClick = {},
                 onRefresh = {},
             )
         }
@@ -247,6 +299,10 @@ fun HomeErrorPreview() {
                 isLoading = false,
                 error = "Connection timeout. Please check your internet.",
                 onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackViewModel = hiltViewModel(),
+                onLikeClick = {},
+                onShareClick = {},
                 onRefresh = {},
             )
         }
@@ -276,6 +332,10 @@ fun HomeContentPreview() {
                 isLoading = false,
                 error = null,
                 onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackViewModel = hiltViewModel(),
+                onLikeClick = {},
+                onShareClick = {},
                 onRefresh = {},
             )
         }
@@ -298,12 +358,11 @@ fun ListingItemPreview() {
                 commentsCount = 45,
                 sharesCount = 12
             ),
-            viewModel = null,
-            isActive = true,
+            playerUiState = null,
             onLikeClick = {},
             onCommentClick = {},
             onShareClick = {},
-            onClick = {}
+            videoPlayerContent = {}
         )
     }
 }

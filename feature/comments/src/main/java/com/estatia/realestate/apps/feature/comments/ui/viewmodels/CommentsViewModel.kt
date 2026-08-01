@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val commentsRepository: CommentsRepository,
+    private val commentsRepository: ICommentsRepository,
     @param:Dispatcher(EstatiaDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -71,7 +71,7 @@ class CommentsViewModel @Inject constructor(
                             copy(
                                 isLoading = false,
                                 comments = result.data,
-                                error = null
+                                error = null,
                             )
                         }
                     }

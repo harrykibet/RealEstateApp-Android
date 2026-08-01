@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Loading
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Success
-import com.estatia.realestate.apps.core.data.repositories.UserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userDataRepository: UserRepository,
+    private val userDataRepository: IUserRepository,
 ) : ViewModel() {
     val settingsUiState: StateFlow<SettingsUiState> =
         userDataRepository.userData

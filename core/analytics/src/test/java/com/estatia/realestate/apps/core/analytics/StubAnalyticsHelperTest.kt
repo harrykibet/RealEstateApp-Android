@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.analytics
 
 import android.util.Log
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import io.mockk.coVerify

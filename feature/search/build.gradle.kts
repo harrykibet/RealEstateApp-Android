@@ -16,5 +16,9 @@ dependencies {
     implementation(projects.core.security)
     implementation(projects.core.model)
     implementation(projects.core.ui)
-    implementation(projects.feature.comments)
+    implementation(projects.core.navigation)
+    implementation(projects.core.playerUi)
+    implementation(projects.core.playerEngine)
+
+    implementation(libs.media3.common)
 }

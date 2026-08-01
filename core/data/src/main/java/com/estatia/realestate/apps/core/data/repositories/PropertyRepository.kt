@@ -2,14 +2,14 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.map
-import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.data.util.translatePropertyFailures
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyDraftMapper
 import com.estatia.realestate.apps.core.model.property.PropertyCursor

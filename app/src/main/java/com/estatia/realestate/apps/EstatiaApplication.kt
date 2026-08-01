@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps
 
 import android.app.Application
-import com.estatia.realestate.apps.core.config.repository.ConfigRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class EstatiaApplication : Application()  {
 
     @Inject
-    lateinit var config: ConfigRepository
+    lateinit var config: IConfigRepository
 
     override fun onCreate() {
         super.onCreate()

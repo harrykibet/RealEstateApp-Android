@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.feature
 
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 
 data class VideoItem(
     val mediaId: String,

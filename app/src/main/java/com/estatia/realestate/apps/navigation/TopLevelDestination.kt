@@ -3,15 +3,15 @@ package com.estatia.realestate.apps.navigation
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.estatia.realestate.apps.R
-import com.estatia.realestate.apps.feature.home.navigation.HomeRoute
-import com.estatia.realestate.apps.feature.profile.navigation.ProfileRoute
-import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesRoute
-import com.estatia.realestate.apps.feature.property.navigation.PropertyRoute
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
-import com.estatia.realestate.apps.feature.favorites.navigation.FavoritesBaseRoute
-import com.estatia.realestate.apps.feature.home.navigation.HomeBaseRoute
-import com.estatia.realestate.apps.feature.profile.navigation.ProfileBaseRoute
-import com.estatia.realestate.apps.feature.property.navigation.PropertyBaseRoute
+import com.estatia.realestate.apps.core.navigation.FavoritesBaseRoute
+import com.estatia.realestate.apps.core.navigation.FavoritesRoute
+import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
+import com.estatia.realestate.apps.core.navigation.HomeRoute
+import com.estatia.realestate.apps.core.navigation.ProfileBaseRoute
+import com.estatia.realestate.apps.core.navigation.ProfileRoute
+import com.estatia.realestate.apps.core.navigation.PropertyBaseRoute
+import com.estatia.realestate.apps.core.navigation.PropertyRoute
 import kotlin.reflect.KClass
 
 /**

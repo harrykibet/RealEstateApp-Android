@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -8,9 +8,9 @@ import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreCommentMapper
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.common.exceptions.CommentException
-import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.util.translateCommentFailures
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

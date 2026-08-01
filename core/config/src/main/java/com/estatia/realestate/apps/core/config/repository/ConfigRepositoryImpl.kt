@@ -1,11 +1,13 @@
 package com.estatia.realestate.apps.core.config.repository
 
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
-import com.estatia.realestate.apps.core.config.datasource.FirebaseRemoteConfigDataSource
-import com.estatia.realestate.apps.core.config.model.RemoteConfigModel
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -14,10 +16,10 @@ import javax.inject.Singleton
 @Singleton
 class ConfigRepositoryImpl @Inject constructor(
     private val assetSource: AssetConfigDataSource,
-    private val remoteSource: FirebaseRemoteConfigDataSource,
+    private val dataRepository: IConfigDataRepository,
     private val parser: ConfigParser,
     private val stateHolder: ConfigStateHolder
-) : ConfigRepository {
+) : IConfigRepository {
 
     override val configVersion = stateHolder.configVersion
 
@@ -66,13 +68,18 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun refresh() {
 
-        val remoteJson = remoteSource.fetch() ?: return
+        val result = dataRepository.fetchRemoteConfig()
+        
+        if (result is AppResult.Success<*>) {
+            val remoteJson = result.data as? String ?: return
 
-        val parsed = runCatching {
-            parser.parse(remoteJson)
-        }.getOrNull() ?: return
+            val parsedResult = runCatching {
+                parser.parse(remoteJson)
+            }
+            val parsed = parsedResult.getOrNull() ?: return
 
-        applyConfig(parsed)
+            applyConfig(parsed)
+        }
     }
 
     private fun applyConfig(config: RemoteConfigModel) {

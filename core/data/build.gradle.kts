@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(projects.core.model)
+    api(projects.core.domain)
     implementation(projects.core.datastore)
     implementation(projects.core.common)
     implementation(projects.core.database)

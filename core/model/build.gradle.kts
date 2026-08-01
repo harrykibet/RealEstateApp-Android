@@ -14,5 +14,4 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.kotlinx.serialization.json)
-    implementation(projects.core.domain)
 }

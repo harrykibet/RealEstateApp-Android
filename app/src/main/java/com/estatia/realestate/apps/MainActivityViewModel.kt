@@ -2,8 +2,8 @@ package com.estatia.realestate.apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand

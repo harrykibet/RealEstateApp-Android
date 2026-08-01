@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.repositories
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import javax.inject.Inject
 

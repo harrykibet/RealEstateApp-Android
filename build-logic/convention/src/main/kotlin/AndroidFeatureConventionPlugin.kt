@@ -18,7 +18,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         dependencies {
             "implementation"(project(":core:ui"))
             "implementation"(project(":core:common"))
-            "implementation"(project(":core:data"))
+            "implementation"(project(":core:domain"))
             "implementation"(project(":core:design-system"))
             "implementation"(libs.findLibrary("kotlinx.serialization.json").get())
         }

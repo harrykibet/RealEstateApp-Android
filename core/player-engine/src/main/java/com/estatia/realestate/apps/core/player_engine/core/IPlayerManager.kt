@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import kotlinx.coroutines.flow.StateFlow

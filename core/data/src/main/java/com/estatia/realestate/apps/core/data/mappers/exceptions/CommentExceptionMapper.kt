@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.mappers.exceptions
 import com.estatia.realestate.apps.core.common.exceptions.CommentException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
-import com.estatia.realestate.apps.core.data.interfaces.DataExceptionMapper
+import com.estatia.realestate.apps.core.domain.interfaces.DataExceptionMapper
 import javax.inject.Inject
 
 class CommentExceptionMapper @Inject constructor()

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network
 
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.config.repository.ConfigRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ServiceNames
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 class ApiKeyValidatorTest {
 
     private lateinit var logger: ILogger
-    private lateinit var config: ConfigRepository
+    private lateinit var config: IConfigRepository
     private lateinit var apiKeyValidator: IApiKeyValidator
 
     @BeforeAll

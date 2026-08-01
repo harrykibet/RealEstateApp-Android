@@ -4,7 +4,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

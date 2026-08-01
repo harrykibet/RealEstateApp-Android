@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.config.parser
 
-import com.estatia.realestate.apps.core.config.model.*
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.config.*
 import kotlinx.serialization.json.*
 
 // ConfigParser.kt

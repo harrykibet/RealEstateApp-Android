@@ -15,4 +15,5 @@ dependencies {
 
     implementation(projects.core.model)
     implementation(projects.core.common)
+    implementation(projects.core.navigation)
 }

@@ -12,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -26,24 +24,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
-import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
-import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
-
 
 @Composable
 fun PropertyFeedItem(
     listing: ListingUiModel,
-    viewModel: VideoPlaybackViewModel?,
-    isActive: Boolean,
+    playerUiState: PlayerUiState?,
     onLikeClick: (ListingUiModel) -> Unit,
     onCommentClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
+    videoPlayerContent: @Composable () -> Unit,
     onClick: (ListingUiModel) -> Unit = {}
 ) {
-    val uiState = if (isActive && viewModel != null) { viewModel.uiState.collectAsState().value } else { null }
     var totalDragAmount by remember { mutableFloatStateOf(0f) }
 
     Box(
@@ -68,31 +61,13 @@ fun PropertyFeedItem(
             .clickable { /* Toggle play/pause logic could go here */ }
     ) {
 
-        val videoUrl = listing.videoUrl
-        if (videoUrl != null && viewModel != null) {
-            EngineVideoPlayer(
-                mediaId = videoUrl,
-                mediaType = MediaType.VOD,
-                modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel
-            )
-        } else {
-            // Placeholder for preview or missing video
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                EstatiaText("Video Placeholder")
-            }
-        }
+        videoPlayerContent()
 
         // ---------------------------------------
         // Playback UI Overlay (ONLY if active)
         // ---------------------------------------
 
-        uiState?.let { state ->
+        playerUiState?.let { state ->
             when (state) {
 
                 PlayerUiState.Buffering -> {

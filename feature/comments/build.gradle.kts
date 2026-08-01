@@ -14,4 +14,5 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)
+    implementation(projects.core.navigation)
 }

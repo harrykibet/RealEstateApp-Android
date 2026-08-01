@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.estatia.realestate.apps.core.navigation.SettingsRoute
 import com.estatia.realestate.apps.feature.settings.SettingsScreen
 
 fun NavController.navigateToSettings(navOptions: NavOptions? = null) =

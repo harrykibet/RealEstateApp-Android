@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.MediaSource
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 
 /**
  * Abstraction over the entire streaming stack.

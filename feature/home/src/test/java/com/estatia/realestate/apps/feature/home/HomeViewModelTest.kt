@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.feature.home
 
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import io.mockk.coEvery

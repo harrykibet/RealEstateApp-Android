@@ -1,10 +1,11 @@
 package com.estatia.realestate.apps.core.config.repository
 
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
-import com.estatia.realestate.apps.core.config.datasource.FirebaseRemoteConfigDataSource
-import com.estatia.realestate.apps.core.config.model.RemoteConfigModel
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
+import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +19,7 @@ import org.junit.Test
 class ConfigRepositoryImplTest {
 
     private lateinit var assetSource: AssetConfigDataSource
-    private lateinit var remoteSource: FirebaseRemoteConfigDataSource
+    private lateinit var dataRepository: IConfigDataRepository
     private lateinit var parser: ConfigParser
     private lateinit var stateHolder: ConfigStateHolder
     private lateinit var repository: ConfigRepositoryImpl
@@ -35,10 +36,10 @@ class ConfigRepositoryImplTest {
     @Before
     fun setup() {
         assetSource = mockk()
-        remoteSource = mockk()
+        dataRepository = mockk()
         parser = mockk()
         stateHolder = mockk(relaxed = true)
-        repository = ConfigRepositoryImpl(assetSource, remoteSource, parser, stateHolder)
+        repository = ConfigRepositoryImpl(assetSource, dataRepository, parser, stateHolder)
     }
 
     @Test
@@ -46,7 +47,7 @@ class ConfigRepositoryImplTest {
         val assetJson = "{asset}"
         val remoteJson = "{remote}"
         coEvery { assetSource.loadDefaultConfig() } returns assetJson
-        coEvery { remoteSource.fetch() } returns remoteJson
+        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(remoteJson)
         every { parser.parse(any()) } returns mockConfig
 
         repository.initialize()
@@ -60,7 +61,7 @@ class ConfigRepositoryImplTest {
     @Test
     fun `refresh updates state when remote data is available`() = runTest {
         val remoteJson = "{remote}"
-        coEvery { remoteSource.fetch() } returns remoteJson
+        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(remoteJson)
         every { parser.parse(remoteJson) } returns mockConfig
 
         repository.refresh()

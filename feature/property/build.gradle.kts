@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.gson)
 
     implementation(projects.core.model)
+    implementation(projects.core.navigation)
     implementation(projects.core.testing)
 
     implementation(libs.play.services.location)

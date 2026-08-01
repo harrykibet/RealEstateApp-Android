@@ -7,13 +7,12 @@ import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.FeedNeighbor
-import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
 
 @Composable
 fun RememberFeedPlaybackCoordinator(
     pagerState: PagerState,
     items: List<ListingUiModel>,
-    viewModel: VideoPlaybackViewModel
+    onPageVisible: (FeedMediaContext) -> Unit
 ) {
     LaunchedEffect(pagerState.currentPage) {
 
@@ -42,7 +41,7 @@ fun RememberFeedPlaybackCoordinator(
             } else null
         }
 
-        viewModel.onPageVisible(
+        onPageVisible(
             FeedMediaContext(
                 mediaId = currentVideoUrl,
                 uri = currentVideoUrl.toUri(),

@@ -2,8 +2,8 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
-import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.data.util.translateUserFailures
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource

@@ -15,25 +15,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
 import com.estatia.realestate.apps.core.model.feature.VideoItem
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.FeedNeighbor
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
-import com.estatia.realestate.apps.core.player_ui.viewModels.VideoPlaybackViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun EngineVideoFeed(
     videos: List<VideoItem>,
-    modifier: Modifier = Modifier,
-    viewModel: VideoPlaybackViewModel = viewModel()
+    uiState: PlayerUiState,
+    onPageVisible: (FeedMediaContext) -> Unit,
+    videoPlayerContent: @Composable (VideoItem, Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     val pagerState = rememberPagerState(pageCount = { videos.size })
-    val uiState by viewModel.uiState.collectAsState()
 
     // Prevent duplicate dispatches
     var lastDispatchedPage by remember { mutableIntStateOf(-1) }
@@ -64,7 +62,7 @@ fun EngineVideoFeed(
                     )
                 }
 
-                viewModel.onPageVisible(
+                onPageVisible(
                     FeedMediaContext(
                         mediaId = video.mediaId,
                         uri = video.videoUrl.toUri(),
@@ -85,12 +83,7 @@ fun EngineVideoFeed(
 
         Box(modifier = Modifier.fillMaxSize()) {
 
-            EngineVideoPlayer(
-                mediaId = video.mediaId,
-                mediaType = MediaType.VOD,
-                modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel
-            )
+            videoPlayerContent(video, isActive)
 
             if (isActive) {
                 when (val state = uiState) {

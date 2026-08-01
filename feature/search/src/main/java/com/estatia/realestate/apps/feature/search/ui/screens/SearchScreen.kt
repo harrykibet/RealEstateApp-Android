@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,27 +41,36 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
+import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import com.estatia.realestate.apps.core.ui.DevicePreviews
+import com.estatia.realestate.apps.core.ui.screens.PropertyFeedItem
 import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
-import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
-import com.estatia.realestate.apps.feature.comments.ui.screens.CommentSheetContent
-import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
+import com.estatia.realestate.apps.core.ui.screens.RememberFeedPlaybackCoordinator
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import com.estatia.realestate.apps.feature.search.ui.viewmodels.SearchViewModel
+import com.estatia.realestate.apps.feature.search.ui.viewmodels.playback.SearchVideoPlaybackViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun SearchRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
+    playbackViewModel: SearchVideoPlaybackViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     SearchScreen(
         uiState = uiState,
         onSearch = viewModel::searchProperties,
         onClearHistory = viewModel::clearSearchHistory,
-        onNavigateToPropertyDetail = onNavigateToPropertyDetail
+        onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual state */ },
+        onNavigateToPropertyDetail = onNavigateToPropertyDetail,
+        commentsContent = commentsContent,
+        playbackViewModel = playbackViewModel
     )
 }
 
@@ -71,7 +79,10 @@ fun SearchScreen(
     uiState: SearchUiState,
     onSearch: (String) -> Unit,
     onClearHistory: () -> Unit,
-    onNavigateToPropertyDetail: (String) -> Unit
+    onLikeClick: (ListingUiModel) -> Unit,
+    onNavigateToPropertyDetail: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit,
+    playbackViewModel: SearchVideoPlaybackViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
@@ -134,20 +145,44 @@ fun SearchScreen(
                     } else {
                         PropertyFeedScreen(
                             listings = listings,
-                            onLikeClick = {},
-                            onShareClick = {},
-                            onPropertyClick = { onNavigateToPropertyDetail(it.id) },
-                            commentsContent = { propertyId ->
-                                val commentsViewModel: CommentsViewModel = hiltViewModel()
-                                LaunchedEffect(propertyId) {
-                                    commentsViewModel.onAction(CommentsAction.Load(propertyId))
-                                }
-                                val commentsState by commentsViewModel.state.collectAsState()
-                                CommentSheetContent(
-                                    state = commentsState,
-                                    onAction = commentsViewModel::onAction
+                            playbackCoordinator = { pagerState, items ->
+                                RememberFeedPlaybackCoordinator(
+                                    pagerState = pagerState,
+                                    items = items,
+                                    onPageVisible = playbackViewModel::onPageVisible
                                 )
-                            }
+                            },
+                            itemContent = { listing, isActive, onCommentClick ->
+                                val playerUiState by if (isActive) {
+                                    playbackViewModel.uiState.collectAsStateWithLifecycle()
+                                } else {
+                                    remember { mutableStateOf(null) }
+                                }
+
+                                PropertyFeedItem(
+                                    listing = listing,
+                                    playerUiState = playerUiState,
+                                    onLikeClick = onLikeClick,
+                                    onCommentClick = { onCommentClick(it.id) },
+                                    onShareClick = {},
+                                    videoPlayerContent = {
+                                        val videoUrl = listing.videoUrl
+                                        if (videoUrl != null) {
+                                            EngineVideoPlayer(
+                                                mediaId = videoUrl,
+                                                mediaType = MediaType.VOD,
+                                                getPlayer = playbackViewModel::getPlayer,
+                                                onPause = { playbackViewModel.pause() },
+                                                isActive = playbackViewModel.isMediaActive(videoUrl),
+                                                modifier = Modifier.fillMaxSize(),
+                                                onClick = { onNavigateToPropertyDetail(listing.id) }
+                                            )
+                                        }
+                                    },
+                                    onClick = { onNavigateToPropertyDetail(it.id) }
+                                )
+                            },
+                            commentsContent = commentsContent,
                         )
                     }
                 }
@@ -261,7 +296,10 @@ fun SearchScreenHistoryPreview() {
                 uiState = SearchUiState.History(listOf("Nairobi", "Apartment", "Westlands")),
                 onSearch = {},
                 onClearHistory = {},
+                onLikeClick = {},
                 onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackViewModel = hiltViewModel()
             )
         }
     }

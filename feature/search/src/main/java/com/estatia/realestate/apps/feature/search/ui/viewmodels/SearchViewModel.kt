@@ -3,7 +3,8 @@ package com.estatia.realestate.apps.feature.search.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,
+    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
@@ -68,6 +70,12 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchRepository.clearSearchHistory()
             _uiState.value = SearchUiState.History(emptyList())
+        }
+    }
+
+    fun toggleLike(propertyId: String, isCurrentlyLiked: Boolean) {
+        viewModelScope.launch {
+            togglePropertyLikeUseCase(propertyId, isCurrentlyLiked)
         }
     }
 }

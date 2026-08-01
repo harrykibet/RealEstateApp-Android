@@ -5,10 +5,27 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
+import com.estatia.realestate.apps.core.navigation.PropertyBaseRoute
+import com.estatia.realestate.apps.core.navigation.PropertyDetailRoute
+import com.estatia.realestate.apps.core.navigation.PropertyRoute
+import com.estatia.realestate.apps.feature.property.ui.screens.PropertyDetailsRoute
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyFormScreen
 
 fun NavController.navigateToPropertyForm(navOptions: NavOptions? = null) =
     navigate(route = PropertyRoute, navOptions)
+
+fun NavGraphBuilder.propertyDetailsScreen(
+    onBackClick: () -> Unit,
+) {
+    composable<PropertyDetailRoute> { backStackEntry ->
+        val route: PropertyDetailRoute = backStackEntry.toRoute()
+        PropertyDetailsRoute(
+            propertyId = route.propertyId,
+            onBackClick = onBackClick
+        )
+    }
+}
 
 fun NavGraphBuilder.propertyAdditionGraph(
     onBackClick: () -> Unit,

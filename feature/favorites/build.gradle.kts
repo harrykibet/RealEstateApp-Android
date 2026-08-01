@@ -15,7 +15,10 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.model)
-    implementation(projects.feature.comments)
     implementation(projects.core.ui)
-    implementation(projects.core.domain)
+    implementation(projects.core.navigation)
+    implementation(projects.core.playerUi)
+    implementation(projects.core.playerEngine)
+
+    implementation(libs.media3.common)
 }

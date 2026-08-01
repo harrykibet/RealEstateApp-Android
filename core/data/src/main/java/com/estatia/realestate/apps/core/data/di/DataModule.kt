@@ -1,17 +1,19 @@
 package com.estatia.realestate.apps.core.data.di
 
-import com.estatia.realestate.apps.core.data.interfaces.IAnalyticsTracker
-import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.interfaces.ICommentsRepository
-import com.estatia.realestate.apps.core.data.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.data.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.data.interfaces.ISecurityRepository
-import com.estatia.realestate.apps.core.data.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ISecurityRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.mappers.exceptions.ExceptionTranslator
 import com.estatia.realestate.apps.core.data.repositories.AnalyticsTracker
 import com.estatia.realestate.apps.core.data.repositories.AuthRepository
 import com.estatia.realestate.apps.core.data.repositories.CommentsRepository
+import com.estatia.realestate.apps.core.data.repositories.ConfigDataRepository
 import com.estatia.realestate.apps.core.data.repositories.PropertyRepository
 import com.estatia.realestate.apps.core.data.repositories.SearchRepository
 import com.estatia.realestate.apps.core.data.repositories.SecurityRepository
@@ -57,6 +59,10 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindUserRepo(repo: UserRepository): IUserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindConfigDataRepo(repo: ConfigDataRepository): IConfigDataRepository
 
     @Binds
     @Singleton

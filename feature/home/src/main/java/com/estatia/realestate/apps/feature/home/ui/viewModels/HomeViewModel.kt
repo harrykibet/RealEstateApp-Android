@@ -3,7 +3,8 @@ package com.estatia.realestate.apps.feature.home.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
-import com.estatia.realestate.apps.core.data.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,
+    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -64,4 +66,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun canLoadMore(): Boolean = canLoadMore
+
+    fun toggleLike(propertyId: String, isCurrentlyLiked: Boolean) {
+        viewModelScope.launch {
+            togglePropertyLikeUseCase(propertyId, isCurrentlyLiked)
+            // Ideally, we should update the UI state locally here or refresh the properties
+        }
+    }
 }

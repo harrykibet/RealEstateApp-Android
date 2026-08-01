@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.config.di
 
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
-import com.estatia.realestate.apps.core.config.repository.ConfigRepository
 import com.estatia.realestate.apps.core.config.repository.ConfigRepositoryImpl
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -19,7 +19,7 @@ abstract class ConfigModule {
     @Singleton
     abstract fun bindConfigRepository(
         impl: ConfigRepositoryImpl
-    ): ConfigRepository
+    ): IConfigRepository
 
     companion object {
 

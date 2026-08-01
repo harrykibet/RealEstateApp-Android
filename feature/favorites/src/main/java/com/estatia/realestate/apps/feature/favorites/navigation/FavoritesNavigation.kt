@@ -1,23 +1,27 @@
 package com.estatia.realestate.apps.feature.favorites.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.estatia.realestate.apps.feature.favorites.ui.screens.FavoritesScreen
+import com.estatia.realestate.apps.core.navigation.FavoritesBaseRoute
+import com.estatia.realestate.apps.core.navigation.FavoritesRoute
+import com.estatia.realestate.apps.feature.favorites.ui.screens.FavoritesRoute as FavoritesScreen
 
 fun NavController.navigateToFavorites(navOptions: NavOptions? = null) =
     navigate(FavoritesRoute, navOptions)
 
-fun NavGraphBuilder.favoritesGraph() {
+fun NavGraphBuilder.favoritesGraph(
+    onPropertyClick: (String) -> Unit,
+    commentsContent: @Composable (propertyId: String) -> Unit
+) {
     navigation<FavoritesBaseRoute>(startDestination = FavoritesRoute) {
         composable<FavoritesRoute> {
             FavoritesScreen(
-                favoriteProperties = emptyList(),
-                onLikeClick = {},
-                onShareClick = {},
-                onPropertyClick = {},
+                onPropertyClick = onPropertyClick,
+                commentsContent = commentsContent
             )
         }
     }

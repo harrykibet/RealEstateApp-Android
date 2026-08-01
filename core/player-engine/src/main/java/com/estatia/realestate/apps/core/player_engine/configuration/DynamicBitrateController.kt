@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.configuration
 
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitratePolicy
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import javax.inject.Inject

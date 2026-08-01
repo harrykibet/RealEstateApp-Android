@@ -25,7 +25,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.estatia.realestate.apps.MainActivityViewModel.MainActivityUiState.Loading
 import com.estatia.realestate.apps.core.analytics.AnalyticsHelper
-import com.estatia.realestate.apps.core.data.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint

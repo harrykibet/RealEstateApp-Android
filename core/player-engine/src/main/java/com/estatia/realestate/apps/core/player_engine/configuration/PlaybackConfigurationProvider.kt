@@ -5,7 +5,7 @@ import androidx.media3.exoplayer.DefaultLivePlaybackSpeedControl
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LivePlaybackSpeedControl
 import androidx.media3.exoplayer.LoadControl
-import com.estatia.realestate.apps.core.domain.interfaces.MediaType
+import com.estatia.realestate.apps.core.model.property.MediaType
 import javax.inject.Inject
 
 @UnstableApi
