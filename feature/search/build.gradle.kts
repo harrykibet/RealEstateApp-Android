@@ -14,9 +14,6 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(projects.core.security)
-    implementation(projects.core.model)
-    implementation(projects.core.ui)
-    implementation(projects.core.navigation)
     implementation(projects.core.playerUi)
     implementation(projects.core.playerEngine)
 

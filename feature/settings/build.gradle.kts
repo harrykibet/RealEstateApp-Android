@@ -10,7 +10,4 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-
-    implementation(projects.core.model)
-    implementation(projects.core.navigation)
 }

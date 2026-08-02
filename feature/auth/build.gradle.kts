@@ -12,8 +12,4 @@ dependencies {
     implementation(libs.google.id)
 
     implementation(libs.bundles.navigation)
-
-    implementation(projects.core.model)
-    implementation(projects.core.common)
-    implementation(projects.core.navigation)
 }

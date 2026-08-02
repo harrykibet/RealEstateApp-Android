@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSour
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.FirestoreAnalytics
 import com.estatia.realestate.apps.core.network.sources.FirebaseAuthService
-import com.estatia.realestate.apps.core.network.sources.FirebaseConfigRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.FirebaseConfig
 import com.estatia.realestate.apps.core.network.sources.FirestoreComments
 import com.estatia.realestate.apps.core.network.sources.FirestoreProperties
 import com.estatia.realestate.apps.core.network.sources.FirestoreSearch
@@ -59,5 +59,5 @@ abstract class DataSourcesModule {
     @Binds
     @Singleton
     abstract fun bindConfigRemoteDataSource(
-        dataSource: FirebaseConfigRemoteDataSource): IConfigRemoteDataSource
+        dataSource: FirebaseConfig): IConfigRemoteDataSource
 }

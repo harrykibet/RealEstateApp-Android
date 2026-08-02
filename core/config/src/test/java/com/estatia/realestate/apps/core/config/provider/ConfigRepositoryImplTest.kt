@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.config.repository
+package com.estatia.realestate.apps.core.config.provider
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
@@ -22,7 +22,7 @@ class ConfigRepositoryImplTest {
     private lateinit var dataRepository: IConfigDataRepository
     private lateinit var parser: ConfigParser
     private lateinit var stateHolder: ConfigStateHolder
-    private lateinit var repository: ConfigRepositoryImpl
+    private lateinit var repository: ConfigProvider
 
     private val mockConfig = mockk<RemoteConfigModel>(relaxed = true) {
         every { keyPatterns.google } returns "google-regex"
@@ -39,7 +39,7 @@ class ConfigRepositoryImplTest {
         dataRepository = mockk()
         parser = mockk()
         stateHolder = mockk(relaxed = true)
-        repository = ConfigRepositoryImpl(assetSource, dataRepository, parser, stateHolder)
+        repository = ConfigProvider(assetSource, dataRepository, parser, stateHolder)
     }
 
     @Test

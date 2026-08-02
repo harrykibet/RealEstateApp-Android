@@ -13,6 +13,5 @@ dependencies {
 
     implementation(libs.bundles.navigation)
 
-    implementation(projects.core.navigation)
     implementation(libs.eventbus)
 }

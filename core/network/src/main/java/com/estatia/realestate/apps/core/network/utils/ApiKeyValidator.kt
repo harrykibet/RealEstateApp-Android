@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import javax.inject.Inject
@@ -16,12 +16,12 @@ import javax.inject.Singleton
  * and provides sanitization for logging purposes to prevent exposing sensitive information.
  *
  * @property logger An instance of [ILogger] for logging validation results and errors.
- * @property config An instance of [IConfigRepository] for retrieving API key patterns from remote config.
+ * @property config An instance of [IConfigProvider] for retrieving API key patterns from remote config.
  */
 @Singleton
 class ApiKeyValidator @Inject constructor(
     private val logger: ILogger,
-    private val config: IConfigRepository,
+    private val config: IConfigProvider,
 ) : IApiKeyValidator {
 
     private val googleKeyPattern: Regex
@@ -35,10 +35,8 @@ class ApiKeyValidator @Inject constructor(
 
     private val servicePatterns: Map<ServiceNames, Regex>
         get() = mapOf(
-            ServiceNames.MAPS to googleKeyPattern,
-            ServiceNames.PLACES to googleKeyPattern,
             ServiceNames.PAYMENTS to paymentsKeyPattern,
-            ServiceNames.AUTH to googleKeyPattern
+            ServiceNames.AUTH to googleKeyPattern,
         )
 
     override fun validate(apiKey: String, service: ServiceNames?) {

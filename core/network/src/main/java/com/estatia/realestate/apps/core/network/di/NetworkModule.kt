@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
@@ -130,7 +130,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        config: IConfigRepository
+        config: IConfigProvider
     ): Retrofit {
 
         val baseUrl = config.baseUrl

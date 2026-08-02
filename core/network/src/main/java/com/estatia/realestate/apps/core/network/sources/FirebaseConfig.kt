@@ -7,7 +7,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseConfigRemoteDataSource @Inject constructor(
+class FirebaseConfig @Inject constructor(
     private val remoteConfig: FirebaseRemoteConfig,
     private val networkClient: INetworkClient
 ) : IConfigRemoteDataSource {

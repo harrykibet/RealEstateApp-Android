@@ -8,8 +8,6 @@ android {
 
 dependencies {
 
-    implementation(projects.core.model)
-    implementation(projects.core.navigation)
     implementation(projects.core.playerUi)
     implementation(projects.core.playerEngine)
 

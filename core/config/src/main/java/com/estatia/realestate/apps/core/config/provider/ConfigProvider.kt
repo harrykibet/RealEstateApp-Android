@@ -1,11 +1,11 @@
-package com.estatia.realestate.apps.core.config.repository
+package com.estatia.realestate.apps.core.config.provider
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +14,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ConfigRepositoryImpl @Inject constructor(
+class ConfigProvider @Inject constructor(
     private val assetSource: AssetConfigDataSource,
     private val dataRepository: IConfigDataRepository,
     private val parser: ConfigParser,
     private val stateHolder: ConfigStateHolder
-) : IConfigRepository {
+) : IConfigProvider {
 
     override val configVersion = stateHolder.configVersion
 

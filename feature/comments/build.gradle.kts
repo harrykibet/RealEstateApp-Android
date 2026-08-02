@@ -12,7 +12,4 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.bundles.navigation)
-
-    implementation(projects.core.model)
-    implementation(projects.core.navigation)
 }

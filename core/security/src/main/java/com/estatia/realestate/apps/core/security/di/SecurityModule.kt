@@ -8,12 +8,12 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.security.BuildConfigApiKeyProvider
+import com.estatia.realestate.apps.core.security.BuildConfigSecureKeyProvider
 import com.estatia.realestate.apps.core.security.TokenLocalDataSource
 import com.estatia.realestate.apps.core.security.crypto.AesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.crypto.RsaCryptoEngine
 import com.estatia.realestate.apps.core.security.crypto.SignatureManager
-import com.estatia.realestate.apps.core.security.interfaces.ApiKeyProvider
+import com.estatia.realestate.apps.core.security.interfaces.SecureKeyProvider
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.IRsaCryptoEngine
@@ -47,7 +47,7 @@ abstract class SecurityModule {
     @Binds
     @Singleton
     @Suppress("unused")
-    abstract fun bindApiKeyProvider(impl: BuildConfigApiKeyProvider): ApiKeyProvider
+    abstract fun bindSecureKeyProvider(impl: BuildConfigSecureKeyProvider): SecureKeyProvider
 
     @Binds
     @Singleton

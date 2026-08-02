@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.domain.interfaces
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import kotlinx.coroutines.flow.StateFlow
 
-interface IConfigRepository {
+interface IConfigProvider {
 
     val isInitialized: Boolean
 
