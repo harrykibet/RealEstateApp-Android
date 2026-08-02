@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(projects.core.common)
+    implementation(projects.core.model)
 
     implementation(libs.bundles.bouncy)
 }

@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSo
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.FirestoreAnalytics
 import com.estatia.realestate.apps.core.network.sources.FirebaseAuthService
@@ -14,6 +15,7 @@ import com.estatia.realestate.apps.core.network.sources.FirestoreComments
 import com.estatia.realestate.apps.core.network.sources.FirestoreProperties
 import com.estatia.realestate.apps.core.network.sources.FirestoreSearch
 import com.estatia.realestate.apps.core.network.sources.FirestoreUsers
+import com.estatia.realestate.apps.core.network.sources.SecretRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -60,4 +62,9 @@ abstract class DataSourcesModule {
     @Singleton
     abstract fun bindConfigRemoteDataSource(
         dataSource: FirebaseConfig): IConfigRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindSecretRemoteSource(
+        dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
 }

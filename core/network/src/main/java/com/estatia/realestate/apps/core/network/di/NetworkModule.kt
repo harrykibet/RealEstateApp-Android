@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
@@ -142,5 +143,11 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSecretApi(retrofit: Retrofit): SecretApi {
+        return retrofit.create(SecretApi::class.java)
     }
 }

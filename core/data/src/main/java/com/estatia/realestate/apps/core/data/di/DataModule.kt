@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.domain.interfaces.ISecurityRepository
+import com.estatia.realestate.apps.core.domain.interfaces.ISecretRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.mappers.exceptions.ExceptionTranslator
 import com.estatia.realestate.apps.core.data.repositories.AnalyticsTracker
@@ -17,6 +18,7 @@ import com.estatia.realestate.apps.core.data.repositories.ConfigDataRepository
 import com.estatia.realestate.apps.core.data.repositories.PropertyRepository
 import com.estatia.realestate.apps.core.data.repositories.SearchRepository
 import com.estatia.realestate.apps.core.data.repositories.SecurityRepository
+import com.estatia.realestate.apps.core.data.repositories.SecretRepository
 import com.estatia.realestate.apps.core.data.repositories.UserRepository
 import com.estatia.realestate.apps.core.data.util.TimeZoneBroadcastMonitor
 import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
@@ -55,6 +57,10 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindSecurityRepo(securityRepository: SecurityRepository) : ISecurityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSecretRepo(repository: SecretRepository) : ISecretRepository
 
     @Binds
     @Singleton
