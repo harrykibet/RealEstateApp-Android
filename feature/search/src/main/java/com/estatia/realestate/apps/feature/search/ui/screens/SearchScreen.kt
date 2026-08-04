@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun SearchRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
     playbackViewModel: SearchVideoPlaybackViewModel = hiltViewModel(),
 ) {
@@ -70,7 +76,8 @@ fun SearchRoute(
         onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual state */ },
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
-        playbackViewModel = playbackViewModel
+        playbackViewModel = playbackViewModel,
+        modifier = modifier
     )
 }
 
@@ -82,11 +89,13 @@ fun SearchScreen(
     onLikeClick: (ListingUiModel) -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
-    playbackViewModel: SearchVideoPlaybackViewModel
+    playbackViewModel: SearchVideoPlaybackViewModel,
+    modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
+        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
         topBar = {
             Box(
                 modifier = Modifier

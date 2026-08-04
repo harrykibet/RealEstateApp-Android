@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.feature.home
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import io.mockk.coEvery
@@ -22,6 +23,8 @@ import org.junit.Test
 class HomeViewModelTest {
 
     private lateinit var propertyRepository: IPropertyRepository
+
+    private lateinit var togglePropertyLikeUseCase: TogglePropertyLikeUseCase
     private lateinit var viewModel: HomeViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -29,7 +32,7 @@ class HomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         propertyRepository = mockk()
-        viewModel = HomeViewModel(propertyRepository)
+        viewModel = HomeViewModel(propertyRepository, togglePropertyLikeUseCase)
     }
 
     @After
