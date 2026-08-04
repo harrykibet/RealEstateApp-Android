@@ -76,6 +76,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Ensure the uiState is collected so the flow starts emitting Success
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {}
+            }
+        }
+
         splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.shouldKeepSplashScreen() }
 
         setContent {

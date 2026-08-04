@@ -66,7 +66,7 @@ fun EstatiaTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview("Top App Bar")
 @Composable
-private fun ReaTopAppBarPreview() {
+private fun EstatiaTopAppBarPreview() {
     EstatiaTheme {
         EstatiaTopAppBar(
             titleRes = android.R.string.untitled,
