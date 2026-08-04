@@ -133,48 +133,16 @@ annotation class ThemePreviews
 
 @ThemePreviews
 @Composable
-fun BackgroundDefault() {
-    EstatiaTheme(disableDynamicTheming = true) {
+fun BackgroundPreview() {
+    EstatiaTheme {
         EstatiaBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @ThemePreviews
 @Composable
-fun BackgroundDynamic() {
-    EstatiaTheme(disableDynamicTheming = false) {
-        EstatiaBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun BackgroundAndroid() {
-    EstatiaTheme(androidTheme = true) {
-        EstatiaBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundDefault() {
-    EstatiaTheme(disableDynamicTheming = true) {
-        EstatiaGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundDynamic() {
-    EstatiaTheme(disableDynamicTheming = false) {
-        EstatiaGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundAndroid() {
-    EstatiaTheme(androidTheme = true) {
+fun GradientBackgroundPreview() {
+    EstatiaTheme {
         EstatiaGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

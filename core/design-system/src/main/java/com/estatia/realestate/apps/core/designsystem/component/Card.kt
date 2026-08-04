@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +16,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
+/**
+ * Estatia section card.
+ * Professionalized with [EstatiaCardDefaults.CardCornerRadius] and a subtle border for a modern flat look.
+ */
 @Composable
 fun EstatiaSectionCard(
     title: String,
@@ -28,18 +32,21 @@ fun EstatiaSectionCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(EstatiaCardDefaults.CardCornerRadius),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             EstatiaText(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
             content()
         }
@@ -59,27 +66,18 @@ fun EstatiaSectionCardLightPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            EstatiaSectionCard(title = "Basic Details") {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.padding(16.dp)) {
+                EstatiaSectionCard(title = "Basic Details") {
                     EstatiaTextField(
-                        value = "",
+                        value = "Luxury Villa",
                         onValueChange = {},
-                        label = "Title",
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        label = "Title"
                     )
                     Spacer(Modifier.height(16.dp))
                     EstatiaTextField(
-                        value = "",
+                        value = "A beautiful sunset villa...",
                         onValueChange = {},
-                        label = "Description",
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    EstatiaTextField(
-                        value = "",
-                        onValueChange = {},
-                        label = "Price",
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        label = "Description"
                     )
                 }
             }
@@ -100,27 +98,18 @@ fun EstatiaSectionCardDarkPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            EstatiaSectionCard(title = "Basic Details") {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.padding(16.dp)) {
+                EstatiaSectionCard(title = "Basic Details") {
                     EstatiaTextField(
-                        value = "",
+                        value = "Luxury Villa",
                         onValueChange = {},
-                        label = "Title",
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        label = "Title"
                     )
                     Spacer(Modifier.height(16.dp))
                     EstatiaTextField(
-                        value = "",
+                        value = "A beautiful sunset villa...",
                         onValueChange = {},
-                        label = "Description",
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    EstatiaTextField(
-                        value = "",
-                        onValueChange = {},
-                        label = "Price",
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        label = "Description"
                     )
                 }
             }
@@ -128,3 +117,6 @@ fun EstatiaSectionCardDarkPreview() {
     }
 }
 
+object EstatiaCardDefaults {
+    val CardCornerRadius = 12.dp
+}

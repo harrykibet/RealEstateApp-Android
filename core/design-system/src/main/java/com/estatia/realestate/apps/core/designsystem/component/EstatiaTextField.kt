@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +32,11 @@ import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 
+/**
+ * Estatia text field component.
+ * Professionalized with a flat, modern design, consistent [EstatiaTextFieldDefaults.TextFieldCornerRadius],
+ * and a subtle background fill.
+ */
 @Composable
 fun EstatiaTextField(
     value: String,
@@ -49,54 +54,45 @@ fun EstatiaTextField(
     else
         VisualTransformation.None
 
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(EstatiaTextFieldDefaults.TextFieldCornerRadius)
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(4.dp, shape),
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { EstatiaText(label) },
+        singleLine = singleLine,
         shape = shape,
-        tonalElevation = 4.dp,
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { EstatiaText(label, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-            singleLine = singleLine,
-            shape = shape,
-            keyboardOptions = keyboardOptions,
-            visualTransformation = visualTransformation,
-            trailingIcon = {
-                if (isPassword) {
-                    val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible) "Hide password" else "Show password"
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        trailingIcon = {
+            if (isPassword) {
+                val image = if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff
+                val description = if (passwordVisible) "Hide password" else "Show password"
 
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = description)
-                    }
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, contentDescription = description)
                 }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
 
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
 
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = Color.Transparent, // Flat look
+            disabledIndicatorColor = Color.Transparent,
 
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 @Preview(
@@ -162,4 +158,6 @@ private fun TextFieldPreviewContent() {
     }
 }
 
-
+object EstatiaTextFieldDefaults {
+    val TextFieldCornerRadius = 12.dp
+}

@@ -17,7 +17,6 @@ import androidx.navigation.navOptions
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.ui.screens.CommentSheetContent
 import com.estatia.realestate.apps.feature.comments.ui.viewmodels.CommentsViewModel
-import com.estatia.realestate.apps.feature.favorites.navigation.favoritesGraph
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
 import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionGraph
@@ -93,23 +92,6 @@ fun EstatiaNavHost(
         searchGraph(
             onBackClick = navController::popBackStack,
             onNavigateToPropertyDetail = navController::navigateToPropertyDetail,
-            commentsContent = { propertyId ->
-                val commentsViewModel: CommentsViewModel = hiltViewModel()
-                LaunchedEffect(propertyId) {
-                    commentsViewModel.onAction(CommentsAction.Load(propertyId))
-                }
-                val commentsState by commentsViewModel.state.collectAsState()
-                CommentSheetContent(
-                    state = commentsState,
-                    onAction = commentsViewModel::onAction
-                )
-            }
-        )
-
-        favoritesGraph(
-            onPropertyClick = { propertyId ->
-                navController.navigateToPropertyDetail(propertyId)
-            },
             commentsContent = { propertyId ->
                 val commentsViewModel: CommentsViewModel = hiltViewModel()
                 LaunchedEffect(propertyId) {

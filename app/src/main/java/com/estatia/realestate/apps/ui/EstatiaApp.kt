@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
@@ -35,6 +34,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.ui.DevicePreviews
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -59,8 +61,49 @@ fun EstatiaApp(
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
+    val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+    val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
+        .collectAsStateWithLifecycle()
+    val isUserAuthenticated by appState.isUserAuthenticated.collectAsStateWithLifecycle()
+    val currentDestination = appState.currentDestination
+
+    EstatiaAppContent(
+        isOffline = isOffline,
+        unreadDestinations = unreadDestinations,
+        isUserAuthenticated = isUserAuthenticated,
+        currentDestination = currentDestination,
+        currentTopLevelDestination = appState.currentTopLevelDestination,
+        windowAdaptiveInfo = windowAdaptiveInfo,
+        onNavigateToTopLevelDestination = appState::navigateToTopLevelDestination,
+        onNavigateToSearch = appState::navigateToSearch,
+        modifier = modifier,
+    ) {
+        EstatiaNavHost(
+            appState = appState,
+            isUserAuthenticated = isUserAuthenticated,
+        )
+    }
+}
+
+@Composable
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalComposeUiApi::class,
+)
+internal fun EstatiaAppContent(
+    isOffline: Boolean,
+    unreadDestinations: Set<TopLevelDestination>,
+    isUserAuthenticated: Boolean?,
+    currentDestination: NavDestination?,
+    currentTopLevelDestination: TopLevelDestination?,
+    windowAdaptiveInfo: WindowAdaptiveInfo,
+    onNavigateToTopLevelDestination: (TopLevelDestination) -> Unit,
+    onNavigateToSearch: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
     val shouldShowGradientBackground =
-        appState.currentTopLevelDestination == TopLevelDestination.HOME
+        currentTopLevelDestination == TopLevelDestination.HOME
 
     EstatiaBackground(modifier = modifier) {
         EstatiaGradientBackground(
@@ -71,8 +114,6 @@ fun EstatiaApp(
             },
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
-
-            val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
             // If user is not connected to the internet show a snack bar to inform them.
             val notConnectedMessage = stringResource(R.string.not_connected)
@@ -85,127 +126,88 @@ fun EstatiaApp(
                 }
             }
 
-            EstatiaApp(
-                appState = appState,
-                snackbarHostState = snackbarHostState,
+            // If auth state is loading, don't show anything (Splash screen is likely still visible)
+            if (isUserAuthenticated == null) return@EstatiaGradientBackground
+
+            val notificationDotColor = MaterialTheme.colorScheme.tertiary
+
+            EstatiaNavigationSuiteScaffold(
+                navigationSuiteItems = {
+                    if (isUserAuthenticated) {
+                        TopLevelDestination.entries.forEach { destination ->
+                            val hasUnread = unreadDestinations.contains(destination)
+                            val selected = currentDestination
+                                .isRouteInHierarchy(destination.baseRoute)
+                            item(
+                                selected = selected,
+                                onClick = { onNavigateToTopLevelDestination(destination) },
+                                icon = destination.unselectedIcon,
+                                selectedIcon = destination.selectedIcon,
+                                label = { EstatiaText(stringResource(destination.iconTextId)) },
+                                modifier =
+                                Modifier
+                                    .testTag("EstatiaNavItem")
+                                    .then(
+                                        if (hasUnread) {
+                                            Modifier.notificationDot(notificationDotColor)
+                                        } else {
+                                            Modifier
+                                        },
+                                    ),
+                            )
+                        }
+                    }
+                },
                 windowAdaptiveInfo = windowAdaptiveInfo,
-            )
-        }
-    }
-}
-
-@Composable
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class,
-)
-internal fun EstatiaApp(
-    appState: EstatiaAppState,
-    snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
-) {
-    val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
-        .collectAsStateWithLifecycle()
-
-    val isUserAuthenticated by appState.isUserAuthenticated.collectAsStateWithLifecycle()
-
-    // If auth state is loading, don't show anything (Splash screen is likely still visible)
-    if (isUserAuthenticated == null) return
-
-    val currentDestination = appState.currentDestination
-
-    val notificationDotColor = MaterialTheme.colorScheme.tertiary
-
-    EstatiaNavigationSuiteScaffold(
-        navigationSuiteItems = {
-            if (isUserAuthenticated == true) {
-                appState.topLevelDestinations.forEach { destination ->
-                    val hasUnread = unreadDestinations.contains(destination)
-                    val selected = currentDestination
-                        .isRouteInHierarchy(destination.baseRoute)
-                    item(
-                        selected = selected,
-                        onClick = { appState.navigateToTopLevelDestination(destination) },
-                        icon = {
-                            Icon(
-                                imageVector = destination.unselectedIcon,
-                                contentDescription = null,
-                            )
-                        },
-                        selectedIcon = {
-                            Icon(
-                                imageVector = destination.selectedIcon,
-                                contentDescription = null,
-                            )
-                        },
-                        label = { EstatiaText(stringResource(destination.iconTextId)) },
-                        modifier =
-                        Modifier
-                            .testTag("EstatiaNavItem")
-                            .then(
-                                if (hasUnread) {
-                                    Modifier.notificationDot(notificationDotColor)
-                                } else {
-                                    Modifier
-                                },
-                            ),
-                    )
-                }
-            }
-        },
-        windowAdaptiveInfo = windowAdaptiveInfo,
-        layoutType = if (isUserAuthenticated == true) {
-            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
-        } else {
-            NavigationSuiteType.None
-        },
-    ) {
-        Scaffold(
-            modifier = modifier.semantics {
-                testTagsAsResourceId = true
-            },
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            snackbarHost = {
-                SnackbarHost(
-                    snackbarHostState,
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
-                )
-            },
-        ) { padding ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(
-                            WindowInsetsSides.Horizontal,
-                        ),
-                    ),
+                layoutType = if (isUserAuthenticated) {
+                    NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
+                } else {
+                    NavigationSuiteType.None
+                },
             ) {
-                EstatiaNavHost(
-                    appState = appState,
-                    isUserAuthenticated = isUserAuthenticated,
-                )
+                Scaffold(
+                    modifier = Modifier.semantics {
+                        testTagsAsResourceId = true
+                    },
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    snackbarHost = {
+                        SnackbarHost(
+                            snackbarHostState,
+                            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+                        )
+                    },
+                ) { padding ->
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .consumeWindowInsets(padding)
+                            .windowInsetsPadding(
+                                WindowInsets.safeDrawing.only(
+                                    WindowInsetsSides.Horizontal,
+                                ),
+                            ),
+                    ) {
+                        content()
 
-                val destination = appState.currentTopLevelDestination
-                if (destination != null && destination.showSearch) {
-                    EstatiaTopAppBar(
-                        modifier = Modifier.windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
-                        ),
-                        navigationIcon = EstatiaIcons.Search,
-                        navigationIconContentDescription = stringResource(
-                            id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
-                        ),
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                        ),
-                        onNavigationClick = { appState.navigateToSearch() },
-                    )
+                        if (currentTopLevelDestination != null && currentTopLevelDestination.showSearch) {
+                            EstatiaTopAppBar(
+                                modifier = Modifier.windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
+                                ),
+                                navigationIcon = EstatiaIcons.Search,
+                                navigationIconContentDescription = stringResource(
+                                    id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
+                                ),
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = Color.Transparent,
+                                ),
+                                onNavigationClick = onNavigateToSearch,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -232,3 +234,78 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {
         it.hasRoute(route)
     } ?: false
+
+@DevicePreviews
+@Composable
+fun EstatiaAppPreviewAuthenticated() {
+    EstatiaTheme {
+        EstatiaAppContent(
+            isOffline = false,
+            unreadDestinations = setOf(TopLevelDestination.HOME),
+            isUserAuthenticated = true,
+            currentDestination = null,
+            currentTopLevelDestination = TopLevelDestination.HOME,
+            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            onNavigateToTopLevelDestination = {},
+            onNavigateToSearch = {},
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            ) {
+                EstatiaText("Authenticated Content")
+            }
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+fun EstatiaAppPreviewUnauthenticated() {
+    EstatiaTheme {
+        EstatiaAppContent(
+            isOffline = false,
+            unreadDestinations = emptySet(),
+            isUserAuthenticated = false,
+            currentDestination = null,
+            currentTopLevelDestination = null,
+            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            onNavigateToTopLevelDestination = {},
+            onNavigateToSearch = {},
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            ) {
+                EstatiaText("Unauthenticated Content (Login)")
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun EstatiaAppPreviewOffline() {
+    EstatiaTheme {
+        EstatiaAppContent(
+            isOffline = true,
+            unreadDestinations = emptySet(),
+            isUserAuthenticated = true,
+            currentDestination = null,
+            currentTopLevelDestination = TopLevelDestination.HOME,
+            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            onNavigateToTopLevelDestination = {},
+            onNavigateToSearch = {},
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            ) {
+                EstatiaText("Offline Content")
+            }
+        }
+    }
+}

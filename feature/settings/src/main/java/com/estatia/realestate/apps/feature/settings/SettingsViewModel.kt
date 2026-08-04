@@ -2,8 +2,6 @@ package com.estatia.realestate.apps.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
-import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Loading
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Success
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
@@ -12,7 +10,6 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -22,13 +19,9 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
     val settingsUiState: StateFlow<SettingsUiState> =
         userDataRepository.userData
-            .map { userData ->
+            .map { _ ->
                 Success(
-                    settings = UserEditableSettings(
-                        brand = userData.themeBrand,
-                        useDynamicColor = userData.useDynamicColor,
-                        darkThemeConfig = userData.darkThemeConfig,
-                    ),
+                    settings = UserEditableSettings(),
                 )
             }
             .stateIn(
@@ -36,34 +29,12 @@ class SettingsViewModel @Inject constructor(
                 started = WhileSubscribed(5.seconds.inWholeMilliseconds),
                 initialValue = Loading,
             )
-
-    fun updateThemeBrand(themeBrand: ThemeBrand) {
-        viewModelScope.launch {
-            userDataRepository.setThemeBrand(themeBrand)
-        }
-    }
-
-    fun updateDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
-        viewModelScope.launch {
-            userDataRepository.setDarkThemeConfig(darkThemeConfig)
-        }
-    }
-
-    fun updateDynamicColorPreference(useDynamicColor: Boolean) {
-        viewModelScope.launch {
-            userDataRepository.setDynamicColorPreference(useDynamicColor)
-        }
-    }
 }
 
 /**
  * Represents the settings which the user can edit within the app.
  */
-data class UserEditableSettings(
-    val brand: ThemeBrand,
-    val useDynamicColor: Boolean,
-    val darkThemeConfig: DarkThemeConfig,
-)
+class UserEditableSettings
 
 sealed interface SettingsUiState {
     data object Loading : SettingsUiState

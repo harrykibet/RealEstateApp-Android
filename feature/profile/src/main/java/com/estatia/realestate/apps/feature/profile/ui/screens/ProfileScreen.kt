@@ -63,7 +63,7 @@ fun ProfileScreen(
     onSettingsClick: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("My Listings", "Saved", "Reviews")
+    val tabs = listOf("My Listings", "Favorites", "Reviews")
 
     Box(modifier = modifier.fillMaxSize()) {
         IconButton(
