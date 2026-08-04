@@ -45,6 +45,7 @@ import com.estatia.realestate.apps.core.ui.TrackScreenViewEvent
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
+    onLogoutClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(
         viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -56,6 +57,7 @@ fun SettingsScreen(
     SettingsScreen(
         settingsUiState = settingsUiState,
         onBackClick = onBackClick,
+        onLogoutClick = onLogoutClick,
     )
 }
 
@@ -64,6 +66,7 @@ fun SettingsScreen(
 internal fun SettingsScreen(
     settingsUiState: SettingsUiState,
     onBackClick: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -124,6 +127,12 @@ internal fun SettingsScreen(
                 onClick = { uriHandler.openUri(FEEDBACK_URL) },
             )
 
+            SettingsSectionTitle(text = "Account")
+            SettingsNavigationRow(
+                text = stringResource(R.string.feature_settings_logout),
+                onClick = onLogoutClick,
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -177,6 +186,7 @@ fun SettingsScreenLightPreview() {
             SettingsScreen(
                 settingsUiState = SettingsUiState.Success(UserEditableSettings()),
                 onBackClick = {},
+                onLogoutClick = {},
             )
         }
     }
@@ -196,6 +206,7 @@ fun SettingsScreenDarkPreview() {
             SettingsScreen(
                 settingsUiState = SettingsUiState.Success(UserEditableSettings()),
                 onBackClick = {},
+                onLogoutClick = {},
             )
         }
     }

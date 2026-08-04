@@ -11,9 +11,13 @@ fun NavController.navigateToSettings(navOptions: NavOptions? = null) =
     navigate(route = SettingsRoute, navOptions)
 
 fun NavGraphBuilder.settingsGraph(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
     composable<SettingsRoute> {
-        SettingsScreen(onBackClick = onBackClick)
+        SettingsScreen(
+            onBackClick = onBackClick,
+            onLogoutClick = onLogoutClick,
+        )
     }
 }

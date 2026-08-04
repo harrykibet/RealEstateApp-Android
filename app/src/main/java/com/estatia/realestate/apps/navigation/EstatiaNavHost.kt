@@ -84,10 +84,8 @@ fun EstatiaNavHost(
 
         profileGraph(
             onBackClick = navController::popBackStack,
-            onLogoutClick = appState::signOut,
-        ) {
-            navController.navigateToSettings()
-        }
+            onSettingsClick = navController::navigateToSettings,
+        )
 
         searchGraph(
             onBackClick = navController::popBackStack,
@@ -109,6 +107,9 @@ fun EstatiaNavHost(
 
         propertyDetailsScreen(onBackClick = navController::popBackStack)
 
-        settingsGraph(onBackClick = navController::popBackStack)
+        settingsGraph(
+            onBackClick = navController::popBackStack,
+            onLogoutClick = appState::signOut,
+        )
     }
 }

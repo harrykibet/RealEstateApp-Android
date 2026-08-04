@@ -59,7 +59,6 @@ fun ProfileScreen(
     name: String = "Harry Kemboi",
     email: String = "truman948@gmail.com",
     onEditProfileClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -73,7 +72,7 @@ fun ProfileScreen(
                 .padding(16.dp),
         ) {
             Icon(
-                imageVector = EstatiaIcons.Settings,
+                imageVector = EstatiaIcons.MoreVert,
                 contentDescription = "Settings",
                 tint = MaterialTheme.colorScheme.onSurface,
             )
@@ -219,18 +218,6 @@ fun ProfileScreen(
                     text = "No ${tabs[selectedTabIndex]} yet",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Logout Button
-            EstatiaOutlinedButton(
-                onClick = onLogoutClick,
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth(),
-            ) {
-                EstatiaText(text = stringResource(com.estatia.realestate.apps.feature.profile.R.string.logout))
             }
 
             Spacer(modifier = Modifier.height(32.dp))
