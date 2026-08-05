@@ -27,6 +27,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -99,10 +100,7 @@ abstract class PlayerManagerModule {
         @Provides
         @Singleton
         @PlayerDispatcher
-        fun providesPlayerDispatcher(): CoroutineDispatcher =
-            Executors.newSingleThreadExecutor { r ->
-                Thread(r, "PlayerManagerThread")
-            }.asCoroutineDispatcher()
+        fun providesPlayerDispatcher(): CoroutineDispatcher = Dispatchers.Main.immediate
 
         @Provides
         @Singleton

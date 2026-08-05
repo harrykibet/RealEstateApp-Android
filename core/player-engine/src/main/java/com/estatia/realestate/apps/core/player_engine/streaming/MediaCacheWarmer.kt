@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import com.estatia.realestate.apps.core.player_engine.di.PlaybackCache
@@ -29,7 +30,8 @@ class MediaCacheWarmer @Inject constructor(
     @param:PlaybackCache private val playbackDataSourceFactory: DataSource.Factory,
     private val environmentCoordinator: EnvironmentCoordinator,
     @param:EngineScope private val scope: CoroutineScope,
-    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
+    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val logger: ILogger
 ) : AutoCloseable {
 
     private val requests = MutableSharedFlow<WarmRequest>(
@@ -133,22 +135,26 @@ class MediaCacheWarmer @Inject constructor(
         maxBytes: Long
     ) = withContext(ioDispatcher) {
 
-        val dataSpec = DataSpec(uri)
-        val dataSource = playbackDataSourceFactory.createDataSource()
+        try {
+            val dataSpec = DataSpec(uri)
+            val dataSource = playbackDataSourceFactory.createDataSource()
 
-        DataSourceInputStream(dataSource, dataSpec).use { input ->
+            DataSourceInputStream(dataSource, dataSpec).use { input ->
 
-            val buffer = ByteArray(32 * 1024)
-            var total = 0L
+                val buffer = ByteArray(32 * 1024)
+                var total = 0L
 
-            while (
-                total < maxBytes &&
-                currentCoroutineContext().isActive
-            ) {
-                val read = input.read(buffer)
-                if (read == -1) break
-                total += read
+                while (
+                    total < maxBytes &&
+                    currentCoroutineContext().isActive
+                ) {
+                    val read = input.read(buffer)
+                    if (read == -1) break
+                    total += read
+                }
             }
+        } catch (e: Exception) {
+            logger.e("MediaCacheWarmer", "Failed to prefetch uri: $uri", e)
         }
     }
 

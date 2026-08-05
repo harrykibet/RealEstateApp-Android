@@ -2,13 +2,14 @@ package com.estatia.realestate.apps.core.player_engine.di
 
 import android.content.Context
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
@@ -19,6 +20,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -50,8 +52,12 @@ object StreamingModule {
 
     @Provides
     @Singleton
-    fun provideUpstreamFactory(): DataSource.Factory =
-        DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true)
+    fun provideUpstreamFactory(
+        @ApplicationContext context: Context,
+        okHttpClient: OkHttpClient
+    ): DataSource.Factory =
+        OkHttpDataSource.Factory(okHttpClient)
+            .setUserAgent(Util.getUserAgent(context, "Estatia"))
 
     @Provides
     @Singleton

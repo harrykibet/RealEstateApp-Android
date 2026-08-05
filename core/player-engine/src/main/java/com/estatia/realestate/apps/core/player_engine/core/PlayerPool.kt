@@ -19,12 +19,17 @@ class PlayerPool @Inject constructor(
     private val configurationFactory: IPlayerConfigurationFactory,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
-    private val confinementThread: Thread by lazy { Thread.currentThread() }
+    private val confinementThread: Thread by lazy { 
+        // We expect to be confined to the main thread because ExoPlayer requires it.
+        android.os.Looper.getMainLooper().thread 
+    }
 
     private fun checkConfinement() {
-        check(Thread.currentThread() === confinementThread) {
-            "PlayerPool must only be accessed from the player dispatcher thread. " +
-                    "Called from ${Thread.currentThread().name}, expected ${confinementThread.name}."
+        if (Thread.currentThread() !== confinementThread) {
+            error(
+                "PlayerPool must only be accessed from the main thread. " +
+                "Called from ${Thread.currentThread().name}, expected ${confinementThread.name}."
+            )
         }
     }
 

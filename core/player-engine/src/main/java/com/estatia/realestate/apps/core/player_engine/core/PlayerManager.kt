@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,9 +38,6 @@ class PlayerManager @Inject constructor(
     private val attachedPlayers = mutableSetOf<ExoPlayer>()
 
     init {
-        require(playerDispatcher is ExecutorCoroutineDispatcher) {
-            "PlayerDispatcher must be single-threaded"
-        }
         environmentCoordinator.start(engineScope)
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
@@ -91,11 +89,12 @@ class PlayerManager @Inject constructor(
                 mediaId?.let { id -> pool.get(id)?.reducer?.state }
                     ?: MutableStateFlow(PlaybackStateReducer.State.Idle)
             }
+            .flowOn(playerDispatcher)
             .stateIn(engineScope, SharingStarted.Eagerly, PlaybackStateReducer.State.Idle)
 
     override fun shutdown() {
         pool.releaseAll()
-        (playerDispatcher as ExecutorCoroutineDispatcher).close()
+        // No need to close Dispatchers.Main
     }
 
     private fun attachListenerIfNeeded(managed: PlayerPool.ManagedPlayer) {
