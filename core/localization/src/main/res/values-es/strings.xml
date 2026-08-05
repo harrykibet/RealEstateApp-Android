@@ -4,4 +4,26 @@
     <string name="localization_language_swahili">Suajili</string>
     <string name="localization_language_french">Francés</string>
     <string name="localization_language_spanish">Español</string>
+
+    <!-- Home Screen -->
+    <string name="feature_home_loading">Cargando propiedades…</string>
+    <string name="feature_home_no_properties_found">No se encontraron propiedades</string>
+    <string name="feature_home_empty_description">Vuelve más tarde o intenta actualizar para ver nuevas ofertas.</string>
+    <string name="feature_home_refresh">Actualizar</string>
+    <string name="feature_home_error_oops">¡Vaya!</string>
+    <string name="feature_home_retry">Reintentar</string>
+
+    <!-- Profile Screen -->
+    <string name="feature_profile_picture">Foto de perfil</string>
+    <string name="feature_profile_badge_agent">Agente</string>
+    <string name="feature_profile_stats_properties">Propiedades</string>
+    <string name="feature_profile_stats_followers">Seguidores</string>
+    <string name="feature_profile_stats_following">Siguiendo</string>
+    <string name="feature_profile_button_edit">Editar perfil</string>
+    <string name="feature_profile_button_share">Compartir perfil</string>
+    <string name="feature_profile_tab_listings">Mis anuncios</string>
+    <string name="feature_profile_tab_favorites">Favoritos</string>
+    <string name="feature_profile_tab_reviews">Reseñas</string>
+    <string name="feature_profile_empty_state">Aún no hay %1$s</string>
+    <string name="feature_profile_settings_cd">Configuración</string>
 </resources>

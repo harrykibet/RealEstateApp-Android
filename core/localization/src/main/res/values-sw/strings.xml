@@ -4,4 +4,26 @@
     <string name="localization_language_swahili">Kiswahili</string>
     <string name="localization_language_french">Kifaransa</string>
     <string name="localization_language_spanish">Kihispania</string>
+
+    <!-- Home Screen -->
+    <string name="feature_home_loading">Inapakia mali…</string>
+    <string name="feature_home_no_properties_found">Hakuna mali iliyopatikana</string>
+    <string name="feature_home_empty_description">Angalia baadaye au jaribu kuonyesha upya ili kuona matangazo mapya.</string>
+    <string name="feature_home_refresh">Onyesha upya</string>
+    <string name="feature_home_error_oops">Samahani!</string>
+    <string name="feature_home_retry">Jaribu tena</string>
+
+    <!-- Profile Screen -->
+    <string name="feature_profile_picture">Picha ya wasifu</string>
+    <string name="feature_profile_badge_agent">Wakala</string>
+    <string name="feature_profile_stats_properties">Mali</string>
+    <string name="feature_profile_stats_followers">Wafuasi</string>
+    <string name="feature_profile_stats_following">Unaoifuata</string>
+    <string name="feature_profile_button_edit">Hariri Wasifu</string>
+    <string name="feature_profile_button_share">Shiriki Wasifu</string>
+    <string name="feature_profile_tab_listings">Mali Zangu</string>
+    <string name="feature_profile_tab_favorites">Vipendwa</string>
+    <string name="feature_profile_tab_reviews">Mapitio</string>
+    <string name="feature_profile_empty_state">Hakuna %1$s bado</string>
+    <string name="feature_profile_settings_cd">Mipangilio</string>
 </resources>

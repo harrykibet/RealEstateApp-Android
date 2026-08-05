@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,27 +48,54 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Locale
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaOutlinedButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.core.ui.R
+import com.estatia.realestate.apps.localization.api.LocalNumberFormatter
+import com.estatia.realestate.apps.localization.R as LocalizationR
+import com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats
+import com.estatia.realestate.apps.feature.profile.ui.state.ProfileUiState
+import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel
+
+@Composable
+internal fun ProfileRoute(
+    onEditProfileClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel(
+        viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        },
+    ),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    ProfileScreen(
+        uiState = uiState,
+        onEditProfileClick = onEditProfileClick,
+        onSettingsClick = onSettingsClick,
+    )
+}
 
 @Composable
 fun ProfileScreen(
+    uiState: ProfileUiState,
+    onEditProfileClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
-    profileImage: Painter = painterResource(R.drawable.ic_launcher_round),
-    name: String = "Harry Kemboi",
-    email: String = "truman948@gmail.com",
-    stats: ProfileStats = ProfileStats(),
-    onEditProfileClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {},
 ) {
+    val numberFormatter = LocalNumberFormatter.current
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("My Listings", "Favorites", "Reviews")
+    val tabs = listOf(
+        stringResource(LocalizationR.string.feature_profile_tab_listings),
+        stringResource(LocalizationR.string.feature_profile_tab_favorites),
+        stringResource(LocalizationR.string.feature_profile_tab_reviews)
+    )
 
     Box(
         modifier = modifier
@@ -86,8 +112,8 @@ fun ProfileScreen(
 
             // Profile Image (Centered & Large)
             Image(
-                painter = profileImage,
-                contentDescription = stringResource(R.string.profile_picture),
+                painter = painterResource(com.estatia.realestate.apps.core.ui.R.drawable.ic_launcher_round), // TODO: Use uiState.profilePictureUrl
+                contentDescription = stringResource(LocalizationR.string.feature_profile_picture),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(100.dp)
@@ -105,16 +131,16 @@ fun ProfileScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     EstatiaText(
-                        text = name,
+                        text = uiState.name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    UserBadge(label = "Agent")
+                    UserBadge(label = uiState.userType)
                 }
 
                 EstatiaText(
-                    text = email,
+                    text = uiState.email,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -122,7 +148,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 EstatiaText(
-                    text = "Professional Real Estate Agent specializing in residential properties in Nairobi. Helping you find your dream home with ease.",
+                    text = uiState.bio,
                     fontSize = 14.sp,
                     lineHeight = 20.sp,
                     textAlign = TextAlign.Center,
@@ -139,9 +165,18 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ProfileStatItem(label = "Properties", value = formatStatCount(stats.propertyCount))
-                ProfileStatItem(label = "Followers", value = formatStatCount(stats.followerCount))
-                ProfileStatItem(label = "Following", value = formatStatCount(stats.followingCount))
+                ProfileStatItem(
+                    label = stringResource(LocalizationR.string.feature_profile_stats_properties),
+                    value = numberFormatter.formatCompactNumber(uiState.stats.propertyCount)
+                )
+                ProfileStatItem(
+                    label = stringResource(LocalizationR.string.feature_profile_stats_followers),
+                    value = numberFormatter.formatCompactNumber(uiState.stats.followerCount)
+                )
+                ProfileStatItem(
+                    label = stringResource(LocalizationR.string.feature_profile_stats_following),
+                    value = numberFormatter.formatCompactNumber(uiState.stats.followingCount)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -157,13 +192,19 @@ fun ProfileScreen(
                     onClick = onEditProfileClick,
                     modifier = Modifier.weight(1f),
                 ) {
-                    EstatiaText(text = "Edit Profile", fontSize = 14.sp)
+                    EstatiaText(
+                        text = stringResource(LocalizationR.string.feature_profile_button_edit),
+                        fontSize = 14.sp
+                    )
                 }
                 EstatiaOutlinedButton(
                     onClick = { /* TODO: Share */ },
                     modifier = Modifier.weight(1f),
                 ) {
-                    EstatiaText(text = "Share Profile", fontSize = 14.sp)
+                    EstatiaText(
+                        text = stringResource(LocalizationR.string.feature_profile_button_share),
+                        fontSize = 14.sp
+                    )
                 }
             }
 
@@ -210,7 +251,7 @@ fun ProfileScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 EstatiaText(
-                    text = "No ${tabs[selectedTabIndex]} yet",
+                    text = stringResource(LocalizationR.string.feature_profile_empty_state, tabs[selectedTabIndex]),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -226,7 +267,7 @@ fun ProfileScreen(
         ) {
             Icon(
                 imageVector = EstatiaIcons.MoreVert,
-                contentDescription = "Settings",
+                contentDescription = stringResource(LocalizationR.string.feature_profile_settings_cd),
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         }
@@ -275,14 +316,19 @@ fun ProfileScreenLightPreview() {
     EstatiaTheme {
         EstatiaBackground {
             ProfileScreen(
-                profileImage = painterResource(id = R.drawable.ic_launcher_round),
-                name = "Harry Kemboi",
-                email = "truman948@gmail.com",
-                stats = ProfileStats(
-                    propertyCount = 12,
-                    followerCount = 1200,
-                    followingCount = 450
-                )
+                uiState = ProfileUiState(
+                    name = "Harry Kemboi",
+                    email = "truman948@gmail.com",
+                    bio = "Professional Real Estate Agent specializing in residential properties in Nairobi.",
+                    userType = "Agent",
+                    stats = ProfileStats(
+                        propertyCount = 12,
+                        followerCount = 1200,
+                        followingCount = 450
+                    )
+                ),
+                onEditProfileClick = {},
+                onSettingsClick = {}
             )
         }
     }
@@ -299,35 +345,49 @@ fun ProfileScreenDarkPreview() {
     EstatiaTheme {
         EstatiaBackground {
             ProfileScreen(
-                profileImage = painterResource(id = R.drawable.ic_launcher_round),
-                name = "Harry Kemboi",
-                email = "truman948@gmail.com",
-                stats = ProfileStats(
-                    propertyCount = 5,
-                    followerCount = 850,
-                    followingCount = 210
-                )
+                uiState = ProfileUiState(
+                    name = "Harry Kemboi",
+                    email = "truman948@gmail.com",
+                    bio = "Professional Real Estate Agent specializing in residential properties in Nairobi.",
+                    userType = "Agent",
+                    stats = ProfileStats(
+                        propertyCount = 5,
+                        followerCount = 850,
+                        followingCount = 210
+                    )
+                ),
+                onEditProfileClick = {},
+                onSettingsClick = {}
             )
         }
     }
 }
 
-/**
- * Data class to model profile statistics.
- */
-data class ProfileStats(
-    val propertyCount: Int = 0,
-    val followerCount: Int = 0,
-    val followingCount: Int = 0,
+@Preview(
+    name = "Swahili Mode",
+    showBackground = true,
+    locale = "sw",
+    widthDp = 400,
 )
-
-/**
- * Formats a count into a social-media style string (e.g., 1.2k, 1.5M).
- */
-private fun formatStatCount(count: Int): String {
-    return when {
-        count >= 1_000_000 -> String.format(Locale.US, "%.1fM", count / 1_000_000f).replace(".0", "")
-        count >= 1_000 -> String.format(Locale.US, "%.1fk", count / 1_000f).replace(".0", "")
-        else -> count.toString()
+@Composable
+fun ProfileScreenSwahiliPreview() {
+    EstatiaTheme {
+        EstatiaBackground {
+            ProfileScreen(
+                uiState = ProfileUiState(
+                    name = "Harry Kemboi",
+                    email = "truman948@gmail.com",
+                    bio = "Wakala wa Mali isiyohamishika aliyebobea katika nyumba za makazi huko Nairobi.",
+                    userType = "Wakala",
+                    stats = ProfileStats(
+                        propertyCount = 15,
+                        followerCount = 2500,
+                        followingCount = 300
+                    )
+                ),
+                onEditProfileClick = {},
+                onSettingsClick = {}
+            )
+        }
     }
 }

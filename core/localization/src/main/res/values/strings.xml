@@ -4,4 +4,26 @@
     <string name="localization_language_swahili">Swahili</string>
     <string name="localization_language_french">French</string>
     <string name="localization_language_spanish">Spanish</string>
+
+    <!-- Home Screen -->
+    <string name="feature_home_loading">Loading properties…</string>
+    <string name="feature_home_no_properties_found">No properties found</string>
+    <string name="feature_home_empty_description">Check back later or try refreshing to see new listings.</string>
+    <string name="feature_home_refresh">Refresh</string>
+    <string name="feature_home_error_oops">Oops!</string>
+    <string name="feature_home_retry">Retry</string>
+
+    <!-- Profile Screen -->
+    <string name="feature_profile_picture">Profile picture</string>
+    <string name="feature_profile_badge_agent">Agent</string>
+    <string name="feature_profile_stats_properties">Properties</string>
+    <string name="feature_profile_stats_followers">Followers</string>
+    <string name="feature_profile_stats_following">Following</string>
+    <string name="feature_profile_button_edit">Edit Profile</string>
+    <string name="feature_profile_button_share">Share Profile</string>
+    <string name="feature_profile_tab_listings">My Listings</string>
+    <string name="feature_profile_tab_favorites">Favorites</string>
+    <string name="feature_profile_tab_reviews">Reviews</string>
+    <string name="feature_profile_empty_state">No %1$s yet</string>
+    <string name="feature_profile_settings_cd">Settings</string>
 </resources>

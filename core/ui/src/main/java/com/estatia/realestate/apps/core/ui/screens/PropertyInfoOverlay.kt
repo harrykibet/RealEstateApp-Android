@@ -14,12 +14,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
+import com.estatia.realestate.apps.localization.api.LocalCurrencyFormatter
 
 @Composable
 fun PropertyInfoOverlay(
     listing: ListingUiModel,
     modifier: Modifier = Modifier
 ) {
+    val currencyFormatter = LocalCurrencyFormatter.current
+    val formattedPrice = listing.price?.let {
+        currencyFormatter.formatCurrency(it, "KES") // TODO: Get currency from Region
+    } ?: "Price on request"
+
     val textShadow = Shadow(
         color = Color.Black.copy(alpha = 0.5f),
         offset = Offset(2f, 2f),
@@ -28,10 +34,22 @@ fun PropertyInfoOverlay(
 
     Column(modifier = modifier) {
 
+        // Price
+        EstatiaText(
+            text = formattedPrice,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                shadow = textShadow,
+                fontWeight = FontWeight.ExtraBold
+            ),
+            color = Color.White
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
         // User Handle
         EstatiaText(
             text = "@${listing.ownerName}",
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = MaterialTheme.typography.bodyLarge.copy(
                 shadow = textShadow,
                 fontWeight = FontWeight.Bold
             ),

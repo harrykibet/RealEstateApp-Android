@@ -4,4 +4,26 @@
     <string name="localization_language_swahili">Swahili</string>
     <string name="localization_language_french">Français</string>
     <string name="localization_language_spanish">Espagnol</string>
+
+    <!-- Home Screen -->
+    <string name="feature_home_loading">Chargement des propriétés…</string>
+    <string name="feature_home_no_properties_found">Aucune propriété trouvée</string>
+    <string name="feature_home_empty_description">Revenez plus tard ou essayez d\'actualiser pour voir de nouvelles annonces.</string>
+    <string name="feature_home_refresh">Actualiser</string>
+    <string name="feature_home_error_oops">Oups !</string>
+    <string name="feature_home_retry">Réessayer</string>
+
+    <!-- Profile Screen -->
+    <string name="feature_profile_picture">Photo de profil</string>
+    <string name="feature_profile_badge_agent">Agent</string>
+    <string name="feature_profile_stats_properties">Propriétés</string>
+    <string name="feature_profile_stats_followers">Abonnés</string>
+    <string name="feature_profile_stats_following">Abonnements</string>
+    <string name="feature_profile_button_edit">Modifier le profil</string>
+    <string name="feature_profile_button_share">Partager le profil</string>
+    <string name="feature_profile_tab_listings">Mes annonces</string>
+    <string name="feature_profile_tab_favorites">Favoris</string>
+    <string name="feature_profile_tab_reviews">Avis</string>
+    <string name="feature_profile_empty_state">Pas encore de %1$s</string>
+    <string name="feature_profile_settings_cd">Paramètres</string>
 </resources>

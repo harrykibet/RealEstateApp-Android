@@ -20,4 +20,12 @@ class AndroidNumberFormatter @Inject constructor() : NumberFormatter {
     override fun formatPercentage(number: Number): String {
         return NumberFormat.getPercentInstance(Locale.getDefault()).format(number)
     }
+
+    override fun formatCompactNumber(number: Number): String {
+        return when {
+            number.toDouble() >= 1_000_000 -> String.format(Locale.getDefault(), "%.1fM", number.toDouble() / 1_000_000f).replace(".0", "")
+            number.toDouble() >= 1_000 -> String.format(Locale.getDefault(), "%.1fk", number.toDouble() / 1_000f).replace(".0", "")
+            else -> number.toString()
+        }
+    }
 }

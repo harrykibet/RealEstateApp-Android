@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.core.network.interfaces
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
+import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthRemoteDataSource {
@@ -12,20 +12,20 @@ interface IAuthRemoteDataSource {
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
 
-    fun getCurrentUser(): FirebaseUser?
+    fun getCurrentUser(): NetworkUserEntity?
     suspend fun signUpWithEmail(
         email: String,
         password: String
-    ): AppResult<FirebaseUser>
+    ): AppResult<NetworkUserEntity>
 
     suspend fun signInWithEmail(
         email: String,
         password: String
-    ): AppResult<FirebaseUser>
+    ): AppResult<NetworkUserEntity>
 
     suspend fun signInWithGoogle(
         idToken: String
-    ): AppResult<FirebaseUser>
+    ): AppResult<NetworkUserEntity>
 
     suspend fun createOrUpdateUserProfile(
         userId: String,

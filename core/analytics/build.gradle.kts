@@ -1,5 +1,6 @@
 plugins {
    alias(libs.plugins.estatia.android.core)
+   alias(libs.plugins.estatia.firebase)
 }
 
 android {
@@ -10,4 +11,6 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.model)
+
+    implementation(libs.bundles.firebase)
 }

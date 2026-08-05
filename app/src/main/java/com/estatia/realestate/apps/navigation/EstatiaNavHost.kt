@@ -83,7 +83,7 @@ fun EstatiaNavHost(
         )
 
         profileGraph(
-            onBackClick = { navController.popBackStack() },
+            onEditProfileClick = { /* TODO: Navigate to Edit Profile */ },
             onSettingsClick = { navController.navigateToSettings() },
         )
 

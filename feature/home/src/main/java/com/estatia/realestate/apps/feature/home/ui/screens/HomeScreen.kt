@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,9 @@ import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
 import com.estatia.realestate.apps.core.ui.screens.RememberFeedPlaybackCoordinator
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
+import androidx.media3.common.Player
+import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
+import com.estatia.realestate.apps.localization.R as LocalizationR
 
 @Composable
 internal fun HomeRoute(
@@ -56,12 +60,17 @@ internal fun HomeRoute(
     playbackViewModel: HomeVideoPlaybackViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
-        playbackViewModel = playbackViewModel,
+        playbackUiState = playbackUiState,
+        onPageVisible = playbackViewModel::onPageVisible,
+        getPlayer = playbackViewModel::getPlayer,
+        pausePlayback = playbackViewModel::pause,
+        isMediaActive = playbackViewModel::isMediaActive,
         onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
         onShareClick = { /* TODO */ },
         onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
@@ -73,7 +82,11 @@ internal fun HomeScreen(
     state: HomeUiState,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
-    playbackViewModel: HomeVideoPlaybackViewModel,
+    playbackUiState: PlayerUiState?,
+    onPageVisible: (FeedMediaContext) -> Unit,
+    getPlayer: suspend (String, MediaType) -> Player,
+    pausePlayback: () -> Unit,
+    isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
@@ -88,7 +101,11 @@ internal fun HomeScreen(
         error = state.error,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
-        playbackViewModel = playbackViewModel,
+        playbackUiState = playbackUiState,
+        onPageVisible = onPageVisible,
+        getPlayer = getPlayer,
+        pausePlayback = pausePlayback,
+        isMediaActive = isMediaActive,
         onLikeClick = onLikeClick,
         onShareClick = onShareClick,
         onRefresh = onRefresh,
@@ -102,7 +119,11 @@ internal fun HomeFeedContent(
     error: String?,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
-    playbackViewModel: HomeVideoPlaybackViewModel,
+    playbackUiState: PlayerUiState?,
+    onPageVisible: (FeedMediaContext) -> Unit,
+    getPlayer: suspend (String, MediaType) -> Player,
+    pausePlayback: () -> Unit,
+    isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
@@ -128,19 +149,15 @@ internal fun HomeFeedContent(
                     RememberFeedPlaybackCoordinator(
                         pagerState = pagerState,
                         items = items,
-                        onPageVisible = playbackViewModel::onPageVisible
+                        onPageVisible = onPageVisible
                     )
                 },
                 itemContent = { listing, isActive, onCommentClick ->
-                    val playerUiState by if (isActive) {
-                        playbackViewModel.uiState.collectAsStateWithLifecycle()
-                    } else {
-                        remember { mutableStateOf(null) }
-                    }
+                    val currentPlayerUiState = if (isActive) playbackUiState else null
 
                     PropertyFeedItem(
                         listing = listing,
-                        playerUiState = playerUiState,
+                        playerUiState = currentPlayerUiState,
                         onLikeClick = onLikeClick,
                         onCommentClick = { onCommentClick(it.id) },
                         onShareClick = onShareClick,
@@ -150,9 +167,9 @@ internal fun HomeFeedContent(
                                 EngineVideoPlayer(
                                     mediaId = videoUrl,
                                     mediaType = MediaType.VOD,
-                                    getPlayer = playbackViewModel::getPlayer,
-                                    onPause = { playbackViewModel.pause() },
-                                    isActive = playbackViewModel.isMediaActive(videoUrl),
+                                    getPlayer = getPlayer,
+                                    onPause = pausePlayback,
+                                    isActive = isMediaActive(videoUrl),
                                     modifier = Modifier.fillMaxSize(),
                                     onClick = { onNavigateToPropertyDetail(listing.id) }
                                 )
@@ -176,7 +193,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(16.dp))
-        EstatiaText(text = "Loading properties...", fontSize = 16.sp)
+        EstatiaText(text = stringResource(LocalizationR.string.feature_home_loading), fontSize = 16.sp)
     }
 }
 
@@ -198,20 +215,20 @@ private fun EmptyState(
         )
         Spacer(Modifier.height(24.dp))
         EstatiaText(
-            text = "No properties found",
+            text = stringResource(LocalizationR.string.feature_home_no_properties_found),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
         )
         Spacer(Modifier.height(8.dp))
         EstatiaText(
-            text = "Check back later or try refreshing to see new listings.",
+            text = stringResource(LocalizationR.string.feature_home_empty_description),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(32.dp))
         EstatiaButton(onClick = onRefresh) {
-            EstatiaText("Refresh")
+            EstatiaText(stringResource(LocalizationR.string.feature_home_refresh))
         }
     }
 }
@@ -228,7 +245,7 @@ private fun ErrorState(
         verticalArrangement = Arrangement.Center,
     ) {
         EstatiaText(
-            text = "Oops!",
+            text = stringResource(LocalizationR.string.feature_home_error_oops),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.error,
@@ -241,7 +258,7 @@ private fun ErrorState(
         )
         Spacer(Modifier.height(32.dp))
         EstatiaButton(onClick = onRetry) {
-            EstatiaText("Retry")
+            EstatiaText(stringResource(LocalizationR.string.feature_home_retry))
         }
     }
 }
@@ -258,7 +275,11 @@ fun HomeLoadingPreview() {
                 error = null,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
-                playbackViewModel = hiltViewModel(),
+                playbackUiState = PlayerUiState.Idle,
+                onPageVisible = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                pausePlayback = {},
+                isMediaActive = { false },
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
@@ -279,7 +300,11 @@ fun HomeEmptyPreview() {
                 error = null,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
-                playbackViewModel = hiltViewModel(),
+                playbackUiState = PlayerUiState.Idle,
+                onPageVisible = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                pausePlayback = {},
+                isMediaActive = { false },
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
@@ -300,7 +325,11 @@ fun HomeErrorPreview() {
                 error = "Connection timeout. Please check your internet.",
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
-                playbackViewModel = hiltViewModel(),
+                playbackUiState = PlayerUiState.Idle,
+                onPageVisible = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                pausePlayback = {},
+                isMediaActive = { false },
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
@@ -321,6 +350,7 @@ fun HomeContentPreview() {
                         id = "1",
                         title = "Modern Apartment",
                         description = "Luxury living in the heart of the city.",
+                        price = 15000000.0,
                         videoUrl = null,
                         ownerName = "jane_doe",
                         ownerAvatarUrl = null,
@@ -333,7 +363,11 @@ fun HomeContentPreview() {
                 error = null,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
-                playbackViewModel = hiltViewModel(),
+                playbackUiState = PlayerUiState.Idle,
+                onPageVisible = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                pausePlayback = {},
+                isMediaActive = { false },
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
@@ -342,27 +376,39 @@ fun HomeContentPreview() {
     }
 }
 
+@Preview(name = "Home - Content (Swahili)", showBackground = true, locale = "sw", widthDp = 400)
 @Composable
-@Preview(showBackground = true)
-fun ListingItemPreview() {
+fun HomeContentSwahiliPreview() {
     EstatiaTheme {
-        PropertyFeedItem(
-            listing = ListingUiModel(
-                id = "1",
-                title = "Modern Apartment",
-                description = "Luxury living in the heart of the city.",
-                videoUrl = null,
-                ownerName = "jane_doe",
-                ownerAvatarUrl = null,
-                likesCount = 120,
-                commentsCount = 45,
-                sharesCount = 12
-            ),
-            playerUiState = null,
-            onLikeClick = {},
-            onCommentClick = {},
-            onShareClick = {},
-            videoPlayerContent = {}
-        )
+        EstatiaBackground {
+            HomeFeedContent(
+                listings = listOf(
+                    ListingUiModel(
+                        id = "1",
+                        title = "Apartment ya Kisasa",
+                        description = "Maisha ya kifahari katikati ya jiji.",
+                        price = 15000000.0,
+                        videoUrl = null,
+                        ownerName = "jane_doe",
+                        ownerAvatarUrl = null,
+                        likesCount = 120,
+                        commentsCount = 45,
+                        sharesCount = 12
+                    )
+                ),
+                isLoading = false,
+                error = null,
+                onNavigateToPropertyDetail = {},
+                commentsContent = {},
+                playbackUiState = PlayerUiState.Idle,
+                onPageVisible = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                pausePlayback = {},
+                isMediaActive = { false },
+                onLikeClick = {},
+                onShareClick = {},
+                onRefresh = {},
+            )
+        }
     }
 }

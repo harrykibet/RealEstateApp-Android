@@ -31,4 +31,5 @@ dependencies {
     api(projects.core.playerUi)
     implementation(projects.core.designSystem)
     api(projects.core.analytics)
+    implementation(projects.core.localization)
 }

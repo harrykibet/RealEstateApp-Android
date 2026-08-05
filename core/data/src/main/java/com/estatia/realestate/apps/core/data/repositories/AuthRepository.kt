@@ -4,7 +4,7 @@ import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.data.mappers.auth.FirebaseAuthUserMapper
+import com.estatia.realestate.apps.core.data.mappers.auth.NetworkUserMapper
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
@@ -30,8 +30,8 @@ class AuthRepository @Inject constructor(
         password: String,
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signUpWithEmail(email, password)
-            .map { firebaseUser ->
-            FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            .map { networkUser ->
+            NetworkUserMapper.fromEntity(networkUser)
         }
     }
 
@@ -40,8 +40,8 @@ class AuthRepository @Inject constructor(
         password: String,
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signInWithEmail(email, password)
-            .map { firebaseUser ->
-            FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            .map { networkUser ->
+            NetworkUserMapper.fromEntity(networkUser)
         }
     }
 
@@ -52,8 +52,8 @@ class AuthRepository @Inject constructor(
     override fun getCurrentUser(): AuthUserDomainModel? {
         return remoteDataSource
             .getCurrentUser()
-            ?.let { firebaseUser ->
-                FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            ?.let { networkUser ->
+                NetworkUserMapper.fromEntity(networkUser)
             }
     }
 
@@ -62,8 +62,8 @@ class AuthRepository @Inject constructor(
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource
             .signInWithGoogle(idToken)
-            .map { firebaseUser ->
-                FirebaseAuthUserMapper.fromFirebase(firebaseUser)
+            .map { networkUser ->
+                NetworkUserMapper.fromEntity(networkUser)
             }
     }
 

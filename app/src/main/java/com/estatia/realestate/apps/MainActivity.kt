@@ -20,7 +20,7 @@ import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 import com.estatia.realestate.apps.ui.rememberEstatiaAppState
 import com.estatia.realestate.apps.ui.EstatiaApp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.localization.api.TimeZoneMonitor
+import com.estatia.realestate.apps.localization.api.*
 import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
@@ -41,6 +41,12 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var timeZoneMonitor: TimeZoneMonitor
+
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    lateinit var numberFormatter: NumberFormatter
 
     @Inject
     lateinit var analyticsHelper: IAnalyticsHelper
@@ -98,6 +104,8 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalAnalyticsHelper provides analyticsHelper,
                 LocalTimeZone provides currentTimeZone,
+                LocalCurrencyFormatter provides currencyFormatter,
+                LocalNumberFormatter provides numberFormatter,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
                     EstatiaApp(appState)
