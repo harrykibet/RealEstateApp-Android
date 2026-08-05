@@ -32,10 +32,14 @@ class PlayerConfigurationFactory @Inject constructor(
 
     /**
      * Rewrites the request host to the currently healthiest CDN endpoint.
+     * Only applies to internal Estatia media domains.
      * Falls back to the original URI on selection failure — CDN routing is an
      * optimization, not a playback precondition.
      */
     private suspend fun resolveViaCdn(uri: Uri): Uri {
+        val host = uri.host ?: return uri
+        if (!host.contains("estatia.com")) return uri
+
         val endpoint = runCatching { cdnSelector.select() }.getOrNull() ?: return uri
         val endpointUri = endpoint.baseUrl.toUri()
         return uri.buildUpon()

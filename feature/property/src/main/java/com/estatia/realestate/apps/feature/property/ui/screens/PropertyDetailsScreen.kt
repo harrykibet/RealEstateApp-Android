@@ -59,12 +59,17 @@ import com.estatia.realestate.apps.localization.api.LocalMeasurementFormatter
 import com.estatia.realestate.apps.localization.R as LocalizationR
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsUiState
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsViewModel
+import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsVideoPlaybackViewModel
+import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
+import com.estatia.realestate.apps.core.model.property.MediaType
+import androidx.media3.common.Player
 
 @Composable
 fun PropertyDetailsRoute(
     propertyId: String,
     onBackClick: () -> Unit,
-    viewModel: PropertyDetailsViewModel = hiltViewModel()
+    viewModel: PropertyDetailsViewModel = hiltViewModel(),
+    playbackViewModel: PropertyDetailsVideoPlaybackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -74,7 +79,10 @@ fun PropertyDetailsRoute(
 
     PropertyDetailsScreen(
         uiState = uiState,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        getPlayer = playbackViewModel::getPlayer,
+        onPausePlayback = playbackViewModel::pause,
+        isMediaActive = playbackViewModel::isMediaActive
     )
 }
 
@@ -82,6 +90,9 @@ fun PropertyDetailsRoute(
 fun PropertyDetailsScreen(
     uiState: PropertyDetailsUiState,
     onBackClick: () -> Unit,
+    getPlayer: suspend (String, MediaType) -> Player,
+    onPausePlayback: () -> Unit,
+    isMediaActive: (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -99,7 +110,10 @@ fun PropertyDetailsScreen(
                 is PropertyDetailsUiState.Success -> {
                     PropertyDetailsContent(
                         property = uiState.property,
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        getPlayer = getPlayer,
+                        onPausePlayback = onPausePlayback,
+                        isMediaActive = isMediaActive
                     )
                 }
 
@@ -116,10 +130,15 @@ fun PropertyDetailsScreen(
 @Composable
 private fun PropertyDetailsContent(
     property: PropertyDomainModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    getPlayer: suspend (String, MediaType) -> Player,
+    onPausePlayback: () -> Unit,
+    isMediaActive: (String) -> Boolean,
 ) {
     val scrollState = rememberScrollState()
-    val allMedia = (property.imageUrls + property.videoUrls).filter { it.isNotBlank() }
+    val images = property.imageUrls.filter { it.isNotBlank() }
+    val videos = property.videoUrls.filter { it.isNotBlank() }
+    val allMedia = images + videos
     val pagerState = rememberPagerState { allMedia.size }
     val currencyFormatter = LocalCurrencyFormatter.current
     val measurementFormatter = LocalMeasurementFormatter.current
@@ -145,11 +164,25 @@ private fun PropertyDetailsContent(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize()
                     ) { page ->
-                        DynamicAsyncImage(
-                            imageUrl = allMedia[page],
-                            contentDescription = stringResource(LocalizationR.string.feature_property_details_gallery_cd),
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        val mediaUrl = allMedia[page]
+                        val isVideo = mediaUrl in videos
+
+                        if (isVideo) {
+                            EngineVideoPlayer(
+                                mediaId = mediaUrl,
+                                mediaType = MediaType.VOD,
+                                getPlayer = getPlayer,
+                                onPause = onPausePlayback,
+                                isActive = isMediaActive(mediaUrl),
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            DynamicAsyncImage(
+                                imageUrl = mediaUrl,
+                                contentDescription = stringResource(LocalizationR.string.feature_property_details_gallery_cd),
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
 
                     // Page Indicator
@@ -302,7 +335,10 @@ fun PropertyDetailsScreenSuccessPreview() {
         EstatiaBackground {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
-                onBackClick = {}
+                onBackClick = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                onPausePlayback = {},
+                isMediaActive = { false }
             )
         }
     }
@@ -315,7 +351,10 @@ fun PropertyDetailsScreenSwahiliPreview() {
         EstatiaBackground {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
-                onBackClick = {}
+                onBackClick = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                onPausePlayback = {},
+                isMediaActive = { false }
             )
         }
     }
@@ -329,7 +368,10 @@ fun PropertyDetailsScreenLoadingPreview() {
         EstatiaBackground {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Loading,
-                onBackClick = {}
+                onBackClick = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                onPausePlayback = {},
+                isMediaActive = { false }
             )
         }
     }
@@ -343,7 +385,10 @@ fun PropertyDetailsScreenErrorPreview() {
         EstatiaBackground {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Error("Failed to load property details. Please try again."),
-                onBackClick = {}
+                onBackClick = {},
+                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                onPausePlayback = {},
+                isMediaActive = { false }
             )
         }
     }

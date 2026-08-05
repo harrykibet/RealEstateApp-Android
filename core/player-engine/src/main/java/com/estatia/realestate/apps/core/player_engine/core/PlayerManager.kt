@@ -61,6 +61,7 @@ class PlayerManager @Inject constructor(
             attachListenerIfNeeded(managed)
             managed.analyticsListener.markPlaybackStart()
 
+            managed.player.prepare()
             managed.player.play()
             activeMediaId = mediaId
             activeMediaIdFlow.value = mediaId
@@ -70,6 +71,7 @@ class PlayerManager @Inject constructor(
         withContext(playerDispatcher) {
             val managed = pool.getOrCreate(mediaId, mediaType)
             attachListenerIfNeeded(managed)
+            managed.player.prepare()
             managed
         }
 
