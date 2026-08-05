@@ -12,4 +12,6 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.datetime)
 }

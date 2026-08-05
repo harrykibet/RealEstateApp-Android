@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="localization_language_english">Kiingereza</string>
+    <string name="localization_language_swahili">Kiswahili</string>
+    <string name="localization_language_french">Kifaransa</string>
+    <string name="localization_language_spanish">Kihispania</string>
+</resources>

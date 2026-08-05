@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaOutlinedButton
@@ -63,6 +64,7 @@ fun ProfileScreen(
     profileImage: Painter = painterResource(R.drawable.ic_launcher_round),
     name: String = "Harry Kemboi",
     email: String = "truman948@gmail.com",
+    stats: ProfileStats = ProfileStats(),
     onEditProfileClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
 ) {
@@ -80,44 +82,26 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Profile Header with Stats
-            Row(
+            // Profile Image (Centered & Large)
+            Image(
+                painter = profileImage,
+                contentDescription = stringResource(R.string.profile_picture),
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                // Profile Image
-                Image(
-                    painter = profileImage,
-                    contentDescription = stringResource(R.string.profile_picture),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape),
-                )
-
-                Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    ProfileStatItem(label = "Properties", value = "12")
-                    ProfileStatItem(label = "Followers", value = "1.2k")
-                    ProfileStatItem(label = "Following", value = "450")
-                }
-            }
+                    .size(100.dp)
+                    .clip(CircleShape),
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // User Identity & Bio
+            // User Identity (Centered)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.Start,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     EstatiaText(
@@ -135,19 +119,34 @@ fun ProfileScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 EstatiaText(
                     text = "Professional Real Estate Agent specializing in residential properties in Nairobi. Helping you find your dream home with ease.",
                     fontSize = 14.sp,
                     lineHeight = 20.sp,
-                    textAlign = TextAlign.Start,
+                    textAlign = TextAlign.Center,
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Action Buttons
+            // Profile Stats Row (Centered)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ProfileStatItem(label = "Properties", value = formatStatCount(stats.propertyCount))
+                ProfileStatItem(label = "Followers", value = formatStatCount(stats.followerCount))
+                ProfileStatItem(label = "Following", value = formatStatCount(stats.followingCount))
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Action Buttons (Centered)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -279,6 +278,11 @@ fun ProfileScreenLightPreview() {
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",
                 email = "truman948@gmail.com",
+                stats = ProfileStats(
+                    propertyCount = 12,
+                    followerCount = 1200,
+                    followingCount = 450
+                )
             )
         }
     }
@@ -298,7 +302,32 @@ fun ProfileScreenDarkPreview() {
                 profileImage = painterResource(id = R.drawable.ic_launcher_round),
                 name = "Harry Kemboi",
                 email = "truman948@gmail.com",
+                stats = ProfileStats(
+                    propertyCount = 5,
+                    followerCount = 850,
+                    followingCount = 210
+                )
             )
         }
+    }
+}
+
+/**
+ * Data class to model profile statistics.
+ */
+data class ProfileStats(
+    val propertyCount: Int = 0,
+    val followerCount: Int = 0,
+    val followingCount: Int = 0,
+)
+
+/**
+ * Formats a count into a social-media style string (e.g., 1.2k, 1.5M).
+ */
+private fun formatStatCount(count: Int): String {
+    return when {
+        count >= 1_000_000 -> String.format(Locale.US, "%.1fM", count / 1_000_000f).replace(".0", "")
+        count >= 1_000 -> String.format(Locale.US, "%.1fk", count / 1_000f).replace(".0", "")
+        else -> count.toString()
     }
 }

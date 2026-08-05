@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="localization_language_english">English</string>
+    <string name="localization_language_swahili">Swahili</string>
+    <string name="localization_language_french">French</string>
+    <string name="localization_language_spanish">Spanish</string>
+</resources>
