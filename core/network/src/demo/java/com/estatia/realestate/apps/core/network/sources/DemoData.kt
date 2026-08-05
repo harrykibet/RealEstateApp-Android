@@ -15,7 +15,7 @@ object DemoData {
             bathrooms = 4,
             areaSize = 450.0,
             imageUrl = listOf("https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1000"),
-            videoUrl = listOf("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
+            videoUrl = listOf("https://vjs.zencdn.net/v/oceans.mp4"),
             video = true,
             ownerName = "Harry Kemboi",
             ownerId = "demo_user"
@@ -30,7 +30,7 @@ object DemoData {
             bathrooms = 2,
             areaSize = 120.0,
             imageUrl = listOf("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000"),
-            videoUrl = listOf("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"),
+            videoUrl = listOf("https://media.w3.org/2010/05/sintel/trailer.mp4"),
             video = true,
             ownerName = "Harry Kemboi",
             ownerId = "demo_user"
@@ -45,7 +45,7 @@ object DemoData {
             bathrooms = 2,
             areaSize = 200.0,
             imageUrl = listOf("https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=1000"),
-            videoUrl = listOf("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"),
+            videoUrl = listOf("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"),
             video = true,
             ownerName = "James Kibet",
             ownerId = "user_123"

@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.HttpDataSource
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
@@ -136,7 +137,12 @@ class MediaCacheWarmer @Inject constructor(
     ) = withContext(ioDispatcher) {
 
         try {
-            val dataSpec = DataSpec(uri)
+            val dataSpec = DataSpec.Builder()
+                .setUri(uri)
+                .setLength(maxBytes)
+                .setFlags(DataSpec.FLAG_ALLOW_CACHE_FRAGMENTATION)
+                .build()
+
             val dataSource = playbackDataSourceFactory.createDataSource()
 
             DataSourceInputStream(dataSource, dataSpec).use { input ->
@@ -154,7 +160,13 @@ class MediaCacheWarmer @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            logger.e("MediaCacheWarmer", "Failed to prefetch uri: $uri", e)
+            val message = when (e) {
+                is HttpDataSource.InvalidResponseCodeException -> {
+                    "Failed to prefetch uri: $uri. Max bytes: $maxBytes. Response code: ${e.responseCode}. Data: ${e.dataSpec}"
+                }
+                else -> "Failed to prefetch uri: $uri. Max bytes: $maxBytes"
+            }
+            logger.e("MediaCacheWarmer", message, e)
         }
     }
 

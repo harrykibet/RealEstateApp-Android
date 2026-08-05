@@ -58,6 +58,7 @@ object StreamingModule {
     ): DataSource.Factory =
         OkHttpDataSource.Factory(okHttpClient)
             .setUserAgent(Util.getUserAgent(context, "Estatia"))
+            .setDefaultRequestProperties(mapOf("Accept" to "*/*"))
 
     @Provides
     @Singleton
