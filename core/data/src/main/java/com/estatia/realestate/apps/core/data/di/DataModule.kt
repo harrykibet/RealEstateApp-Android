@@ -20,8 +20,6 @@ import com.estatia.realestate.apps.core.data.repositories.SearchRepository
 import com.estatia.realestate.apps.core.data.repositories.SecurityRepository
 import com.estatia.realestate.apps.core.data.repositories.SecretRepository
 import com.estatia.realestate.apps.core.data.repositories.UserRepository
-import com.estatia.realestate.apps.core.data.util.TimeZoneBroadcastMonitor
-import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
@@ -73,9 +71,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
-
-    @Binds
-    internal abstract fun binds(impl: TimeZoneBroadcastMonitor): TimeZoneMonitor
 
     companion object {
         @Provides

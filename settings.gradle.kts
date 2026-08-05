@@ -35,7 +35,6 @@ rootProject.name = "Estatia"
 
 include(":app")
 include(":benchmark")
-include(":localization")
 include(":lint")
 
 include(":core:analytics")
@@ -43,6 +42,7 @@ include(":core:network")
 include(":core:ui")
 include(":core:common")
 include(":core:navigation")
+include(":core:localization")
 include(":core:config")
 include(":core:notifications")
 include(":core:data")

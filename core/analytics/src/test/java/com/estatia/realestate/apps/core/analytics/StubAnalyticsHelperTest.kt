@@ -17,14 +17,14 @@ import org.junit.Test
 class StubAnalyticsHelperTest {
 
     private lateinit var analyticsRepository: IAnalyticsTracker
-    private lateinit var stubAnalyticsHelper: StubAnalyticsHelper
+    private lateinit var stubAnalyticsHelper: AnalyticsHelper
 
     @Before
     fun setup() {
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
         analyticsRepository = mockk(relaxed = true)
-        stubAnalyticsHelper = StubAnalyticsHelper(analyticsRepository)
+        stubAnalyticsHelper = AnalyticsHelper(analyticsRepository)
     }
 
     @After

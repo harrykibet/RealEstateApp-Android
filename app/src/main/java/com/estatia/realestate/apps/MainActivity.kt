@@ -15,13 +15,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.tracing.trace
-import com.estatia.realestate.apps.core.ui.LocalTimeZone
+import com.estatia.realestate.apps.localization.api.LocalTimeZone
 import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 import com.estatia.realestate.apps.ui.rememberEstatiaAppState
 import com.estatia.realestate.apps.ui.EstatiaApp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.core.data.util.TimeZoneMonitor
-import com.estatia.realestate.apps.core.analytics.AnalyticsHelper
+import com.estatia.realestate.apps.localization.api.TimeZoneMonitor
+import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
     lateinit var timeZoneMonitor: TimeZoneMonitor
 
     @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+    lateinit var analyticsHelper: IAnalyticsHelper
 
     @Inject
     lateinit var authRepository: IAuthRepository

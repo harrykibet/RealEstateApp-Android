@@ -63,7 +63,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.common)
-    implementation(projects.core.navigation)
     implementation(projects.core.config)
     implementation(projects.core.network)
     implementation(projects.core.testing)
@@ -72,6 +71,8 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.analytics)
+    implementation(projects.core.navigation)
+    implementation(projects.core.localization)
     implementation(projects.core.playerEngine)
     implementation(projects.core.designSystem)
     implementation(projects.core.notifications)
@@ -93,7 +94,6 @@ dependencies {
     implementation(projects.feature.intelligence)
 
     implementation(projects.lint)
-    implementation(projects.localization)
 }
 
 
