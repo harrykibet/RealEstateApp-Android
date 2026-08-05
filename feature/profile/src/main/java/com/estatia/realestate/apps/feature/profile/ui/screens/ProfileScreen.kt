@@ -74,19 +74,6 @@ fun ProfileScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
     ) {
-        IconButton(
-            onClick = onSettingsClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp),
-        ) {
-            Icon(
-                imageVector = EstatiaIcons.MoreVert,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -230,6 +217,19 @@ fun ProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
+
+        IconButton(
+            onClick = onSettingsClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp),
+        ) {
+            Icon(
+                imageVector = EstatiaIcons.MoreVert,
+                contentDescription = "Settings",
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

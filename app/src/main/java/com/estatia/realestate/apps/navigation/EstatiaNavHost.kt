@@ -83,8 +83,8 @@ fun EstatiaNavHost(
         )
 
         profileGraph(
-            onBackClick = navController::popBackStack,
-            onSettingsClick = navController::navigateToSettings,
+            onBackClick = { navController.popBackStack() },
+            onSettingsClick = { navController.navigateToSettings() },
         )
 
         searchGraph(
