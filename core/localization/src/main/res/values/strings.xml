@@ -26,4 +26,18 @@
     <string name="feature_profile_tab_reviews">Reviews</string>
     <string name="feature_profile_empty_state">No %1$s yet</string>
     <string name="feature_profile_settings_cd">Settings</string>
+
+    <!-- Property Details Screen -->
+    <string name="feature_property_details_gallery_cd">Property Media</string>
+    <string name="feature_property_details_back_cd">Back</string>
+    <string name="feature_property_details_no_media">No Media Available</string>
+    <string name="feature_property_details_location_unknown">Location unknown</string>
+    <string name="feature_property_details_no_description">No description provided.</string>
+    <string name="feature_property_details_label_bedrooms">Bedrooms</string>
+    <string name="feature_property_details_label_bathrooms">Bathrooms</string>
+    <string name="feature_property_details_label_area">Area</string>
+    <string name="feature_property_details_section_about">About this property</string>
+    <string name="feature_property_details_button_contact">Contact %1$s</string>
+    <string name="feature_property_details_owner_fallback">Owner</string>
+    <string name="feature_property_details_price_on_request">Price on request</string>
 </resources>

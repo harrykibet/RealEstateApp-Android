@@ -26,4 +26,18 @@
     <string name="feature_profile_tab_reviews">Mapitio</string>
     <string name="feature_profile_empty_state">Hakuna %1$s bado</string>
     <string name="feature_profile_settings_cd">Mipangilio</string>
+
+    <!-- Property Details Screen -->
+    <string name="feature_property_details_gallery_cd">Mali Media</string>
+    <string name="feature_property_details_back_cd">Nyuma</string>
+    <string name="feature_property_details_no_media">Hakuna Picha au Video Zinazopatikana</string>
+    <string name="feature_property_details_location_unknown">Mahali haijulikani</string>
+    <string name="feature_property_details_no_description">Maelezo hayajatolewa.</string>
+    <string name="feature_property_details_label_bedrooms">Vyumba vya kulala</string>
+    <string name="feature_property_details_label_bathrooms">Vyumba vya kuoga</string>
+    <string name="feature_property_details_label_area">Eneo</string>
+    <string name="feature_property_details_section_about">Kuhusu mali hii</string>
+    <string name="feature_property_details_button_contact">Wasiliana na %1$s</string>
+    <string name="feature_property_details_owner_fallback">Mmiliki</string>
+    <string name="feature_property_details_price_on_request">Bei iko kwa ombi</string>
 </resources>

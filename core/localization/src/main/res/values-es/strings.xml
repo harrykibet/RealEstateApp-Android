@@ -26,4 +26,18 @@
     <string name="feature_profile_tab_reviews">Reseñas</string>
     <string name="feature_profile_empty_state">Aún no hay %1$s</string>
     <string name="feature_profile_settings_cd">Configuración</string>
+
+    <!-- Property Details Screen -->
+    <string name="feature_property_details_gallery_cd">Multimedia de la propiedad</string>
+    <string name="feature_property_details_back_cd">Atrás</string>
+    <string name="feature_property_details_no_media">No hay multimedia disponible</string>
+    <string name="feature_property_details_location_unknown">Ubicación desconocida</string>
+    <string name="feature_property_details_no_description">No se proporcionó descripción.</string>
+    <string name="feature_property_details_label_bedrooms">Dormitorios</string>
+    <string name="feature_property_details_label_bathrooms">Baños</string>
+    <string name="feature_property_details_label_area">Área</string>
+    <string name="feature_property_details_section_about">Acerca de esta propiedad</string>
+    <string name="feature_property_details_button_contact">Contactar a %1$s</string>
+    <string name="feature_property_details_owner_fallback">Dueño</string>
+    <string name="feature_property_details_price_on_request">Precio a consultar</string>
 </resources>

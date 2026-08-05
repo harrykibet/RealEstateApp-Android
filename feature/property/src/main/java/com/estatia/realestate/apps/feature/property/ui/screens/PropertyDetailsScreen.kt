@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,9 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.testing.data.MockProperties
 import com.estatia.realestate.apps.core.ui.DevicePreviews
+import com.estatia.realestate.apps.localization.api.LocalCurrencyFormatter
+import com.estatia.realestate.apps.localization.api.LocalMeasurementFormatter
+import com.estatia.realestate.apps.localization.R as LocalizationR
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsUiState
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsViewModel
 
@@ -117,6 +121,12 @@ private fun PropertyDetailsContent(
     val scrollState = rememberScrollState()
     val allMedia = (property.imageUrls + property.videoUrls).filter { it.isNotBlank() }
     val pagerState = rememberPagerState { allMedia.size }
+    val currencyFormatter = LocalCurrencyFormatter.current
+    val measurementFormatter = LocalMeasurementFormatter.current
+
+    val formattedPrice = property.price?.let {
+        currencyFormatter.formatCurrency(it.amount, "KES") // TODO: Get from Region
+    } ?: stringResource(LocalizationR.string.feature_property_details_price_on_request)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -137,7 +147,7 @@ private fun PropertyDetailsContent(
                     ) { page ->
                         DynamicAsyncImage(
                             imageUrl = allMedia[page],
-                            contentDescription = "Property Media",
+                            contentDescription = stringResource(LocalizationR.string.feature_property_details_gallery_cd),
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -163,7 +173,7 @@ private fun PropertyDetailsContent(
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
                     ) {
-                        EstatiaText("No Media Available")
+                        EstatiaText(stringResource(LocalizationR.string.feature_property_details_no_media))
                     }
                 }
             }
@@ -177,7 +187,7 @@ private fun PropertyDetailsContent(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         EstatiaText(
-                            text = property.title,
+                            text = property.title.ifBlank { stringResource(LocalizationR.string.feature_home_no_properties_found) }, // Using existing fallback
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -191,21 +201,19 @@ private fun PropertyDetailsContent(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             EstatiaText(
-                                text = property.address ?: property.county ?: "Location unknown",
+                                text = property.address ?: property.county ?: stringResource(LocalizationR.string.feature_property_details_location_unknown),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
-                    property.price?.let { price ->
-                        EstatiaText(
-                            text = "Ksh ${price.amount}",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
+                    EstatiaText(
+                        text = formattedPrice,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.ExtraBold
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -214,21 +222,30 @@ private fun PropertyDetailsContent(
 
                 // Stats Section
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    StatItem(label = "Bedrooms", value = property.bedrooms?.toString() ?: "-")
-                    StatItem(label = "Bathrooms", value = property.bathrooms?.toString() ?: "-")
-                    StatItem(label = "Area", value = property.areaSize?.let { "${it} sqft" } ?: "-")
+                    StatItem(
+                        label = stringResource(LocalizationR.string.feature_property_details_label_bedrooms),
+                        value = property.bedrooms?.toString() ?: "-"
+                    )
+                    StatItem(
+                        label = stringResource(LocalizationR.string.feature_property_details_label_bathrooms),
+                        value = property.bathrooms?.toString() ?: "-"
+                    )
+                    StatItem(
+                        label = stringResource(LocalizationR.string.feature_property_details_label_area),
+                        value = property.areaSize?.let { measurementFormatter.formatArea(it) } ?: "-"
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 EstatiaText(
-                    text = "About this property",
+                    text = stringResource(LocalizationR.string.feature_property_details_section_about),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 EstatiaText(
-                    text = property.description ?: "No description provided.",
+                    text = property.description ?: stringResource(LocalizationR.string.feature_property_details_no_description),
                     style = MaterialTheme.typography.bodyLarge,
                     lineHeight = 24.sp
                 )
@@ -239,7 +256,12 @@ private fun PropertyDetailsContent(
                     onClick = { /* TODO: Contact Owner */ },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    EstatiaText("Contact ${property.ownerName ?: "Owner"}")
+                    EstatiaText(
+                        stringResource(
+                            LocalizationR.string.feature_property_details_button_contact,
+                            property.ownerName ?: stringResource(LocalizationR.string.feature_property_details_owner_fallback)
+                        )
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -256,7 +278,10 @@ private fun PropertyDetailsContent(
                 .background(Color.Black.copy(alpha = 0.3f), CircleShape),
             colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(LocalizationR.string.feature_property_details_back_cd)
+            )
         }
     }
 }
@@ -273,6 +298,19 @@ private fun StatItem(label: String, value: String) {
 @DevicePreviews
 @Composable
 fun PropertyDetailsScreenSuccessPreview() {
+    EstatiaTheme {
+        EstatiaBackground {
+            PropertyDetailsScreen(
+                uiState = PropertyDetailsUiState.Success(MockProperties.single()),
+                onBackClick = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "Property Details - Success (Swahili)", showBackground = true, locale = "sw")
+@Composable
+fun PropertyDetailsScreenSwahiliPreview() {
     EstatiaTheme {
         EstatiaBackground {
             PropertyDetailsScreen(

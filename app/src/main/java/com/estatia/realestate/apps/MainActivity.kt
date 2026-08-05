@@ -49,6 +49,9 @@ class MainActivity : ComponentActivity() {
     lateinit var numberFormatter: NumberFormatter
 
     @Inject
+    lateinit var measurementFormatter: MeasurementFormatter
+
+    @Inject
     lateinit var analyticsHelper: IAnalyticsHelper
 
     @Inject
@@ -106,6 +109,7 @@ class MainActivity : ComponentActivity() {
                 LocalTimeZone provides currentTimeZone,
                 LocalCurrencyFormatter provides currencyFormatter,
                 LocalNumberFormatter provides numberFormatter,
+                LocalMeasurementFormatter provides measurementFormatter,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
                     EstatiaApp(appState)

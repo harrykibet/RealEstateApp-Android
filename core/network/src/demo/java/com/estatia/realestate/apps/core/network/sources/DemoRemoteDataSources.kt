@@ -61,7 +61,25 @@ internal class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRem
     override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = AppResult.Success(emptyList())
-    override suspend fun fetchPropertiesPaginated(cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> = AppResult.Success(PropertyRemotePage(DemoData.sampleProperties, null))
+    override suspend fun fetchPropertiesPaginated(cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> {
+        val allProperties = DemoData.sampleProperties
+        val startIndex = (cursor?.documentId?.toIntOrNull() ?: 0)
+        val endIndex = (startIndex + pageSize).coerceAtMost(allProperties.size)
+        
+        val properties = if (startIndex < allProperties.size) {
+            allProperties.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+        
+        val nextCursor = if (endIndex < allProperties.size) {
+            PropertyCursor(createdAt = System.currentTimeMillis(), documentId = endIndex.toString())
+        } else {
+            null
+        }
+        
+        return AppResult.Success(PropertyRemotePage(properties, nextCursor))
+    }
     override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> = AppResult.Success(DemoData.sampleProperties.filter { it.title.contains(query, ignoreCase = true) })
 }
 

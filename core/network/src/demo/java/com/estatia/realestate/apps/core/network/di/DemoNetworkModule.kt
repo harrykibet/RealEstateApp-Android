@@ -1,8 +1,13 @@
 package com.estatia.realestate.apps.core.network.di
 
+import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
+import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.exceptions.*
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
@@ -14,6 +19,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -24,6 +32,18 @@ object DemoNetworkModule {
     @Singleton
     fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
         return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkStatsManager(@ApplicationContext context: Context): NetworkStatsManager {
+        return context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideTelephonyManager(@ApplicationContext context: Context): TelephonyManager {
+        return context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
     }
 
     @Provides
@@ -89,5 +109,25 @@ object DemoNetworkModule {
     @Singleton
     fun provideRetryPolicy(): IRetryPolicy = object : IRetryPolicy {
         override suspend fun <T> execute(config: RetryConfig?, block: suspend () -> T): T = block()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://demo.estatia.com/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSecretApi(retrofit: Retrofit): SecretApi {
+        return retrofit.create(SecretApi::class.java)
     }
 }

@@ -6,8 +6,12 @@ import javax.inject.Inject
 
 class AndroidMeasurementFormatter @Inject constructor() : MeasurementFormatter {
     override fun formatArea(squareMeters: Double): String {
-        // Simple logic for now, could be more complex with Region check
-        return String.format(Locale.getDefault(), "%.1f m²", squareMeters)
+        return if (Locale.getDefault().country == "US") {
+            val sqft = squareMeters * 10.7639
+            String.format(Locale.getDefault(), "%.0f sq ft", sqft)
+        } else {
+            String.format(Locale.getDefault(), "%.1f m²", squareMeters)
+        }
     }
 
     override fun formatDistance(meters: Double): String {
