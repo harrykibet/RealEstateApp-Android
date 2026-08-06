@@ -37,28 +37,10 @@ fun PropertyFeedItem(
     videoPlayerContent: @Composable () -> Unit,
     onClick: (ListingUiModel) -> Unit = {}
 ) {
-    var totalDragAmount by remember { mutableFloatStateOf(0f) }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures(
-                    onDragEnd = {
-                        // Swipe threshold (e.g., swipe left by 100 pixels)
-                        if (totalDragAmount < -150f) {
-                            onClick(listing)
-                        }
-                        totalDragAmount = 0f
-                    },
-                    onHorizontalDrag = { change, dragAmount ->
-                        change.consume()
-                        totalDragAmount += dragAmount
-                    }
-                )
-            }
-            .clickable { /* Toggle play/pause logic could go here */ }
     ) {
 
         videoPlayerContent()

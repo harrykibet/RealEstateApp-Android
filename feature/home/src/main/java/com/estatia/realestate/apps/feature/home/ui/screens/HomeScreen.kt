@@ -170,15 +170,14 @@ internal fun HomeFeedContent(
                                     getPlayer = getPlayer,
                                     onPause = pausePlayback,
                                     isActive = isMediaActive(videoUrl),
-                                    modifier = Modifier.fillMaxSize(),
-                                    onClick = { onNavigateToPropertyDetail(listing.id) }
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
-                        },
-                        onClick = { onNavigateToPropertyDetail(it.id) }
+                        }
                     )
                 },
                 commentsContent = commentsContent,
+                onNavigateToDetails = onNavigateToPropertyDetail
             )
         }
     }

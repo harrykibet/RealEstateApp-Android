@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.content.Context
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.BandwidthMeter
@@ -33,6 +34,7 @@ class PlayerFactory @Inject constructor(
         configuration.livePlaybackSpeedControl?.let { builder.setLivePlaybackSpeedControl(it) }
 
         val player = builder.build()
+        player.repeatMode = Player.REPEAT_MODE_ONE
         player.setMediaItem(configuration.mediaItem)
 
         val listener = analyticsListenerProvider.get()

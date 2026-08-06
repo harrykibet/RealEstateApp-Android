@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -9,10 +10,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 
@@ -22,7 +25,8 @@ fun PropertyFeedScreen(
     listings: List<ListingUiModel>,
     playbackCoordinator: @Composable (PagerState, List<ListingUiModel>) -> Unit,
     itemContent: @Composable (ListingUiModel, Boolean, (String) -> Unit) -> Unit,
-    commentsContent: @Composable (String) -> Unit
+    commentsContent: @Composable (String) -> Unit,
+    onNavigateToDetails: (String) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -49,11 +53,36 @@ fun PropertyFeedScreen(
 
             val listing = listings[page]
 
-            itemContent(
-                listing,
-                pagerState.currentPage == page,
-                { id -> showCommentsForId = id }
-            )
+            // TikTok-style horizontal swipe for details
+            val horizontalPagerState = rememberPagerState(pageCount = { 2 })
+
+            LaunchedEffect(horizontalPagerState) {
+                snapshotFlow { horizontalPagerState.currentPage }
+                    .collect { horizontalPage ->
+                        if (horizontalPage == 1) {
+                            onNavigateToDetails(listing.id)
+                            // Snap back to 0 so when we come back, we're on the video
+                            horizontalPagerState.scrollToPage(0)
+                        }
+                    }
+            }
+
+            HorizontalPager(
+                state = horizontalPagerState,
+                modifier = Modifier.fillMaxSize(),
+                userScrollEnabled = true
+            ) { hPage ->
+                if (hPage == 0) {
+                    itemContent(
+                        listing,
+                        pagerState.currentPage == page,
+                        { id -> showCommentsForId = id }
+                    )
+                } else {
+                    // Empty page to trigger navigation
+                    androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize())
+                }
+            }
         }
     }
 }
