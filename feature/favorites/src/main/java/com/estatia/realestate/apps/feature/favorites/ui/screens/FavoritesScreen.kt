@@ -1,11 +1,13 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
@@ -73,18 +75,19 @@ fun FavoritesScreen(
                     if (videoUrl != null) {
                         EngineVideoPlayer(
                             mediaId = videoUrl,
+                            uri = videoUrl.toUri(),
                             mediaType = MediaType.VOD,
                             getPlayer = playbackViewModel::getPlayer,
                             onPause = { playbackViewModel.pause() },
                             isActive = playbackViewModel.isMediaActive(videoUrl),
-                            modifier = Modifier.fillMaxSize(),
-                            onClick = { onPropertyClick(listing.id) }
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 },
                 onClick = { onPropertyClick(it.id) }
             )
         },
-        commentsContent = commentsContent
+        commentsContent = commentsContent,
+        onNavigateToDetails = onPropertyClick
     )
 }

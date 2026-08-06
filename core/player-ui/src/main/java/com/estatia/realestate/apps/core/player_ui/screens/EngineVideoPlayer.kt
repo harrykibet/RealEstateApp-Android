@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 package com.estatia.realestate.apps.core.player_ui.screens
 
-import android.view.SurfaceView
-import android.view.ViewGroup
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,17 +33,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import kotlinx.coroutines.delay
 
 @Composable
 fun EngineVideoPlayer(
     mediaId: String,
+    uri: Uri,
     mediaType: MediaType,
-    getPlayer: suspend (String, MediaType) -> Player,
+    getPlayer: suspend (String, Uri, MediaType) -> Player,
     onPause: () -> Unit,
     isActive: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -55,12 +54,23 @@ fun EngineVideoPlayer(
         mutableStateOf<Player?>(null)
     }
 
-    // Acquire player only when mediaId changes
-    LaunchedEffect(mediaId, mediaType) {
-        playerState.value = getPlayer(mediaId, mediaType)
+    // Acquire player only when mediaId/uri changes
+    LaunchedEffect(mediaId, uri, mediaType) {
+        playerState.value = getPlayer(mediaId, uri, mediaType)
     }
 
     val player = playerState.value
+
+    // Stable surface lifecycle via Pool
+    val surfaceView = remember(mediaId) {
+        SurfacePool.acquire(context)
+    }
+
+    DisposableEffect(mediaId) {
+        onDispose {
+            SurfacePool.release(surfaceView)
+        }
+    }
 
     // Playback control state
     var isPlaying by remember { mutableStateOf(true) }
@@ -78,28 +88,18 @@ fun EngineVideoPlayer(
     LaunchedEffect(player, isActive, isPlaying) {
         if (player != null && isActive && isPlaying) {
             while (true) {
-                val current = player.currentPosition.toFloat()
-                val duration = player.duration.toFloat()
+                val current = player.currentPosition.toDouble()
+                val duration = player.duration.toDouble()
                 if (duration > 0) {
-                    progress = current / duration
+                    progress = (current / duration).toFloat()
                 }
                 delay(200)
             }
         }
     }
 
-    // Stable surface lifecycle
-    val surfaceView = remember(mediaId) {
-        SurfaceView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-    }
-
     // Attach surface ONLY when player changes
-    DisposableEffect(player) {
+    DisposableEffect(player, surfaceView) {
         player?.setVideoSurfaceView(surfaceView)
 
         onDispose {
@@ -166,7 +166,7 @@ fun EngineVideoPlayer(
                     .align(Alignment.Center)
                     .alpha(indicatorAlpha)
             )
-            
+
             // Auto-hide indicator if it was just a transient tap
             LaunchedEffect(showIndicator) {
                 delay(800)
@@ -184,107 +184,10 @@ fun EngineVideoPlayer(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(progress)
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
                     .height(2.dp)
                     .background(Color.White)
             )
         }
     }
 }
-=======
-package com.estatia.realestate.apps.core.player_ui.screens
-
-import android.view.SurfaceView
-import android.view.ViewGroup
-import androidx.compose.foundation.clickable
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.Player
-import com.estatia.realestate.apps.core.model.property.MediaType
-
-@Composable
-fun EngineVideoPlayer(
-    mediaId: String,
-    mediaType: MediaType,
-    getPlayer: suspend (String, MediaType) -> Player,
-    onPause: () -> Unit,
-    isActive: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
-) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    val playerState = remember(mediaId) {
-        mutableStateOf<Player?>(null)
-    }
-
-    LaunchedEffect(mediaId, mediaType) {
-        playerState.value = getPlayer(mediaId, mediaType)
-    }
-
-    val player = playerState.value
-
-    val surfaceView = remember(mediaId) {
-        SurfaceView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-    }
-
-    DisposableEffect(player, surfaceView) {
-        player?.setVideoSurfaceView(surfaceView)
-        onDispose {
-            player?.clearVideoSurfaceView(surfaceView)
-        }
-    }
-
-    LaunchedEffect(player, isActive) {
-        if (player == null) return@LaunchedEffect
-        if (isActive) {
-            player.playWhenReady = true
-            player.play()
-        } else {
-            player.pause()
-        }
-    }
-
-    DisposableEffect(lifecycleOwner, mediaId, isActive) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> {
-                    if (isActive) {
-                        onPause()
-                    }
-                }
-
-                else -> Unit
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    AndroidView(
-        modifier = modifier.then(
-            if (onClick != null) Modifier.clickable { onClick() } else Modifier
-        ),
-        factory = { surfaceView }
-    )
-}
->>>>>>> 42f7fa85 (Player Core and UI fixes)

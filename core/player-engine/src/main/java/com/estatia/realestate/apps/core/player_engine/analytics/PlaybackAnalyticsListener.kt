@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,6 +44,10 @@ class PlaybackAnalyticsListener @Inject constructor(
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
         firstFrameSentAt = null
+    }
+
+    fun release() {
+        scope.cancel()
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {

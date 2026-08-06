@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.home.ui.screens
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -46,7 +48,7 @@ import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
-import com.estatia.realestate.apps.localization.R as LocalizationR
+import com.estatia.realestate.apps.core.localization.R as LocalizationR
 
 @Composable
 internal fun HomeRoute(
@@ -84,7 +86,7 @@ internal fun HomeScreen(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
     onPageVisible: (FeedMediaContext) -> Unit,
-    getPlayer: suspend (String, MediaType) -> Player,
+    getPlayer: suspend (String, Uri, MediaType) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -121,7 +123,7 @@ internal fun HomeFeedContent(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
     onPageVisible: (FeedMediaContext) -> Unit,
-    getPlayer: suspend (String, MediaType) -> Player,
+    getPlayer: suspend (String, Uri, MediaType) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -166,6 +168,7 @@ internal fun HomeFeedContent(
                             if (videoUrl != null) {
                                 EngineVideoPlayer(
                                     mediaId = videoUrl,
+                                    uri = videoUrl.toUri(),
                                     mediaType = MediaType.VOD,
                                     getPlayer = getPlayer,
                                     onPause = pausePlayback,
@@ -276,7 +279,7 @@ fun HomeLoadingPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPageVisible = {},
-                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -301,7 +304,7 @@ fun HomeEmptyPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPageVisible = {},
-                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -326,7 +329,7 @@ fun HomeErrorPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPageVisible = {},
-                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -364,7 +367,7 @@ fun HomeContentPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPageVisible = {},
-                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -401,7 +404,7 @@ fun HomeContentSwahiliPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPageVisible = {},
-                getPlayer = { _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},

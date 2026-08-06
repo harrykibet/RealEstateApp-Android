@@ -44,17 +44,17 @@ class VideoPlaybackCoordinator @Inject constructor(
         preloadJob?.cancel()
 
         playJob = scope.launch {
-            playerController.play(mediaId, MediaType.VOD)
+            playerController.play(mediaId, uri, MediaType.VOD)
         }
 
         warmVisible(mediaId, uri)
 
         preloadJob = scope.launch {
             previous?.let {
-                playerController.preload(it.mediaId, MediaType.VOD)
+                playerController.preload(it.mediaId, it.uri, MediaType.VOD)
             }
             next?.let {
-                playerController.preload(it.mediaId, MediaType.VOD)
+                playerController.preload(it.mediaId, it.uri, MediaType.VOD)
                 warmNext(it.mediaId, it.uri)
             }
         }
@@ -80,8 +80,8 @@ class VideoPlaybackCoordinator @Inject constructor(
         }
     }
 
-    suspend fun getPlayer(mediaId: String, mediaType: MediaType): Player {
-        return playerController.getPlayer(mediaId, mediaType)
+    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player {
+        return playerController.getPlayer(mediaId, uri, mediaType)
     }
 
     fun pause(scope: CoroutineScope) {

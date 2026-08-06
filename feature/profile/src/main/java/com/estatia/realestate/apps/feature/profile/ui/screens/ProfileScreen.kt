@@ -57,8 +57,8 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaOutlinedBu
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.localization.api.LocalNumberFormatter
-import com.estatia.realestate.apps.localization.R as LocalizationR
+import com.estatia.realestate.apps.core.localization.api.LocalNumberFormatter
+import com.estatia.realestate.apps.core.localization.R as LocalizationR
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileUiState
 import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel

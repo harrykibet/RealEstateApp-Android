@@ -15,12 +15,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.tracing.trace
-import com.estatia.realestate.apps.localization.api.LocalTimeZone
+import com.estatia.realestate.apps.core.localization.api.LocalTimeZone
 import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 import com.estatia.realestate.apps.ui.rememberEstatiaAppState
 import com.estatia.realestate.apps.ui.EstatiaApp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
-import com.estatia.realestate.apps.localization.api.*
+import com.estatia.realestate.apps.core.localization.api.*
 import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider

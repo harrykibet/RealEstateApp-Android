@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -10,13 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IPlayerManager {
 
-    suspend fun play(mediaId: String, mediaType: MediaType)
+    suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType)
 
     suspend fun pause()
-    suspend fun getPlayer(mediaId: String, mediaType: MediaType): Player
+    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player
 
     @OptIn(UnstableApi::class)
-    suspend fun preload(mediaId: String, mediaType: MediaType): PlayerPool.ManagedPlayer
+    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType): PlayerPool.ManagedPlayer
     fun observeState(): StateFlow<PlaybackStateReducer.State>
     fun shutdown()
 }

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
-import com.estatia.realestate.apps.localization.api.LocalCurrencyFormatter
+import com.estatia.realestate.apps.core.localization.api.LocalCurrencyFormatter
 
 @Composable
 fun PropertyInfoOverlay(

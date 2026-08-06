@@ -1,12 +1,12 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
-import android.net.Uri
 import kotlinx.coroutines.withTimeout
 import java.net.InetSocketAddress
 import java.net.Socket
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration
+import androidx.core.net.toUri
 
 @Singleton
 class DefaultLatencyMeasurer @Inject constructor() : ILatencyMeasurer {
@@ -14,7 +14,7 @@ class DefaultLatencyMeasurer @Inject constructor() : ILatencyMeasurer {
         val start = System.currentTimeMillis()
         return try {
             withTimeout(timeout) {
-                val parsed = Uri.parse(host.trim())
+                val parsed = host.trim().toUri()
                 val normalizedHost = parsed.host ?: host.trim()
                 val port = parsed.port.takeIf { it > 0 } ?: if (parsed.scheme == "https") 443 else 80
                 val socket = Socket()

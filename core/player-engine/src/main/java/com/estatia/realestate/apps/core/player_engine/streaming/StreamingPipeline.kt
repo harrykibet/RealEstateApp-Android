@@ -28,6 +28,7 @@ class StreamingPipeline @Inject constructor(
     ): MediaItem {
         return MediaItem.Builder()
             .setUri(uri)
+            .setCustomCacheKey(uri.toString()) // Stable key for caching
             .apply {
                 if (mediaType == MediaType.LIVE) {
                     setLiveConfiguration(

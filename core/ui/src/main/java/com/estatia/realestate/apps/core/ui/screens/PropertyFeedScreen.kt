@@ -53,16 +53,19 @@ fun PropertyFeedScreen(
 
             val listing = listings[page]
 
-            // TikTok-style horizontal swipe for details
-            val horizontalPagerState = rememberPagerState(pageCount = { 2 })
+            // TikTok-style horizontal swipe for details (Start at page 1, swipe right to page 0)
+            val horizontalPagerState = rememberPagerState(
+                initialPage = 1,
+                pageCount = { 2 }
+            )
 
             LaunchedEffect(horizontalPagerState) {
                 snapshotFlow { horizontalPagerState.currentPage }
                     .collect { horizontalPage ->
-                        if (horizontalPage == 1) {
+                        if (horizontalPage == 0) {
                             onNavigateToDetails(listing.id)
-                            // Snap back to 0 so when we come back, we're on the video
-                            horizontalPagerState.scrollToPage(0)
+                            // Snap back to 1 so when we come back, we're on the video
+                            horizontalPagerState.scrollToPage(1)
                         }
                     }
             }
@@ -72,14 +75,14 @@ fun PropertyFeedScreen(
                 modifier = Modifier.fillMaxSize(),
                 userScrollEnabled = true
             ) { hPage ->
-                if (hPage == 0) {
+                if (hPage == 1) {
                     itemContent(
                         listing,
                         pagerState.currentPage == page,
                         { id -> showCommentsForId = id }
                     )
                 } else {
-                    // Empty page to trigger navigation
+                    // Empty page (left side) to trigger navigation
                     androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize())
                 }
             }

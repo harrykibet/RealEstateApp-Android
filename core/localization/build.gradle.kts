@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.estatia.realestate.apps.localization"
+    namespace = "com.estatia.realestate.apps.core.localization"
 }
 
 dependencies {

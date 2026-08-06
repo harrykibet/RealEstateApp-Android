@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.search.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
@@ -111,11 +113,6 @@ fun SearchScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
-                
-                // Trigger search when user presses search on keyboard
-                // Note: EstatiaTextField doesn't expose KeyboardActions currently, 
-                // but let's assume it should or use a simpler field if needed.
-                // For now, let's just use the query if Success state comes from outside.
             }
         }
     ) { padding ->
@@ -148,7 +145,7 @@ fun SearchScreen(
                     val listings = remember(uiState.results) {
                         uiState.results.map { it.toListingUiModel() }
                     }
-                    
+
                     if (listings.isEmpty()) {
                         EmptySearchResults()
                     } else {
@@ -179,19 +176,19 @@ fun SearchScreen(
                                         if (videoUrl != null) {
                                             EngineVideoPlayer(
                                                 mediaId = videoUrl,
+                                                uri = videoUrl.toUri(),
                                                 mediaType = MediaType.VOD,
                                                 getPlayer = playbackViewModel::getPlayer,
                                                 onPause = { playbackViewModel.pause() },
                                                 isActive = playbackViewModel.isMediaActive(videoUrl),
-                                                modifier = Modifier.fillMaxSize(),
-                                                onClick = { onNavigateToPropertyDetail(listing.id) }
+                                                modifier = Modifier.fillMaxSize()
                                             )
                                         }
-                                    },
-                                    onClick = { onNavigateToPropertyDetail(it.id) }
+                                    }
                                 )
                             },
                             commentsContent = commentsContent,
+                            onNavigateToDetails = onNavigateToPropertyDetail
                         )
                     }
                 }
@@ -204,7 +201,7 @@ fun SearchScreen(
             }
         }
     }
-    
+
     // Auto-search if query is typed and enter is pressed (simplified for now)
     LaunchedEffect(searchQuery) {
         if (searchQuery.length > 2) {
