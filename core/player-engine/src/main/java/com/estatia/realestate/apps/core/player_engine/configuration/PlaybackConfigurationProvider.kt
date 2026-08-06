@@ -18,9 +18,7 @@ class PlaybackConfigurationProvider @Inject constructor() : IPlaybackConfigurati
         }
     }
 
-    override fun createPlaybackSpeedControl(mediaType: MediaType)
-            : LivePlaybackSpeedControl? {
-
+    override fun createPlaybackSpeedControl(mediaType: MediaType): LivePlaybackSpeedControl? {
         return if (mediaType == MediaType.LIVE) {
             DefaultLivePlaybackSpeedControl.Builder()
                 .setFallbackMinPlaybackSpeed(0.97f)
@@ -29,24 +27,24 @@ class PlaybackConfigurationProvider @Inject constructor() : IPlaybackConfigurati
         } else null
     }
 
-    private fun createLiveLoadControl() : LoadControl {
+    private fun createLiveLoadControl(): LoadControl {
         return DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                1000,
-                3000,
-                500,
-                1000
+                800,
+                2500,
+                400,
+                800
             )
             .build()
     }
 
-    private fun createVodLoadControl() : LoadControl {
+    private fun createVodLoadControl(): LoadControl {
         return DefaultLoadControl.Builder()
             .setBufferDurationsMs(
+                250,
                 3000,
-                6000,
-                1500,
-                2000
+                250,
+                800
             )
             .build()
     }

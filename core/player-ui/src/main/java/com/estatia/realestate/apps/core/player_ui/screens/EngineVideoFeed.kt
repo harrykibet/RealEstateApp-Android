@@ -1,15 +1,22 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.pager.VerticalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,31 +37,25 @@ fun EngineVideoFeed(
     videoPlayerContent: @Composable (VideoItem, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val pagerState = rememberPagerState(pageCount = { videos.size })
+    val currentOnPageVisible by rememberUpdatedState(onPageVisible)
 
-    // Prevent duplicate dispatches
     var lastDispatchedPage by remember { mutableIntStateOf(-1) }
 
-    LaunchedEffect(pagerState) {
-
+    LaunchedEffect(pagerState, videos.size) {
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
             .collect { page ->
-
-                // HARD GUARD: avoid duplicate calls
                 if (page == lastDispatchedPage) return@collect
                 lastDispatchedPage = page
 
                 val video = videos.getOrNull(page) ?: return@collect
-
                 val previous = videos.getOrNull(page - 1)?.let {
                     FeedNeighbor(
                         mediaId = it.mediaId,
                         uri = it.videoUrl.toUri()
                     )
                 }
-
                 val next = videos.getOrNull(page + 1)?.let {
                     FeedNeighbor(
                         mediaId = it.mediaId,
@@ -62,7 +63,7 @@ fun EngineVideoFeed(
                     )
                 }
 
-                onPageVisible(
+                currentOnPageVisible(
                     FeedMediaContext(
                         mediaId = video.mediaId,
                         uri = video.videoUrl.toUri(),
@@ -77,17 +78,14 @@ fun EngineVideoFeed(
         state = pagerState,
         modifier = modifier.fillMaxSize()
     ) { page ->
-
         val video = videos[page]
         val isActive = pagerState.currentPage == page
 
         Box(modifier = Modifier.fillMaxSize()) {
-
             videoPlayerContent(video, isActive)
 
             if (isActive) {
                 when (val state = uiState) {
-
                     PlayerUiState.Buffering -> {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),

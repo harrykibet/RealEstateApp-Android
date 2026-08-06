@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
+import android.content.Context
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
@@ -30,6 +32,8 @@ class PlayerManagerTest {
     private lateinit var environmentCoordinator: EnvironmentCoordinator
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private lateinit var dynamicBitrateController: DynamicBitrateController
+    private lateinit var streamingPipeline: IStreamingPipeline
+    private lateinit var context: Context
     private lateinit var playerManager: PlayerManager
 
     private val testScope = TestScope()
@@ -49,12 +53,17 @@ class PlayerManagerTest {
             every { calculateMaxPoolSize() } returns 3
         }
         dynamicBitrateController = mockk(relaxed = true)
+        streamingPipeline = mockk(relaxed = true)
+        context = mockk(relaxed = true)
+        every { context.getSystemService(any()) } returns null
 
         playerManager = PlayerManager(
             pool,
             environmentCoordinator,
             sizingPolicy,
             dynamicBitrateController,
+            streamingPipeline,
+            context,
             testScope,
             playerDispatcher
         )

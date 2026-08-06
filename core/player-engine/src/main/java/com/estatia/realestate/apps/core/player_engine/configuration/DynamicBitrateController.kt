@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitratePolicy
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @UnstableApi
 class DynamicBitrateController @Inject constructor(
@@ -21,7 +22,8 @@ class DynamicBitrateController @Inject constructor(
     fun apply(
         player: ExoPlayer,
         mediaType: MediaType,
-        environment: EnvironmentState
+        environment: EnvironmentState,
+        startupPhase: Boolean = false
     ) {
         val targetBitrate =
             bitratePolicy.calculateMaxVideoBitrate(
@@ -29,15 +31,19 @@ class DynamicBitrateController @Inject constructor(
                 environment = environment
             )
 
-        val currentBitrate =
-            player.trackSelectionParameters.maxVideoBitrate
+        val effectiveBitrate = if (startupPhase) {
+            (targetBitrate * 0.55).roundToInt().coerceAtLeast(500_000)
+        } else {
+            targetBitrate
+        }
 
-        if (currentBitrate == targetBitrate) return
+        val currentBitrate = player.trackSelectionParameters.maxVideoBitrate
+        if (currentBitrate == effectiveBitrate) return
 
         player.trackSelectionParameters =
             player.trackSelectionParameters
                 .buildUpon()
-                .setMaxVideoBitrate(targetBitrate)
+                .setMaxVideoBitrate(effectiveBitrate)
                 .build()
     }
 }

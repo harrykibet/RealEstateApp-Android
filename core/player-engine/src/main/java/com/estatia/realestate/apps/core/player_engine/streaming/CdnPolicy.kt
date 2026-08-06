@@ -17,34 +17,25 @@ class CdnPolicy @Inject constructor(
         endpoints: List<CdnEndpoint>,
         healthMonitor: CdnHealthMonitor
     ): CdnEndpoint {
-
         val env = environmentCoordinator.environment.value
 
-        // 1. Fast path: degraded network → avoid strict optimization
         if (shouldUseRandomFallback(env)) {
             return endpoints.random(random)
         }
 
-        // 2. Evaluate health + latency only when network is stable
-        val healthy = endpoints.mapNotNull { endpoint ->
+        val scored = endpoints.mapNotNull { endpoint ->
             val health = healthMonitor.getHealth(endpoint)
-
-            if (!health.isCircuitOpen && health.latencyMs != null) {
-                endpoint to health.latencyMs
-            } else {
+            if (health.isCircuitOpen || health.latencyMs == null) {
                 null
+            } else {
+                val latencyPenalty = health.latencyMs + (health.failureCount * 250L)
+                endpoint to latencyPenalty
             }
         }
 
-        // 3. Best latency wins
-        return healthy.minByOrNull { it.second }?.first
-            ?: endpoints.random(random)
+        return scored.minByOrNull { it.second }?.first ?: endpoints.random(random)
     }
 
-    /**
-     * Centralized decision instead of INetworkUtils.
-     * Keeps CDN policy aligned with global environment model.
-     */
     private fun shouldUseRandomFallback(env: EnvironmentState): Boolean {
         return env.shouldThrottlePerformance || env.isMetered
     }

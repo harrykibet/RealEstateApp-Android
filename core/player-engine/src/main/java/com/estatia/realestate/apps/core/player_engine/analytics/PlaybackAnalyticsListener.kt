@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.analytics
 
+import android.os.SystemClock
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
@@ -19,7 +21,6 @@ import javax.inject.Inject
  *
  * This class is ONLY responsible for analytics tracking.
  */
-// PlaybackAnalyticsListener.kt — drop implicit singleton assumption, add session correlation
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
@@ -30,34 +31,69 @@ class PlaybackAnalyticsListener @Inject constructor(
     @Volatile
     private var startupStartTime: Long = 0L
 
+    @Volatile
+    private var bufferingStartedAt: Long? = null
+
+    @Volatile
+    private var firstFrameSentAt: Long? = null
+
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun markPlaybackStart() {
-        startupStartTime = System.currentTimeMillis()
+        startupStartTime = SystemClock.elapsedRealtime()
+        bufferingStartedAt = null
+        firstFrameSentAt = null
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
         scope.launch {
             when (state) {
                 Player.STATE_READY -> {
-                    val startupTime = System.currentTimeMillis() - startupStartTime
+                    val startupTime = SystemClock.elapsedRealtime() - startupStartTime
                     analyticsClient.logEvent(
                         message = "PlaybackAnalyticsListener",
                         eventType = EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_START,
                         customMetadata = mapOf(
                             "time_ms" to startupTime.toString(),
-                            "session_id" to sessionId
+                            "session_id" to sessionId,
+                            "buffering_ms" to (bufferingStartedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L).toString()
                         )
                     )
+                    bufferingStartedAt = null
                 }
+
                 Player.STATE_BUFFERING -> {
+                    bufferingStartedAt = bufferingStartedAt ?: SystemClock.elapsedRealtime()
                     analyticsClient.logEvent(
                         message = "PlaybackAnalyticsListener",
                         eventType = EventTypes.EVENT_MEDIA_PLAYER_BUFFERING_START,
                         customMetadata = mapOf("session_id" to sessionId)
                     )
                 }
+
+                Player.STATE_ENDED -> {
+                    analyticsClient.logEvent(
+                        message = "PlaybackAnalyticsListener",
+                        eventType = EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_END,
+                        customMetadata = mapOf("session_id" to sessionId)
+                    )
+                }
+
+                else -> Unit
             }
+        }
+    }
+
+    override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
+        scope.launch {
+            analyticsClient.logEvent(
+                message = "PlaybackAnalyticsListener",
+                eventType = EventTypes.EVENT_MEDIA_PLAYER_ERROR,
+                customMetadata = mapOf(
+                    "session_id" to sessionId,
+                    "error_type" to error.errorCode.toString()
+                )
+            )
         }
     }
 }
