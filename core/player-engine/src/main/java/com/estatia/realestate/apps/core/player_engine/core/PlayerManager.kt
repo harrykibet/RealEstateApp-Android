@@ -1,9 +1,10 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
-import androidx.core.net.toUri
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -21,12 +22,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,15 +49,18 @@ class PlayerManager @Inject constructor(
     private var activeMediaId: String? = null
     private val activeMediaIdFlow = MutableStateFlow<String?>(null)
     private val attachedPlayers = mutableSetOf<ExoPlayer>()
+    private var activeFocusRequest: AudioFocusRequest? = null
     private val audioManager: AudioManager? by lazy {
         context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
     }
     private val audioFocusListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-        when (focusChange) {
-            AudioManager.AUDIOFOCUS_LOSS,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> pauseCurrentPlayer()
-            AudioManager.AUDIOFOCUS_GAIN -> resumeCurrentPlayer()
+        engineScope.launch(playerDispatcher) {
+            when (focusChange) {
+                AudioManager.AUDIOFOCUS_LOSS,
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> pauseCurrentPlayer()
+                AudioManager.AUDIOFOCUS_GAIN -> resumeCurrentPlayer()
+            }
         }
     }
 
@@ -119,25 +124,41 @@ class PlayerManager @Inject constructor(
                 mediaId?.let { id -> pool.get(id)?.reducer?.state }
                     ?: MutableStateFlow(PlaybackStateReducer.State.Idle)
             }
+            .flowOn(playerDispatcher)
             .stateIn(engineScope, SharingStarted.Eagerly, PlaybackStateReducer.State.Idle)
 
     override fun shutdown() {
-        pauseCurrentPlayer()
-        abandonAudioFocus()
-        pool.releaseAll()
-        environmentCoordinator.stop()
+        engineScope.launch(playerDispatcher) {
+            pauseCurrentPlayer()
+            abandonAudioFocus()
+            pool.releaseAll()
+            environmentCoordinator.stop()
+        }
     }
 
     private fun requestAudioFocus(): Boolean {
-        return audioManager?.requestAudioFocus(
-            audioFocusListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        ) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        val audioManager = audioManager ?: return false
+
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+            .build()
+
+        val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            .setAudioAttributes(attributes)
+            .setAcceptsDelayedFocusGain(true)
+            .setOnAudioFocusChangeListener(audioFocusListener)
+            .build()
+
+        activeFocusRequest = request
+        return audioManager.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
 
     private fun abandonAudioFocus() {
-        audioManager?.abandonAudioFocus(audioFocusListener)
+        activeFocusRequest?.let { request ->
+            audioManager?.abandonAudioFocusRequest(request)
+        }
+        activeFocusRequest = null
     }
 
     private fun pauseCurrentPlayer() {

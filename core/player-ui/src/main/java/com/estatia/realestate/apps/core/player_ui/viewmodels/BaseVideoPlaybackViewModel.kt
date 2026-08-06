@@ -9,7 +9,9 @@ import com.estatia.realestate.apps.core.player_engine.core.FeedNeighborInfo
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
+import com.estatia.realestate.apps.core.player_ui.state.PlayerErrorType
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
+import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +25,7 @@ abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator
 ) : ViewModel() {
 
+    private var lastMediaContext: FeedMediaContext? = null
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
 
@@ -44,6 +47,7 @@ abstract class BaseVideoPlaybackViewModel(
     }
 
     fun onPageVisible(context: FeedMediaContext) {
+        lastMediaContext = context
         coordinator.onPageVisible(
             scope = viewModelScope,
             mediaId = context.mediaId,
@@ -51,6 +55,11 @@ abstract class BaseVideoPlaybackViewModel(
             previous = context.previous?.let { FeedNeighborInfo(it.mediaId, it.uri) },
             next = context.next?.let { FeedNeighborInfo(it.mediaId, it.uri) }
         )
+    }
+
+    fun retry() {
+        val context = lastMediaContext ?: return
+        coordinator.retry(viewModelScope, context.mediaId, context.uri)
     }
 
     suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =
@@ -68,7 +77,22 @@ abstract class BaseVideoPlaybackViewModel(
             PlaybackStateReducer.State.Playing -> PlayerUiState.Playing
             PlaybackStateReducer.State.Paused -> PlayerUiState.Paused
             PlaybackStateReducer.State.Ended -> PlayerUiState.Ended
-            is PlaybackStateReducer.State.Error -> PlayerUiState.Error(state.error.message)
+            is PlaybackStateReducer.State.Error -> {
+                val errorType = when (state.error.errorCode) {
+                    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+                    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT -> PlayerErrorType.NETWORK
+
+                    PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS,
+                    PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND,
+                    PlaybackException.ERROR_CODE_IO_CLEARTEXT_NOT_PERMITTED -> PlayerErrorType.SERVER
+
+                    PlaybackException.ERROR_CODE_DECODER_INIT_FAILED,
+                    PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED -> PlayerErrorType.DECODER
+
+                    else -> PlayerErrorType.UNKNOWN
+                }
+                PlayerUiState.Error(state.error.message, errorType)
+            }
         }
     }
 

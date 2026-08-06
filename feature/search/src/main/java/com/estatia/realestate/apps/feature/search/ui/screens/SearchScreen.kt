@@ -171,6 +171,7 @@ fun SearchScreen(
                                     onLikeClick = onLikeClick,
                                     onCommentClick = { onCommentClick(it.id) },
                                     onShareClick = {},
+                                    onRetry = { playbackViewModel.retry() },
                                     videoPlayerContent = {
                                         val videoUrl = listing.videoUrl
                                         if (videoUrl != null) {

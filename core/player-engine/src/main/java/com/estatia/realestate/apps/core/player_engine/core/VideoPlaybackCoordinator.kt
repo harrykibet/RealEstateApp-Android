@@ -92,6 +92,13 @@ class VideoPlaybackCoordinator @Inject constructor(
 
     fun isMediaActive(mediaId: String): Boolean = currentMediaId == mediaId
 
+    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri) {
+        playJob?.cancel()
+        playJob = scope.launch {
+            playerController.play(mediaId, uri, MediaType.VOD)
+        }
+    }
+
     fun onBufferingStarted() = streamingPipeline.onBufferingStarted()
     fun onBufferingEnded() = streamingPipeline.onBufferingEnded()
 

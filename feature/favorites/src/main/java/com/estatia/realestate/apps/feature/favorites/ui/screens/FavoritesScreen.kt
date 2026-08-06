@@ -70,6 +70,7 @@ fun FavoritesScreen(
                 onLikeClick = { onLikeClick(it.id) },
                 onCommentClick = { onCommentClick(it.id) },
                 onShareClick = { onShareClick(it.id) },
+                onRetry = { playbackViewModel.retry() },
                 videoPlayerContent = {
                     val videoUrl = listing.videoUrl
                     if (videoUrl != null) {

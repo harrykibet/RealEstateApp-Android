@@ -62,7 +62,10 @@ import com.estatia.realestate.apps.core.localization.R as LocalizationR
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsUiState
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsViewModel
 import com.estatia.realestate.apps.feature.property.ui.management.viewmodels.PropertyDetailsVideoPlaybackViewModel
+import com.estatia.realestate.apps.core.player_ui.screens.PlaybackErrorView
+import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.estatia.realestate.apps.core.model.property.MediaType
 import androidx.media3.common.Player
 
@@ -74,6 +77,7 @@ fun PropertyDetailsRoute(
     playbackViewModel: PropertyDetailsVideoPlaybackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(propertyId) {
         viewModel.loadProperty(propertyId)
@@ -82,6 +86,8 @@ fun PropertyDetailsRoute(
     PropertyDetailsScreen(
         uiState = uiState,
         onBackClick = onBackClick,
+        playbackUiState = playbackUiState,
+        onPlaybackRetry = playbackViewModel::retry,
         getPlayer = playbackViewModel::getPlayer,
         onPausePlayback = playbackViewModel::pause,
         isMediaActive = playbackViewModel::isMediaActive
@@ -92,6 +98,8 @@ fun PropertyDetailsRoute(
 fun PropertyDetailsScreen(
     uiState: PropertyDetailsUiState,
     onBackClick: () -> Unit,
+    playbackUiState: PlayerUiState,
+    onPlaybackRetry: () -> Unit,
     getPlayer: suspend (String, Uri, MediaType) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
@@ -113,6 +121,8 @@ fun PropertyDetailsScreen(
                     PropertyDetailsContent(
                         property = uiState.property,
                         onBackClick = onBackClick,
+                        playbackUiState = playbackUiState,
+                        onPlaybackRetry = onPlaybackRetry,
                         getPlayer = getPlayer,
                         onPausePlayback = onPausePlayback,
                         isMediaActive = isMediaActive
@@ -133,6 +143,8 @@ fun PropertyDetailsScreen(
 private fun PropertyDetailsContent(
     property: PropertyDomainModel,
     onBackClick: () -> Unit,
+    playbackUiState: PlayerUiState,
+    onPlaybackRetry: () -> Unit,
     getPlayer: suspend (String, Uri, MediaType) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
@@ -170,15 +182,27 @@ private fun PropertyDetailsContent(
                         val isVideo = mediaUrl in videos
 
                         if (isVideo) {
-                            EngineVideoPlayer(
-                                mediaId = mediaUrl,
-                                uri = mediaUrl.toUri(),
-                                mediaType = MediaType.VOD,
-                                getPlayer = getPlayer,
-                                onPause = onPausePlayback,
-                                isActive = isMediaActive(mediaUrl),
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                EngineVideoPlayer(
+                                    mediaId = mediaUrl,
+                                    uri = mediaUrl.toUri(),
+                                    mediaType = MediaType.VOD,
+                                    getPlayer = getPlayer,
+                                    onPause = onPausePlayback,
+                                    isActive = isMediaActive(mediaUrl),
+                                    modifier = Modifier.fillMaxSize()
+                                )
+
+                                if (playbackUiState is PlayerUiState.Error) {
+                                    PlaybackErrorView(
+                                        errorState = playbackUiState,
+                                        onRetry = onPlaybackRetry,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(Color.Black.copy(alpha = 0.7f))
+                                    )
+                                }
+                            }
                         } else {
                             DynamicAsyncImage(
                                 imageUrl = mediaUrl,
@@ -339,6 +363,8 @@ fun PropertyDetailsScreenSuccessPreview() {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
                 onBackClick = {},
+                playbackUiState = PlayerUiState.Idle,
+                onPlaybackRetry = {},
                 getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
@@ -355,6 +381,8 @@ fun PropertyDetailsScreenSwahiliPreview() {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
                 onBackClick = {},
+                playbackUiState = PlayerUiState.Idle,
+                onPlaybackRetry = {},
                 getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
@@ -372,6 +400,8 @@ fun PropertyDetailsScreenLoadingPreview() {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Loading,
                 onBackClick = {},
+                playbackUiState = PlayerUiState.Idle,
+                onPlaybackRetry = {},
                 getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
@@ -389,6 +419,8 @@ fun PropertyDetailsScreenErrorPreview() {
             PropertyDetailsScreen(
                 uiState = PropertyDetailsUiState.Error("Failed to load property details. Please try again."),
                 onBackClick = {},
+                playbackUiState = PlayerUiState.Idle,
+                onPlaybackRetry = {},
                 getPlayer = { _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }

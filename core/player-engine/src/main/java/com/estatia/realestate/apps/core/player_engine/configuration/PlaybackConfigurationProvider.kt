@@ -41,7 +41,7 @@ class PlaybackConfigurationProvider @Inject constructor() : IPlaybackConfigurati
     private fun createVodLoadControl(): LoadControl {
         return DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                250,
+                800,
                 3000,
                 250,
                 800

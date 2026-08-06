@@ -25,6 +25,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
+import com.estatia.realestate.apps.core.player_ui.screens.PlaybackErrorView
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 
 @Composable
@@ -34,6 +35,7 @@ fun PropertyFeedItem(
     onLikeClick: (ListingUiModel) -> Unit,
     onCommentClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
+    onRetry: () -> Unit,
     videoPlayerContent: @Composable () -> Unit,
     onClick: (ListingUiModel) -> Unit = {}
 ) {
@@ -60,9 +62,9 @@ fun PropertyFeedItem(
                 }
 
                 is PlayerUiState.Error -> {
-                    EstatiaText(
-                        text = state.message ?: "Playback error",
-                        color = Color.White,
+                    PlaybackErrorView(
+                        errorState = state,
+                        onRetry = onRetry,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }

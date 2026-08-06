@@ -34,6 +34,7 @@ fun EngineVideoFeed(
     videos: List<VideoItem>,
     uiState: PlayerUiState,
     onPageVisible: (FeedMediaContext) -> Unit,
+    onRetry: () -> Unit,
     videoPlayerContent: @Composable (VideoItem, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -94,9 +95,9 @@ fun EngineVideoFeed(
                     }
 
                     is PlayerUiState.Error -> {
-                        EstatiaText(
-                            text = state.message ?: "Playback error",
-                            color = Color.White,
+                        PlaybackErrorView(
+                            errorState = state,
+                            onRetry = onRetry,
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }

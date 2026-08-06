@@ -8,5 +8,16 @@ sealed class PlayerUiState {
     object Ended : PlayerUiState()
     object Ready : PlayerUiState()
 
-    data class Error(val message: String?) : PlayerUiState()
+    data class Error(
+        val message: String?,
+        val type: PlayerErrorType = PlayerErrorType.UNKNOWN
+    ) : PlayerUiState()
+}
+
+enum class PlayerErrorType {
+    NETWORK,
+    SERVER,
+    NOT_FOUND,
+    DECODER,
+    UNKNOWN
 }
