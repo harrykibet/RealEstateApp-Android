@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class PlayerPool @Inject constructor(
+internal class PlayerPool @Inject constructor(
     private val playerFactory: PlayerFactory,
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
@@ -44,14 +44,6 @@ class PlayerPool @Inject constructor(
     private val idlePlayers = ArrayDeque<IdleManagedPlayer>()
     private val prewarmBudget: Int
         get() = maxOf(1, minOf(2, maxPoolSize / 2))
-
-    data class ManagedPlayer(
-        val mediaId: String,
-        val mediaType: MediaType,
-        val player: ExoPlayer,
-        var analyticsListener: PlaybackAnalyticsListener,
-        val reducer: PlaybackStateReducer = PlaybackStateReducer()
-    )
 
     private data class IdleManagedPlayer(
         val player: ExoPlayer,

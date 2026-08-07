@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.mappers.firestore
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 
-object FirestoreCommentMapper {
+internal object FirestoreCommentMapper {
 
     // Map to Domain Model
     fun toDomain(comment: CommentEntityModel): CommentDomainModel {

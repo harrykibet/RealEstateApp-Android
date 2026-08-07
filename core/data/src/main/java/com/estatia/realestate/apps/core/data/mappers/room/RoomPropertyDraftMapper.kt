@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.mappers.room
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 
-object RoomPropertyDraftMapper {
+internal object RoomPropertyDraftMapper {
 
     fun toDomain(
         entity: PropertyDraftEntity

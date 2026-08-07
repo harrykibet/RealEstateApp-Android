@@ -18,13 +18,13 @@ abstract class SourcesModule {
 
     @Binds
     @Singleton
-    abstract fun bindPropertyLocalSource(dataSource: PropertyLocalDataSource) : IPropertyLocalDataSource
+    internal abstract fun bindPropertyLocalSource(dataSource: PropertyLocalDataSource) : IPropertyLocalDataSource
 
     @Binds
     @Singleton
-    abstract fun bindSearchLocalSource(dataSource: SearchLocalDataSource) : ISearchLocalDataSource
+    internal abstract fun bindSearchLocalSource(dataSource: SearchLocalDataSource) : ISearchLocalDataSource
 
     @Binds
     @Singleton
-    abstract fun bindLocalDatabaseExecutor(executor: LocalDatabaseExecutor) : ILocalDatabaseExecutor
+    internal abstract fun bindLocalDatabaseExecutor(executor: LocalDatabaseExecutor) : ILocalDatabaseExecutor
 }

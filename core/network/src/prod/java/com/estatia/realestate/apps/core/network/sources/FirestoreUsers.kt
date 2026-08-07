@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class FirestoreUsers @Inject constructor(
+internal class FirestoreUsers @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient
 ) : IUserRemoteDataSource {

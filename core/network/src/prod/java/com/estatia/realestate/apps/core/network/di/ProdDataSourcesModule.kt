@@ -1,21 +1,7 @@
 package com.estatia.realestate.apps.core.network.di
 
-import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
-import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
-import com.estatia.realestate.apps.core.network.sources.FirestoreAnalytics
-import com.estatia.realestate.apps.core.network.sources.FirebaseAuthService
-import com.estatia.realestate.apps.core.network.sources.FirebaseConfig
-import com.estatia.realestate.apps.core.network.sources.FirestoreComments
-import com.estatia.realestate.apps.core.network.sources.FirestoreProperties
-import com.estatia.realestate.apps.core.network.sources.FirestoreSearch
-import com.estatia.realestate.apps.core.network.sources.FirestoreUsers
-import com.estatia.realestate.apps.core.network.sources.SecretRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.*
+import com.estatia.realestate.apps.core.network.sources.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -30,41 +16,41 @@ abstract class ProdDataSourcesModule {
 
     @Binds
     @Singleton
-    abstract fun bindSearchRemoteSource(
+    internal abstract fun bindSearchRemoteSource(
         dataSource: FirestoreSearch): ISearchRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindPropertyRemoteSource(
+    internal abstract fun bindPropertyRemoteSource(
         dataSource: FirestoreProperties): IPropertyRemoteDatasource
 
     @Binds
     @Singleton
-    abstract fun bindAuthRemoteSource(
+    internal abstract fun bindAuthRemoteSource(
         dataSource: FirebaseAuthService): IAuthRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindCommentsRemoteSource(
+    internal abstract fun bindCommentsRemoteSource(
         dataSource: FirestoreComments): ICommentsRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindAnalyticsRemoteSource(
+    internal abstract fun bindAnalyticsRemoteSource(
         dataSource: FirestoreAnalytics): IAnalyticsRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindUserRemoteDataSource(
+    internal abstract fun bindUserRemoteDataSource(
         dataSource: FirestoreUsers): IUserRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindConfigRemoteDataSource(
+    internal abstract fun bindConfigRemoteDataSource(
         dataSource: FirebaseConfig): IConfigRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindSecretRemoteSource(
+    internal abstract fun bindSecretRemoteSource(
         dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
 }

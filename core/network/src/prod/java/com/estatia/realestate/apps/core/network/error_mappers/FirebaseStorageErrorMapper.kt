@@ -6,7 +6,7 @@ import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
 
 
-class FirebaseStorageErrorMapper @Inject constructor()
+internal class FirebaseStorageErrorMapper @Inject constructor()
     : IFirebaseStorageErrorMapper {
 
 

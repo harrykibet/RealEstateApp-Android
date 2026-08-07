@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import javax.inject.Inject
 
 
-class FirebaseNetworkClient @Inject constructor(
+internal class FirebaseNetworkClient @Inject constructor(
     private val retryPolicy: IRetryPolicy,
     private val exceptionMapper: IExceptionMapper,
     private val logger: ILogger

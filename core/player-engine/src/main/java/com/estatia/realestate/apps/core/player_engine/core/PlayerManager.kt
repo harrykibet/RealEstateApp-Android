@@ -35,7 +35,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class PlayerManager @Inject constructor(
+internal class PlayerManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val sizingPolicy: IPlayerPoolSizingPolicy,
@@ -169,7 +169,7 @@ class PlayerManager @Inject constructor(
         }
     }
 
-    private fun attachListenerIfNeeded(managed: PlayerPool.ManagedPlayer) {
+    private fun attachListenerIfNeeded(managed: ManagedPlayer) {
         if (!attachedPlayers.add(managed.player)) return
 
         managed.player.addListener(object : Player.Listener {

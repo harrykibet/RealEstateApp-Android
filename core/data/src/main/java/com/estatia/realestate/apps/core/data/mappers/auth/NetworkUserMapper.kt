@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.mappers.auth
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 
-object NetworkUserMapper {
+internal object NetworkUserMapper {
 
     fun fromEntity(
         user: NetworkUserEntity

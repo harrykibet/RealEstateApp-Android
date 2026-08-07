@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
 import com.google.firebase.FirebaseException
 import javax.inject.Inject
 
-class FirebaseFallbackErrorMapper @Inject constructor()
+internal class FirebaseFallbackErrorMapper @Inject constructor()
     : IFirebaseErrorMapper {
 
 

@@ -22,7 +22,7 @@ private const val DEFAULT_SIGNING_ALIAS = "estatia_default_signing_key"
  * It bridges high-level feature requests (using Strings) with low-level cryptographic
  * engines (using ByteArrays and structured payloads).
  */
-class SecurityRepository @Inject constructor(
+internal class SecurityRepository @Inject constructor(
     private val aesGcmCryptoEngine: IAesGcmCryptoEngine,
     private val rsaCryptoEngine: IRsaCryptoEngine,
     private val signatureManager: ISignatureManager,

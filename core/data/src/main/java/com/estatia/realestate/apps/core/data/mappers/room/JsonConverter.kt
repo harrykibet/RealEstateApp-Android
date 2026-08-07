@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.mappers.room
 
 import com.google.gson.Gson
 
-object JsonConverter {
+internal object JsonConverter {
     private val gson = Gson()
 
     // Convert a list of strings to JSON

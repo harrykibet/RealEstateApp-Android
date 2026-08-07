@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 
-object RoomPropertyMapper {
+internal object RoomPropertyMapper {
 
     fun toEntity(domain: PropertyDomainModel): PropertyCacheEntity {
         return PropertyCacheEntity(

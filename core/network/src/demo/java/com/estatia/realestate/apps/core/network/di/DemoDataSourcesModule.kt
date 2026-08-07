@@ -10,45 +10,45 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class DemoDataSourcesModule {
+abstract class DemoDataSourcesModule {
 
     @Binds
     @Singleton
-    abstract fun bindSearchRemoteSource(
+    internal abstract fun bindSearchRemoteSource(
         dataSource: DemoSearchRemoteDataSource): ISearchRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindPropertyRemoteSource(
+    internal abstract fun bindPropertyRemoteSource(
         dataSource: DemoPropertyRemoteDataSource): IPropertyRemoteDatasource
 
     @Binds
     @Singleton
-    abstract fun bindAuthRemoteSource(
+    internal abstract fun bindAuthRemoteSource(
         dataSource: DemoAuthRemoteDataSource): IAuthRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindCommentsRemoteSource(
+    internal abstract fun bindCommentsRemoteSource(
         dataSource: DemoCommentsRemoteDataSource): ICommentsRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindAnalyticsRemoteSource(
+    internal abstract fun bindAnalyticsRemoteSource(
         dataSource: DemoAnalyticsRemoteDataSource): IAnalyticsRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindUserRemoteDataSource(
+    internal abstract fun bindUserRemoteDataSource(
         dataSource: DemoUserRemoteDataSource): IUserRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindConfigRemoteDataSource(
+    internal abstract fun bindConfigRemoteDataSource(
         dataSource: DemoConfigRemoteDataSource): IConfigRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindSecretRemoteSource(
+    internal abstract fun bindSecretRemoteSource(
         dataSource: DemoSecretRemoteDataSource): ISecretRemoteDataSource
 }

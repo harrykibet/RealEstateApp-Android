@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 
-fun <T> AppResult<T>.translateCommentFailures(
+internal fun <T> AppResult<T>.translateCommentFailures(
     translator: IExceptionTranslator
 ): AppResult<T> {
 

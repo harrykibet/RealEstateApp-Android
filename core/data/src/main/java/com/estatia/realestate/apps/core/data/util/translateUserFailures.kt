@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.InfrastructureExceptio
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 
 
-fun <T> AppResult<T>.translateUserFailures(
+internal fun <T> AppResult<T>.translateUserFailures(
     translator: IExceptionTranslator
 ): AppResult<T> {
 

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Reports on if synchronization is in progress
  */
-interface SyncManager {
+internal interface SyncManager {
     val isSyncing: Flow<Boolean>
     fun requestSync()
 }

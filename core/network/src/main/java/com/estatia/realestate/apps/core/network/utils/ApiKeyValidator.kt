@@ -19,7 +19,7 @@ import javax.inject.Singleton
  * @property config An instance of [IConfigProvider] for retrieving API key patterns from remote config.
  */
 @Singleton
-class ApiKeyValidator @Inject constructor(
+internal class ApiKeyValidator @Inject constructor(
     private val logger: ILogger,
     private val config: IConfigProvider,
 ) : IApiKeyValidator {

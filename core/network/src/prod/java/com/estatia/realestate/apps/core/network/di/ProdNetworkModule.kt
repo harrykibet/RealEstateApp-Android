@@ -1,11 +1,21 @@
 package com.estatia.realestate.apps.core.network.di
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.telephony.TelephonyManager
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.network.api.SecretApi
+import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
+import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
+import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
+import com.estatia.realestate.apps.core.network.error_mappers.*
+import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
@@ -24,6 +34,26 @@ private annotation class BaseClient
 @Module
 @InstallIn(SingletonComponent::class)
 object ProdNetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideTelephonyManager(@ApplicationContext context: Context): TelephonyManager {
+        return context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkStateProvider(
+        connectivityManager: ConnectivityManager
+    ): INetworkStateProvider {
+        return AndroidNetworkStateProvider(connectivityManager)
+    }
 
     @Provides
     @Singleton
@@ -128,5 +158,47 @@ object ProdNetworkModule {
     @Singleton
     fun provideSecretApi(retrofit: Retrofit): SecretApi {
         return retrofit.create(SecretApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkClient(
+        retryPolicy: IRetryPolicy,
+        exceptionMapper: IExceptionMapper,
+        logger: ILogger
+    ): INetworkClient {
+        return FirebaseNetworkClient(retryPolicy, exceptionMapper, logger)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetryPolicy(
+        exceptionMapper: IExceptionMapper
+    ): IRetryPolicy {
+        return ExponentialRetryPolicy(exceptionMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExceptionMapper(
+        networkMapper: INetworkErrorMapper,
+        authMapper: IAuthExceptionMapper,
+        databaseMapper: IFirestoreErrorMapper,
+        storageMapper: IFirebaseStorageErrorMapper,
+        fallbackFirebaseMapper: IFirebaseErrorMapper
+    ): IExceptionMapper {
+        return ExceptionMapper(
+            networkMapper,
+            authMapper,
+            databaseMapper,
+            storageMapper,
+            fallbackFirebaseMapper
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkErrorMapper(): INetworkErrorMapper {
+        return NetworkErrorMapper()
     }
 }

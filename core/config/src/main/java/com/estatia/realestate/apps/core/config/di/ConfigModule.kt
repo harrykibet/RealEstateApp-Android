@@ -17,7 +17,7 @@ abstract class ConfigModule {
 
     @Binds
     @Singleton
-    abstract fun bindConfigRepository(
+    internal abstract fun bindConfigRepository(
         impl: ConfigProvider
     ): IConfigProvider
 

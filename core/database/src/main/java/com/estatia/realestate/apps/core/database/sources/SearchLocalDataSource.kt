@@ -12,7 +12,7 @@ import javax.inject.Inject
 private const val MAX_SEARCH_RESULTS = 50
 private const val TARGET_SEARCH_RESULTS = 40
 
-class SearchLocalDataSource @Inject constructor(
+internal class SearchLocalDataSource @Inject constructor(
     private val historyDao: SearchHistoryDao,
     private val cacheDao: SearchCacheDao,
     private val databaseExecutor: ILocalDatabaseExecutor

@@ -16,7 +16,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class FirestoreAnalytics @Inject constructor(
+internal class FirestoreAnalytics @Inject constructor(
     database: FirebaseFirestore,
     private val networkClient: INetworkClient,
     private val deviceUtils: IDeviceUtils,

@@ -5,7 +5,6 @@ import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,10 +46,10 @@ interface IPlayerManager {
      * @param mediaId Unique identifier for the media asset.
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
-     * @return A [PlayerPool.ManagedPlayer] container holding the pre-prepared player.
+     * @return A [ManagedPlayer] container holding the pre-prepared player.
      */
     @OptIn(UnstableApi::class)
-    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType): PlayerPool.ManagedPlayer
+    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType): ManagedPlayer
 
     /**
      * Returns a [Flow] observing the playback state for a specific media item.

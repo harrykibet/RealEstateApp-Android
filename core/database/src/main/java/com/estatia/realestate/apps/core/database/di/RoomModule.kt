@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RoomModule {
+internal object RoomModule {
 
     // Provides the singleton instance of PropertyDatabase
     @Provides

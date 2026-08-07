@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Remote data source that fetches secrets from a secure backend using [SecretApi].
  * Uses [INetworkClient] for standardized error handling and logging.
  */
-class SecretRemoteDataSource @Inject constructor(
+internal class SecretRemoteDataSource @Inject constructor(
     private val api: SecretApi,
     private val networkClient: INetworkClient
 ) : ISecretRemoteDataSource {

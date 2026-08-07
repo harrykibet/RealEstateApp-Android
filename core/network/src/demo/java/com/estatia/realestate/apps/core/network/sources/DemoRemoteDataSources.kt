@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
+class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
     override fun isUserAuthenticated(): Flow<Boolean> = flowOf(true)
     override fun getCurrentUserId(): String? = DemoData.demoUser.userId
     override fun getCurrentUserEmail(): String? = DemoData.demoUser.email
@@ -52,7 +52,7 @@ internal class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataS
 }
 
 @Singleton
-internal class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRemoteDatasource {
+class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRemoteDatasource {
     override suspend fun uploadProperty(property: PropertyEntityModel, imageUris: List<Uri>, videoUris: List<Uri>): AppResult<String> = AppResult.Success("prop_1")
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
@@ -85,7 +85,7 @@ internal class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRem
 }
 
 @Singleton
-internal class DemoSearchRemoteDataSource @Inject constructor() : ISearchRemoteDataSource {
+class DemoSearchRemoteDataSource @Inject constructor() : ISearchRemoteDataSource {
     override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> = 
         AppResult.Success(DemoData.sampleProperties.filter { it.title.contains(query, ignoreCase = true) })
     
@@ -93,13 +93,13 @@ internal class DemoSearchRemoteDataSource @Inject constructor() : ISearchRemoteD
 }
 
 @Singleton
-internal class DemoCommentsRemoteDataSource @Inject constructor() : ICommentsRemoteDataSource {
+class DemoCommentsRemoteDataSource @Inject constructor() : ICommentsRemoteDataSource {
     override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> = flowOf(AppResult.Success(emptyList()))
     override suspend fun submitComment(comment: CommentEntityModel): AppResult<Unit> = AppResult.Success(Unit)
 }
 
 @Singleton
-internal class DemoAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRemoteDataSource {
+class DemoAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRemoteDataSource {
     override suspend fun logEvent(event: AnalyticsEvent): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun getEventsForUser(userId: String): AppResult<List<AnalyticsEvent>> = AppResult.Success(emptyList())
     override suspend fun getEventById(eventId: String): AppResult<AnalyticsEvent?> = AppResult.Success(null)
@@ -108,16 +108,16 @@ internal class DemoAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsR
 }
 
 @Singleton
-internal class DemoUserRemoteDataSource @Inject constructor() : IUserRemoteDataSource {
+class DemoUserRemoteDataSource @Inject constructor() : IUserRemoteDataSource {
     override suspend fun getUserById(userId: String): AppResult<UserEntityModel> = AppResult.Success(DemoData.demoUser)
 }
 
 @Singleton
-internal class DemoConfigRemoteDataSource @Inject constructor() : IConfigRemoteDataSource {
+class DemoConfigRemoteDataSource @Inject constructor() : IConfigRemoteDataSource {
     override suspend fun fetchRemoteConfig(): AppResult<String?> = AppResult.Success("demo_config")
 }
 
 @Singleton
-internal class DemoSecretRemoteDataSource @Inject constructor() : ISecretRemoteDataSource {
+class DemoSecretRemoteDataSource @Inject constructor() : ISecretRemoteDataSource {
     override suspend fun fetchSecret(secretId: SecretId): AppResult<String> = AppResult.Success("demo_secret")
 }

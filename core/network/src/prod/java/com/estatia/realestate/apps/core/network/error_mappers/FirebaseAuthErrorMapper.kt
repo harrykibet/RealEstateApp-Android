@@ -12,7 +12,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthException
 import javax.inject.Inject
 
-class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
+internal class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
 
     override fun map(

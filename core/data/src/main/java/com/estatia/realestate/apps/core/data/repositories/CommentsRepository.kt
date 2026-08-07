@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 
-class CommentsRepository @Inject constructor(
+internal class CommentsRepository @Inject constructor(
     private val remoteDataSource: ICommentsRemoteDataSource,
     private val localDataSource: IPropertyLocalDataSource,
     private val userRepository: IUserRepository,

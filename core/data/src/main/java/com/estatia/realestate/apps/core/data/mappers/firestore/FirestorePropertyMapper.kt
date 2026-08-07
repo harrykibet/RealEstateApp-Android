@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-object FirestorePropertyMapper {
+internal object FirestorePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(

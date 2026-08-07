@@ -104,25 +104,25 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseFirestoreErrorMapper() : IFirestoreErrorMapper {
+    internal fun provideFirebaseFirestoreErrorMapper() : IFirestoreErrorMapper {
         return FirebaseFirestoreErrorMapper()
     }
 
     @Provides
     @Singleton
-    fun provideFirebaseAuthenticationErrorMapper() : IAuthExceptionMapper {
+    internal fun provideFirebaseAuthenticationErrorMapper() : IAuthExceptionMapper {
         return FirebaseAuthErrorMapper()
     }
 
     @Provides
     @Singleton
-    fun provideFirebaseStorageErrorMapper() : IFirebaseStorageErrorMapper {
+    internal fun provideFirebaseStorageErrorMapper() : IFirebaseStorageErrorMapper {
         return FirebaseStorageErrorMapper()
     }
 
     @Provides
     @Singleton
-    fun provideFirebaseFallbackErrorMapper() : IFirebaseErrorMapper {
+    internal fun provideFirebaseFallbackErrorMapper() : IFirebaseErrorMapper {
         return FirebaseFallbackErrorMapper()
     }
 }

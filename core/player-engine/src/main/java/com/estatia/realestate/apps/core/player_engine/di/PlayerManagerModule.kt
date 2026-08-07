@@ -13,17 +13,11 @@ import com.estatia.realestate.apps.core.player_engine.configuration.PlaybackConf
 import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
-import com.estatia.realestate.apps.core.player_engine.streaming.CdnPolicy
-import com.estatia.realestate.apps.core.player_engine.streaming.ICdnPolicy
-import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
-import com.estatia.realestate.apps.core.player_engine.streaming.StreamingPipeline
-import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +27,10 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.player_engine.streaming.*
+import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -61,33 +59,33 @@ abstract class PlayerManagerModule {
 
     @Binds
     @Singleton
-    abstract fun bindPlayerManager(playerManager: PlayerManager): IPlayerManager
+    internal abstract fun bindPlayerManager(playerManager: PlayerManager): IPlayerManager
 
     @Binds
     @Singleton
-    abstract fun bindPlayerPoolSizingPolicy(
+    internal abstract fun bindPlayerPoolSizingPolicy(
         playerPoolSizingPolicy: AdaptivePlayerPoolSizingPolicy
     ): IPlayerPoolSizingPolicy
 
     @Binds
     @Singleton
-    abstract fun bindStreamingPipeline(
+    internal abstract fun bindStreamingPipeline(
         streamingPipeline: StreamingPipeline
     ): IStreamingPipeline
 
     @Binds
     @Singleton
-    abstract fun bindCdnPolicy(cdnPolicy: CdnPolicy): ICdnPolicy
+    internal abstract fun bindCdnPolicy(cdnPolicy: CdnPolicy): ICdnPolicy
 
     @Binds
     @Singleton
-    abstract fun bindPlayerConfigurationFactory(
+    internal abstract fun bindPlayerConfigurationFactory(
         playerConfigurationFactory: PlayerConfigurationFactory
     ): IPlayerConfigurationFactory
 
     @Binds
     @Singleton
-    abstract fun bindPlaybackConfigurationProvider(
+    internal abstract fun bindPlaybackConfigurationProvider(
         playbackConfigurationProvider: PlaybackConfigurationProvider
     ): IPlaybackConfigurationProvider
 
@@ -125,7 +123,7 @@ abstract class PlayerManagerModule {
 
         @Provides
         @Singleton
-        fun provideBandwidthMeter(context: Context): BandwidthMeter =
+        fun provideBandwidthMeter(@ApplicationContext context: Context): BandwidthMeter =
             DefaultBandwidthMeter.Builder(context).build()
 
         @Provides

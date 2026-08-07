@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirestoreComments @Inject constructor(
+internal class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,
     private val errorMapper: IFirestoreErrorMapper

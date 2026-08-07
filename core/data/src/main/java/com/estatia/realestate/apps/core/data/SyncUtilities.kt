@@ -60,7 +60,7 @@ private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = 
  * Note that the blocks defined above are never run concurrently, and the [Synchronizer]
  * implementation must guarantee this.
  */
-suspend fun Synchronizer.changeListSync(
+internal suspend fun Synchronizer.changeListSync(
     versionReader: (ChangeListVersions) -> Int,
     changeListFetcher: suspend (Int) -> List<NetworkChangeList>,
     versionUpdater: ChangeListVersions.(Int) -> ChangeListVersions,

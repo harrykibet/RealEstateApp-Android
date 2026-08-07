@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class ApiKeyValidatorModule {
     @Binds
     @Singleton
-    abstract fun bindApiKeyValidator(validator: ApiKeyValidator): IApiKeyValidator
+    internal abstract fun bindApiKeyValidator(validator: ApiKeyValidator): IApiKeyValidator
 }
