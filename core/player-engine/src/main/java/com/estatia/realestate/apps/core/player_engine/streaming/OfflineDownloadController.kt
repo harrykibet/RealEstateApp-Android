@@ -20,7 +20,7 @@ class OfflineDownloadController @Inject constructor(
 
     fun download(mediaId: String, uri: Uri) {
         val request = DownloadRequest.Builder(mediaId, uri)
-            .setCustomCacheKey(uri.toString())
+            .setCustomCacheKey(mediaId)
             .build()
         downloadManager.addDownload(request)
     }

@@ -29,8 +29,10 @@ interface IStreamingPipeline {
     /**
      * Create a MediaItem in a streaming-aware way.
      * (Allows future token injection, signed URLs, DRM, etc.)
+     *
+     * @param mediaId Stable ID used as custom cache key to unify playback and offline caches.
      */
-    fun createMediaItem(uri: Uri, mediaType: MediaType): MediaItem
+    fun createMediaItem(mediaId: String, uri: Uri, mediaType: MediaType): MediaItem
 
     /**
      * Asynchronous prefetch entry point.

@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 @UnstableApi
 interface IPlayerConfigurationFactory {
     suspend fun create(
+        mediaId: String,
         uri: Uri,
         mediaType: MediaType
     ): PlayerConfiguration

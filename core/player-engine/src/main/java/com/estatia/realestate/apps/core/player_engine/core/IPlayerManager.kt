@@ -7,6 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface IPlayerManager {
@@ -18,6 +19,6 @@ interface IPlayerManager {
 
     @OptIn(UnstableApi::class)
     suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType): PlayerPool.ManagedPlayer
-    fun observeState(): StateFlow<PlaybackStateReducer.State>
+    fun observeState(mediaId: String): Flow<PlaybackStateReducer.State>
     fun shutdown()
 }

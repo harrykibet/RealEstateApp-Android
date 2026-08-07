@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -27,6 +28,7 @@ class PlayerFactory @Inject constructor(
 
     fun create(configuration: PlayerConfiguration): CreatedPlayer {
         val builder = ExoPlayer.Builder(context)
+            .setLooper(Looper.getMainLooper())
             .setBandwidthMeter(bandwidthMeter)
             .setMediaSourceFactory(configuration.mediaSourceFactory)
             .setLoadControl(configuration.loadControl)

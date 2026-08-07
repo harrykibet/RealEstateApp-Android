@@ -23,12 +23,13 @@ class StreamingPipeline @Inject constructor(
     }
 
     override fun createMediaItem(
+        mediaId: String,
         uri: Uri,
         mediaType: MediaType
     ): MediaItem {
         return MediaItem.Builder()
             .setUri(uri)
-            .setCustomCacheKey(uri.toString()) // Stable key for caching
+            .setCustomCacheKey(mediaId) // Stable key for caching unified with offline
             .apply {
                 if (mediaType == MediaType.LIVE) {
                     setLiveConfiguration(

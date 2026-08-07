@@ -15,9 +15,13 @@ class PlayerConfigurationFactory @Inject constructor(
     private val cdnSelector: CdnSelector
 ) : IPlayerConfigurationFactory {
 
-    override suspend fun create(uri: Uri, mediaType: MediaType): PlayerConfiguration {
+    override suspend fun create(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType
+    ): PlayerConfiguration {
         val resolvedUri = resolveViaCdn(uri)
-        val mediaItem = streamingPipeline.createMediaItem(resolvedUri, mediaType)
+        val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
         val loadControl = playbackConfigurationProvider.createLoadControl(mediaType)
         val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType)

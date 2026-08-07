@@ -28,7 +28,8 @@ class VideoPlaybackCoordinator @Inject constructor(
 
     private val warmedMedia = LinkedHashSet<String>()
 
-    fun observeState(): Flow<PlaybackStateReducer.State> = playerController.observeState()
+    fun observeState(mediaId: String): Flow<PlaybackStateReducer.State> =
+        playerController.observeState(mediaId)
 
     fun onPageVisible(
         scope: CoroutineScope,

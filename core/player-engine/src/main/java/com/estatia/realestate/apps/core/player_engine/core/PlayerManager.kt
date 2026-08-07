@@ -22,6 +22,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -126,6 +127,10 @@ class PlayerManager @Inject constructor(
             }
             .flowOn(playerDispatcher)
             .stateIn(engineScope, SharingStarted.Eagerly, PlaybackStateReducer.State.Idle)
+
+    override fun observeState(mediaId: String): Flow<PlaybackStateReducer.State> =
+        pool.observeMediaState(mediaId)
+            .flowOn(playerDispatcher)
 
     override fun shutdown() {
         engineScope.launch(playerDispatcher) {

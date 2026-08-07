@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.content.Context
+import android.net.Uri
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -13,6 +14,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPol
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -45,6 +47,9 @@ class PlayerManagerTest {
 
     @Before
     fun setup() {
+        mockkStatic(Uri::class)
+        every { Uri.parse(any()) } returns mockk(relaxed = true)
+        
         pool = mockk(relaxed = true)
         environmentCoordinator = mockk(relaxed = true) {
             every { environment } returns environmentFlow
@@ -78,15 +83,16 @@ class PlayerManagerTest {
     fun `play calls pool getOrCreate and plays the player`() = runTest {
         // Given
         val mediaId = "media_1"
+        val uri = Uri.parse("https://example.com/video.mp4")
         val mediaType = MediaType.VOD
         val mockPlayer = mockk<ExoPlayer>(relaxed = true)
         val mockManagedPlayer = PlayerPool.ManagedPlayer(
             mediaId, mediaType, mockPlayer, mockk(relaxed = true), PlaybackStateReducer()
         )
-        coEvery { pool.getOrCreate(mediaId, mediaType) } returns mockManagedPlayer
+        coEvery { pool.getOrCreate(mediaId, uri, mediaType) } returns mockManagedPlayer
 
         // When
-        playerManager.play(mediaId, mediaType)
+        playerManager.play(mediaId, uri, mediaType)
 
         // Then
         verify { mockPlayer.play() }

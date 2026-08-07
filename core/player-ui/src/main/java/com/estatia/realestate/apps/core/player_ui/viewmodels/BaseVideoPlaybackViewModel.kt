@@ -12,9 +12,12 @@ import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.PlayerErrorType
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import androidx.media3.common.PlaybackException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -25,12 +28,21 @@ abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator
 ) : ViewModel() {
 
+    private val activeMediaId = MutableStateFlow<String?>(null)
     private var lastMediaContext: FeedMediaContext? = null
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
 
     init {
-        coordinator.observeState()
+        @OptIn(ExperimentalCoroutinesApi::class)
+        activeMediaId
+            .flatMapLatest { mediaId ->
+                if (mediaId != null) {
+                    coordinator.observeState(mediaId)
+                } else {
+                    flowOf(PlaybackStateReducer.State.Idle)
+                }
+            }
             .onEach { engineState ->
                 handleEngineState(engineState)
                 _uiState.value = mapToUiState(engineState)
@@ -48,6 +60,7 @@ abstract class BaseVideoPlaybackViewModel(
 
     fun onPageVisible(context: FeedMediaContext) {
         lastMediaContext = context
+        activeMediaId.value = context.mediaId
         coordinator.onPageVisible(
             scope = viewModelScope,
             mediaId = context.mediaId,
