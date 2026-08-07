@@ -12,6 +12,9 @@ import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.*
+import com.estatia.realestate.apps.core.network.di.AuthClient
+import com.estatia.realestate.apps.core.network.di.PlaybackClient
+import com.estatia.realestate.apps.core.network.di.UploadClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -117,7 +120,22 @@ object DemoNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    @AuthClient
+    fun provideAuthOkHttpClient(client: OkHttpClient): OkHttpClient = client
+
+    @Provides
+    @Singleton
+    @UploadClient
+    fun provideUploadOkHttpClient(client: OkHttpClient): OkHttpClient = client
+
+    @Provides
+    @Singleton
+    @PlaybackClient
+    fun providePlaybackOkHttpClient(client: OkHttpClient): OkHttpClient = client
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(@AuthClient okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://demo.estatia.com/")
             .client(okHttpClient)

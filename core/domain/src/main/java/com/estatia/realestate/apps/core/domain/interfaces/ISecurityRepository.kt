@@ -12,8 +12,6 @@ interface ISecurityRepository {
     suspend fun symmetricDecrypt(encryptedData: String): AppResult<String>
     suspend fun signData(data: String): AppResult<String>
     suspend fun verifySignature(data: String, signature: String): AppResult<Boolean>
-    suspend fun hashWithSalt(data: String): AppResult<String>
-    suspend fun verifyHash(data: String, combinedHash: String): AppResult<Boolean>
     suspend fun saveToken(token: String): AppResult<Unit>
     suspend fun getToken(): AppResult<String?>
     suspend fun clearToken(): AppResult<Unit>

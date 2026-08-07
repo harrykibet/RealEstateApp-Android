@@ -15,6 +15,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
+import com.estatia.realestate.apps.core.network.di.PlaybackClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,7 +55,7 @@ object StreamingModule {
     @Singleton
     fun provideUpstreamFactory(
         @ApplicationContext context: Context,
-        okHttpClient: OkHttpClient
+        @PlaybackClient okHttpClient: OkHttpClient
     ): DataSource.Factory =
         OkHttpDataSource.Factory(okHttpClient)
             .setUserAgent(Util.getUserAgent(context, "Estatia"))

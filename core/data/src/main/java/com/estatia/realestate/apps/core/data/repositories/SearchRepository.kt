@@ -1,19 +1,24 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
 import com.estatia.realestate.apps.core.data.util.translateSearchFailures
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import javax.inject.Inject
 
 class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
-    private val localDataSource: ISearchLocalDataSource,
+    private val searchLocalDataSource: ISearchLocalDataSource,
+    private val propertyLocalDataSource: IPropertyLocalDataSource,
     private val exceptionTranslator: IExceptionTranslator
 ) : ISearchRepository {
 
@@ -21,22 +26,38 @@ class SearchRepository @Inject constructor(
         query: String,
         limit: Int
     ): AppResult<List<PropertyDomainModel>> {
-        localDataSource.saveSearchQuery(query) // Cache the search query locally (best effort)
-        
+        searchLocalDataSource.saveSearchQuery(query) 
+
+        // 1. Try search cache
+        val cachedIds = searchLocalDataSource.getCachedSearchResult(query).getOrNull()
+        if (!cachedIds.isNullOrEmpty()) {
+            val cachedProperties = propertyLocalDataSource.getCachedPropertiesByIds(cachedIds).getOrNull()
+            if (!cachedProperties.isNullOrEmpty()) {
+                return AppResult.Success(cachedProperties.map(RoomPropertyMapper::toDomain))
+            }
+        }
+
+        // 2. Remote search
         return remoteDataSource.searchProperties(query, limit)
             .map { entities ->
-                entities.map(FirestorePropertyMapper::toDomain)
+                val domainModels = entities.map(FirestorePropertyMapper::toDomain)
+                
+                // 3. Update cache
+                searchLocalDataSource.cacheSearchResult(query, domainModels.map { it.id.value })
+                propertyLocalDataSource.cacheProperties(domainModels.toCacheEntities())
+
+                domainModels
             }
             .translateSearchFailures(exceptionTranslator)
     }
 
     override suspend fun getSearchHistory(): AppResult<List<String>> {
-        return localDataSource.getSearchHistory()
+        return searchLocalDataSource.getSearchHistory()
             .translateSearchFailures(exceptionTranslator)
     }
 
     override suspend fun clearSearchHistory(): AppResult<Unit> {
-        return localDataSource.clearSearchHistory()
+        return searchLocalDataSource.clearSearchHistory()
             .translateSearchFailures(exceptionTranslator)
     }
 

@@ -29,11 +29,18 @@ class ExponentialRetryPolicy @Inject constructor(
         var attempt = 0
         var delayMs = retryConfig.initialDelayMs
         var lastException: AppException? = null
+        val startTime = System.currentTimeMillis()
 
 
         while(
             attempt < retryConfig.maxAttempts
         ) {
+            
+            retryConfig.maxTotalDurationMs?.let { maxDuration ->
+                if (System.currentTimeMillis() - startTime > maxDuration) {
+                    throw lastException ?: IllegalStateException("Retry total duration exceeded")
+                }
+            }
 
             try {
 

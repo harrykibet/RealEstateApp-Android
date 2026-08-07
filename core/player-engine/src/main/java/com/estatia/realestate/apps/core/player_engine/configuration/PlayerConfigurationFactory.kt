@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.CdnSelector
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import javax.inject.Inject
 import androidx.core.net.toUri
 
@@ -12,7 +13,8 @@ import androidx.core.net.toUri
 class PlayerConfigurationFactory @Inject constructor(
     private val streamingPipeline: IStreamingPipeline,
     private val playbackConfigurationProvider: IPlaybackConfigurationProvider,
-    private val cdnSelector: CdnSelector
+    private val cdnSelector: CdnSelector,
+    private val config: IConfigProvider
 ) : IPlayerConfigurationFactory {
 
     override suspend fun create(
@@ -20,6 +22,7 @@ class PlayerConfigurationFactory @Inject constructor(
         uri: Uri,
         mediaType: MediaType
     ): PlayerConfiguration {
+        config.awaitReady()
         val resolvedUri = resolveViaCdn(uri)
         val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()

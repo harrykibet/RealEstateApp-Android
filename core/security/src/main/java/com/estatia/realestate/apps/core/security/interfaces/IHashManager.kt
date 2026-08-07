@@ -4,11 +4,6 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 
 interface IHashManager {
     /**
-     * Legacy method for string-based hashing with internal salt.
-     */
-    suspend fun hashWithSalt(data: String): AppResult<String>
-
-    /**
      * Hashes raw binary data using SHA-256.
      */
     suspend fun hash(data: ByteArray): AppResult<ByteArray>

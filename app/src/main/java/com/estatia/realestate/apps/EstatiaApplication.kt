@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 import javax.inject.Inject
@@ -28,7 +29,7 @@ class EstatiaApplication : Application()  {
     }
 
     private fun initializeConfig() {
-        CoroutineScope(Dispatchers.IO).launch {
+        runBlocking {
             config.initialize()
         }
     }

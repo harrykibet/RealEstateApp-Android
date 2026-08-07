@@ -50,7 +50,8 @@ sealed class DatabaseException(
     data object Timeout :
         DatabaseException(
             "Database timeout"
-        )
+        ), RetryableException
+
 
     data class LocalDatabaseError(val msg: String) :
         DatabaseException(

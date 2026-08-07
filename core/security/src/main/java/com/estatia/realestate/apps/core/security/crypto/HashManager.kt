@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.security.crypto
 
-import android.util.Base64
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.common.exceptions.map
@@ -21,13 +20,6 @@ class HashManager @Inject constructor(
 ) : IHashManager {
 
     private val secureRandom = SecureRandom()
-
-    override suspend fun hashWithSalt(data: String): AppResult<String> {
-        val staticSalt = "ESTATIA_INTERNAL_SALT".toByteArray()
-        return hashWithSalt(data.toByteArray(), staticSalt).map {
-            Base64.encodeToString(it, Base64.DEFAULT)
-        }
-    }
 
     override suspend fun hash(data: ByteArray): AppResult<ByteArray> =
         cryptoExecutor.execute(SecurityException.HashGenerationFailed()) {

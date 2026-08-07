@@ -10,6 +10,9 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.Su
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.LIKES_COUNT
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.SHARES_COUNT
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.VIEWS_COUNT
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -17,6 +20,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
@@ -37,27 +41,32 @@ class FirestoreProperties @Inject constructor(
         videoUris: List<Uri>
     ): AppResult<String> {
 
+        val propertyId =
+            database.collection(PROPERTIES)
+                .document()
+                .id
+
+        val imagePaths = imageUris.map {
+            "$PROPERTIES/$propertyId/${MediaFormat.MEDIA_TYPE_IMAGES}/${UUID.randomUUID()}"
+        }
+
+        val videoPaths = videoUris.map {
+            "$PROPERTIES/$propertyId/${MediaFormat.MEDIA_TYPE_VIDEOS}/${UUID.randomUUID()}"
+        }
+
         return networkClient.execute {
-
-            val propertyId =
-                database.collection(PROPERTIES)
-                    .document()
-                    .id
-
 
             val images =
                 uploadMedia(
-                    propertyId,
                     imageUris,
-                    MediaFormat.MEDIA_TYPE_IMAGES
+                    imagePaths
                 )
 
 
             val videos =
                 uploadMedia(
-                    propertyId,
                     videoUris,
-                    MediaFormat.MEDIA_TYPE_VIDEOS
+                    videoPaths
                 )
 
 
@@ -80,17 +89,13 @@ class FirestoreProperties @Inject constructor(
     }
 
     private suspend fun uploadMedia(
-        propertyId: String,
         uris: List<Uri>,
-        mediaType: String
+        paths: List<String>
     ): List<String> {
 
-        return uris.map { uri ->
+        return uris.mapIndexed { index, uri ->
 
-
-            val path =
-                "$PROPERTIES/$propertyId/$mediaType/${UUID.randomUUID()}"
-
+            val path = paths[index]
 
             storage.reference
                 .child(path)
@@ -192,9 +197,12 @@ class FirestoreProperties @Inject constructor(
         return networkClient.execute {
 
 
-            val likesRef =
+            val propertyRef =
                 database.collection(PROPERTIES)
                     .document(propertyId)
+
+            val likesRef =
+                propertyRef
                     .collection(LIKES)
                     .document(userId)
 
@@ -228,6 +236,8 @@ class FirestoreProperties @Inject constructor(
                     )
                 )
 
+                batch.update(propertyRef, LIKES_COUNT, FieldValue.increment(1))
+
             }.await()
 
 
@@ -241,9 +251,12 @@ class FirestoreProperties @Inject constructor(
 
         return networkClient.execute {
 
-            val likesRef =
+            val propertyRef =
                 database.collection(PROPERTIES)
                     .document(propertyId)
+
+            val likesRef =
+                propertyRef
                     .collection(LIKES)
                     .document(userId)
 
@@ -259,8 +272,28 @@ class FirestoreProperties @Inject constructor(
 
                 batch.delete(likesRef)
                 batch.delete(likedPropertiesRef)
+                
+                batch.update(propertyRef, LIKES_COUNT, FieldValue.increment(-1))
 
             }.await()
+        }
+    }
+
+    override suspend fun recordView(propertyId: String): AppResult<Unit> {
+        return networkClient.execute {
+            database.collection(PROPERTIES)
+                .document(propertyId)
+                .update(VIEWS_COUNT, FieldValue.increment(1))
+                .await()
+        }
+    }
+
+    override suspend fun recordShare(propertyId: String): AppResult<Unit> {
+        return networkClient.execute {
+            database.collection(PROPERTIES)
+                .document(propertyId)
+                .update(SHARES_COUNT, FieldValue.increment(1))
+                .await()
         }
     }
 
@@ -323,31 +356,6 @@ class FirestoreProperties @Inject constructor(
                         )
                     }
             )
-        }
-    }
-
-    override suspend fun searchProperties(
-        query: String,
-        limit: Int
-    ): AppResult<List<PropertyEntityModel>> {
-
-        return networkClient.execute {
-
-            val searchQuery =
-                database.collection(PROPERTIES)
-                    .orderBy(
-                        FirestoreFields.TITLE,
-                        Query.Direction.ASCENDING
-                    )
-                    .startAt(query)
-                    .endAt(query + "\uf8ff")
-
-            val querySnapshot =
-                searchQuery.limit(limit.toLong()).get().await()
-
-            querySnapshot.documents.mapNotNull {
-                it.toObject(PropertyEntityModel::class.java)
-            }
         }
     }
 }

@@ -75,6 +75,7 @@ object RetryConfigs {
             name = "CHAT",
             maxAttempts = Int.MAX_VALUE,
             initialDelayMs = 1000,
-            maxDelayMs = 60000
+            maxDelayMs = 60000,
+            maxTotalDurationMs = 3600000 // 1 hour ceiling
         )
 }

@@ -69,6 +69,13 @@ interface IPropertyRepository {
     ): AppResult<PropertyDomainModel>
 
     /**
+     * Fetches multiple properties by their IDs.
+     */
+    suspend fun getPropertiesByIds(
+        propertyIds: List<String>
+    ): AppResult<List<PropertyDomainModel>>
+
+    /**
      * Fetches properties liked by a specific user.
      */
     suspend fun fetchLikedProperties(
@@ -92,12 +99,14 @@ interface IPropertyRepository {
     ): AppResult<Unit>
 
     /**
-     * Searches for properties using a text query.
+     * Increments the view count for a property.
      */
-    suspend fun searchProperties(
-        query: String,
-        limit: Int
-    ): AppResult<List<PropertyDomainModel>>
+    suspend fun recordView(propertyId: String): AppResult<Unit>
+
+    /**
+     * Increments the share count for a property.
+     */
+    suspend fun recordShare(propertyId: String): AppResult<Unit>
 
     /**
      * Fetches properties using paginated results.

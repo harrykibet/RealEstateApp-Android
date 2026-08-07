@@ -1,126 +1,105 @@
 package com.estatia.realestate.apps.core.network.di
 
-import android.app.usage.NetworkStatsManager
-import android.content.Context
-import android.net.ConnectivityManager
-import android.telephony.TelephonyManager
-import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.network.api.SecretApi
-import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
-import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
-import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
-import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
-import com.estatia.realestate.apps.core.network.error_mappers.ExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
-import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
-import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.network.error_mappers.*
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
+import com.estatia.realestate.apps.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+private annotation class BaseClient
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ProdNetworkModule {
-    @Provides
-    @Singleton
-    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
-        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    }
 
     @Provides
     @Singleton
-    fun provideNetworkStatsManager(@ApplicationContext context: Context): NetworkStatsManager {
-        return context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
-    }
-
-    @Provides
-    @Singleton
-    fun provideRetryPolicy(): IRetryPolicy {
-        return ExponentialRetryPolicy(
-            exceptionMapper = ExceptionMapper(
-                networkMapper = NetworkErrorMapper(),
-                authMapper = FirebaseAuthErrorMapper(),
-                databaseMapper = FirebaseFirestoreErrorMapper(),
-                storageMapper = FirebaseStorageErrorMapper(),
-                fallbackFirebaseMapper = FirebaseFallbackErrorMapper()
-            )
+    fun provideConnectionPool(): ConnectionPool {
+        return ConnectionPool(
+            maxIdleConnections = 20,
+            keepAliveDuration = 5,
+            timeUnit = TimeUnit.MINUTES
         )
     }
 
     @Provides
     @Singleton
-    fun provideNetworkErrorMapper(): INetworkErrorMapper {
-        return NetworkErrorMapper()
-    }
-
-    @Provides
-    @Singleton
-    fun provideExceptionMapper(
-        networkMapper: INetworkErrorMapper,
-        authMapper: IAuthExceptionMapper,
-        databaseMapper: IFirestoreErrorMapper,
-        storageMapper: IFirebaseStorageErrorMapper,
-        fallbackFirebaseMapper: IFirebaseErrorMapper
-    ): IExceptionMapper {
-        return ExceptionMapper(
-            networkMapper,
-            authMapper,
-            databaseMapper,
-            storageMapper,
-            fallbackFirebaseMapper)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideNetworkClient(
-        networkStateProvider: INetworkStateProvider,
-        retryPolicy: IRetryPolicy,
-        exceptionMapper: IExceptionMapper,
-        logger: ILogger
-    ): INetworkClient {
-        return FirebaseNetworkClient(networkStateProvider, retryPolicy, exceptionMapper, logger)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideNetworkStateProvider(
-        connectivityManager: ConnectivityManager
-    ): INetworkStateProvider {
-        return AndroidNetworkStateProvider(connectivityManager)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideTelephonyManager(@ApplicationContext context: Context): TelephonyManager {
-        return context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    }
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    @BaseClient
+    fun provideBaseOkHttpClient(
+        connectionPool: ConnectionPool
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(
-                HttpLoggingInterceptor().apply
-            { HttpLoggingInterceptor.Level.BODY })
+            .connectionPool(connectionPool)
+            .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(
+                        HttpLoggingInterceptor().apply {
+                            level = HttpLoggingInterceptor.Level.BODY
+                        }
+                    )
+                }
+            }
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @AuthClient
+    fun provideAuthOkHttpClient(
+        @BaseClient baseClient: OkHttpClient
+    ): OkHttpClient {
+        return baseClient.newBuilder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @UploadClient
+    fun provideUploadOkHttpClient(
+        @BaseClient baseClient: OkHttpClient
+    ): OkHttpClient {
+        return baseClient.newBuilder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
+            .writeTimeout(120, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @PlaybackClient
+    fun providePlaybackOkHttpClient(
+        @BaseClient baseClient: OkHttpClient
+    ): OkHttpClient {
+        return baseClient.newBuilder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        @BaseClient baseClient: OkHttpClient
+    ): OkHttpClient {
+        return baseClient.newBuilder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
@@ -130,7 +109,7 @@ object ProdNetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @AuthClient okHttpClient: OkHttpClient,
         config: IConfigProvider
     ): Retrofit {
 

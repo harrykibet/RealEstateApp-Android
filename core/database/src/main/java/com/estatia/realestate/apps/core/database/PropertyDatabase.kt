@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.estatia.realestate.apps.core.database.dao.CommentCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
 import com.estatia.realestate.apps.core.database.converters.RoomTypeConverters
+import com.estatia.realestate.apps.core.database.entities.CommentCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 
@@ -15,9 +17,10 @@ import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 @Database(
     entities = [
         PropertyCacheEntity::class,
-        PropertyDraftEntity::class
+        PropertyDraftEntity::class,
+        CommentCacheEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(RoomTypeConverters::class)
@@ -26,6 +29,7 @@ abstract class PropertyDatabase : RoomDatabase() {
     // Abstract function to get the PropertyDraftDao
     abstract fun propertyDraftDao(): PropertyDraftDao
     abstract fun propertyCacheDao(): PropertyCacheDao
+    abstract fun commentCacheDao(): CommentCacheDao
 
     companion object {
         // Singleton instance of the database
@@ -39,7 +43,9 @@ abstract class PropertyDatabase : RoomDatabase() {
                     context.applicationContext,
                     PropertyDatabase::class.java,
                     "property_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration(false) // For demo purposes, we can reset on change
+                    .build()
                 INSTANCE = instance
                 instance
             }

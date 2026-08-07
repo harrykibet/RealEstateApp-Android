@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import android.net.Uri
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
@@ -12,9 +13,13 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.data.util.translatePropertyFailures
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyDraftMapper
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import javax.inject.Inject
+
+private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
 
 class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
@@ -115,6 +120,16 @@ class PropertyRepository @Inject constructor(
             )
     }
 
+    override suspend fun getPropertiesByIds(
+        propertyIds: List<String>
+    ): AppResult<List<PropertyDomainModel>> {
+        return localDataSource.getCachedPropertiesByIds(propertyIds)
+            .map { entities ->
+                entities.map(RoomPropertyMapper::toDomain)
+            }
+            .translatePropertyFailures(exceptionTranslator)
+    }
+
     override suspend fun likeProperty(
         userId: String,
         propertyId: String
@@ -151,13 +166,32 @@ class PropertyRepository @Inject constructor(
         return remoteDataSource
             .fetchLikedProperties(userId)
             .map { properties ->
-                properties.map(
-                    FirestorePropertyMapper::toDomain
-                )
+                val domainModels = properties.map(FirestorePropertyMapper::toDomain)
+                // Mark as liked in local cache
+                localDataSource.cacheProperties(domainModels.map { 
+                    RoomPropertyMapper.toEntity(it).copy(isLiked = true)
+                })
+                domainModels
             }
             .translatePropertyFailures(
                 exceptionTranslator
-            )
+            ).let { result ->
+                if (result is AppResult.Error) {
+                    localDataSource.getCachedProperties().map { entities ->
+                        entities.filter { it.isLiked }.map(RoomPropertyMapper::toDomain)
+                    }
+                } else result
+            }
+    }
+
+    override suspend fun recordView(propertyId: String): AppResult<Unit> {
+        return remoteDataSource.recordView(propertyId)
+            .translatePropertyFailures(exceptionTranslator)
+    }
+
+    override suspend fun recordShare(propertyId: String): AppResult<Unit> {
+        return remoteDataSource.recordShare(propertyId)
+            .translatePropertyFailures(exceptionTranslator)
     }
 
     override suspend fun fetchPropertiesPaginated(
@@ -165,43 +199,50 @@ class PropertyRepository @Inject constructor(
         pageSize: Int
     ): AppResult<PropertyPage> {
 
-        return remoteDataSource
-            .fetchPropertiesPaginated(
-                cursor,
-                pageSize
-            )
-            .map { remotePage ->
-                PropertyPage(
-                    properties =
-                    remotePage.properties.map {
-                        FirestorePropertyMapper.toDomain(it)
-                    },
-                    cursor =
-                    remotePage.cursor
-                )
+        // 1. Try to serve from cache if first page and not stale
+        if (cursor == null) {
+            val isStale = localDataSource.isCacheStale(MAX_CACHE_AGE_5_MIN).getOrNull() ?: true
+            if (!isStale) {
+                val cached = localDataSource.getCachedProperties().getOrNull()
+                if (!cached.isNullOrEmpty()) {
+                    return AppResult.Success(
+                        PropertyPage(
+                            properties = cached.map(RoomPropertyMapper::toDomain),
+                            cursor = null // Cache only stores first page for now
+                        )
+                    )
+                }
             }
-            .translatePropertyFailures(
-                exceptionTranslator
-            )
-    }
+        }
 
-    override suspend fun searchProperties(
-        query: String,
-        limit: Int
-    ): AppResult<List<PropertyDomainModel>> {
+        // 2. Fetch from remote
+        val remoteResult = remoteDataSource.fetchPropertiesPaginated(cursor, pageSize)
 
-        return remoteDataSource
-            .searchProperties(
-                query,
-                limit
-            )
-            .map { entities ->
-                entities.map(
-                    FirestorePropertyMapper::toDomain
-                )
+        return remoteResult.map { remotePage ->
+            val domainProperties = remotePage.properties.map(FirestorePropertyMapper::toDomain)
+            
+            // 3. Update cache if it's the first page
+            if (cursor == null) {
+                localDataSource.cacheProperties(domainProperties.toCacheEntities())
             }
-            .translatePropertyFailures(
-                exceptionTranslator
+
+            PropertyPage(
+                properties = domainProperties,
+                cursor = remotePage.cursor
             )
+        }.translatePropertyFailures(exceptionTranslator).let { result ->
+            // 4. Fallback to cache on error if first page
+            if (result is AppResult.Error && cursor == null) {
+                val cached = localDataSource.getCachedProperties().getOrNull()
+                if (!cached.isNullOrEmpty()) {
+                    AppResult.Success(
+                        PropertyPage(
+                            properties = cached.map(RoomPropertyMapper::toDomain),
+                            cursor = null
+                        )
+                    )
+                } else result
+            } else result
+        }
     }
 }

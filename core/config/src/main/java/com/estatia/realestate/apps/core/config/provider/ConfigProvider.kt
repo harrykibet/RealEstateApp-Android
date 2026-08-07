@@ -8,7 +8,12 @@ import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,6 +27,13 @@ class ConfigProvider @Inject constructor(
 ) : IConfigProvider {
 
     override val configVersion = stateHolder.configVersion
+
+    private val _isReady = MutableStateFlow(false)
+    override val isReady: StateFlow<Boolean> = _isReady
+
+    override suspend fun awaitReady() {
+        _isReady.first { it }
+    }
 
     @Volatile
     private var cachedConfig: RemoteConfigModel? = null
@@ -61,9 +73,13 @@ class ConfigProvider @Inject constructor(
             applyConfig(parsed)
 
             isInitialized = true
-        }
+            _isReady.value = true
 
-        refresh()
+            // Trigger remote refresh asynchronously to avoid blocking startup on network
+            CoroutineScope(Dispatchers.IO).launch {
+                refresh()
+            }
+        }
     }
 
     override suspend fun refresh() {

@@ -60,6 +60,8 @@ internal class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRem
         AppResult.Success(DemoData.sampleProperties.find { it.id == propertyId } ?: DemoData.sampleProperties.first())
     override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
+    override suspend fun recordView(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
+    override suspend fun recordShare(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = AppResult.Success(emptyList())
     override suspend fun fetchPropertiesPaginated(cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> {
         val allProperties = DemoData.sampleProperties
@@ -80,12 +82,13 @@ internal class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRem
         
         return AppResult.Success(PropertyRemotePage(properties, nextCursor))
     }
-    override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> = AppResult.Success(DemoData.sampleProperties.filter { it.title.contains(query, ignoreCase = true) })
 }
 
 @Singleton
 internal class DemoSearchRemoteDataSource @Inject constructor() : ISearchRemoteDataSource {
-    override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> = AppResult.Success(emptyList())
+    override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> = 
+        AppResult.Success(DemoData.sampleProperties.filter { it.title.contains(query, ignoreCase = true) })
+    
     override suspend fun getNearbyProperties(latitude: Double, longitude: Double, radiusKm: Double): AppResult<List<PropertyEntityModel>> = AppResult.Success(emptyList())
 }
 

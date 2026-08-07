@@ -10,6 +10,8 @@ data class RetryConfig(
 
     val maxDelayMs:Long,
 
-    val multiplier:Double = 2.0
+    val multiplier:Double = 2.0,
+
+    val maxTotalDurationMs: Long? = null
 
 )

@@ -5,6 +5,16 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IConfigProvider {
 
+    /**
+     * Emits true when the configuration has been loaded (at least from local assets).
+     */
+    val isReady: StateFlow<Boolean>
+
+    /**
+     * Suspends until the configuration is ready.
+     */
+    suspend fun awaitReady()
+
     val isInitialized: Boolean
 
     suspend fun initialize()

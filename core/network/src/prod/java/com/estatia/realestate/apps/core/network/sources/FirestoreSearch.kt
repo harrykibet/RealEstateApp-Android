@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.math.atan2
@@ -33,10 +34,12 @@ class FirestoreSearch @Inject constructor(
             database.collection(
                 FirestoreCollections.PROPERTIES
             )
-                .whereEqualTo(
+                .orderBy(
                     FirestoreFields.TITLE,
-                    query
+                    Query.Direction.ASCENDING
                 )
+                .startAt(query)
+                .endAt(query + "\uf8ff")
                 .limit(limit.toLong())
                 .get()
                 .await()

@@ -14,6 +14,8 @@ class CdnSelector @Inject constructor(
 
     suspend fun select(): CdnEndpoint {
 
+        config.awaitReady()
+
         val endpoints = config.cdnEndpoints
 
         require(endpoints.isNotEmpty()) {

@@ -3,8 +3,10 @@ package com.estatia.realestate.apps.core.database.di
 import android.content.Context
 import com.estatia.realestate.apps.core.database.PropertyDatabase
 import com.estatia.realestate.apps.core.database.SearchDatabase
+import com.estatia.realestate.apps.core.database.dao.CommentCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
+import com.estatia.realestate.apps.core.database.dao.SearchCacheDao
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
 import com.estatia.realestate.apps.core.database.mappers.RoomExceptionMapper
@@ -44,8 +46,18 @@ object RoomModule {
     }
 
     @Provides
+    fun provideCommentCacheDao(propertyDatabase: PropertyDatabase): CommentCacheDao {
+        return propertyDatabase.commentCacheDao()
+    }
+
+    @Provides
     fun provideSearchHistoryDao(searchDatabase: SearchDatabase): SearchHistoryDao {
         return searchDatabase.searchHistoryDao()
+    }
+
+    @Provides
+    fun provideSearchCacheDao(searchDatabase: SearchDatabase): SearchCacheDao {
+        return searchDatabase.searchCacheDao()
     }
 
     @Provides

@@ -2,12 +2,14 @@ package com.estatia.realestate.apps.core.network.sources
 
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
+import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.COMMENTS_COUNT
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
@@ -28,10 +30,17 @@ class FirestoreComments @Inject constructor(
     ): AppResult<Unit> =
         networkClient.execute(RetryConfigs.COMMENTS) {
 
-            commentsCollection(comment.propertyId)
+            val propertyRef = database.collection(FirestoreCollections.PROPERTIES)
+                .document(comment.propertyId)
+
+            val commentRef = propertyRef
+                .collection(FirestoreCollections.SubCollections.COMMENTS)
                 .document()
-                .set(comment)
-                .await()
+
+            database.runBatch { batch ->
+                batch.set(commentRef, comment)
+                batch.update(propertyRef, COMMENTS_COUNT, FieldValue.increment(1))
+            }.await()
         }
 
 

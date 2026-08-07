@@ -15,7 +15,7 @@ jobs:
     name: Setup & Define Modules
     runs-on: ubuntu-latest
     outputs:
-      modules: "core feature_home feature_property feature_auth feature_search feature_profile ui_components feature_analytics feature_mediaplayer app localization security feature_intelligence feature_payments feature_marketplace feature_favorites feature_chats feature_notifications feature_comments feature_settings feature_service"
+      modules: "app core:analytics core:common core:config core:data core:database core:datastore core:datastore-proto core:design-system core:domain core:localization core:model core:navigation core:network core:notifications core:player-engine core:player-ui core:security core:testing core:ui feature:auth feature:chats feature:comments feature:favorites feature:home feature:intelligence feature:market feature:payments feature:profile feature:property feature:search feature:service feature:settings"
 
     steps:
       - name: Checkout Code
@@ -27,7 +27,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        module: [core, feature_home, feature_property, feature_auth, feature_search, feature_profile, ui_components, feature_analytics, feature_mediaplayer, app, localization, security, feature_intelligence, feature_payments, feature_marketplace, feature_favorites, feature_chats, feature_notifications, feature_comments, feature_settings, feature_service]
+        module: [app, core:analytics, core:common, core:config, core:data, core:database, core:datastore, core:datastore-proto, core:design-system, core:domain, core:localization, core:model, core:navigation, core:network, core:notifications, core:player-engine, core:player-ui, core:security, core:testing, core:ui, feature:auth, feature:chats, feature:comments, feature:favorites, feature:home, feature:intelligence, feature:market, feature:payments, feature:profile, feature:property, feature:search, feature:service, feature:settings]
 
     steps:
       - name: Checkout Code

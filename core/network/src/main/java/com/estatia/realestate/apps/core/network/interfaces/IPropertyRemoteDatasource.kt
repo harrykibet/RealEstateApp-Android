@@ -50,14 +50,6 @@ interface IPropertyRemoteDatasource {
     ): AppResult<List<PropertyEntityModel>>
 
     /**
-     * Searches for properties based on a text query.
-     */
-    suspend fun searchProperties(
-        query: String,
-        limit: Int
-    ): AppResult<List<PropertyEntityModel>>
-
-    /**
      * Registers a "like" action for a user on a property.
      */
     suspend fun likeProperty(
@@ -72,6 +64,16 @@ interface IPropertyRemoteDatasource {
         userId: String,
         propertyId: String
     ): AppResult<Unit>
+
+    /**
+     * Increments the view count for a property.
+     */
+    suspend fun recordView(propertyId: String): AppResult<Unit>
+
+    /**
+     * Increments the share count for a property.
+     */
+    suspend fun recordShare(propertyId: String): AppResult<Unit>
 
     /**
      * Fetches properties using pagination.

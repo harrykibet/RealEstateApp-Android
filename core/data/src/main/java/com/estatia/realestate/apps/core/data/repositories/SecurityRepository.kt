@@ -56,15 +56,8 @@ class SecurityRepository @Inject constructor(
         return signatureManager.verify(data.toByteArray(), signatureBytes, DEFAULT_SIGNING_ALIAS)
     }
 
-    override suspend fun hashWithSalt(data: String): AppResult<String> =
-        hashManager.hashWithSalt(data)
-
     override suspend fun hashWithSalt(data: ByteArray, salt: ByteArray): AppResult<ByteArray> =
         hashManager.hashWithSalt(data, salt)
-
-
-    override suspend fun verifyHash(data: String, combinedHash: String): AppResult<Boolean> =
-        hashWithSalt(data).map { it == combinedHash }
 
     override suspend fun saveToken(token: String): AppResult<Unit> =
         tokenDataSource.saveToken(token)

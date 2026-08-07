@@ -119,16 +119,4 @@ class SecurityRepositoryTest {
         assert(result is AppResult.Success)
         assertEquals("encoded", (result as AppResult.Success).data)
     }
-
-    @Test
-    fun `hashWithSalt delegates to hashManager`() = runTest {
-        val data = "test"
-        val expected = "hash"
-        coEvery { hashManager.hashWithSalt(data) } returns AppResult.Success(expected)
-
-        val result = repository.hashWithSalt(data)
-
-        assert(result is AppResult.Success)
-        assertEquals(expected, (result as AppResult.Success).data)
-    }
 }

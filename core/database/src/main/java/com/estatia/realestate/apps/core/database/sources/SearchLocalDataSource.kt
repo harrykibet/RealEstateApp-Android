@@ -1,14 +1,20 @@
 package com.estatia.realestate.apps.core.database.sources
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.database.dao.SearchCacheDao
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
+import com.estatia.realestate.apps.core.database.entities.SearchCacheEntity
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import javax.inject.Inject
 
+private const val MAX_SEARCH_RESULTS = 50
+private const val TARGET_SEARCH_RESULTS = 40
+
 class SearchLocalDataSource @Inject constructor(
-    private val dao: SearchHistoryDao,
+    private val historyDao: SearchHistoryDao,
+    private val cacheDao: SearchCacheDao,
     private val databaseExecutor: ILocalDatabaseExecutor
 ) : ISearchLocalDataSource {
 
@@ -19,11 +25,11 @@ class SearchLocalDataSource @Inject constructor(
     ): AppResult<Unit> =
         databaseExecutor.execute {
 
-            dao.insertSearchQuery(
+            historyDao.insertSearchQuery(
                 SearchHistoryEntity(query = query)
             )
 
-            dao.maintainSearchHistoryLimit()
+            historyDao.maintainSearchHistoryLimit()
         }
 
 
@@ -32,7 +38,7 @@ class SearchLocalDataSource @Inject constructor(
             : AppResult<List<String>> =
         databaseExecutor.execute {
 
-            dao.getSearchHistory()
+            historyDao.getSearchHistory()
                 .map(SearchHistoryEntity::query)
         }
 
@@ -42,6 +48,30 @@ class SearchLocalDataSource @Inject constructor(
             : AppResult<Unit> =
         databaseExecutor.execute {
 
-            dao.clearSearchHistory()
+            historyDao.clearSearchHistory()
+        }
+
+    override suspend fun cacheSearchResult(
+        query: String,
+        propertyIds: List<String>
+    ): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.insert(
+                SearchCacheEntity(
+                    query = query,
+                    propertyIds = propertyIds,
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+            if (cacheDao.count() > MAX_SEARCH_RESULTS) {
+                cacheDao.trim(TARGET_SEARCH_RESULTS)
+            }
+        }
+
+    override suspend fun getCachedSearchResult(
+        query: String
+    ): AppResult<List<String>?> =
+        databaseExecutor.execute {
+            cacheDao.get(query)?.propertyIds
         }
 }

@@ -25,11 +25,7 @@ dependencies {
     implementation(libs.media3.exoplayer)
 
     implementation(projects.core.model)
-    implementation(projects.core.domain)
-    implementation(projects.core.data)
-    implementation(projects.core.common)
     api(projects.core.playerUi)
     implementation(projects.core.designSystem)
-    api(projects.core.analytics)
     implementation(projects.core.localization)
 }

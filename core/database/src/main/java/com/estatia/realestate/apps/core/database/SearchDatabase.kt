@@ -4,18 +4,24 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.estatia.realestate.apps.core.database.dao.SearchCacheDao
 import com.estatia.realestate.apps.core.database.dao.SearchHistoryDao
+import com.estatia.realestate.apps.core.database.entities.SearchCacheEntity
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
 
 @Database(
-    entities = [SearchHistoryEntity::class],
-    version = 1,
+    entities = [
+        SearchHistoryEntity::class,
+        SearchCacheEntity::class
+    ],
+    version = 2,
     exportSchema = false
 )
 abstract class SearchDatabase : RoomDatabase() {
 
     // Abstract function to get the SearchHistoryDao
     abstract fun searchHistoryDao(): SearchHistoryDao
+    abstract fun searchCacheDao(): SearchCacheDao
 
     companion object {
         // Singleton instance of the database
@@ -29,7 +35,9 @@ abstract class SearchDatabase : RoomDatabase() {
                     context.applicationContext,
                     SearchDatabase::class.java,
                     "search_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration(false)
+                    .build()
                 INSTANCE = instance
                 instance
             }

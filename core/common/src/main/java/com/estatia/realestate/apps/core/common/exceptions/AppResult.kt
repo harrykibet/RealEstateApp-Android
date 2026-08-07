@@ -73,3 +73,10 @@ fun <T> AppResult<T>.getOrThrow(): T {
         is AppResult.Error -> throw exception
     }
 }
+
+fun <T> AppResult<T>.getOrNull(): T? {
+    return when(this) {
+        is AppResult.Success -> data
+        is AppResult.Error -> null
+    }
+}
