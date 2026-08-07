@@ -9,7 +9,6 @@ firebase.json
 firestore.indexes.json
 MapsApiKey.json
 AI_ML_ApiKey.json
-firestore.rules
 .firebaserc
 app/google-services.json
 my-firebase-admin-app/

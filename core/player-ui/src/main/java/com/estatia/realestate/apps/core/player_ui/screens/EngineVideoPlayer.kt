@@ -36,6 +36,17 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import kotlinx.coroutines.delay
 
+/**
+ * A reusable video player component that abstracts the surface lifecycle and player attachment.
+ * Optimized for use within vertical feeds.
+ * 
+ * @param mediaId Unique identifier for the media.
+ * @param uri Source URI for the video.
+ * @param mediaType Type of media (LIVE/VOD).
+ * @param getPlayer Suspend function to acquire a pooled player instance.
+ * @param onPause Callback for when the video should pause (e.g., due to lifecycle events).
+ * @param isActive Whether this player is currently the active (visible) one in a feed.
+ */
 @Composable
 fun EngineVideoPlayer(
     mediaId: String,

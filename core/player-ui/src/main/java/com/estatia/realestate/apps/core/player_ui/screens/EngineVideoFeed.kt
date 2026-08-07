@@ -29,6 +29,16 @@ import com.estatia.realestate.apps.core.player_ui.state.FeedNeighbor
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+/**
+ * A specialized vertical feed component designed for high-performance video playback.
+ * Integrates with [VideoPlaybackCoordinator] to handle prefetching and player recycling.
+ * 
+ * @param videos List of video items to display.
+ * @param uiState The current state of the active player (from [BaseVideoPlaybackViewModel]).
+ * @param onPageVisible Callback triggered when a new page becomes visible, used to initiate playback and prewarm neighbors.
+ * @param onRetry Callback for retrying playback after an error.
+ * @param videoPlayerContent Composable lambda for rendering the individual video player.
+ */
 @Composable
 fun EngineVideoFeed(
     videos: List<VideoItem>,

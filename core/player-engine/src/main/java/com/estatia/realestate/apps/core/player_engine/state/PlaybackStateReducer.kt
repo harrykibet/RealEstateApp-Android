@@ -4,8 +4,15 @@ import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * Reducer responsible for managing the logical playback state of a single player.
+ * Maps low-level ExoPlayer events to consistent UI-ready states.
+ */
 class PlaybackStateReducer {
 
+    /**
+     * Represent the possible UI-visible states of a video player.
+     */
     sealed interface State {
         data object Idle : State
         data object Buffering : State
@@ -16,6 +23,9 @@ class PlaybackStateReducer {
         data class Error(val error: PlaybackException) : State
     }
 
+    /**
+     * Represents events that trigger state transitions.
+     */
     sealed interface Event {
         data object Reset : Event
         data object BufferingStarted : Event

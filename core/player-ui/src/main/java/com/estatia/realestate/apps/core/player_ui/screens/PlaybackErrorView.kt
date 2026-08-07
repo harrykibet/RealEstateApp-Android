@@ -23,6 +23,13 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.player_ui.state.PlayerErrorType
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 
+/**
+ * A standardized error view for media playback failures.
+ * Displays appropriate icons and messages based on the [PlayerErrorType].
+ * 
+ * @param errorState The specific error state containing the type and message.
+ * @param onRetry Callback triggered when the user clicks the "Retry" button.
+ */
 @Composable
 fun PlaybackErrorView(
     errorState: PlayerUiState.Error,

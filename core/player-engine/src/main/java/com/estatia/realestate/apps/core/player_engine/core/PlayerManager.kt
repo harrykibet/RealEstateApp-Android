@@ -21,7 +21,6 @@ import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPol
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -117,16 +116,6 @@ class PlayerManager @Inject constructor(
 
     override suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =
         withContext(playerDispatcher) { pool.getOrCreate(mediaId, uri, mediaType).player }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun observeState(): StateFlow<PlaybackStateReducer.State> =
-        activeMediaIdFlow
-            .flatMapLatest { mediaId ->
-                mediaId?.let { id -> pool.get(id)?.reducer?.state }
-                    ?: MutableStateFlow(PlaybackStateReducer.State.Idle)
-            }
-            .flowOn(playerDispatcher)
-            .stateIn(engineScope, SharingStarted.Eagerly, PlaybackStateReducer.State.Idle)
 
     override fun observeState(mediaId: String): Flow<PlaybackStateReducer.State> =
         pool.observeMediaState(mediaId)

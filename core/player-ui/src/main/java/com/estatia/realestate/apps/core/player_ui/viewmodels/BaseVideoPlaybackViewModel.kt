@@ -23,6 +23,10 @@ import kotlinx.coroutines.flow.onEach
 
 /**
  * Base ViewModel providing shared logic for video playback coordination in feeds.
+ * Subclasses provide screen-specific scoping and dependency injection.
+ * 
+ * Manages the mapping of engine-level states to UI-friendly [PlayerUiState] and
+ * handles per-screen state isolation.
  */
 abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator

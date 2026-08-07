@@ -7,50 +7,57 @@ import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Domain-level repository for user profile and preference management.
+ */
 interface IUserRepository {
-    suspend fun getUserById(userId: String): AppResult<UserDomainModel>
     /**
-     * Stream of [UserData]
+     * Fetches detailed profile for a specific user.
+     */
+    suspend fun getUserById(userId: String): AppResult<UserDomainModel>
+
+    /**
+     * Reactive stream of current user's local preferences (Theme, dynamic color, etc.)
      */
     val userData: Flow<UserData>
 
     /**
-     * Sets the user's currently followed properties
+     * Updates the set of followed properties.
      */
     suspend fun setFollowedPropertyIds(followedPropertyIds: Set<String>)
 
     /**
-     * Sets the user's newly followed/unfollowed properties
+     * Toggles follow status for a property.
      */
     suspend fun setPropertyIdFollowed(followedPropertyId: String, followed: Boolean)
 
     /**
-     * Updates the bookmarked status for a property
+     * Toggles bookmarked status for a property.
      */
     suspend fun setPropertyBookmarked(propertyId: String, bookmarked: Boolean)
 
     /**
-     * Updates the viewed status for a property
+     * Sets a property as viewed.
      */
     suspend fun setPropertyViewed(propertyId: String, viewed: Boolean)
 
     /**
-     * Sets the desired theme brand.
+     * Sets the preferred theme brand.
      */
     suspend fun setThemeBrand(themeBrand: ThemeBrand)
 
     /**
-     * Sets the desired dark theme config.
+     * Sets the preferred dark theme configuration.
      */
     suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig)
 
     /**
-     * Sets the preferred dynamic color config.
+     * Toggles dynamic color support.
      */
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean)
 
     /**
-     * Sets whether the user has completed the onboarding process.
+     * Sets onboarding completion status.
      */
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean)
 }
