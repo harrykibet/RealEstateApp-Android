@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
 
 image: cirrusci/android-sdk:30  # ✅ Android SDK Docker image
@@ -36,8 +37,14 @@ before_script:
 
     echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
 
+unit-test:
+  stage: test
+  script:
+    - ./gradlew test --stacktrace
+
 build-apk:
   stage: build
+  needs: ["unit-test"]
   script:
     - ./gradlew assembleRelease --stacktrace
   artifacts:

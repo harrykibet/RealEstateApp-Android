@@ -28,6 +28,10 @@ workflows:
         inputs:
         - content: "- script@1:\n    title: Generate Debug Keystore\n    inputs:\n    - content: |-\n        #!/bin/bash\n        # Define the keystore path\n        KEYSTORE_PATH=\"/root/.android/debug.keystore\"\n        \n # Ensure the directory exists sudo mkdir -p /root/.android \n        # Remove existing keystore if it exists\n        if [ -f \"$KEYSTORE_PATH\" ]; then\n            echo \"Removing existing debug keystore...\"\n            rm -f \"$KEYSTORE_PATH\"\n        fi\n        \n        # Generate a new debug keystore\n        echo \"Generating new debug keystore...\"\n        keytool -genkey -v \\\n                -keystore \"$KEYSTORE_PATH\" \\\n                -storepass android \\\n                -alias androiddebugkey \\\n                -keypass android \\\n                -dname \"CN=Android Debug,O=Android,C=US\" \\\n                -keyalg RSA \\\n                -keysize 2048 \\\n                -validity 10000\n\n       # Ensure proper file permissions sudo chmod 644 $KEYSTORE_PATH \n echo \"Debug keystore generated at $KEYSTORE_PATH\"\n"
         title: Generate Debug Keystore
+    - android-unit-test@1:
+        inputs:
+        - variant: $VARIANT
+        - cache_level: all
     - android-build@1:
         inputs:
         - module: $MODULE

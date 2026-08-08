@@ -74,7 +74,12 @@ workflows:
           chmod +x scripts/ci-display-bootstrap.sh
           ./scripts/ci-display-bootstrap.sh
 
-      # 6 Build release APK or AAB (Gradle handles signing)
+      # 6 Run unit tests
+      - name: Run Unit Tests
+        script: |
+          ./gradlew test --no-daemon
+
+      # 7 Build release APK or AAB (Gradle handles signing)
       - name: Build Android Release
         script: |
           ./gradlew bundleRelease \
@@ -83,7 +88,7 @@ workflows:
             --build-cache \
             --no-daemon
 
-      # 7 Verify Output
+      # 8 Verify Output
       - name: Verify build output
         script: |
           ARTIFACT_DIR="app/build/outputs/bundle/release"
