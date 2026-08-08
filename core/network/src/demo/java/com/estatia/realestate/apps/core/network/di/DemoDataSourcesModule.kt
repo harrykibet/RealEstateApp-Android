@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.sources.*
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -51,4 +52,9 @@ abstract class DemoDataSourcesModule {
     @Singleton
     internal abstract fun bindSecretRemoteSource(
         dataSource: DemoSecretRemoteDataSource): ISecretRemoteDataSource
+
+    companion object {
+        @Provides
+        fun provideBackendInitializers(): Set<IBackendInitializer> = emptySet()
+    }
 }

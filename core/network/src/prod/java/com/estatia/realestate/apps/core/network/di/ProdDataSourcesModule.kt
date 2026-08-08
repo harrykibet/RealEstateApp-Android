@@ -2,10 +2,13 @@ package com.estatia.realestate.apps.core.network.di
 
 import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.sources.*
+import com.estatia.realestate.apps.core.network.sources.firebase.*
+import com.estatia.realestate.apps.core.network.sources.aws.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import javax.inject.Singleton
 
 
@@ -13,6 +16,20 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ProdDataSourcesModule {
+
+    // --- Backend Initializers ---
+
+    @Binds
+    @IntoSet
+    internal abstract fun bindFirebaseInitializer(
+        initializer: FirebaseBackendInitializer): IBackendInitializer
+
+    @Binds
+    @IntoSet
+    internal abstract fun bindAwsInitializer(
+        initializer: AwsBackendInitializer): IBackendInitializer
+
+    // --- Firebase Bindings (Current) ---
 
     @Binds
     @Singleton
@@ -53,4 +70,12 @@ abstract class ProdDataSourcesModule {
     @Singleton
     internal abstract fun bindSecretRemoteSource(
         dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
+
+    // --- AWS Bindings (Future/Alternative) ---
+    /*
+    @Binds
+    @Singleton
+    internal abstract fun bindAwsAuthRemoteSource(
+        dataSource: AwsAuthService): IAuthRemoteDataSource
+    */
 }

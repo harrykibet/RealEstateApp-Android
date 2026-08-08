@@ -2,10 +2,10 @@ package com.estatia.realestate.apps.core.network.di
 
 import android.content.Context
 import android.util.Log
-import com.estatia.realestate.apps.core.network.error_mappers.FirebaseAuthErrorMapper
-import com.estatia.realestate.apps.core.network.error_mappers.FirebaseFallbackErrorMapper
-import com.estatia.realestate.apps.core.network.error_mappers.FirebaseFirestoreErrorMapper
-import com.estatia.realestate.apps.core.network.error_mappers.FirebaseStorageErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseAuthErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseFallbackErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper

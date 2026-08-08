@@ -2,7 +2,7 @@ package com.estatia.realestate.apps
 
 import android.app.Application
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.google.firebase.FirebaseApp
+import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -20,9 +20,12 @@ class EstatiaApplication : Application()  {
     @Inject
     lateinit var config: IConfigProvider
 
+    @Inject
+    lateinit var backendInitializers: Set<@JvmSuppressWildcards IBackendInitializer>
+
     override fun onCreate() {
         super.onCreate()
-        initializeFirebase()
+        initializeBackends()
         initializeBouncyCastle()
         configureGlobalExceptionHandler()
         initializeConfig()
@@ -34,11 +37,8 @@ class EstatiaApplication : Application()  {
         }
     }
 
-    private fun initializeFirebase() {
-        FirebaseApp.initializeApp(this)
-            ?: error("Firebase initialization failed")
-
-        FirebaseAppCheckInitializer.init()
+    private fun initializeBackends() {
+        backendInitializers.forEach { it.initialize() }
     }
 
 
