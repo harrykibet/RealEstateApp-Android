@@ -11,11 +11,13 @@ interface IAnalyticsRemoteDataSource {
     ): AppResult<Unit>
 
 
+    @Deprecated("Raw event querying is no longer supported on the client. Use BigQuery export.")
     suspend fun getEventsForUser(
         userId: String
     ): AppResult<List<AnalyticsEvent>>
 
 
+    @Deprecated("Raw event querying is no longer supported on the client. Use BigQuery export.")
     suspend fun getEventById(
         eventId: String
     ): AppResult<AnalyticsEvent?>

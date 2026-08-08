@@ -1,45 +1,54 @@
 package com.estatia.realestate.apps.core.network.sources
 
+import android.os.Bundle
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
-import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
-import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.analytics.FirebaseAnalytics
+import java.util.UUID
 import javax.inject.Inject
 
 
 internal class FirestoreAnalytics @Inject constructor(
-    database: FirebaseFirestore,
-    private val networkClient: INetworkClient,
+    private val firebaseAnalytics: FirebaseAnalytics,
     private val deviceUtils: IDeviceUtils,
     private val authService: IAuthRemoteDataSource,
     private val locationUtils: ILocationUtils
 ) : IAnalyticsRemoteDataSource {
 
 
-    private val analyticsCollection =
-        database.collection(FirestoreCollections.ANALYTICS)
-
-
     override suspend fun logEvent(
         event: AnalyticsEvent
     ): AppResult<Unit> {
 
-        return networkClient.execute {
-            analyticsCollection
-                .document(event.eventId)
-                .set(event)
-                .await()
+        val params = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, event.eventId)
+            putString(FirebaseAnalytics.Param.CONTENT_TYPE, event.eventType)
+            putString("user_id", event.userId)
+            putLong("timestamp", event.timestamp)
+            
+            event.metadata.forEach { (key, value) ->
+                putString("meta_$key", value)
+            }
 
+            val device = event.deviceInfo
+            putString("device_os", device.os)
+            putString("app_version", device.appVersion)
+            putString("device_type", device.deviceType)
+
+            event.userLocation?.let { loc ->
+                putDouble("latitude", loc.latitude)
+                putDouble("longitude", loc.longitude)
+            }
         }
+
+        firebaseAnalytics.logEvent(event.eventType, params)
+        
+        return AppResult.Success(Unit)
     }
 
 
@@ -83,46 +92,20 @@ internal class FirestoreAnalytics @Inject constructor(
     override suspend fun getEventsForUser(
         userId: String
     ): AppResult<List<AnalyticsEvent>> {
-
-        return networkClient.execute {
-
-            analyticsCollection
-                .whereEqualTo(
-                    FirestoreFields.USER_ID,
-                    userId
-                )
-                .get()
-                .await()
-                .documents
-                .mapNotNull { document ->
-
-                    document.toObject<AnalyticsEvent>()
-
-                }
-        }
+        // Firebase Analytics SDK is write-only from client. 
+        // For scale, raw events should be queried via BigQuery.
+        return AppResult.Success(emptyList())
     }
 
 
     override suspend fun getEventById(
         eventId: String
     ): AppResult<AnalyticsEvent?> {
-
-        return networkClient.execute {
-
-            analyticsCollection
-                .document(eventId)
-                .get()
-                .await()
-                .toObject<AnalyticsEvent>()
-
-        }
+        return AppResult.Success(null)
     }
 
 
     override fun generateEventId(): String {
-
-        return analyticsCollection
-            .document()
-            .id
+        return UUID.randomUUID().toString()
     }
 }
