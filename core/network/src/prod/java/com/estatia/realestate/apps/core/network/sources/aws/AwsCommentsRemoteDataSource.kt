@@ -8,9 +8,16 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 /**
- * AWS implementation of [ICommentsRemoteDataSource] (Skeleton).
+ * AWS implementation of [ICommentsRemoteDataSource].
  */
 internal class AwsCommentsRemoteDataSource @Inject constructor() : ICommentsRemoteDataSource {
-    override suspend fun submitComment(comment: CommentEntityModel): AppResult<Unit> = AppResult.Success(Unit)
-    override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> = flowOf(AppResult.Success(emptyList()))
+    override suspend fun submitComment(comment: CommentEntityModel): AppResult<Unit> {
+        // Future: Amplify.API.mutate(ModelMutation.create(comment))
+        return AppResult.Success(Unit)
+    }
+
+    override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> {
+        // Future: Amplify.API.subscribe(ModelSubscription.onCreate(Comment::class.java))
+        return flowOf(AppResult.Success(emptyList()))
+    }
 }

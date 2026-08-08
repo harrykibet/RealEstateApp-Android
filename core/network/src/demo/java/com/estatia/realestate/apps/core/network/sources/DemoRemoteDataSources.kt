@@ -35,6 +35,9 @@ class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
     override suspend fun signInWithEmail(email: String, password: String): AppResult<NetworkUserEntity> = 
         AppResult.Success(getCurrentUser()!!)
 
+    override suspend fun signInInteractive(activity: Activity): AppResult<NetworkUserEntity> = 
+        AppResult.Success(getCurrentUser()!!)
+
     override suspend fun signInWithGoogle(idToken: String): AppResult<NetworkUserEntity> = 
         AppResult.Success(getCurrentUser()!!)
 

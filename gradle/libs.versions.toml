@@ -71,6 +71,8 @@ protobufPlugin = "0.10.0"
 protobuf = "4.35.1"
 turbine = "1.2.1"
 junit-vintage = "6.1.2"
+appauth = "0.11.1"
+amplify = "2.39.0"
 
 [plugins]
 
@@ -331,6 +333,10 @@ androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.r
 androidx-tracing = { group = "androidx.tracing", name = "tracing", version.ref = "androidx-tracing" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit-vintage" }
+appauth = { group = "net.openid", name = "appauth", version.ref = "appauth" }
+amplify-core = { group = "com.amplifyframework", name = "aws-core", version.ref = "amplify" }
+amplify-api = { group = "com.amplifyframework", name = "aws-api", version.ref = "amplify" }
+amplify-auth = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "amplify" }
 
 
 # Networking

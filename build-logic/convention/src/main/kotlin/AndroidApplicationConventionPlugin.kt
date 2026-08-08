@@ -70,6 +70,9 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 targetSdk = 37
                 versionCode = 1
                 versionName = "1.0"
+
+                // Required for AppAuth (AWS Cognito / OIDC)
+                manifestPlaceholders["appAuthRedirectScheme"] = "com.estatia.realestate.apps.auth"
             }
 
             signingConfigs {

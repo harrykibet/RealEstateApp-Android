@@ -26,6 +26,10 @@ dependencies {
     implementation(libs.bundles.analytics)
 
     implementation(libs.bundles.firebase)
+    implementation(libs.appauth)
+    implementation(libs.amplify.core)
+    implementation(libs.amplify.api)
+    implementation(libs.amplify.auth)
 
     implementation(projects.core.common)
     implementation(projects.core.domain)

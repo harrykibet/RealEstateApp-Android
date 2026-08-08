@@ -48,6 +48,14 @@ interface IAuthRemoteDataSource {
     ): AppResult<NetworkUserEntity>
 
     /**
+     * Signs in a user using an interactive browser-based flow (e.g., OIDC/OAuth2).
+     * Typically used for providers like AWS Cognito or Auth0.
+     */
+    suspend fun signInInteractive(
+        activity: Activity
+    ): AppResult<NetworkUserEntity>
+
+    /**
      * Signs in a user using a Google ID token.
      */
     suspend fun signInWithGoogle(

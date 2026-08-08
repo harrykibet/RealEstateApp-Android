@@ -114,6 +114,15 @@ internal class FirebaseAuthService @Inject constructor(
     }
 
 
+    override suspend fun signInInteractive(
+        activity: Activity
+    ): AppResult<NetworkUserEntity> {
+        // Firebase Auth typically uses signInWithEmailLink or signInWithRedirect for browser-based flows,
+        // but for this project's structure, we consider this an unsupported path for the pure Firebase implementation.
+        return AppResult.Error(AuthException.Unknown(Exception("signInInteractive not supported for Firebase")))
+    }
+
+
     override suspend fun signInWithGoogle(
         idToken: String
     ): AppResult<NetworkUserEntity> {
