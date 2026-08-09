@@ -2,6 +2,13 @@ package com.estatia.realestate.apps.core.network.sources.aws
 
 import android.content.Context
 import android.util.Log
+import com.amplifyframework.AmplifyException
+import com.amplifyframework.api.aws.AWSApiPlugin
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
+import com.amplifyframework.core.Amplify
+import com.amplifyframework.logging.cloudwatch.AWSCloudWatchLoggingPlugin
+import com.amplifyframework.analytics.pinpoint.AWSPinpointAnalyticsPlugin
+import com.amplifyframework.storage.s3.AWSS3StoragePlugin
 import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -15,20 +22,19 @@ class AwsBackendInitializer @Inject constructor(
 ) : IBackendInitializer {
 
     override fun initialize() {
-        /*
-        // TRULY AWS READY: Uncomment once amplifyconfiguration.json is added to res/raw
         try {
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSApiPlugin())
             Amplify.addPlugin(AWSS3StoragePlugin())
             Amplify.addPlugin(AWSPinpointAnalyticsPlugin())
             Amplify.addPlugin(AWSCloudWatchLoggingPlugin())
+            
+            // Note: This requires amplifyconfiguration.json in app/res/raw
             Amplify.configure(context)
+            
             Log.i("AwsBackend", "Amplify initialized successfully")
         } catch (error: AmplifyException) {
             Log.e("AwsBackend", "Could not initialize Amplify", error)
         }
-        */
-        Log.i("AwsBackend", "AWS Initializer in passive mode (waiting for configuration)")
     }
 }

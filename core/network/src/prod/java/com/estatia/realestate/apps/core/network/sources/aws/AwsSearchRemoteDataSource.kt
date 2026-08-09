@@ -1,9 +1,14 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
+import com.amplifyframework.api.graphql.SimpleGraphQLRequest
+import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 /**
  * AWS implementation of [ISearchRemoteDataSource].
@@ -11,56 +16,54 @@ import javax.inject.Inject
  * TRULY AWS READY: This implementation uses the Amplify API (GraphQL) pattern
  * to interact with AWS OpenSearch via an AppSync bridge.
  */
-class AwsSearchRemoteDataSource @Inject constructor() : ISearchRemoteDataSource {
+class AwsSearchRemoteDataSource @Inject constructor(
+    private val networkClient: INetworkClient
+) : ISearchRemoteDataSource {
 
     override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> {
-        // TRULY AWS READY: Pattern for full-text search with OpenSearch typo tolerance (fuzzy matching)
-        /*
         val searchQuery = """
-            query SearchProperties($query: String!, $limit: Int!) {
+            query SearchProperties(${'$'}query: String!, ${'$'}limit: Int!) {
                 searchProperties(filter: { 
                     or: [
-                        { title: { match: $query, fuzziness: "AUTO" } },
-                        { description: { match: $query, fuzziness: "AUTO" } }
+                        { title: { match: ${'$'}query, fuzziness: "AUTO" } },
+                        { description: { match: ${'$'}query, fuzziness: "AUTO" } }
                     ]
-                }, limit: $limit) {
+                }, limit: ${'$'}limit) {
                     items {
                         id
                         title
                         description
                         price
-                        ...
                     }
                 }
             }
         """.trimIndent()
 
+        val request = SimpleGraphQLRequest<List<PropertyEntityModel>>(
+            searchQuery,
+            mapOf("query" to query, "limit" to limit),
+            List::class.java as Class<List<PropertyEntityModel>>,
+            null
+        )
+
         return networkClient.execute {
-            val response = Amplify.API.query(
-                SimpleGraphQLRequest<List<PropertyEntityModel>>(
-                    searchQuery,
-                    mapOf("query" to query, "limit" to limit),
-                    List::class.java, // Need appropriate model type
-                    GsonVariablesSerializer()
+            suspendCancellableCoroutine { continuation ->
+                Amplify.API.query(request,
+                    { response -> continuation.resume(response.data ?: emptyList()) },
+                    { error -> continuation.resumeWith(Result.failure(error)) }
                 )
-            ).await()
-            
-            response.data ?: emptyList()
+            }
         }
-        */
-        return AppResult.Success(emptyList())
     }
 
     override suspend fun getNearbyProperties(latitude: Double, longitude: Double, radiusKm: Double): AppResult<List<PropertyEntityModel>> {
-        // TRULY AWS READY: Pattern for efficient geospatial search via OpenSearch geo-point indexing
-        /*
         val geoQuery = """
-            query NearbyProperties($lat: Float!, $lng: Float!, $radius: String!) {
+            query NearbyProperties(${'$'}lat: Float!, ${'$'}lng: Float!, ${'$'}radius: String!) {
                 searchProperties(filter: {
                     location: {
                         within: {
-                            distance: $radius,
-                            center: { lat: $lat, lon: $lng }
+                            distance: ${'$'}radius,
+                            center: { lat: ${'$'}lat, lon: ${'$'}lng }
                         }
                     }
                 }) {
@@ -68,12 +71,21 @@ class AwsSearchRemoteDataSource @Inject constructor() : ISearchRemoteDataSource 
                 }
             }
         """.trimIndent()
+
+        val request = SimpleGraphQLRequest<List<PropertyEntityModel>>(
+            geoQuery,
+            mapOf("lat" to latitude, "lng" to longitude, "radius" to "${radiusKm}km"),
+            List::class.java as Class<List<PropertyEntityModel>>,
+            null
+        )
         
         return networkClient.execute {
-            // Amplify handles the complex geo-filtering server-side via OpenSearch
-            ...
+            suspendCancellableCoroutine { continuation ->
+                Amplify.API.query(request,
+                    { response -> continuation.resume(response.data ?: emptyList()) },
+                    { error -> continuation.resumeWith(Result.failure(error)) }
+                )
+            }
         }
-        */
-        return AppResult.Success(emptyList())
     }
 }

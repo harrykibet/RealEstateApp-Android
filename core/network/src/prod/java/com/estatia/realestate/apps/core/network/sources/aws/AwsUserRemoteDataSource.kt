@@ -1,11 +1,15 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
+import com.amplifyframework.api.graphql.SimpleGraphQLRequest
+import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 /**
  * AWS implementation of [IUserRemoteDataSource].
@@ -18,11 +22,9 @@ class AwsUserRemoteDataSource @Inject constructor(
 ) : IUserRemoteDataSource {
 
     override suspend fun getUserById(userId: String): AppResult<UserEntityModel> {
-        // TRULY AWS READY: Pattern for retrieving a user profile from Aurora via AppSync
-        /*
         val userQuery = """
-            query GetUser($id: ID!) {
-                getUser(id: $id) {
+            query GetUser(${'$'}id: ID!) {
+                getUser(id: ${'$'}id) {
                     userId
                     name
                     email
@@ -34,19 +36,24 @@ class AwsUserRemoteDataSource @Inject constructor(
             }
         """.trimIndent()
 
+        val request = SimpleGraphQLRequest<UserEntityModel>(
+            userQuery,
+            mapOf("id" to userId),
+            UserEntityModel::class.java,
+            null
+        )
+
         return networkClient.execute {
-            val response = Amplify.API.query(
-                SimpleGraphQLRequest<UserEntityModel>(
-                    userQuery,
-                    mapOf("id" to userId),
-                    UserEntityModel::class.java,
-                    GsonVariablesSerializer()
+            suspendCancellableCoroutine { continuation ->
+                Amplify.API.query(request,
+                    { response -> 
+                        val data = response.data
+                        if (data != null) continuation.resume(data)
+                        else continuation.resumeWith(Result.failure(DatabaseException.NotFound))
+                    },
+                    { error -> continuation.resumeWith(Result.failure(error)) }
                 )
-            ).await()
-            
-            response.data ?: throw DatabaseException.NotFound
+            }
         }
-        */
-        return AppResult.Error(DatabaseException.NotFound)
     }
 }

@@ -1,12 +1,18 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
+import com.amplifyframework.api.graphql.SimpleGraphQLRequest
+import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 /**
  * AWS implementation of [ICommentsRemoteDataSource].
@@ -19,46 +25,62 @@ class AwsCommentsRemoteDataSource @Inject constructor(
 ) : ICommentsRemoteDataSource {
 
     override suspend fun submitComment(comment: CommentEntityModel): AppResult<Unit> {
-        // TRULY AWS READY: Pattern for creating a comment and triggering an AppSync subscription
-        /*
         val mutation = """
-            mutation CreateComment($input: CreateCommentInput!) {
-                createComment(input: $input) {
+            mutation CreateComment(${'$'}input: CreateCommentInput!) {
+                createComment(input: ${'$'}input) { id }
+            }
+        """.trimIndent()
+
+        val request = SimpleGraphQLRequest<String>(
+            mutation,
+            mapOf("input" to comment),
+            String::class.java,
+            null
+        )
+
+        return networkClient.execute {
+            suspendCancellableCoroutine { continuation ->
+                Amplify.API.mutate(request,
+                    { response -> continuation.resume(Unit) },
+                    { error -> continuation.resumeWith(Result.failure(error)) }
+                )
+            }
+        }
+    }
+
+    override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> = callbackFlow {
+        // AppSync Subscription for real-time comments
+        val subscriptionQuery = """
+            subscription OnCreateComment(${'$'}propertyId: String!) {
+                onCreateComment(propertyId: ${'$'}propertyId) {
                     id
                     propertyId
+                    authorId
                     message
-                    ...
+                    timeStamp
                 }
             }
         """.trimIndent()
 
-        return networkClient.execute {
-            Amplify.API.mutate(
-                ModelMutation.create(comment)
-            ).await()
-            Unit
-        }
-        */
-        return AppResult.Success(Unit)
-    }
+        val request = SimpleGraphQLRequest<CommentEntityModel>(
+            subscriptionQuery,
+            mapOf("propertyId" to propertyId),
+            CommentEntityModel::class.java,
+            null
+        )
 
-    override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> {
-        // TRULY AWS READY: Pattern for real-time subscriptions with Amplify
-        /*
-        return callbackFlow {
-            val subscription = Amplify.API.subscribe(
-                ModelSubscription.onCreate(Comment::class.java),
-                { Log.i("AwsComments", "Subscription started") },
-                { event -> 
-                    // Fetch latest list or append new comment
-                    trySend(AppResult.Success(listOf(event.data))) 
-                },
-                { error -> trySend(AppResult.Error(DatabaseException.Unknown(error))) },
-                { Log.i("AwsComments", "Subscription completed") }
-            )
-            awaitClose { subscription.cancel() }
-        }
-        */
-        return flowOf(AppResult.Success(emptyList()))
+        val operation = Amplify.API.subscribe(request,
+            { /* onStart */ },
+            { event -> 
+                val newComment = event.data
+                if (newComment != null) {
+                    trySend(AppResult.Success(listOf(newComment)))
+                }
+            },
+            { error -> trySend(AppResult.Error(DatabaseException.Unknown(error))) },
+            { /* onComplete */ }
+        )
+
+        awaitClose { operation?.cancel() }
     }
 }
