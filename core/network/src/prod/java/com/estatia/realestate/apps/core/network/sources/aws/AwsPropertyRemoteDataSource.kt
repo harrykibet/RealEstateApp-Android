@@ -28,7 +28,7 @@ class AwsPropertyRemoteDataSource @Inject constructor(
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> = networkClient.execute {
-        val propertyId = property.id ?: UUID.randomUUID().toString()
+        val propertyId = property.id.ifBlank { UUID.randomUUID().toString() }
         
         // 1. Upload Images to S3
         // Note: For S3, we typically store the keys and resolve them via Storage.getUrl or a CDN

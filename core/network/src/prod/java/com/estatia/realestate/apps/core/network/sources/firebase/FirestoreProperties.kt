@@ -41,10 +41,9 @@ class FirestoreProperties @Inject constructor(
         videoUris: List<Uri>
     ): AppResult<String> {
 
-        val propertyId =
-            database.collection(PROPERTIES)
-                .document()
-                .id
+        // IDEMPOTENCY: Use the client-provided ID or fallback to generating one once.
+        // This ensures retries don't create duplicate documents.
+        val propertyId = property.id.ifBlank { UUID.randomUUID().toString() }
 
         val imagePaths = imageUris.map {
             "$PROPERTIES/$propertyId/${MediaFormat.MEDIA_TYPE_IMAGES}/${UUID.randomUUID()}"

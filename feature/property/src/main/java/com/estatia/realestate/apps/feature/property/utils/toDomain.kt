@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.model.property.Coordinates
 import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
+import java.util.UUID
 
 fun AddPropertyDraft.toDomain(
     userId: String
@@ -14,7 +15,7 @@ fun AddPropertyDraft.toDomain(
     return PropertyDomainModel(
 
         id = PropertyId(
-            value = System.currentTimeMillis().toString()
+            value = UUID.randomUUID().toString()
         ),
 
         title = title,
