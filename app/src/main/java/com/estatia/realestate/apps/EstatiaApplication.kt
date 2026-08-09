@@ -4,6 +4,7 @@ import android.app.Application
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
 import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
+import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,10 @@ class EstatiaApplication : Application()  {
     @Inject
     lateinit var backendInitializers: Set<@JvmSuppressWildcards IBackendInitializer>
 
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
+
     override fun onCreate() {
         super.onCreate()
         initializeBackends()
@@ -35,7 +40,7 @@ class EstatiaApplication : Application()  {
     }
 
     private fun initializeConfig() {
-        runBlocking {
+        applicationScope.launch {
             config.initialize()
         }
     }

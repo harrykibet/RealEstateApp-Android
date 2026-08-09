@@ -3,6 +3,7 @@ package com.estatia.realestate.apps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,13 +16,19 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     userDataRepository: IUserRepository,
-    authRepository: IAuthRepository
+    authRepository: IAuthRepository,
+    config: IConfigProvider
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = combine(
         userDataRepository.userData,
-        authRepository.isUserAuthenticated()
-    ) { userData, isAuthenticated ->
-        MainActivityUiState.Success(userData, isAuthenticated)
+        authRepository.isUserAuthenticated(),
+        config.isReady
+    ) { userData, isAuthenticated, isConfigReady ->
+        if (isConfigReady) {
+            MainActivityUiState.Success(userData, isAuthenticated)
+        } else {
+            MainActivityUiState.Loading
+        }
     }.stateIn(
         scope = viewModelScope,
         initialValue = MainActivityUiState.Loading,
