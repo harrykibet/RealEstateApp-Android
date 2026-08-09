@@ -25,7 +25,7 @@ fun RememberFeedPlaybackCoordinator(
             val videoUrl = it.videoUrl
             if (videoUrl != null) {
                 FeedNeighbor(
-                    mediaId = videoUrl,
+                    mediaId = it.id,
                     uri = videoUrl.toUri()
                 )
             } else null
@@ -35,7 +35,7 @@ fun RememberFeedPlaybackCoordinator(
             val videoUrl = it.videoUrl
             if (videoUrl != null) {
                 FeedNeighbor(
-                    mediaId = videoUrl,
+                    mediaId = it.id,
                     uri = videoUrl.toUri()
                 )
             } else null
@@ -43,7 +43,7 @@ fun RememberFeedPlaybackCoordinator(
 
         onPageVisible(
             FeedMediaContext(
-                mediaId = currentVideoUrl,
+                mediaId = current.id,
                 uri = currentVideoUrl.toUri(),
                 previous = previous,
                 next = next

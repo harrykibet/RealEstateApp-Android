@@ -14,7 +14,8 @@ import javax.inject.Singleton
 class StreamingPipeline @Inject constructor(
     private val cacheWarmer: MediaCacheWarmer,
     private val mediaSourceFactory: MediaSource.Factory,
-    private val offlineDownloadController: OfflineDownloadController
+    private val offlineDownloadController: OfflineDownloadController,
+    private val cacheKeyFactory: ICacheKeyFactory
 ) : IStreamingPipeline {
 
 
@@ -27,9 +28,12 @@ class StreamingPipeline @Inject constructor(
         uri: Uri,
         mediaType: MediaType
     ): MediaItem {
+        val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+
         return MediaItem.Builder()
             .setUri(uri)
-            .setCustomCacheKey(mediaId) // Stable key for caching unified with offline
+            .setMediaId(stableKey)
+            .setCustomCacheKey(stableKey) // Stable key for caching unified with offline
             .apply {
                 if (mediaType == MediaType.LIVE) {
                     setLiveConfiguration(

@@ -89,6 +89,12 @@ abstract class PlayerManagerModule {
         playbackConfigurationProvider: PlaybackConfigurationProvider
     ): IPlaybackConfigurationProvider
 
+    @Binds
+    @Singleton
+    internal abstract fun bindCacheKeyFactory(
+        cacheKeyFactory: DefaultCacheKeyFactory
+    ): ICacheKeyFactory
+
     // -------------------------------------------------------
     // @Provides — must be static, goes in companion object
     // -------------------------------------------------------

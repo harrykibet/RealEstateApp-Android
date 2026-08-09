@@ -15,12 +15,14 @@ import javax.inject.Singleton
 @UnstableApi
 @Singleton
 class OfflineDownloadController @Inject constructor(
-    private val downloadManager: DownloadManager
+    private val downloadManager: DownloadManager,
+    private val cacheKeyFactory: ICacheKeyFactory
 ) {
 
     fun download(mediaId: String, uri: Uri) {
-        val request = DownloadRequest.Builder(mediaId, uri)
-            .setCustomCacheKey(mediaId)
+        val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+        val request = DownloadRequest.Builder(stableKey, uri)
+            .setCustomCacheKey(stableKey)
             .build()
         downloadManager.addDownload(request)
     }
