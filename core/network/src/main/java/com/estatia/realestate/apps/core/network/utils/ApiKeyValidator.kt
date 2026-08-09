@@ -48,7 +48,7 @@ internal class ApiKeyValidator @Inject constructor(
             else -> performGenericValidation(apiKey, sanitizedKey)
         }
 
-        logger.d(message = "Validated API key for service {}: {}, ${service?.name}, $sanitizedKey")
+        logger.d(message = "Validated API key for service ${service?.name ?: "Generic"}: $sanitizedKey")
     }
 
     private fun validateForService(apiKey: String, service: ServiceNames, sanitizedKey: String) {
