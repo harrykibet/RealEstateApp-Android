@@ -71,11 +71,21 @@ abstract class ProdDataSourcesModule {
     internal abstract fun bindSecretRemoteSource(
         dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
 
+    @Binds
+    @Singleton
+    internal abstract fun bindPaymentsRemoteSource(
+        dataSource: FirebasePaymentsRemoteDataSource): IPaymentsRemoteDataSource
+
     // --- AWS Bindings (Future/Alternative) ---
     /*
     @Binds
     @Singleton
     internal abstract fun bindAwsAuthRemoteSource(
         dataSource: AwsAuthService): IAuthRemoteDataSource
+
+    @Binds
+    @Singleton
+    internal abstract fun bindAwsPaymentsRemoteSource(
+        dataSource: AwsPaymentsRemoteDataSource): IPaymentsRemoteDataSource
     */
 }

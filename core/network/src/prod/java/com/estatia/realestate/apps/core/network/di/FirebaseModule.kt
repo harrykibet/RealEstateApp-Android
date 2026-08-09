@@ -15,6 +15,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.perf.FirebasePerformance
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.storage.FirebaseStorage
@@ -85,6 +86,13 @@ object FirebaseModule {
     fun provideFirebaseRemoteConfig(@ApplicationContext context: Context): FirebaseRemoteConfig {
         initializeFirebaseIfNeeded(context)
         return FirebaseRemoteConfig.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFunctions(@ApplicationContext context: Context): FirebaseFunctions {
+        initializeFirebaseIfNeeded(context)
+        return FirebaseFunctions.getInstance()
     }
 
     @Provides

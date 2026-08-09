@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.amplify.core)
     implementation(libs.amplify.api)
     implementation(libs.amplify.auth)
+    implementation(libs.amplify.storage)
 
     implementation(projects.core.common)
     implementation(projects.core.domain)

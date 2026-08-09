@@ -172,7 +172,8 @@ firebase = [
     "firebase-crashlytics",
     "firebase-auth",
     "firebase-firestore",
-    "firebase-storage"
+    "firebase-storage",
+    "firebase-functions"
 ]
 
 media3 = [
@@ -292,6 +293,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
+firebase-functions = { module = "com.google.firebase:firebase-functions" }
 firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity" }
 firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 
@@ -337,6 +339,7 @@ appauth = { group = "net.openid", name = "appauth", version.ref = "appauth" }
 amplify-core = { group = "com.amplifyframework", name = "aws-core", version.ref = "amplify" }
 amplify-api = { group = "com.amplifyframework", name = "aws-api", version.ref = "amplify" }
 amplify-auth = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "amplify" }
+amplify-storage = { group = "com.amplifyframework", name = "aws-storage-s3", version.ref = "amplify" }
 
 
 # Networking

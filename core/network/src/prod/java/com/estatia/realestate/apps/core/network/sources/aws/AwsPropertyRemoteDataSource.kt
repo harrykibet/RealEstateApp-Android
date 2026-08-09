@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
 import android.net.Uri
-import android.util.Log
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
@@ -20,11 +19,22 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
 ) : IPropertyRemoteDatasource {
 
     override suspend fun uploadProperty(property: PropertyEntityModel, imageUris: List<Uri>, videoUris: List<Uri>): AppResult<String> {
-        // TRULY AWS READY: Implementation pattern for AppSync/Aurora
+        // TRULY AWS READY: Pattern for idempotent uploads with Amplify Storage and AppSync
         /*
-        val mutation = ModelMutation.create(property)
-        val response = Amplify.API.mutate(mutation)
-        ...
+        val propertyId = UUID.randomUUID().toString()
+        
+        // 1. Upload Images to S3
+        val imageUrls = imageUris.map { uri ->
+            val key = "properties/$propertyId/images/${UUID.randomUUID()}"
+            Amplify.Storage.uploadFile(key, context.contentResolver.openInputStream(uri)!!).await()
+            key // Store keys, resolve to URLs later or use Amplify.Storage.getUrl
+        }
+
+        // 2. Create entry in Aurora via AppSync
+        val finalProperty = property.copy(id = propertyId, imageUrl = imageUrls)
+        Amplify.API.mutate(ModelMutation.create(finalProperty)).await()
+
+        return AppResult.Success(propertyId)
         */
         return AppResult.Error(DatabaseException.Unknown(Exception("AWS Property Upload Not Implemented")))
     }

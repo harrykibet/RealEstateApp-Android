@@ -20,6 +20,7 @@ internal class AwsBackendInitializer @Inject constructor(
         try {
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSApiPlugin())
+            Amplify.addPlugin(AWSS3StoragePlugin())
             Amplify.configure(context)
             Log.i("AwsBackend", "Amplify initialized successfully")
         } catch (error: AmplifyException) {
