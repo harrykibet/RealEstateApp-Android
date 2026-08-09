@@ -145,17 +145,6 @@ class AndroidKeyStoreManager @Inject constructor(
         }
 
 
-    override suspend fun rotateKey(
-        alias: String
-    ): AppResult<Unit> =
-        cryptoExecutor.execute(SecurityException.KeyRotationFailed()) {
-            withContext(Dispatchers.IO) {
-                if (keyStore.containsAlias(alias)) {
-                    keyStore.deleteEntry(alias)
-                }
-            }
-        }
-
     override fun getKeyPair(
         alias: String
     ): AppResult<KeyPair> {

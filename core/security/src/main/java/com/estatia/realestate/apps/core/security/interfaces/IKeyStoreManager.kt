@@ -27,11 +27,6 @@ interface IKeyStoreManager {
     ): AppResult<Unit>
 
 
-    suspend fun rotateKey(
-        alias: String
-    ): AppResult<Unit>
-
-
     fun getSecretKey(
         alias: String
     ): SecretKey?

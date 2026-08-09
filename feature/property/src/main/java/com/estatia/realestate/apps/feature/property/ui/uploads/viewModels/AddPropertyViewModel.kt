@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
@@ -281,7 +282,11 @@ class AddPropertyViewModel @Inject constructor(
         onFailure: (Exception) -> Unit,
         onSuccess: (String) -> Unit
     ) {
-        val userId = authRepository.getCurrentUserId() ?: return
+        val userId = authRepository.getCurrentUserId()
+        if (userId == null) {
+            onFailure(AuthException.UserNotAuthenticated)
+            return
+        }
 
         viewModelScope.launch {
             try {
