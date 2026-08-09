@@ -63,6 +63,7 @@ private fun ApplicationExtension.applyCommon(
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildTypes {
@@ -107,6 +108,7 @@ private fun LibraryExtension.applyCommon(
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildTypes {
@@ -149,6 +151,7 @@ private fun DynamicFeatureExtension.applyCommon(
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 

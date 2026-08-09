@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
@@ -59,6 +60,10 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             pluginManager.withPlugin("com.android.base") {
                 extensions.configure<KotlinAndroidProjectExtension> {
                     jvmToolchain(17)
+                }
+
+                dependencies {
+                    add("coreLibraryDesugaring", libs.findLibrary("android.desugarJdkLibs").get())
                 }
             }
 

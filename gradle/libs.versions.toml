@@ -73,6 +73,7 @@ turbine = "1.2.1"
 junit-vintage = "6.1.2"
 appauth = "0.11.1"
 amplify = "2.39.0"
+androidDesugarJdkLibs = "2.1.5"
 
 [plugins]
 
@@ -340,6 +341,7 @@ amplify-core = { group = "com.amplifyframework", name = "aws-core", version.ref 
 amplify-api = { group = "com.amplifyframework", name = "aws-api", version.ref = "amplify" }
 amplify-auth = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "amplify" }
 amplify-storage = { group = "com.amplifyframework", name = "aws-storage-s3", version.ref = "amplify" }
+android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 
 
 # Networking
