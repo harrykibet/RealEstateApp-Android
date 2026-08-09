@@ -14,7 +14,7 @@ import javax.inject.Inject
  * TRULY AWS READY: This implementation uses the AWS AppConfig Data SDK
  * to retrieve dynamic configuration profiles.
  */
-class AwsConfigRemoteDataSource @Inject constructor(
+internal class AwsConfigRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : IConfigRemoteDataSource {
 

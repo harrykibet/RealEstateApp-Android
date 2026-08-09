@@ -1,30 +1,72 @@
 package com.estatia.realestate.apps.feature.profile.ui.viewmodels
 
-
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val authRepository: IAuthRepository,
+    private val userRepository: IUserRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        ProfileUiState(
-            name = "Harry Kemboi",
-            email = "truman948@gmail.com",
-            bio = "Professional Real Estate Agent specializing in residential properties in Nairobi. Helping you find your dream home with ease.",
-            userType = "Agent",
-            stats = com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats(
-                propertyCount = 12,
-                followerCount = 1200,
-                followingCount = 450
-            )
-        )
-    )
+    private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    init {
+        loadUserProfile()
+    }
+
+    private fun loadUserProfile() {
+        val userId = authRepository.getCurrentUserId()
+        if (userId == null) {
+            _uiState.update { it.copy(isLoading = false, error = "User not authenticated") }
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            when (val result = userRepository.getUserById(userId)) {
+                is AppResult.Success -> {
+                    val user = result.data
+                    _uiState.update { 
+                        it.copy(
+                            isLoading = false,
+                            name = user.name ?: "Unknown User",
+                            email = user.email ?: "",
+                            bio = user.bio ?: "",
+                            profilePictureUrl = user.profilePictureUrl,
+                            userType = user.userType.displayName,
+                            stats = ProfileStats(
+                                propertyCount = user.propertyCount,
+                                followerCount = user.followerCount,
+                                followingCount = user.followingCount
+                            ),
+                            error = null
+                        )
+                    }
+                }
+                is AppResult.Error -> {
+                    _uiState.update { 
+                        it.copy(
+                            isLoading = false, 
+                            error = result.exception.message ?: "Failed to load profile"
+                        ) 
+                    }
+                }
+            }
+        }
+    }
 }

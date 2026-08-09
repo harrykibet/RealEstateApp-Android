@@ -6,7 +6,7 @@ import javax.inject.Inject
 /**
  * Maps infrastructure exceptions to [PropertyException].
  */
-class PropertyExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<PropertyException>(
+internal class PropertyExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<PropertyException>(
     notFound = { PropertyException.PropertyNotFound },
     permissionDenied = { PropertyException.PermissionDenied },
     creationFailed = { PropertyException.PropertyCreationFailed() },

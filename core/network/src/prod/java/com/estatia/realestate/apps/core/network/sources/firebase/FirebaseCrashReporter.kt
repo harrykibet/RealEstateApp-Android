@@ -7,7 +7,7 @@ import javax.inject.Inject
 /**
  * Firebase implementation of [ICrashReporter] using Crashlytics.
  */
-class FirebaseCrashReporter @Inject constructor(
+internal class FirebaseCrashReporter @Inject constructor(
     private val crashlytics: FirebaseCrashlytics
 ) : ICrashReporter {
 

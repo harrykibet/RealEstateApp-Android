@@ -24,6 +24,8 @@ import com.estatia.realestate.apps.core.localization.api.*
 import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
+import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,6 +58,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authRepository: IAuthRepository
+
+    @Inject
+    lateinit var surfacePool: SurfacePool
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -110,6 +115,7 @@ class MainActivity : ComponentActivity() {
                 LocalCurrencyFormatter provides currencyFormatter,
                 LocalNumberFormatter provides numberFormatter,
                 LocalMeasurementFormatter provides measurementFormatter,
+                LocalSurfacePool provides surfacePool,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
                     EstatiaApp(appState)

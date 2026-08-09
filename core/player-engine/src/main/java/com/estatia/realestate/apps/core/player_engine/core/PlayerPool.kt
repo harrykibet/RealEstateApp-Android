@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class PlayerPool @Inject constructor(
+internal class PlayerPool @Inject constructor(
     private val playerFactory: PlayerFactory,
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,

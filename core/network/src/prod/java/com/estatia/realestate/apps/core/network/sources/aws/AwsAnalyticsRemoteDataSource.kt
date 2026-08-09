@@ -11,7 +11,7 @@ import javax.inject.Inject
  * AWS implementation of [IAnalyticsRemoteDataSource].
  * Uses Amazon Pinpoint via Amplify.
  */
-class AwsAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRemoteDataSource {
+internal class AwsAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRemoteDataSource {
 
     override suspend fun logEvent(event: DomainEvent): AppResult<Unit> {
         val amplifyEvent = AnalyticsEvent.builder()

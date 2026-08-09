@@ -6,7 +6,11 @@ data class UserDomainModel(
     val email: String?,
     val phoneNumber: String?,
     val profilePictureUrl: String?,
+    val bio: String? = null,
     val userType: UserType,
     val verified: Boolean,
-    val likedProperties: List<String>
+    val likedProperties: List<String>,
+    val propertyCount: Int = 0,
+    val followerCount: Int = 0,
+    val followingCount: Int = 0
 )

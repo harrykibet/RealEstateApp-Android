@@ -1,9 +1,5 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.content.Context
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
 import android.net.Uri
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -17,17 +13,11 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,13 +25,13 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class PlayerManager @Inject constructor(
+internal class PlayerManager @Inject constructor(
     private val pool: PlayerPool,
-    private val environmentCoordinator: EnvironmentCoordinator,
-    private val sizingPolicy: IPlayerPoolSizingPolicy,
+    private val environmentManager: PlayerEnvironmentManager,
+    private val audioFocusManager: AudioFocusManager,
     private val dynamicBitrateController: DynamicBitrateController,
+    private val environmentCoordinator: EnvironmentCoordinator,
     private val streamingPipeline: IStreamingPipeline,
-    @param:ApplicationContext private val context: Context,
     @param:EngineScope private val engineScope: CoroutineScope,
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) : IPlayerManager {
@@ -49,32 +39,13 @@ class PlayerManager @Inject constructor(
     private var activeMediaId: String? = null
     private val activeMediaIdFlow = MutableStateFlow<String?>(null)
     private val attachedPlayers = mutableSetOf<ExoPlayer>()
-    private var activeFocusRequest: AudioFocusRequest? = null
-    private val audioManager: AudioManager? by lazy {
-        context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-    }
-    private val audioFocusListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-        engineScope.launch(playerDispatcher) {
-            when (focusChange) {
-                AudioManager.AUDIOFOCUS_LOSS,
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> pauseCurrentPlayer()
-                AudioManager.AUDIOFOCUS_GAIN -> resumeCurrentPlayer()
-            }
-        }
-    }
 
     init {
-        environmentCoordinator.start(engineScope)
-        engineScope.launch(playerDispatcher) {
-            environmentCoordinator.environment.collect { env ->
-                val newSize = sizingPolicy.calculateMaxPoolSize()
-                pool.updateMaxPoolSize(newSize, activeMediaId)
-                pool.forEachPlayer { player, mediaType ->
-                    dynamicBitrateController.apply(player, mediaType, env)
-                }
-            }
-        }
+        audioFocusManager.setCallbacks(
+            onLost = { pauseCurrentPlayer() },
+            onGained = { resumeCurrentPlayer() }
+        )
+        environmentManager.start()
     }
 
     override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType) =
@@ -92,9 +63,13 @@ class PlayerManager @Inject constructor(
             managed.player.playWhenReady = true
             managed.player.prepare()
             managed.player.play()
-            requestAudioFocus()
+            
+            audioFocusManager.request()
+            
             activeMediaId = mediaId
             activeMediaIdFlow.value = mediaId
+            environmentManager.updateActiveMediaId(mediaId)
+            
             streamingPipeline.warm(uri, WarmPriority.VISIBLE)
         }
 
@@ -110,7 +85,7 @@ class PlayerManager @Inject constructor(
     override suspend fun pause() {
         withContext(playerDispatcher) {
             pauseCurrentPlayer()
-            abandonAudioFocus()
+            audioFocusManager.abandon()
         }
     }
 
@@ -124,35 +99,10 @@ class PlayerManager @Inject constructor(
     override fun shutdown() {
         engineScope.launch(playerDispatcher) {
             pauseCurrentPlayer()
-            abandonAudioFocus()
+            audioFocusManager.abandon()
             pool.releaseAll()
-            environmentCoordinator.stop()
+            environmentManager.stop()
         }
-    }
-
-    private fun requestAudioFocus(): Boolean {
-        val audioManager = audioManager ?: return false
-
-        val attributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-            .build()
-
-        val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-            .setAudioAttributes(attributes)
-            .setAcceptsDelayedFocusGain(true)
-            .setOnAudioFocusChangeListener(audioFocusListener)
-            .build()
-
-        activeFocusRequest = request
-        return audioManager.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
-    private fun abandonAudioFocus() {
-        activeFocusRequest?.let { request ->
-            audioManager?.abandonAudioFocusRequest(request)
-        }
-        activeFocusRequest = null
     }
 
     private fun pauseCurrentPlayer() {

@@ -16,7 +16,7 @@ import javax.inject.Singleton
 // PlayerFactory.kt — request a fresh listener instance per player via Provider<T>
 @UnstableApi
 @Singleton
-class PlayerFactory @Inject constructor(
+internal class PlayerFactory @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>

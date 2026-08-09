@@ -6,7 +6,7 @@ import javax.inject.Inject
 /**
  * Maps infrastructure exceptions to [CommentException].
  */
-class CommentExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<CommentException>(
+internal class CommentExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<CommentException>(
     notFound = { CommentException.CommentNotFound },
     permissionDenied = { CommentException.PermissionDenied },
     creationFailed = { CommentException.CommentSubmissionFailed },

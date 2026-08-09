@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import javax.inject.Inject
 
 
-class ExceptionTranslator @Inject constructor(
+internal class ExceptionTranslator @Inject constructor(
     private val propertyMapper: PropertyExceptionMapper,
     private val userMapper: UserExceptionMapper,
     private val commentMapper: CommentExceptionMapper,

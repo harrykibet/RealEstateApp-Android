@@ -11,7 +11,7 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
 
-class ExponentialRetryPolicy @Inject constructor(
+internal class ExponentialRetryPolicy @Inject constructor(
     private val exceptionMapper: IExceptionMapper
 ) : IRetryPolicy {
 

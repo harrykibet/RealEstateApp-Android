@@ -33,8 +33,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
+import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A reusable video player component that abstracts the surface lifecycle and player attachment.
@@ -59,6 +60,7 @@ fun EngineVideoPlayer(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val surfacePool = LocalSurfacePool.current
 
     // Stable player reference
     val playerState = remember(mediaId) {
@@ -74,12 +76,12 @@ fun EngineVideoPlayer(
 
     // Stable surface lifecycle via Pool
     val surfaceView = remember(mediaId) {
-        SurfacePool.acquire(context)
+        surfacePool.acquire(context)
     }
 
     DisposableEffect(mediaId) {
         onDispose {
-            SurfacePool.release(surfaceView)
+            surfacePool.release(surfaceView)
         }
     }
 
@@ -104,7 +106,7 @@ fun EngineVideoPlayer(
                 if (duration > 0) {
                     progress = (current / duration).toFloat()
                 }
-                delay(200)
+                delay(200.milliseconds)
             }
         }
     }

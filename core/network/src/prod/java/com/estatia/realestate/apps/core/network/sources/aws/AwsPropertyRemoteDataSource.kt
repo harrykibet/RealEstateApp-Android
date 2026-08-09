@@ -19,7 +19,7 @@ import kotlin.coroutines.resume
  * AWS implementation of [IPropertyRemoteDatasource].
  * Uses Amplify API (GraphQL) to interact with Aurora Serverless via AppSync.
  */
-class AwsPropertyRemoteDataSource @Inject constructor(
+internal class AwsPropertyRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : IPropertyRemoteDatasource {
 

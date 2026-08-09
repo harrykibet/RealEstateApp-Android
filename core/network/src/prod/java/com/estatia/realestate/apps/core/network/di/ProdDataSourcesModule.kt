@@ -16,7 +16,7 @@ import javax.inject.Singleton
 // Network EndPoints
 @Module
 @InstallIn(SingletonComponent::class)
-object ProdDataSourcesModule {
+internal object ProdDataSourcesModule {
 
     // --- Backend Initializers ---
 

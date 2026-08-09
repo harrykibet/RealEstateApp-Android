@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.mappers.room
 import com.estatia.realestate.apps.core.database.entities.CommentCacheEntity
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 
-object RoomCommentMapper {
+internal object RoomCommentMapper {
 
     fun toDomain(entity: CommentCacheEntity): CommentDomainModel {
         return CommentDomainModel(

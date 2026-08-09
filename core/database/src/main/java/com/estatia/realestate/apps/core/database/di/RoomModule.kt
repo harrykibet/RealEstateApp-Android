@@ -36,33 +36,33 @@ internal object RoomModule {
 
     // Provides the PropertyDraftDao from the PropertyDatabase
     @Provides
-    fun providePropertyDraftDao(propertyDatabase: PropertyDatabase): PropertyDraftDao {
+    internal fun providePropertyDraftDao(propertyDatabase: PropertyDatabase): PropertyDraftDao {
         return propertyDatabase.propertyDraftDao()
     }
 
     @Provides
-    fun providePropertyCacheDao(propertyDatabase: PropertyDatabase): PropertyCacheDao {
+    internal fun providePropertyCacheDao(propertyDatabase: PropertyDatabase): PropertyCacheDao {
         return propertyDatabase.propertyCacheDao()
     }
 
     @Provides
-    fun provideCommentCacheDao(propertyDatabase: PropertyDatabase): CommentCacheDao {
+    internal fun provideCommentCacheDao(propertyDatabase: PropertyDatabase): CommentCacheDao {
         return propertyDatabase.commentCacheDao()
     }
 
     @Provides
-    fun provideSearchHistoryDao(searchDatabase: SearchDatabase): SearchHistoryDao {
+    internal fun provideSearchHistoryDao(searchDatabase: SearchDatabase): SearchHistoryDao {
         return searchDatabase.searchHistoryDao()
     }
 
     @Provides
-    fun provideSearchCacheDao(searchDatabase: SearchDatabase): SearchCacheDao {
+    internal fun provideSearchCacheDao(searchDatabase: SearchDatabase): SearchCacheDao {
         return searchDatabase.searchCacheDao()
     }
 
     @Provides
     @Singleton
-    fun provideRoomExceptionMapper(): IRoomExceptionMapper {
+    internal fun provideRoomExceptionMapper(): IRoomExceptionMapper {
         return RoomExceptionMapper()
     }
 }

@@ -15,7 +15,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(
+internal class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
     private val exceptionTranslator: IExceptionTranslator

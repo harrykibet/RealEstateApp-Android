@@ -63,7 +63,7 @@ abstract class PlayerManagerModule {
 
     @Binds
     @Singleton
-    internal abstract fun bindPlayerPoolSizingPolicy(
+    abstract fun bindPlayerPoolSizingPolicy(
         playerPoolSizingPolicy: AdaptivePlayerPoolSizingPolicy
     ): IPlayerPoolSizingPolicy
 

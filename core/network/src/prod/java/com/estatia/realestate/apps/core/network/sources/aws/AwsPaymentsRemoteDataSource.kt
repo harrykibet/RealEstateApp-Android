@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
  * AWS implementation of [IPaymentsRemoteDataSource].
  * Triggers a Lambda function via AWS AppSync (GraphQL).
  */
-class AwsPaymentsRemoteDataSource @Inject constructor(
+internal class AwsPaymentsRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : IPaymentsRemoteDataSource {
 

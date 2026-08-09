@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
  * TRULY AWS READY: This implementation uses the Amplify API (GraphQL) pattern
  * to interact with AWS OpenSearch via an AppSync bridge.
  */
-class AwsSearchRemoteDataSource @Inject constructor(
+internal class AwsSearchRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : ISearchRemoteDataSource {
 

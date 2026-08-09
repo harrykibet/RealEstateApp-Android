@@ -3,15 +3,20 @@ package com.estatia.realestate.apps.core.player_ui.core
 import android.content.Context
 import android.view.SurfaceView
 import android.view.ViewGroup
+import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.collections.ArrayDeque
 
 /**
- * A simple thread-safe pool for reusing [SurfaceView] instances.
- * This prevents the expensive allocation of new window layers during feed scrolling.
+ * A thread-safe pool for reusing [SurfaceView] instances.
+ * Dynamically adjusts its capacity based on [IPlayerPoolSizingPolicy].
  */
-object SurfacePool {
+@Singleton
+class SurfacePool @Inject constructor(
+    private val sizingPolicy: IPlayerPoolSizingPolicy
+) {
     private val pool = ArrayDeque<SurfaceView>()
-    private const val MAX_POOL_SIZE = 5
 
     fun acquire(context: Context): SurfaceView {
         return synchronized(this) {
@@ -24,7 +29,9 @@ object SurfacePool {
             // Detach from previous parent if any
             (surfaceView.parent as? ViewGroup)?.removeView(surfaceView)
             
-            if (pool.size < MAX_POOL_SIZE) {
+            val maxPoolSize = sizingPolicy.calculateMaxPoolSize()
+            
+            if (pool.size < maxPoolSize) {
                 pool.addLast(surfaceView)
             }
         }

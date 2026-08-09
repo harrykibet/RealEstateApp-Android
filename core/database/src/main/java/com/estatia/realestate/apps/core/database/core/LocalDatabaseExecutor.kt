@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecut
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
 import javax.inject.Inject
 
-class LocalDatabaseExecutor @Inject constructor(
+internal class LocalDatabaseExecutor @Inject constructor(
     private val exceptionMapper: IRoomExceptionMapper,
     private val logger: ILogger
 ) : ILocalDatabaseExecutor {

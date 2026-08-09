@@ -6,7 +6,7 @@ import javax.inject.Inject
 /**
  * Maps infrastructure exceptions to [UserException].
  */
-class UserExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<UserException>(
+internal class UserExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<UserException>(
     notFound = { UserException.UserNotFound },
     permissionDenied = { UserException.PermissionDenied },
     creationFailed = { UserException.UserCreationFailed },

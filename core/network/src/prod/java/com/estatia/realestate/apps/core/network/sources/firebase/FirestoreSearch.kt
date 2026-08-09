@@ -16,7 +16,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 
-class FirestoreSearch @Inject constructor(
+internal class FirestoreSearch @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient
 ) : ISearchRemoteDataSource {

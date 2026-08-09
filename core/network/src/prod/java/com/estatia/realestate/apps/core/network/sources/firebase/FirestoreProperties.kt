@@ -29,7 +29,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-class FirestoreProperties @Inject constructor(
+internal class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,
     private val networkClient: INetworkClient

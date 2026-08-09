@@ -17,43 +17,43 @@ abstract class DataModule {
 
     @Binds
     @Singleton
-    abstract fun bindAnalyticsRepository(analyticsRepository: AnalyticsTracker) : IAnalyticsTracker
+    internal abstract fun bindAnalyticsRepository(analyticsRepository: AnalyticsTracker) : IAnalyticsTracker
 
     @Binds
     @Singleton
-    abstract fun bindAuthRepository(repository: AuthRepository) : IAuthRepository
+    internal abstract fun bindAuthRepository(repository: AuthRepository) : IAuthRepository
 
     @Binds
     @Singleton
-    abstract fun bindCommentsRepository(repository: CommentsRepository) : ICommentsRepository
+    internal abstract fun bindCommentsRepository(repository: CommentsRepository) : ICommentsRepository
 
     @Binds
     @Singleton
-    abstract fun bindPropertyRepository(repository: PropertyRepository) : IPropertyRepository
+    internal abstract fun bindPropertyRepository(repository: PropertyRepository) : IPropertyRepository
 
     @Binds
     @Singleton
-    abstract fun bindSearchRepo(repo: SearchRepository): ISearchRepository
+    internal abstract fun bindSearchRepo(repo: SearchRepository): ISearchRepository
 
     @Binds
     @Singleton
-    abstract fun bindSecurityRepo(securityRepository: SecurityRepository) : ISecurityRepository
+    internal abstract fun bindSecurityRepo(securityRepository: SecurityRepository) : ISecurityRepository
 
     @Binds
     @Singleton
-    abstract fun bindSecretRepo(repository: SecretRepository) : ISecretRepository
+    internal abstract fun bindSecretRepo(repository: SecretRepository) : ISecretRepository
 
     @Binds
     @Singleton
-    abstract fun bindUserRepo(repo: UserRepository): IUserRepository
+    internal abstract fun bindUserRepo(repo: UserRepository): IUserRepository
 
     @Binds
     @Singleton
-    abstract fun bindConfigDataRepo(repo: ConfigDataRepository): IConfigDataRepository
+    internal abstract fun bindConfigDataRepo(repo: ConfigDataRepository): IConfigDataRepository
 
     @Binds
     @Singleton
-    abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
+    internal abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
 
     companion object {
         @Provides

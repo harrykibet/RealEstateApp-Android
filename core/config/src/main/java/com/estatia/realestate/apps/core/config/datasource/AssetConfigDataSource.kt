@@ -4,7 +4,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class AssetConfigDataSource @Inject constructor(
+internal class AssetConfigDataSource @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
 

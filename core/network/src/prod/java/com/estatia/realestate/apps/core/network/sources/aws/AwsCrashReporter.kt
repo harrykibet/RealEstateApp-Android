@@ -7,7 +7,7 @@ import javax.inject.Inject
 /**
  * AWS implementation of [ICrashReporter] using CloudWatch via Amplify Logging.
  */
-class AwsCrashReporter @Inject constructor() : ICrashReporter {
+internal class AwsCrashReporter @Inject constructor() : ICrashReporter {
 
     override fun log(message: String) {
         Amplify.Logging.logger("Estatia").info(message)

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 
-class AndroidNetworkStateProvider @Inject constructor(
+internal class AndroidNetworkStateProvider @Inject constructor(
     private val connectivityManager: ConnectivityManager
 ) : INetworkStateProvider {
 

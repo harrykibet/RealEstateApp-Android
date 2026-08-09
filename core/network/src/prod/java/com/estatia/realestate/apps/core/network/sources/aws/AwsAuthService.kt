@@ -21,7 +21,7 @@ import androidx.core.net.toUri
 /**
  * AWS implementation of [IAuthRemoteDataSource] using AppAuth for Cognito.
  */
-class AwsAuthService @Inject constructor(
+internal class AwsAuthService @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IAuthRemoteDataSource {
 

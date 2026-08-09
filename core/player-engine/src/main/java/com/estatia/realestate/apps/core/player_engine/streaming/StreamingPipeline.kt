@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-class StreamingPipeline @Inject constructor(
+internal class StreamingPipeline @Inject constructor(
     private val cacheWarmer: MediaCacheWarmer,
     private val mediaSourceFactory: MediaSource.Factory,
     private val offlineDownloadController: OfflineDownloadController,

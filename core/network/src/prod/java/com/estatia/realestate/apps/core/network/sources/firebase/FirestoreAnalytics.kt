@@ -13,7 +13,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-class FirestoreAnalytics @Inject constructor(
+internal class FirestoreAnalytics @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val deviceUtils: IDeviceUtils,
     private val authService: IAuthRemoteDataSource,

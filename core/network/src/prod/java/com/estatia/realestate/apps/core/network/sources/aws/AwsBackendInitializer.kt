@@ -17,7 +17,7 @@ import javax.inject.Inject
  * AWS implementation of [IBackendInitializer].
  * Prepares the Amplify framework for Aurora Serverless (via AppSync) and Cognito.
  */
-class AwsBackendInitializer @Inject constructor(
+internal class AwsBackendInitializer @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IBackendInitializer {
 

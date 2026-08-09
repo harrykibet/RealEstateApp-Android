@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Firebase implementation of [IBackendInitializer].
  */
-class FirebaseBackendInitializer @Inject constructor(
+internal class FirebaseBackendInitializer @Inject constructor(
     @ApplicationContext private val context: Context,
     private val appCheckProxy: IFirebaseAppCheckProxy
 ) : IBackendInitializer {

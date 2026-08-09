@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataS
 import javax.inject.Inject
 
 
-class AnalyticsTracker @Inject constructor(
+internal class AnalyticsTracker @Inject constructor(
     private val remoteDataSource: IAnalyticsRemoteDataSource,
     private val logger: ILogger
 ) : IAnalyticsTracker {

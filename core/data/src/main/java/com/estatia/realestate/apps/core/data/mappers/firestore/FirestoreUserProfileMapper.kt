@@ -14,9 +14,13 @@ internal object FirestoreUserProfileMapper {
             email = user.email,
             phoneNumber = user.phoneNumber,
             profilePictureUrl = user.profilePictureUrl,
+            bio = user.bio,
             userType = UserType.valueOf(user.userType), // Convert String to Enum
             verified = user.verified,
-            likedProperties = user.likedProperties
+            likedProperties = user.likedProperties,
+            propertyCount = user.propertyCount,
+            followerCount = user.followerCount,
+            followingCount = user.followingCount
         )
     }
 
@@ -27,9 +31,13 @@ internal object FirestoreUserProfileMapper {
             email = user.email,
             phoneNumber = user.phoneNumber,
             profilePictureUrl = user.profilePictureUrl,
+            bio = user.bio,
             userType = user.userType.name, // Convert Enum to String
             verified = user.verified,
-            likedProperties = user.likedProperties
+            likedProperties = user.likedProperties,
+            propertyCount = user.propertyCount,
+            followerCount = user.followerCount,
+            followingCount = user.followingCount
         )
     }
 }

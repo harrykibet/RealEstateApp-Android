@@ -20,7 +20,7 @@ import kotlin.coroutines.resume
  * TRULY AWS READY: This implementation pattern uses the Amplify API (GraphQL)
  * for real-time comments using AppSync Subscriptions.
  */
-class AwsCommentsRemoteDataSource @Inject constructor(
+internal class AwsCommentsRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : ICommentsRemoteDataSource {
 
