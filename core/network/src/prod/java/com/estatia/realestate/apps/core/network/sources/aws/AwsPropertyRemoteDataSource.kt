@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
@@ -25,6 +26,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
 
     override suspend fun uploadProperty(
         property: PropertyEntityModel,
+        contactInfo: PropertyContactEntity,
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> = networkClient.execute {

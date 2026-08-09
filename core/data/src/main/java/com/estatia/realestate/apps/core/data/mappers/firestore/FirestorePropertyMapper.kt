@@ -35,8 +35,8 @@ internal object FirestorePropertyMapper {
             ownerName = entity.ownerName,
 
             contact = ContactInfo(
-                phone = entity.contactPhone,
-                email = entity.contactEmail
+                phone = entity.contact?.phone,
+                email = entity.contact?.email
             ),
 
             county = entity.county,
@@ -82,8 +82,7 @@ internal object FirestorePropertyMapper {
             createdAt = domain.createdAt,
             ownerId = domain.ownerId,
             ownerName = domain.ownerName,
-            contactPhone = domain.contact.phone,
-            contactEmail = domain.contact.email,
+            contact = null, // Contact info is uploaded separately to a subcollection
             county = domain.county,
             active = domain.active,
             viewsCount = domain.viewsCount,

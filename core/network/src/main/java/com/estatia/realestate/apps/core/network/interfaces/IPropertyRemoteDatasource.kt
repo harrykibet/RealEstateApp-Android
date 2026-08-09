@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
@@ -12,10 +13,11 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 interface IPropertyRemoteDatasource {
 
     /**
-     * Uploads a new property listing along with its associated media files.
+     * Uploads a new property listing along with its associated media files and contact info.
      */
     suspend fun uploadProperty(
         property: PropertyEntityModel,
+        contactInfo: PropertyContactEntity,
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String>

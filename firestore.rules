@@ -1,74 +1,87 @@
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection rules
+
+    // --- Helper Functions ---
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return request.auth.token.admin == true;
+    }
+
+    // --- Users Collection ---
     match /users/{userId} {
-      allow read: if request.auth.uid == userId || request.auth.token.admin == true;
+      allow read: if isOwner(userId) || isAdmin();
 
-      // Allow creation of own profile
-      allow create: if request.auth.uid == userId;
+      // Ensure that when creating, the document ID matches the auth UID and the data payload
+      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
 
-      // Allow updates to own profile EXCEPT for sensitive trust/type fields
-      allow update: if request.auth.uid == userId
+      // Prevent users from escalating their own privileges
+      allow update: if isOwner(userId)
                     && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'userType']);
 
-      // Liked properties sub-collection rules
       match /likedProperties/{propertyId} {
-          allow read: if request.auth.uid == userId; // Allow userId to read their own liked properties
-
-          // Allow users to create a like entry for a property they haven't liked yet
-          allow create: if request.auth.uid == userId;
-
-          // Allow users to update only their own liked properties
-          allow update: if request.auth.uid == userId;
-
-          // Allow users to delete only their own liked properties
-          allow delete: if request.auth.uid == userId;
+          allow read, write: if isOwner(userId);
       }
 
-      // Owned properties sub-collection rules
       match /ownedProperties/{propertyId} {
-          allow read: if request.auth.uid == userId; // Allow userId to read their own properties
-
-          // Allow the owner to create a new property entry
-          allow create: if request.auth.uid == userId;
-
-          // Allow the owner to update only their own properties
-          allow update: if request.auth.uid == userId;
-
-          // Allow the owner to delete only their own properties
-          allow delete: if request.auth.uid == userId;
+          allow read, write: if isOwner(userId);
       }
     }
 
-    // Properties collection rules
+    // --- Properties Collection ---
     match /properties/{propertyId} {
-      allow read: if true; // Everyone can read properties
-      allow write: if request.auth.uid == resource.data.ownerId || request.auth.token.admin == true; // Only owner or admin can write
+      allow read: if true;
 
-      // Likes sub-collection rules
+      // Ensure the ownerId in data matches the creator
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+
+      // Allow updates only by owner or admin. Immutable fields: ownerId.
+      allow update: if (isOwner(resource.data.ownerId) || isAdmin())
+                    && request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete: if isOwner(resource.data.ownerId) || isAdmin();
+
+      // --- Gated Contact Information ---
+      match /contact/info {
+          // Prevent scraping: only authenticated users can see contact details.
+          // Rate limiting should be handled via a backend function for high-volume protection,
+          // but this rule provides a baseline security layer.
+          allow read: if isAuthenticated();
+
+          // Only the property owner can set/update contact info.
+          allow write: if isOwner(get(/databases/$(database)/documents/properties/$(propertyId)).data.ownerId)
+                       || isAdmin();
+      }
+
       match /likes/{userId} {
-          allow read: if request.auth != null; // Authenticated users can read likes
-
-          // Allow create if the document doesn't exist
-          allow create: if request.auth.uid == userId;
-
-          // Allow update only by the original liker
-          allow update: if request.auth.uid == userId;
-
-          // Optionally, allow delete if only the original liker can remove their like
-          allow delete: if request.auth.uid == userId;
+          allow read: if isAuthenticated();
+          allow create: if isOwner(userId);
+          allow update, delete: if isOwner(userId);
       }
 
       match /comments/{commentId} {
-          allow read: if request.auth != null; // Authenticated users can read comments
-          allow write: if request.auth != null; // All authenticated users can add comments
+          allow read: if isAuthenticated();
+
+          // Prevent identity spoofing on comments
+          allow create: if isAuthenticated()
+                        && request.resource.data.authorId == request.auth.uid;
+
+          allow update, delete: if isOwner(resource.data.authorId) || isAdmin();
       }
     }
 
-    // Analytics collection rules (Restrictive to prevent tampering)
+    // --- Analytics (Restricted) ---
     match /analytics/{eventId} {
-      allow read, update, delete: if request.auth.token.admin == true;
-      allow create: if request.auth != null; // Only allow creation, no read/edit
+      allow read, update, delete: if isAdmin();
+      allow create: if isAuthenticated();
     }
   }
 }

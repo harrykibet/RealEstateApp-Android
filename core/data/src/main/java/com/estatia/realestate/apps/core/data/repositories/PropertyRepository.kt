@@ -16,6 +16,7 @@ import com.estatia.realestate.apps.core.data.util.translatePropertyFailures
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyDraftMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
+import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import kotlinx.coroutines.flow.firstOrNull
@@ -75,6 +76,10 @@ internal class PropertyRepository @Inject constructor(
         return remoteDataSource
             .uploadProperty(
                 FirestorePropertyMapper.toEntity(property),
+                PropertyContactEntity(
+                    phone = property.contact.phone,
+                    email = property.contact.email
+                ),
                 imageUris,
                 videoUris
             )

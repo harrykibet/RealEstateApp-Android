@@ -20,8 +20,7 @@ data class PropertyEntityModel(
     val ownerId: String? = null,
     val ownerName: String? = null,
 
-    val contactPhone: String? = null,
-    val contactEmail: String? = null,
+    val contact: PropertyContactEntity? = null,
 
     val county: String? = null,
 

@@ -56,7 +56,7 @@ class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
 
 @Singleton
 class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRemoteDatasource {
-    override suspend fun uploadProperty(property: PropertyEntityModel, imageUris: List<Uri>, videoUris: List<Uri>): AppResult<String> = AppResult.Success("prop_1")
+    override suspend fun uploadProperty(property: PropertyEntityModel, contactInfo: PropertyContactEntity, imageUris: List<Uri>, videoUris: List<Uri>): AppResult<String> = AppResult.Success("prop_1")
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> = 

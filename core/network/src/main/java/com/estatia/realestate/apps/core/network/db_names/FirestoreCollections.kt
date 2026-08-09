@@ -10,5 +10,6 @@ object FirestoreCollections {
         const val COMMENTS = "comments"
         const val OWNED_PROPERTIES = "ownedproperties"
         const val LIKED_PROPERTIES = "likedproperties"
+        const val CONTACT = "contact"
     }
 }

@@ -4,8 +4,10 @@ import android.net.Uri
 import com.estatia.realestate.apps.core.common.media.MediaFormat
 import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
+import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
+import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.CONTACT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
@@ -37,6 +39,7 @@ internal class FirestoreProperties @Inject constructor(
 
     override suspend fun uploadProperty(
         property: PropertyEntityModel,
+        contactInfo: PropertyContactEntity,
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> {
@@ -76,12 +79,13 @@ internal class FirestoreProperties @Inject constructor(
                     videoUrl = videos
                 )
 
+            val propertyRef = database.collection(PROPERTIES).document(propertyId)
+            val contactRef = propertyRef.collection(CONTACT).document("info")
 
-            database.collection(PROPERTIES)
-                .document(propertyId)
-                .set(finalProperty)
-                .await()
-
+            database.runBatch { batch ->
+                batch.set(propertyRef, finalProperty)
+                batch.set(contactRef, contactInfo)
+            }.await()
 
             propertyId
         }
@@ -152,10 +156,22 @@ internal class FirestoreProperties @Inject constructor(
             }
 
 
-            snapshot.toObject(PropertyEntityModel::class.java)
+            val property = snapshot.toObject(PropertyEntityModel::class.java)
                 ?: throw DatabaseException.InvalidData(
                     "Unable to parse property"
                 )
+            
+            // Try to fetch contact info if available (gated by rules)
+            val contactSnapshot = database.collection(PROPERTIES)
+                .document(propertyId)
+                .collection(CONTACT)
+                .document("info")
+                .get()
+                .await()
+            
+            val contactInfo = contactSnapshot.toObject(PropertyContactEntity::class.java)
+            
+            property.copy(contact = contactInfo)
         }
     }
 
