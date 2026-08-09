@@ -74,7 +74,12 @@ workflows:
           chmod +x scripts/ci-display-bootstrap.sh
           ./scripts/ci-display-bootstrap.sh
 
-      # 6 Run unit tests
+      # 6 Static Analysis (Lint)
+      - name: Static Analysis (Lint)
+        script: |
+          ./gradlew lint --no-daemon
+
+      # 7 Run unit tests
       - name: Run Unit Tests
         script: |
           ./gradlew test --no-daemon

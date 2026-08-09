@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
   - build
 
@@ -36,6 +37,11 @@ before_script:
       -validity 10000
 
     echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
+
+static-analysis:
+  stage: lint
+  script:
+    - ./gradlew lint --stacktrace
 
 unit-test:
   stage: test
