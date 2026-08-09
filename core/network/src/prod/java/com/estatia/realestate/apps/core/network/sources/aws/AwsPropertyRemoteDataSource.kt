@@ -39,9 +39,9 @@ class AwsPropertyRemoteDataSource @Inject constructor(
         }
 
         // 2. Create entry in Aurora via AppSync (GraphQL Mutation)
-        val mutation = """
-            mutation CreateProperty(${'$'}input: CreatePropertyInput!) {
-                createProperty(input: ${'$'}input) { id }
+        val mutation = $$"""
+            mutation CreateProperty($input: CreatePropertyInput!) {
+                createProperty(input: $input) { id }
             }
         """.trimIndent()
 
@@ -69,9 +69,9 @@ class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> {
-        val query = """
-            query GetProperty(${'$'}id: ID!) {
-                getProperty(id: ${'$'}id) {
+        val query = $$"""
+            query GetProperty($id: ID!) {
+                getProperty(id: $id) {
                     id
                     title
                     description

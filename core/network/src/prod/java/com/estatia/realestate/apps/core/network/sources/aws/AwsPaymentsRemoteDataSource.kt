@@ -25,9 +25,10 @@ class AwsPaymentsRemoteDataSource @Inject constructor(
         currency: String,
         method: PaymentMethod
     ): AppResult<PaymentStatus> {
-        val mutation = """
-            mutation ProcessPayment(${'$'}amount: Float!, ${'$'}currency: String!, ${'$'}method: String!) {
-                processPayment(amount: ${'$'}amount, currency: ${'$'}currency, method: ${'$'}method) {
+
+        val mutation = $$"""
+            mutation ProcessPayment($amount: Float!, $currency: String!, $method: String!) {
+                processPayment(amount: $amount, currency: $currency, method: $method) {
                     status
                 }
             }

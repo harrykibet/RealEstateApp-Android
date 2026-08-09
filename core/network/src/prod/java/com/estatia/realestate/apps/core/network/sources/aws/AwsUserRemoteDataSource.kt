@@ -22,9 +22,9 @@ class AwsUserRemoteDataSource @Inject constructor(
 ) : IUserRemoteDataSource {
 
     override suspend fun getUserById(userId: String): AppResult<UserEntityModel> {
-        val userQuery = """
-            query GetUser(${'$'}id: ID!) {
-                getUser(id: ${'$'}id) {
+        val userQuery = $$"""
+            query GetUser($id: ID!) {
+                getUser(id: $id) {
                     userId
                     name
                     email

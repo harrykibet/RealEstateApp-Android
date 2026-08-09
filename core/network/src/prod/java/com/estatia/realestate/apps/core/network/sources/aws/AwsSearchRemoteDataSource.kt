@@ -21,14 +21,14 @@ class AwsSearchRemoteDataSource @Inject constructor(
 ) : ISearchRemoteDataSource {
 
     override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> {
-        val searchQuery = """
-            query SearchProperties(${'$'}query: String!, ${'$'}limit: Int!) {
+        val searchQuery = $$"""
+            query SearchProperties($query: String!, $limit: Int!) {
                 searchProperties(filter: { 
                     or: [
-                        { title: { match: ${'$'}query, fuzziness: "AUTO" } },
-                        { description: { match: ${'$'}query, fuzziness: "AUTO" } }
+                        { title: { match: $query, fuzziness: "AUTO" } },
+                        { description: { match: $query, fuzziness: "AUTO" } }
                     ]
-                }, limit: ${'$'}limit) {
+                }, limit: $limit) {
                     items {
                         id
                         title
@@ -57,13 +57,13 @@ class AwsSearchRemoteDataSource @Inject constructor(
     }
 
     override suspend fun getNearbyProperties(latitude: Double, longitude: Double, radiusKm: Double): AppResult<List<PropertyEntityModel>> {
-        val geoQuery = """
-            query NearbyProperties(${'$'}lat: Float!, ${'$'}lng: Float!, ${'$'}radius: String!) {
+        val geoQuery = $$"""
+            query NearbyProperties($lat: Float!, $lng: Float!, $radius: String!) {
                 searchProperties(filter: {
                     location: {
                         within: {
-                            distance: ${'$'}radius,
-                            center: { lat: ${'$'}lat, lon: ${'$'}lng }
+                            distance: $radius,
+                            center: { lat: $lat, lon: $lng }
                         }
                     }
                 }) {
