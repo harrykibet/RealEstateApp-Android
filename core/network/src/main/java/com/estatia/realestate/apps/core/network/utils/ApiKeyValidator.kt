@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
+import com.estatia.realestate.apps.core.network.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,7 +49,9 @@ internal class ApiKeyValidator @Inject constructor(
             else -> performGenericValidation(apiKey, sanitizedKey)
         }
 
-        logger.d(message = "Validated API key for service ${service?.name ?: "Generic"}: $sanitizedKey")
+        if (BuildConfig.DEBUG) {
+            logger.d(message = "Validated API key for service ${service?.name ?: "Generic"}: $sanitizedKey")
+        }
     }
 
     private fun validateForService(apiKey: String, service: ServiceNames, sanitizedKey: String) {
