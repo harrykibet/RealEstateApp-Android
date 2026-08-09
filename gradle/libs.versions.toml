@@ -237,6 +237,8 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "google-dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt" }
 
 
 # Core

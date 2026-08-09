@@ -17,6 +17,9 @@ dependencies {
 
     implementation(libs.kotlinx.datetime)
 
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
     implementation(projects.core.model)
     api(projects.core.domain)
     implementation(projects.core.datastore)

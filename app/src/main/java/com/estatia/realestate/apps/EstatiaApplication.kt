@@ -1,6 +1,8 @@
 package com.estatia.realestate.apps
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
 import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
@@ -8,15 +10,13 @@ import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 import javax.inject.Inject
 
 @HiltAndroidApp
-class EstatiaApplication : Application()  {
+class EstatiaApplication : Application(), Configuration.Provider  {
 
     @Inject
     lateinit var config: IConfigProvider
@@ -30,6 +30,14 @@ class EstatiaApplication : Application()  {
     @Inject
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 
     override fun onCreate() {
         super.onCreate()

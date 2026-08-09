@@ -58,6 +58,10 @@ dependencies {
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
     implementation(projects.core.ui)
     implementation(projects.core.data)
     implementation(projects.core.model)

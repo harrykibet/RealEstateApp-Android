@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.domain.interfaces
 
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 
 /**
  * Interface for tracking analytics and performance events.
@@ -27,4 +28,9 @@ interface IAnalyticsTracker {
      * Generates a unique ID for grouping events into a single session.
      */
     fun generateEventId(): String
+
+    /**
+     * Attempts to sync any pending events from the local outbox.
+     */
+    suspend fun syncEvents(): AppResult<Unit>
 }

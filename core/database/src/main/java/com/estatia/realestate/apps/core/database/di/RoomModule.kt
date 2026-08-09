@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.core.database.di
 import android.content.Context
 import com.estatia.realestate.apps.core.database.PropertyDatabase
 import com.estatia.realestate.apps.core.database.SearchDatabase
+import com.estatia.realestate.apps.core.database.AnalyticsDatabase
+import com.estatia.realestate.apps.core.database.dao.AnalyticsOutboxDao
 import com.estatia.realestate.apps.core.database.dao.CommentCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyCacheDao
 import com.estatia.realestate.apps.core.database.dao.PropertyDraftDao
@@ -34,6 +36,12 @@ internal object RoomModule {
         return SearchDatabase.getDatabase(context)
     }
 
+    @Provides
+    @Singleton
+    fun provideAnalyticsDatabase(@ApplicationContext context: Context): AnalyticsDatabase {
+        return AnalyticsDatabase.getDatabase(context)
+    }
+
     // Provides the PropertyDraftDao from the PropertyDatabase
     @Provides
     internal fun providePropertyDraftDao(propertyDatabase: PropertyDatabase): PropertyDraftDao {
@@ -58,6 +66,11 @@ internal object RoomModule {
     @Provides
     internal fun provideSearchCacheDao(searchDatabase: SearchDatabase): SearchCacheDao {
         return searchDatabase.searchCacheDao()
+    }
+
+    @Provides
+    internal fun provideAnalyticsOutboxDao(analyticsDatabase: AnalyticsDatabase): AnalyticsOutboxDao {
+        return analyticsDatabase.analyticsOutboxDao()
     }
 
     @Provides
