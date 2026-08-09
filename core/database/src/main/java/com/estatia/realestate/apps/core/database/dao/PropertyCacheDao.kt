@@ -30,6 +30,6 @@ interface PropertyCacheDao {
     @Query("SELECT COUNT(*) FROM properties_cache")
     suspend fun count(): Int
 
-    @Query("DELETE FROM properties_cache WHERE id NOT IN (SELECT id FROM properties_cache ORDER BY is_liked DESC, created_at DESC LIMIT :targetSize)")
+    @Query("DELETE FROM properties_cache WHERE id NOT IN (SELECT id FROM properties_cache ORDER BY created_at DESC LIMIT :targetSize)")
     suspend fun trim(targetSize: Int)
 }

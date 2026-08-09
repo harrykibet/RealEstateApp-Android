@@ -10,6 +10,7 @@ data class UserData(
     val bookmarkedProperties: Set<String>,
     val viewedProperties: Set<String>,
     val followedProperties: Set<String>,
+    val likedProperties: Set<String>,
     val themeBrand: ThemeBrand,
     val darkThemeConfig: DarkThemeConfig,
     val useDynamicColor: Boolean,

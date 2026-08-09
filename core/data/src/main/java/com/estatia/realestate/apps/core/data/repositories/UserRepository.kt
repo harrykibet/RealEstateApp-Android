@@ -41,6 +41,10 @@ internal class UserRepository @Inject constructor(
         estatiaPreferencesDataSource.setPropertyBookmarked(propertyId, bookmarked)
     }
 
+    override suspend fun setPropertyIdLiked(propertyId: String, liked: Boolean) {
+        estatiaPreferencesDataSource.setPropertyLiked(propertyId, liked)
+    }
+
     override suspend fun setPropertyViewed(propertyId: String, viewed: Boolean) {
         estatiaPreferencesDataSource.setPropertyViewed(propertyId, viewed)
     }

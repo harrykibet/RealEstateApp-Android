@@ -37,6 +37,11 @@ interface IUserRepository {
     suspend fun setPropertyBookmarked(propertyId: String, bookmarked: Boolean)
 
     /**
+     * Toggles liked status for a property locally.
+     */
+    suspend fun setPropertyIdLiked(propertyId: String, liked: Boolean)
+
+    /**
      * Sets a property as viewed.
      */
     suspend fun setPropertyViewed(propertyId: String, viewed: Boolean)

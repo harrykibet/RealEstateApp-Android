@@ -19,6 +19,7 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 bookmarkedProperties = it.bookmarkedPropertyIdsMap.keys,
                 viewedProperties = it.viewedPropertyIdsMap.keys,
                 followedProperties = it.followedPropertyIdsMap.keys,
+                likedProperties = it.likedPropertyIdsMap.keys,
                 themeBrand = when (it.themeBrand) {
                     null,
                     ThemeBrandProto.THEME_BRAND_UNSPECIFIED,
@@ -112,6 +113,22 @@ class EstatiaPreferencesDataSource @Inject constructor(
                         bookmarkedPropertyIds.put(propertyId, true)
                     } else {
                         bookmarkedPropertyIds.remove(propertyId)
+                    }
+                }
+            }
+        } catch (ioException: IOException) {
+            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+        }
+    }
+
+    suspend fun setPropertyLiked(propertyId: String, liked: Boolean) {
+        try {
+            userPreferences.updateData {
+                it.copy {
+                    if (liked) {
+                        likedPropertyIds.put(propertyId, true)
+                    } else {
+                        likedPropertyIds.remove(propertyId)
                     }
                 }
             }

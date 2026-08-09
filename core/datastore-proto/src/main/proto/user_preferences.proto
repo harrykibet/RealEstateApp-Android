@@ -41,6 +41,7 @@ message UserPreferences {
     map<string, bool> followed_owner_ids = 14;
     map<string, bool> bookmarked_property_ids = 15;
     map<string, bool> viewed_property_ids = 20;
+    map<string, bool> liked_property_ids = 21;
 
     ThemeBrandProto theme_brand = 16;
     DarkThemeConfigProto dark_theme_config = 17;

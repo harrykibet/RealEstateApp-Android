@@ -56,8 +56,5 @@ data class PropertyCacheEntity(
     @ColumnInfo(name = "comments_count")
     val commentsCount: Int,
     @ColumnInfo(name = "shares_count")
-    val sharesCount: Int,
-
-    @ColumnInfo(name = "is_liked")
-    val isLiked: Boolean = false
+    val sharesCount: Int
 )

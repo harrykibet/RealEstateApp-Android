@@ -4,6 +4,7 @@ import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
@@ -17,6 +18,7 @@ import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyPage
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
@@ -24,6 +26,7 @@ private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
 internal class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,
+    private val userRepository: IUserRepository,
     private val exceptionTranslator: IExceptionTranslator
 ) : IPropertyRepository {
 
@@ -135,6 +138,8 @@ internal class PropertyRepository @Inject constructor(
         propertyId: String
     ): AppResult<Unit> {
 
+        userRepository.setPropertyIdLiked(propertyId, true)
+
         return remoteDataSource
             .likeProperty(
                 userId,
@@ -149,6 +154,8 @@ internal class PropertyRepository @Inject constructor(
         userId: String,
         propertyId: String
     ): AppResult<Unit> {
+
+        userRepository.setPropertyIdLiked(propertyId, false)
 
         return remoteDataSource.unlikeProperty(
             userId,
@@ -167,19 +174,23 @@ internal class PropertyRepository @Inject constructor(
             .fetchLikedProperties(userId)
             .map { properties ->
                 val domainModels = properties.map(FirestorePropertyMapper::toDomain)
-                // Mark as liked in local cache
-                localDataSource.cacheProperties(domainModels.map { 
-                    RoomPropertyMapper.toEntity(it).copy(isLiked = true)
-                })
+                localDataSource.cacheProperties(domainModels.toCacheEntities())
                 domainModels
             }
             .translatePropertyFailures(
                 exceptionTranslator
             ).let { result ->
                 if (result is AppResult.Error) {
-                    localDataSource.getCachedProperties().map { entities ->
-                        entities.filter { it.isLiked }.map(RoomPropertyMapper::toDomain)
-                    }
+                    // Robust offline fallback: fetch liked IDs from local preferences
+                    // and return corresponding properties from cache
+                    val userData = userRepository.userData.firstOrNull()
+                    val likedIds = userData?.likedProperties?.toList() ?: emptyList()
+                    
+                    if (likedIds.isNotEmpty()) {
+                        localDataSource.getCachedPropertiesByIds(likedIds).map { entities ->
+                            entities.map(RoomPropertyMapper::toDomain)
+                        }
+                    } else result
                 } else result
             }
     }
