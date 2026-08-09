@@ -7,12 +7,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
-import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +24,7 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+    @EngineScope private val scope: CoroutineScope
 ) : AnalyticsListener {
 
     val sessionId: String = java.util.UUID.randomUUID().toString()
@@ -42,12 +38,6 @@ class PlaybackAnalyticsListener @Inject constructor(
     @Volatile
     private var firstFrameSentAt: Long? = null
 
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        // Fail-silent for analytics; prevent app crash on logging failure
-    }
-
-    private val scope = CoroutineScope(SupervisorJob() + ioDispatcher + exceptionHandler)
-
     fun markPlaybackStart() {
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
@@ -55,7 +45,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     fun release() {
-        scope.cancel()
+        // No-op: using shared EngineScope
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
