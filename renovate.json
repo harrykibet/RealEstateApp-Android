@@ -1,0 +1,73 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "config:recommended",
+    "group:monorepos",
+    "security:openssf-scorecard"
+  ],
+
+  "timezone": "Africa/Nairobi",
+
+  "dependencyDashboard": true,
+
+  "prCreation": "immediate",
+
+  "rangeStrategy": "pin",
+
+  "reviewers": [
+    "your-github-username"
+  ],
+
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+
+  "packageRules": [
+    {
+      "description": "Group Kotlin updates",
+      "matchPackagePatterns": [
+        "^org.jetbrains.kotlin"
+      ],
+      "groupName": "Kotlin"
+    },
+
+    {
+      "description": "Group Android Gradle Plugin updates",
+      "matchPackageNames": [
+        "com.android.tools.build:gradle"
+      ],
+      "groupName": "Android Gradle Plugin"
+    },
+
+    {
+      "description": "Group Compose dependencies",
+      "matchPackagePatterns": [
+        "androidx.compose"
+      ],
+      "groupName": "Jetpack Compose"
+    },
+
+    {
+      "description": "Auto merge patch updates",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true
+    },
+
+    {
+      "description": "Security updates immediately",
+      "matchDatasources": [
+        "npm",
+        "maven"
+      ],
+      "matchCategories": [
+        "security"
+      ],
+      "automerge": false,
+      "priority": 10
+    }
+  ]
+}
