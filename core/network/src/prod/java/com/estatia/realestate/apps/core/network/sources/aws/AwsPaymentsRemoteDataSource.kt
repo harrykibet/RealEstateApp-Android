@@ -12,7 +12,7 @@ import javax.inject.Inject
  * AWS implementation of [IPaymentsRemoteDataSource].
  * Triggers a Lambda function via AWS AppSync (GraphQL).
  */
-internal class AwsPaymentsRemoteDataSource @Inject constructor(
+class AwsPaymentsRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : IPaymentsRemoteDataSource {
 

@@ -2,8 +2,8 @@ package com.estatia.realestate.apps
 
 import android.app.Application
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
 import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +19,9 @@ class EstatiaApplication : Application()  {
 
     @Inject
     lateinit var config: IConfigProvider
+
+    @Inject
+    lateinit var crashReporter: ICrashReporter
 
     @Inject
     lateinit var backendInitializers: Set<@JvmSuppressWildcards IBackendInitializer>
@@ -66,10 +69,7 @@ class EstatiaApplication : Application()  {
     private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         val errorMessage = "Uncaught exception in thread '${thread.name}': ${throwable.localizedMessage}"
 
-        // Log detailed error information to Crashlytics
-        FirebaseCrashlytics.getInstance().apply {
-            log("[CRITICAL] $errorMessage")
-            recordException(throwable)
-        }
+        crashReporter.log("[CRITICAL] $errorMessage")
+        crashReporter.recordException(throwable)
     }
 }

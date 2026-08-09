@@ -12,7 +12,7 @@ import javax.inject.Inject
  * Mediator repository for secrets.
  * Tries to fetch from remote first, falls back to local provider.
  */
-internal class SecretRepository @Inject constructor(
+class SecretRepository @Inject constructor(
     private val remoteDataSource: ISecretRemoteDataSource,
     private val localProvider: SecureKeyProvider
 ) : ISecretRepository {

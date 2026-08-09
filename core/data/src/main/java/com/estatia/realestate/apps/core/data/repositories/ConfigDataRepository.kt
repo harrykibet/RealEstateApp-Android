@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
 import javax.inject.Inject
 
-internal class ConfigDataRepository @Inject constructor(
+class ConfigDataRepository @Inject constructor(
     private val remoteDataSource: IConfigRemoteDataSource
 ) : IConfigDataRepository {
 

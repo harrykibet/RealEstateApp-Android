@@ -13,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
 
-internal class ExceptionMapper @Inject constructor(
+class ExceptionMapper @Inject constructor(
     private val networkMapper: INetworkErrorMapper,
     private val authMapper: IAuthExceptionMapper,
     private val databaseMapper: IFirestoreErrorMapper,

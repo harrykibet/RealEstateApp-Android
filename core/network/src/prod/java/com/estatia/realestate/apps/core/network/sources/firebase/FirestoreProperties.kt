@@ -10,7 +10,6 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.Su
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
-import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.COMMENTS_COUNT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.LIKES_COUNT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.SHARES_COUNT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.VIEWS_COUNT
@@ -30,7 +29,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-internal class FirestoreProperties @Inject constructor(
+class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,
     private val networkClient: INetworkClient

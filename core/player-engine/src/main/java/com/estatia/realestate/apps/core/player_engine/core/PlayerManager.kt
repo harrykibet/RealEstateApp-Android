@@ -35,7 +35,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-internal class PlayerManager @Inject constructor(
+class PlayerManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val sizingPolicy: IPlayerPoolSizingPolicy,

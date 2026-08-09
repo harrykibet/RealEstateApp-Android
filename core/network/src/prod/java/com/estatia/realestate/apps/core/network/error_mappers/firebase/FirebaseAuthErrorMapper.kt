@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import javax.inject.Inject
 
 
-internal class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
+class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
 
     override fun map(

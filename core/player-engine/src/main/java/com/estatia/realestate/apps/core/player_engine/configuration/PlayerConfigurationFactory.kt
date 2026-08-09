@@ -10,7 +10,7 @@ import javax.inject.Inject
 import androidx.core.net.toUri
 
 @UnstableApi
-internal class PlayerConfigurationFactory @Inject constructor(
+class PlayerConfigurationFactory @Inject constructor(
     private val streamingPipeline: IStreamingPipeline,
     private val playbackConfigurationProvider: IPlaybackConfigurationProvider,
     private val cdnSelector: CdnSelector,

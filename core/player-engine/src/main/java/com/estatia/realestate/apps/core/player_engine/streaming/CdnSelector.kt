@@ -6,7 +6,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class CdnSelector @Inject constructor(
+class CdnSelector @Inject constructor(
     private val policy: ICdnPolicy,
     private val healthMonitor: CdnHealthMonitor,
     private val config: IConfigProvider

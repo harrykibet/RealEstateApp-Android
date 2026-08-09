@@ -1,11 +1,12 @@
 package com.estatia.realestate.apps.core.network.di
 
+import com.estatia.realestate.apps.core.domain.interfaces.*
 import com.estatia.realestate.apps.core.network.interfaces.*
-import com.estatia.realestate.apps.core.network.sources.*
 import com.estatia.realestate.apps.core.network.sources.firebase.*
 import com.estatia.realestate.apps.core.network.sources.aws.*
-import dagger.Binds
+import com.estatia.realestate.apps.core.network.sources.SecretRemoteDataSource
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
@@ -15,77 +16,121 @@ import javax.inject.Singleton
 // Network EndPoints
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class ProdDataSourcesModule {
+object ProdDataSourcesModule {
 
     // --- Backend Initializers ---
 
-    @Binds
+    @Provides
     @IntoSet
-    internal abstract fun bindFirebaseInitializer(
-        initializer: FirebaseBackendInitializer): IBackendInitializer
+    fun provideFirebaseInitializer(
+        initializer: FirebaseBackendInitializer): IBackendInitializer = initializer
 
-    @Binds
+    @Provides
     @IntoSet
-    internal abstract fun bindAwsInitializer(
-        initializer: AwsBackendInitializer): IBackendInitializer
+    fun provideAwsInitializer(
+        initializer: AwsBackendInitializer): IBackendInitializer = initializer
 
-    // --- Firebase Bindings (Current) ---
+    // --- Active Backend Bindings (AWS Primary) ---
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindSearchRemoteSource(
-        dataSource: FirestoreSearch): ISearchRemoteDataSource
+    fun provideSearchRemoteSource(
+        dataSource: AwsSearchRemoteDataSource): ISearchRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindPropertyRemoteSource(
-        dataSource: FirestoreProperties): IPropertyRemoteDatasource
+    fun providePropertyRemoteSource(
+        dataSource: AwsPropertyRemoteDataSource
+    ): IPropertyRemoteDatasource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindAuthRemoteSource(
-        dataSource: FirebaseAuthService): IAuthRemoteDataSource
+    fun provideAuthRemoteSource(
+        dataSource: AwsAuthService): IAuthRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindCommentsRemoteSource(
-        dataSource: FirestoreComments): ICommentsRemoteDataSource
+    fun provideCommentsRemoteSource(
+        dataSource: AwsCommentsRemoteDataSource): ICommentsRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindAnalyticsRemoteSource(
-        dataSource: FirestoreAnalytics): IAnalyticsRemoteDataSource
+    fun provideAnalyticsRemoteSource(
+        dataSource: AwsAnalyticsRemoteDataSource): IAnalyticsRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindUserRemoteDataSource(
-        dataSource: FirestoreUsers): IUserRemoteDataSource
+    fun provideUserRemoteDataSource(
+        dataSource: AwsUserRemoteDataSource): IUserRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindConfigRemoteDataSource(
-        dataSource: FirebaseConfig): IConfigRemoteDataSource
+    fun provideConfigRemoteDataSource(
+        dataSource: AwsConfigRemoteDataSource): IConfigRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindSecretRemoteSource(
-        dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
+    fun provideCrashReporter(
+        reporter: AwsCrashReporter): ICrashReporter = reporter
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindPaymentsRemoteSource(
-        dataSource: FirebasePaymentsRemoteDataSource): IPaymentsRemoteDataSource
+    fun providePaymentsRemoteSource(
+        dataSource: AwsPaymentsRemoteDataSource): IPaymentsRemoteDataSource = dataSource
 
-    // --- AWS Bindings (Future/Alternative) ---
+    // --- Shared / Infrastructure ---
+
+    @Provides
+    @Singleton
+    fun provideSecretRemoteSource(
+        dataSource: SecretRemoteDataSource): ISecretRemoteDataSource = dataSource
+
+
+    // --- Firebase Bindings (Commented for future reference) ---
     /*
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindAwsAuthRemoteSource(
-        dataSource: AwsAuthService): IAuthRemoteDataSource
+    fun provideFirebaseSearchRemoteSource(
+        dataSource: FirestoreSearch): ISearchRemoteDataSource = dataSource
 
-    @Binds
+    @Provides
     @Singleton
-    internal abstract fun bindAwsPaymentsRemoteSource(
-        dataSource: AwsPaymentsRemoteDataSource): IPaymentsRemoteDataSource
+    fun provideFirebasePropertyRemoteSource(
+        dataSource: FirestoreProperties): IPropertyRemoteDatasource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuthRemoteSource(
+        dataSource: FirebaseAuthService): IAuthRemoteDataSource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseCommentsRemoteSource(
+        dataSource: FirestoreComments): ICommentsRemoteDataSource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAnalyticsRemoteSource(
+        dataSource: FirestoreAnalytics): IAnalyticsRemoteDataSource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseUserRemoteDataSource(
+        dataSource: FirestoreUsers): IUserRemoteDataSource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseConfigRemoteDataSource(
+        dataSource: FirebaseConfig): IConfigRemoteDataSource = dataSource
+
+    @Provides
+    @Singleton
+    fun provideFirebaseCrashReporter(
+        reporter: FirebaseCrashReporter): ICrashReporter = reporter
+
+    @Provides
+    @Singleton
+    fun provideFirebasePaymentsRemoteSource(
+        dataSource: FirebasePaymentsRemoteDataSource): IPaymentsRemoteDataSource = dataSource
     */
 }

@@ -73,6 +73,7 @@ turbine = "1.2.1"
 junit-vintage = "6.1.2"
 appauth = "0.11.1"
 amplify = "2.39.0"
+aws-sdk-kotlin-appconfigdata = "1.8.26"
 androidDesugarJdkLibs = "2.1.5"
 
 [plugins]
@@ -341,6 +342,9 @@ amplify-core = { group = "com.amplifyframework", name = "aws-core", version.ref 
 amplify-api = { group = "com.amplifyframework", name = "aws-api", version.ref = "amplify" }
 amplify-auth = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "amplify" }
 amplify-storage = { group = "com.amplifyframework", name = "aws-storage-s3", version.ref = "amplify" }
+amplify-analytics = { group = "com.amplifyframework", name = "aws-analytics-pinpoint", version.ref = "amplify" }
+amplify-logging = { group = "com.amplifyframework", name = "aws-logging-cloudwatch", version.ref = "amplify" }
+aws-appconfig = { group = "aws.sdk.kotlin", name = "appconfigdata", version.ref = "aws-sdk-kotlin-appconfigdata" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 
 

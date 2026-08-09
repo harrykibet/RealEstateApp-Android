@@ -7,7 +7,7 @@ import com.google.firebase.FirebaseException
 import javax.inject.Inject
 
 
-internal class FirebaseFallbackErrorMapper @Inject constructor()
+class FirebaseFallbackErrorMapper @Inject constructor()
     : IFirebaseErrorMapper {
 
 

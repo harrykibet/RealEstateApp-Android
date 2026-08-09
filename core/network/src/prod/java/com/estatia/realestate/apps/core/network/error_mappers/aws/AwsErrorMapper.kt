@@ -7,6 +7,6 @@ import javax.inject.Inject
 /**
  * AWS implementation of error mapping (Skeleton).
  */
-internal class AwsErrorMapper @Inject constructor() {
+class AwsErrorMapper @Inject constructor() {
     fun map(throwable: Throwable): AppException = NetworkException.Unknown(throwable)
 }

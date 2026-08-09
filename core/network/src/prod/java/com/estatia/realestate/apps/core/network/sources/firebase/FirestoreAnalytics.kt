@@ -13,7 +13,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-internal class FirestoreAnalytics @Inject constructor(
+class FirestoreAnalytics @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val deviceUtils: IDeviceUtils,
     private val authService: IAuthRemoteDataSource,
@@ -89,6 +89,7 @@ internal class FirestoreAnalytics @Inject constructor(
     }
 
 
+    @Deprecated("Raw event querying is no longer supported on the client.")
     override suspend fun getEventsForUser(
         userId: String
     ): AppResult<List<AnalyticsEvent>> {
@@ -98,6 +99,7 @@ internal class FirestoreAnalytics @Inject constructor(
     }
 
 
+    @Deprecated("Raw event querying is no longer supported on the client.")
     override suspend fun getEventById(
         eventId: String
     ): AppResult<AnalyticsEvent?> {

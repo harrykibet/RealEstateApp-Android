@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-internal class AuthRepository @Inject constructor(
+class AuthRepository @Inject constructor(
     private val remoteDataSource: IAuthRemoteDataSource,
 ) : IAuthRepository {
 

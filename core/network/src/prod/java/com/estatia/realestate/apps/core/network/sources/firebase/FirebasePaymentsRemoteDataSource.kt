@@ -14,7 +14,7 @@ import javax.inject.Inject
  * Firebase implementation of [IPaymentsRemoteDataSource].
  * Triggers a Firebase Cloud Function.
  */
-internal class FirebasePaymentsRemoteDataSource @Inject constructor(
+class FirebasePaymentsRemoteDataSource @Inject constructor(
     private val functions: FirebaseFunctions,
     private val networkClient: INetworkClient
 ) : IPaymentsRemoteDataSource {

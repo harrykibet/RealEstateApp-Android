@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.network.sources.aws
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
@@ -17,20 +16,22 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import net.openid.appauth.*
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import androidx.core.net.toUri
 
 /**
  * AWS implementation of [IAuthRemoteDataSource] using AppAuth for Cognito.
  */
-internal class AwsAuthService @Inject constructor(
+class AwsAuthService @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IAuthRemoteDataSource {
 
     // --- Cognito Configuration (From instructions) ---
-    private val ISSUER_URI = Uri.parse("https://cognito-idp.us-west-1.amazonaws.com/us-west-1_Wcu3aBx17")
+    private val ISSUER_URI =
+        "https://cognito-idp.us-west-1.amazonaws.com/us-west-1_Wcu3aBx17".toUri()
     private val CLIENT_ID = "5t99kn0pue8gpdslih3nm96179"
     
     // Using the custom scheme defined in Gradle (AndroidApplicationConventionPlugin)
-    private val REDIRECT_URI = Uri.parse("com.estatia.realestate.apps.auth:/oauth2redirect")
+    private val REDIRECT_URI = "com.estatia.realestate.apps.auth:/oauth2redirect".toUri()
     
     private val SCOPES = "email openid phone"
 

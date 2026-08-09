@@ -56,5 +56,13 @@ abstract class DemoDataSourcesModule {
     companion object {
         @Provides
         fun provideBackendInitializers(): Set<IBackendInitializer> = emptySet()
+
+        @Provides
+        @Singleton
+        fun provideCrashReporter(): com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter = object : com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter {
+            override fun log(message: String) {}
+            override fun recordException(throwable: Throwable) {}
+            override fun setCustomKey(key: String, value: String) {}
+        }
     }
 }

@@ -35,7 +35,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal class FirebaseAuthService @Inject constructor(
+class FirebaseAuthService @Inject constructor(
     private val database: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val authErrorMapper: IAuthExceptionMapper,

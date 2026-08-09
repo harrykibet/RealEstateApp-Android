@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
 import javax.inject.Inject
 
-internal class RoomExceptionMapper @Inject constructor() : IRoomExceptionMapper {
+class RoomExceptionMapper @Inject constructor() : IRoomExceptionMapper {
 
     override fun map(
         throwable: Throwable

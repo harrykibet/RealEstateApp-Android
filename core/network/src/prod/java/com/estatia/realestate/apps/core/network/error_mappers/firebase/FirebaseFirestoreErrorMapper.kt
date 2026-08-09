@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import javax.inject.Inject
 
 
-internal class FirebaseFirestoreErrorMapper @Inject constructor() : IFirestoreErrorMapper {
+class FirebaseFirestoreErrorMapper @Inject constructor() : IFirestoreErrorMapper {
 
 
     override fun map(

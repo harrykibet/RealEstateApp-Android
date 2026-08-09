@@ -19,7 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class ConfigProvider @Inject constructor(
+class ConfigProvider @Inject constructor(
     private val assetSource: AssetConfigDataSource,
     private val dataRepository: IConfigDataRepository,
     private val parser: ConfigParser,

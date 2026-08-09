@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
 
-internal class PropertyRepository @Inject constructor(
+class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,
     private val exceptionTranslator: IExceptionTranslator

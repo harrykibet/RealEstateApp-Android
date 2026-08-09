@@ -7,7 +7,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
-internal class NetworkErrorMapper @Inject constructor()
+class NetworkErrorMapper @Inject constructor()
     : INetworkErrorMapper {
 
 

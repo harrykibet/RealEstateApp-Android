@@ -15,7 +15,7 @@ import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSour
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import javax.inject.Inject
 
-internal class SearchRepository @Inject constructor(
+class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,
     private val propertyLocalDataSource: IPropertyLocalDataSource,

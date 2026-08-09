@@ -17,7 +17,7 @@ private const val TARGET_PROPERTIES = 160
 private const val MAX_COMMENTS = 500
 private const val TARGET_COMMENTS = 400
 
-internal class PropertyLocalDataSource @Inject constructor(
+class PropertyLocalDataSource @Inject constructor(
     private val draftDao: PropertyDraftDao,
     private val cacheDao: PropertyCacheDao,
     private val commentDao: CommentCacheDao,
