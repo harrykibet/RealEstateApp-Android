@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
+import android.os.SystemClock
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
@@ -24,9 +25,15 @@ class VideoPlaybackCoordinator @Inject constructor(
     private var playJob: Job? = null
     private var preloadJob: Job? = null
 
+    private var lastPageChangeTime: Long = 0
+    private var consecutiveFastScrolls: Int = 0
+
     companion object {
-        private const val MAX_WARMED_MEDIA = 8 // Increased for deeper window
+        private const val MAX_WARMED_MEDIA = 8
         private const val DWELL_TIME_DEBOUNCE_MS = 100L
+        private const val FLING_DEBOUNCE_MS = 250L
+        private const val FAST_SCROLL_THRESHOLD_MS = 300L
+        private const val FLING_COUNT_THRESHOLD = 3
     }
 
     private val warmedMedia = LinkedHashSet<String>()
@@ -44,31 +51,47 @@ class VideoPlaybackCoordinator @Inject constructor(
         if (currentMediaId == mediaId) return
         currentMediaId = mediaId
 
+        // Fling Heuristic: detect rapid flicking
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastPageChangeTime < FAST_SCROLL_THRESHOLD_MS) {
+            consecutiveFastScrolls++
+        } else {
+            consecutiveFastScrolls = 0
+        }
+        lastPageChangeTime = now
+
+        val isFlinging = consecutiveFastScrolls >= FLING_COUNT_THRESHOLD
+        val debounceTime = if (isFlinging) FLING_DEBOUNCE_MS else DWELL_TIME_DEBOUNCE_MS
+
         playJob?.cancel()
         preloadJob?.cancel()
 
         playJob = scope.launch {
-            delay(DWELL_TIME_DEBOUNCE_MS.milliseconds)
+            delay(debounceTime.milliseconds)
             warmVisible(mediaId, uri)
             playerController.play(mediaId, uri, MediaType.VOD)
         }
 
-        preloadJob = scope.launch {
-            // 1. Symmetric Warming: Warm previous neighbor (N=1)
-            previous.firstOrNull()?.let {
-                playerController.preload(it.mediaId, it.uri, MediaType.VOD)
-                warmPrevious(it.mediaId, it.uri)
-            }
+        // Only prewarm neighbors if not flinging to reduce list virtualization pressure
+        if (!isFlinging) {
+            preloadJob = scope.launch {
+                delay(debounceTime.milliseconds) // Also debounce preloading
 
-            // 2. Deep Warming: Warm next neighbors (N=2)
-            next.getOrNull(0)?.let {
-                playerController.preload(it.mediaId, it.uri, MediaType.VOD)
-                warmNext(it.mediaId, it.uri)
-            }
+                // 1. Symmetric Warming: Warm previous neighbor (N=1)
+                previous.firstOrNull()?.let {
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD)
+                    warmPrevious(it.mediaId, it.uri)
+                }
 
-            next.getOrNull(1)?.let {
-                // Speculative: only warm bytes, don't prepare player yet (save resources)
-                warmLow(it.mediaId, it.uri)
+                // 2. Deep Warming: Warm next neighbors (N=2)
+                next.getOrNull(0)?.let {
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD)
+                    warmNext(it.mediaId, it.uri)
+                }
+
+                next.getOrNull(1)?.let {
+                    warmLow(it.mediaId, it.uri)
+                }
             }
         }
     }
@@ -130,6 +153,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     fun clear() {
         warmedMedia.clear()
         currentMediaId = null
+        consecutiveFastScrolls = 0
     }
 }
 

@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -32,6 +34,7 @@ internal class PlayerPool @Inject constructor(
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
     private val confinementThread: Thread = Looper.getMainLooper().thread
+    private val prewarmMutex = Mutex()
 
     private fun checkConfinement() {
         check(Thread.currentThread() === confinementThread) {
@@ -71,9 +74,9 @@ internal class PlayerPool @Inject constructor(
         return prewarm(mediaId, uri, mediaType)
     }
 
-    suspend fun prewarm(mediaId: String, uri: Uri, mediaType: MediaType): ManagedPlayer {
+    suspend fun prewarm(mediaId: String, uri: Uri, mediaType: MediaType): ManagedPlayer = prewarmMutex.withLock {
         checkConfinement()
-        players[mediaId]?.let { return it }
+        players[mediaId]?.let { return@withLock it }
 
         ensureIdlePlayers()
 
@@ -84,7 +87,7 @@ internal class PlayerPool @Inject constructor(
         players[mediaId] = managed
         poolUpdates.tryEmit(Unit)
         trimIfNeeded(excludeMediaId = null)
-        return managed
+        return@withLock managed
     }
 
     private suspend fun ensureIdlePlayers() {
