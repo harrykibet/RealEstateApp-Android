@@ -15,17 +15,5 @@ dependencies {
 
     implementation(libs.metrics.performance)
 
-    implementation(libs.kotlinx.datetime)
-
-    implementation(libs.glide)
-    ksp(libs.glide.compiler)
-
-    implementation(libs.media3.common)
-    implementation(libs.media3.ui)
-    implementation(libs.media3.exoplayer)
-
-    implementation(projects.core.model)
-    api(projects.core.playerUi)
     implementation(projects.core.designSystem)
-    implementation(projects.core.localization)
 }

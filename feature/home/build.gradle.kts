@@ -8,6 +8,7 @@ android {
 
 dependencies {
 
+    implementation(projects.feature.sharedUi)
     implementation(projects.core.ui)
     implementation(projects.core.playerUi)
     implementation(projects.core.playerEngine)

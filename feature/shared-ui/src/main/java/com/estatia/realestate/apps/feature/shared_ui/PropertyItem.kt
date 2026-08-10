@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.ui.screens
+package com.estatia.realestate.apps.feature.shared_ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

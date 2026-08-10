@@ -12,9 +12,9 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
-import com.estatia.realestate.apps.core.ui.screens.PropertyFeedItem
-import com.estatia.realestate.apps.core.ui.screens.PropertyFeedScreen
-import com.estatia.realestate.apps.core.ui.screens.RememberFeedPlaybackCoordinator
+import com.estatia.realestate.apps.feature.shared_ui.PropertyFeedItem
+import com.estatia.realestate.apps.feature.shared_ui.PropertyFeedScreen
+import com.estatia.realestate.apps.feature.shared_ui.RememberFeedPlaybackCoordinator
 import com.estatia.realestate.apps.feature.favorites.ui.viewmodels.playback.FavoritesVideoPlaybackViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
