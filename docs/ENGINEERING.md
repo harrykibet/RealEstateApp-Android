@@ -45,6 +45,7 @@
 * All state exposed immutably; side effects explicit
 * PRs require architectural review and test coverage
 * Document non-obvious business rules or patterns
+* **UI Interaction Blocking**: To prevent gesture conflicts in vertical feeds, any future playback features requiring horizontal or precise gestures (e.g., tap-to-seek or scrub) must explicitly suppress the parent `Pager` scroll recognition (`userScrollEnabled = false`) while the scrub gesture is active.
 
 ## Feature-Specific Patterns & Diagrams
 
