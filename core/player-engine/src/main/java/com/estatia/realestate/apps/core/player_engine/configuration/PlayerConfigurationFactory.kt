@@ -43,7 +43,7 @@ class PlayerConfigurationFactory @Inject constructor(
      * Falls back to the original URI on selection failure — CDN routing is an
      * optimization, not a playback precondition.
      */
-    private suspend fun resolveViaCdn(uri: Uri): Uri {
+    private fun resolveViaCdn(uri: Uri): Uri {
         val host = uri.host ?: return uri
         if (!host.contains("estatia.com")) return uri
 

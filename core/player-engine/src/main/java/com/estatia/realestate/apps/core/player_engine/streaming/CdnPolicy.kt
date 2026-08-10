@@ -13,9 +13,9 @@ class CdnPolicy @Inject constructor(
     private val random: Random
 ) : ICdnPolicy {
 
-    override suspend fun select(
+    override fun select(
         endpoints: List<CdnEndpoint>,
-        healthMonitor: CdnHealthMonitor
+        healthSnapshot: Map<String, CdnHealth>
     ): CdnEndpoint {
         val env = environmentCoordinator.environment.value
 
@@ -24,8 +24,8 @@ class CdnPolicy @Inject constructor(
         }
 
         val scored = endpoints.mapNotNull { endpoint ->
-            val health = healthMonitor.getHealth(endpoint)
-            if (health.isCircuitOpen || health.latencyMs == null) {
+            val health = healthSnapshot[endpoint.baseUrl]
+            if (health == null || health.isCircuitOpen || health.latencyMs == null) {
                 null
             } else {
                 val latencyPenalty = health.latencyMs + (health.failureCount * 250L)

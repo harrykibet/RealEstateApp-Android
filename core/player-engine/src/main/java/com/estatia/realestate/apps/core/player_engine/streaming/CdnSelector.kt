@@ -12,16 +12,21 @@ class CdnSelector @Inject constructor(
     private val config: IConfigProvider
 ) {
 
-    suspend fun select(): CdnEndpoint {
-
-        config.awaitReady()
-
+    /**
+     * Selects an endpoint immediately.
+     * Triggers background health refreshes if data is stale.
+     */
+    fun select(): CdnEndpoint {
         val endpoints = config.cdnEndpoints
 
         require(endpoints.isNotEmpty()) {
             "No CDN endpoints configured"
         }
 
-        return policy.select(endpoints, healthMonitor)
+        // Trigger background refresh for next time
+        healthMonitor.refreshIfStale(endpoints)
+
+        // Immediate selection based on current snapshot
+        return policy.select(endpoints, healthMonitor.getHealthSnapshot())
     }
 }

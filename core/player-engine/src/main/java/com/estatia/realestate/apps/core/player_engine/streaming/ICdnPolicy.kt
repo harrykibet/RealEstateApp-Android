@@ -7,14 +7,15 @@ import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
  */
 interface ICdnPolicy {
     /**
-     * Selects an endpoint based on health metrics and latency data.
+     * Selects an endpoint based on a snapshot of health metrics.
+     * This function is non-suspending to ensure it never blocks the player startup path.
      * 
      * @param endpoints List of available CDN endpoints.
-     * @param healthMonitor Monitor providing real-time health and latency metrics.
+     * @param healthSnapshot Map of endpoint base URLs to their current health metrics.
      * @return The selected [CdnEndpoint].
      */
-    suspend fun select(
+    fun select(
         endpoints: List<CdnEndpoint>,
-        healthMonitor: CdnHealthMonitor
+        healthSnapshot: Map<String, CdnHealth>
     ): CdnEndpoint
 }

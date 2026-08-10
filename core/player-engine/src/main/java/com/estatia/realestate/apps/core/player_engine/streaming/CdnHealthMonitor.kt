@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -13,6 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 @Singleton
 class CdnHealthMonitor @Inject constructor(
     private val latencyMeasurer: ILatencyMeasurer,
+    @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     private val ttl: Duration = 30.seconds
@@ -27,25 +29,35 @@ class CdnHealthMonitor @Inject constructor(
     private fun mutexFor(key: String): Mutex =
         endpointMutexes.getOrPut(key) { Mutex() }
 
-    suspend fun getHealth(endpoint: CdnEndpoint): CdnHealth {
-        val current = healthMap[endpoint.baseUrl]
-        val now = clock()
+    /**
+     * Returns a snapshot of all currently known health metrics.
+     */
+    fun getHealthSnapshot(): Map<String, CdnHealth> {
+        return healthMap.toMap()
+    }
 
-        if (current != null && now - current.lastCheckedAt < ttl.inWholeMilliseconds) {
-            return current
-        }
+    /**
+     * Triggers background probes for any endpoints that are missing or stale.
+     * Non-blocking.
+     */
+    fun refreshIfStale(endpoints: List<CdnEndpoint>) {
+        endpoints.forEach { endpoint ->
+            val current = healthMap[endpoint.baseUrl]
+            val now = clock()
 
-        // Locked only per-endpoint — probes to other endpoints proceed concurrently.
-        return mutexFor(endpoint.baseUrl).withLock {
-            val recheck = healthMap[endpoint.baseUrl]
-            val recheckNow = clock()
-            if (recheck != null && recheckNow - recheck.lastCheckedAt < ttl.inWholeMilliseconds) {
-                return@withLock recheck
+            if (current == null || now - current.lastCheckedAt > ttl.inWholeMilliseconds) {
+                // Launch background probe
+                scope.launch {
+                    mutexFor(endpoint.baseUrl).withLock {
+                        // Re-check under lock
+                        val recheck = healthMap[endpoint.baseUrl]
+                        if (recheck == null || clock() - recheck.lastCheckedAt > ttl.inWholeMilliseconds) {
+                            val updated = measure(endpoint, recheck)
+                            healthMap[endpoint.baseUrl] = updated
+                        }
+                    }
+                }
             }
-
-            val updated = measure(endpoint, recheck)
-            healthMap[endpoint.baseUrl] = updated
-            updated
         }
     }
 
