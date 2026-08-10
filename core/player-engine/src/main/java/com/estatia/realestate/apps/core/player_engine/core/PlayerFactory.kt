@@ -4,8 +4,14 @@ import android.content.Context
 import android.os.Looper
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
+import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
+import com.estatia.realestate.apps.core.player_engine.advanced.SpatialAudioRenderer
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfiguration
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,7 +25,8 @@ import javax.inject.Singleton
 internal class PlayerFactory @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
-    private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>
+    private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
+    private val spatialAudioRendererProvider: Provider<SpatialAudioRenderer>
 ) {
     data class CreatedPlayer(
         val player: ExoPlayer,
@@ -27,7 +34,22 @@ internal class PlayerFactory @Inject constructor(
     )
 
     fun create(configuration: PlayerConfiguration): CreatedPlayer {
-        val builder = ExoPlayer.Builder(context)
+        val spatialAudioRenderer = spatialAudioRendererProvider.get()
+        spatialAudioRenderer.logSpatialAudioStatus()
+
+        val renderersFactory = object : DefaultRenderersFactory(context) {
+            override fun buildAudioSink(
+                context: Context,
+                enableFloatOutput: Boolean,
+                enableAudioTrackPlaybackParams: Boolean
+            ): AudioSink? {
+                return DefaultAudioSink.Builder(context)
+                    .build()
+                    .apply { setListener(spatialAudioRenderer) }
+            }
+        }
+
+        val builder = ExoPlayer.Builder(context, renderersFactory)
             .setLooper(Looper.getMainLooper())
             .setBandwidthMeter(bandwidthMeter)
             .setMediaSourceFactory(configuration.mediaSourceFactory)

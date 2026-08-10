@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +20,8 @@ import kotlin.collections.ArrayDeque
 @Singleton
 class SurfacePool @Inject constructor(
     private val sizingPolicy: IPlayerPoolSizingPolicy,
-    private val environmentCoordinator: EnvironmentCoordinator
+    private val environmentCoordinator: EnvironmentCoordinator,
+    private val hdrConfiguration: HdrConfiguration
 ) {
     private val pool = ArrayDeque<SurfaceView>()
 
@@ -48,6 +50,9 @@ class SurfacePool @Inject constructor(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+            
+            // Set PixelFormat for HDR support if available
+            holder.setFormat(hdrConfiguration.getBestSupportedMode().format)
         }
     }
 }
