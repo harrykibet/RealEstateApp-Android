@@ -18,6 +18,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -79,21 +80,30 @@ fun EngineVideoPlayer(
         surfacePool.acquire(context)
     }
 
-    DisposableEffect(mediaId) {
-        onDispose {
-            surfacePool.release(surfaceView)
-        }
-    }
-
-    // Playback control state
-    var isPlaying by remember { mutableStateOf(true) }
+    // Playback control state - Synced with Player via Listener
+    var isPlaying by remember { mutableStateOf(false) }
+    var lastClickTime by remember { mutableLongStateOf(0L) }
     var showIndicator by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
 
-    // Sync isPlaying with player state and isActive
-    LaunchedEffect(player, isActive) {
-        if (player != null && isActive) {
-            isPlaying = player.playWhenReady
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying = playing
+            }
+        }
+        player?.addListener(listener)
+        // Sync initial state
+        isPlaying = player?.isPlaying ?: false
+
+        onDispose {
+            player?.removeListener(listener)
+        }
+    }
+
+    DisposableEffect(mediaId) {
+        onDispose {
+            surfacePool.release(surfaceView)
         }
     }
 
@@ -149,13 +159,15 @@ fun EngineVideoPlayer(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
+                    val now = System.currentTimeMillis()
+                    if (now - lastClickTime < 200) return@clickable
+                    lastClickTime = now
+
                     if (player != null) {
                         if (player.isPlaying) {
                             player.pause()
-                            isPlaying = false
                         } else {
                             player.play()
-                            isPlaying = true
                         }
                         showIndicator = true
                     }
