@@ -24,8 +24,15 @@ class PlayerConfigurationFactory @Inject constructor(
         uri: Uri,
         mediaType: MediaType
     ): PlayerConfiguration {
-        config.awaitReady()
-        val resolvedUri = resolveViaCdn(uri)
+        // ⏱️ Optimization: Only wait for config if we actually need it for CDN resolution.
+        // Idle players use Uri.EMPTY and shouldn't be blocked.
+        val resolvedUri = if (needsCdnResolution(uri)) {
+            config.awaitReady()
+            resolveViaCdn(uri)
+        } else {
+            uri
+        }
+
         val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
         val loadControl = playbackConfigurationProvider.createLoadControl(mediaType)
@@ -47,14 +54,16 @@ class PlayerConfigurationFactory @Inject constructor(
      * optimization, not a playback precondition.
      */
     private fun resolveViaCdn(uri: Uri): Uri {
-        val host = uri.host ?: return uri
-        if (!host.contains("estatia.com")) return uri
-
         val endpoint = runCatching { cdnSelector.select() }.getOrNull() ?: return uri
         val endpointUri = endpoint.baseUrl.toUri()
         return uri.buildUpon()
             .scheme(endpointUri.scheme ?: uri.scheme)
             .authority(endpointUri.authority ?: uri.authority)
             .build()
+    }
+
+    private fun needsCdnResolution(uri: Uri): Boolean {
+        val host = uri.host ?: return false
+        return host.contains("estatia.com")
     }
 }
