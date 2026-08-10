@@ -63,7 +63,6 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
 
     implementation(projects.core.ui)
-    implementation(projects.feature.sharedUi)
     implementation(projects.core.data)
     implementation(projects.core.model)
     implementation(projects.core.domain)
@@ -95,6 +94,7 @@ dependencies {
     implementation(projects.feature.property)
     implementation(projects.feature.settings)
     implementation(projects.feature.payments)
+    implementation(projects.feature.sharedUi)
     implementation(projects.feature.favorites)
     implementation(projects.feature.intelligence)
 
