@@ -5,8 +5,8 @@ import android.net.Uri
 data class FeedMediaContext(
     val mediaId: String,
     val uri: Uri,
-    val previous: FeedNeighbor?,
-    val next: FeedNeighbor?
+    val previous: List<FeedNeighbor> = emptyList(),
+    val next: List<FeedNeighbor> = emptyList()
 )
 
 data class FeedNeighbor(

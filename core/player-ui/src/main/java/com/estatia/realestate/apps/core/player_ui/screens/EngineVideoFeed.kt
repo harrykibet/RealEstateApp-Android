@@ -62,16 +62,20 @@ fun EngineVideoFeed(
 
                 val video = videos.getOrNull(page) ?: return@collect
                 val previous = videos.getOrNull(page - 1)?.let {
-                    FeedNeighbor(
+                    listOf(FeedNeighbor(
                         mediaId = it.mediaId,
                         uri = it.videoUrl.toUri()
-                    )
-                }
-                val next = videos.getOrNull(page + 1)?.let {
-                    FeedNeighbor(
-                        mediaId = it.mediaId,
-                        uri = it.videoUrl.toUri()
-                    )
+                    ))
+                } ?: emptyList()
+                
+                val next = mutableListOf<FeedNeighbor>()
+                for (i in 1..2) {
+                    videos.getOrNull(page + i)?.let {
+                        next.add(FeedNeighbor(
+                            mediaId = it.mediaId,
+                            uri = it.videoUrl.toUri()
+                        ))
+                    }
                 }
 
                 currentOnPageVisible(

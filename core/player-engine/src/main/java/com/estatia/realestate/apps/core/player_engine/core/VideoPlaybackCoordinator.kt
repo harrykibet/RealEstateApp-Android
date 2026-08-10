@@ -8,10 +8,12 @@ import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeli
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class VideoPlaybackCoordinator @Inject constructor(
@@ -23,7 +25,8 @@ class VideoPlaybackCoordinator @Inject constructor(
     private var preloadJob: Job? = null
 
     companion object {
-        private const val MAX_WARMED_MEDIA = 6
+        private const val MAX_WARMED_MEDIA = 8 // Increased for deeper window
+        private const val DWELL_TIME_DEBOUNCE_MS = 100L
     }
 
     private val warmedMedia = LinkedHashSet<String>()
@@ -35,8 +38,8 @@ class VideoPlaybackCoordinator @Inject constructor(
         scope: CoroutineScope,
         mediaId: String,
         uri: Uri,
-        previous: FeedNeighborInfo?,
-        next: FeedNeighborInfo?
+        previous: List<FeedNeighborInfo>,
+        next: List<FeedNeighborInfo>
     ) {
         if (currentMediaId == mediaId) return
         currentMediaId = mediaId
@@ -45,18 +48,27 @@ class VideoPlaybackCoordinator @Inject constructor(
         preloadJob?.cancel()
 
         playJob = scope.launch {
+            delay(DWELL_TIME_DEBOUNCE_MS.milliseconds)
+            warmVisible(mediaId, uri)
             playerController.play(mediaId, uri, MediaType.VOD)
         }
 
-        warmVisible(mediaId, uri)
-
         preloadJob = scope.launch {
-            previous?.let {
+            // 1. Symmetric Warming: Warm previous neighbor (N=1)
+            previous.firstOrNull()?.let {
                 playerController.preload(it.mediaId, it.uri, MediaType.VOD)
+                warmPrevious(it.mediaId, it.uri)
             }
-            next?.let {
+
+            // 2. Deep Warming: Warm next neighbors (N=2)
+            next.getOrNull(0)?.let {
                 playerController.preload(it.mediaId, it.uri, MediaType.VOD)
                 warmNext(it.mediaId, it.uri)
+            }
+
+            next.getOrNull(1)?.let {
+                // Speculative: only warm bytes, don't prepare player yet (save resources)
+                warmLow(it.mediaId, it.uri)
             }
         }
     }
@@ -78,6 +90,18 @@ class VideoPlaybackCoordinator @Inject constructor(
     private fun warmNext(mediaId: String, uri: Uri) {
         if (markWarmed(mediaId)) {
             streamingPipeline.warm(uri, WarmPriority.NEXT)
+        }
+    }
+
+    private fun warmPrevious(mediaId: String, uri: Uri) {
+        if (markWarmed(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.PREVIOUS)
+        }
+    }
+
+    private fun warmLow(mediaId: String, uri: Uri) {
+        if (markWarmed(mediaId)) {
+            streamingPipeline.warm(uri, WarmPriority.LOW)
         }
     }
 

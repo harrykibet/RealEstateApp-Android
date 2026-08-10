@@ -4,7 +4,9 @@ import android.net.Uri
 
 enum class WarmPriority {
     VISIBLE,
-    NEXT
+    NEXT,
+    PREVIOUS,
+    LOW
 }
 
 data class WarmRequest(

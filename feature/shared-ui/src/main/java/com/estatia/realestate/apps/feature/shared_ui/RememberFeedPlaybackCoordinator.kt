@@ -21,24 +21,22 @@ fun RememberFeedPlaybackCoordinator(
 
         val currentVideoUrl = current.videoUrl ?: return@LaunchedEffect
 
-        val previous = items.getOrNull(page - 1)?.let {
-            val videoUrl = it.videoUrl
-            if (videoUrl != null) {
-                FeedNeighbor(
-                    mediaId = it.id,
-                    uri = videoUrl.toUri()
-                )
-            } else null
+        // Collect Previous Neighbors (N=1)
+        val previous = mutableListOf<FeedNeighbor>()
+        items.getOrNull(page - 1)?.let {
+            it.videoUrl?.let { url ->
+                previous.add(FeedNeighbor(it.id, url.toUri()))
+            }
         }
 
-        val next = items.getOrNull(page + 1)?.let {
-            val videoUrl = it.videoUrl
-            if (videoUrl != null) {
-                FeedNeighbor(
-                    mediaId = it.id,
-                    uri = videoUrl.toUri()
-                )
-            } else null
+        // Collect Next Neighbors (N=2)
+        val next = mutableListOf<FeedNeighbor>()
+        for (i in 1..2) {
+            items.getOrNull(page + i)?.let {
+                it.videoUrl?.let { url ->
+                    next.add(FeedNeighbor(it.id, url.toUri()))
+                }
+            }
         }
 
         onPageVisible(

@@ -69,8 +69,8 @@ abstract class BaseVideoPlaybackViewModel(
             scope = viewModelScope,
             mediaId = context.mediaId,
             uri = context.uri,
-            previous = context.previous?.let { FeedNeighborInfo(it.mediaId, it.uri) },
-            next = context.next?.let { FeedNeighborInfo(it.mediaId, it.uri) }
+            previous = context.previous.map { FeedNeighborInfo(it.mediaId, it.uri) },
+            next = context.next.map { FeedNeighborInfo(it.mediaId, it.uri) }
         )
     }
 

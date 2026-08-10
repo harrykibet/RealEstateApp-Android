@@ -45,6 +45,9 @@ class MediaCacheWarmer @Inject constructor(
 
     private var visibleJob: Job? = null
     private var nextJob: Job? = null
+    private var previousJob: Job? = null
+    private var lowJob: Job? = null
+    
     private var buffering = false
 
     init {
@@ -53,6 +56,8 @@ class MediaCacheWarmer @Inject constructor(
                 when (request.priority) {
                     WarmPriority.VISIBLE -> handleVisible(request)
                     WarmPriority.NEXT -> handleNext(request)
+                    WarmPriority.PREVIOUS -> handlePrevious(request)
+                    WarmPriority.LOW -> handleLow(request)
                 }
             }
         }
@@ -66,6 +71,8 @@ class MediaCacheWarmer @Inject constructor(
         buffering = true
         nextJob?.cancel()
         nextJob = null
+        lowJob?.cancel()
+        lowJob = null
     }
 
     fun onBufferingEnded() {
@@ -78,7 +85,7 @@ class MediaCacheWarmer @Inject constructor(
         visibleJob = scope.launch {
             prefetchInternal(
                 uri = request.uri,
-                maxBytes = adaptivePrefetchSize(visible = true)
+                maxBytes = adaptivePrefetchSize(WarmPriority.VISIBLE)
             )
         }
     }
@@ -91,39 +98,59 @@ class MediaCacheWarmer @Inject constructor(
         nextJob = scope.launch {
             prefetchInternal(
                 uri = request.uri,
-                maxBytes = adaptivePrefetchSize(visible = false)
+                maxBytes = adaptivePrefetchSize(WarmPriority.NEXT)
+            )
+        }
+    }
+
+    private fun handlePrevious(request: WarmRequest) {
+        if (buffering) return
+
+        previousJob?.cancel()
+
+        previousJob = scope.launch {
+            prefetchInternal(
+                uri = request.uri,
+                maxBytes = adaptivePrefetchSize(WarmPriority.PREVIOUS)
+            )
+        }
+    }
+
+    private fun handleLow(request: WarmRequest) {
+        if (buffering) return
+
+        lowJob?.cancel()
+
+        lowJob = scope.launch {
+            prefetchInternal(
+                uri = request.uri,
+                maxBytes = adaptivePrefetchSize(WarmPriority.LOW)
             )
         }
     }
 
     /**
-     * Core policy engine: derives cache size from environment snapshot.
-     * No direct system calls, no legacy network utils.
+     * Core policy engine: derives cache size from environment snapshot and priority.
      */
-    private fun adaptivePrefetchSize(visible: Boolean): Long {
+    private fun adaptivePrefetchSize(priority: WarmPriority): Long {
         val env = environment.value
 
         val throttled = env.shouldThrottlePerformance
         val metered = env.isMetered
         val throughput = env.estimatedThroughputBps
 
-        return when {
+        val baseSize = when {
+            throttled -> 1L * 1024 * 1024
+            metered -> 2L * 1024 * 1024
+            throughput > 10_000_000L -> 5L * 1024 * 1024
+            else -> 3L * 1024 * 1024
+        }
 
-            throttled -> {
-                if (visible) 1L * 1024 * 1024 else 512L * 1024
-            }
-
-            metered -> {
-                if (visible) 2L * 1024 * 1024 else 1L * 1024 * 1024
-            }
-
-            throughput > 10_000_000L -> {
-                if (visible) 5L * 1024 * 1024 else 3L * 1024 * 1024
-            }
-
-            else -> {
-                if (visible) 3L * 1024 * 1024 else 2L * 1024 * 1024
-            }
+        return when (priority) {
+            WarmPriority.VISIBLE -> baseSize
+            WarmPriority.NEXT -> (baseSize * 0.7).toLong()
+            WarmPriority.PREVIOUS -> (baseSize * 0.4).toLong()
+            WarmPriority.LOW -> (baseSize * 0.2).toLong()
         }
     }
 
@@ -173,12 +200,19 @@ class MediaCacheWarmer @Inject constructor(
     suspend fun cancelAllJobs() {
         visibleJob?.cancelAndJoin()
         nextJob?.cancelAndJoin()
+        previousJob?.cancelAndJoin()
+        lowJob?.cancelAndJoin()
+        
         visibleJob = null
         nextJob = null
+        previousJob = null
+        lowJob = null
     }
 
     override fun close() {
         visibleJob?.cancel()
         nextJob?.cancel()
+        previousJob?.cancel()
+        lowJob?.cancel()
     }
 }
