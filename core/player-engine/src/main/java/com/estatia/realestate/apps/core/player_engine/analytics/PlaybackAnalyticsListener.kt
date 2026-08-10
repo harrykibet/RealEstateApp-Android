@@ -7,7 +7,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +26,7 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
+    private val metricsTracker: IMetricsTracker,
     @EngineScope private val scope: CoroutineScope
 ) : AnalyticsListener {
 
@@ -53,13 +56,18 @@ class PlaybackAnalyticsListener @Inject constructor(
             when (state) {
                 Player.STATE_READY -> {
                     val startupTime = SystemClock.elapsedRealtime() - startupStartTime
+                    val bufferingMs = bufferingStartedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L
+
+                    metricsTracker.trackDuration("player.startup.duration", startupTime.milliseconds)
+                    metricsTracker.trackDuration("player.buffering.duration", bufferingMs.milliseconds)
+
                     analyticsClient.logEvent(
                         message = "PlaybackAnalyticsListener",
                         eventType = EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_START,
                         customMetadata = mapOf(
                             "time_ms" to startupTime.toString(),
                             "session_id" to sessionId,
-                            "buffering_ms" to (bufferingStartedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L).toString()
+                            "buffering_ms" to bufferingMs.toString()
                         )
                     )
                     bufferingStartedAt = null

@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.network.di
 
 import com.estatia.realestate.apps.core.network.interfaces.*
+import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.sources.*
 import dagger.Binds
 import dagger.Module
@@ -54,8 +55,6 @@ abstract class DemoDataSourcesModule {
         dataSource: DemoSecretRemoteDataSource): ISecretRemoteDataSource
 
     companion object {
-        @Provides
-        fun provideBackendInitializers(): Set<IBackendInitializer> = emptySet()
 
         @Provides
         @Singleton

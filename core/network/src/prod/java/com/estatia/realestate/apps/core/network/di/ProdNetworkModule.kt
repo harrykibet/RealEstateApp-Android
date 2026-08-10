@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.*
+import com.estatia.realestate.apps.core.network.interceptors.TracingInterceptor
 import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.BuildConfig
 import dagger.Module
@@ -69,10 +70,12 @@ object ProdNetworkModule {
     @Singleton
     @BaseClient
     fun provideBaseOkHttpClient(
-        connectionPool: ConnectionPool
+        connectionPool: ConnectionPool,
+        tracingInterceptor: TracingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectionPool(connectionPool)
+            .addInterceptor(tracingInterceptor)
             .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
             .apply {
                 if (BuildConfig.DEBUG) {

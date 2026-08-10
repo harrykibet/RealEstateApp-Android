@@ -13,5 +13,7 @@ dependencies {
     implementation(projects.core.model)
 
     implementation(libs.work.runtime.ktx)
+    implementation(libs.bundles.analytics)
     implementation(libs.bundles.firebase)
+    implementation(projects.core.common)
 }

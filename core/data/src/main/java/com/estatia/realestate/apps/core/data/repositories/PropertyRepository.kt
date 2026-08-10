@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
@@ -19,6 +20,7 @@ import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toC
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyPage
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ internal class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,
     private val userRepository: IUserRepository,
+    private val metricsTracker: IMetricsTracker,
     private val exceptionTranslator: IExceptionTranslator
 ) : IPropertyRepository {
 
@@ -73,7 +76,8 @@ internal class PropertyRepository @Inject constructor(
         videoUris: List<Uri>
     ): AppResult<String> {
 
-        return remoteDataSource
+        val startTime = System.currentTimeMillis()
+        val result = remoteDataSource
             .uploadProperty(
                 FirestorePropertyMapper.toEntity(property),
                 PropertyContactEntity(
@@ -83,7 +87,17 @@ internal class PropertyRepository @Inject constructor(
                 imageUris,
                 videoUris
             )
-            .translatePropertyFailures(
+        
+        val duration = System.currentTimeMillis() - startTime
+        metricsTracker.trackDuration("property.upload.duration", duration.milliseconds)
+        
+        if (result is AppResult.Success) {
+            metricsTracker.incrementCounter("property.upload.success")
+        } else {
+            metricsTracker.incrementCounter("property.upload.failure")
+        }
+
+        return result.translatePropertyFailures(
                 exceptionTranslator
             )
     }
@@ -232,7 +246,10 @@ internal class PropertyRepository @Inject constructor(
         }
 
         // 2. Fetch from remote
+        val startTime = System.currentTimeMillis()
         val remoteResult = remoteDataSource.fetchPropertiesPaginated(cursor, pageSize)
+        val duration = System.currentTimeMillis() - startTime
+        metricsTracker.trackDuration("property.fetch_paginated.duration", duration.milliseconds)
 
         return remoteResult.map { remotePage ->
             val domainProperties = remotePage.properties.map(FirestorePropertyMapper::toDomain)

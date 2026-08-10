@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources.firebase
 
 import android.content.Context
-import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
+import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAppCheckProxy
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.qualifiers.ApplicationContext

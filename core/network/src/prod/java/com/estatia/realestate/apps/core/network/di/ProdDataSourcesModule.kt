@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.network.di
 
 import com.estatia.realestate.apps.core.domain.interfaces.*
+import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.sources.firebase.*
 import com.estatia.realestate.apps.core.network.sources.aws.*

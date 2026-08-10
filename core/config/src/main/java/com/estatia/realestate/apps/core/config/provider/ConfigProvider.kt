@@ -6,8 +6,10 @@ import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,8 @@ internal class ConfigProvider @Inject constructor(
     private val assetSource: AssetConfigDataSource,
     private val dataRepository: IConfigDataRepository,
     private val parser: ConfigParser,
-    private val stateHolder: ConfigStateHolder
+    private val stateHolder: ConfigStateHolder,
+    private val metricsTracker: IMetricsTracker
 ) : IConfigProvider {
 
     override val configVersion = stateHolder.configVersion
@@ -65,12 +68,16 @@ internal class ConfigProvider @Inject constructor(
         if (isInitialized) return
 
         withContext(Dispatchers.IO) {
+            val startTime = System.currentTimeMillis()
 
             val defaultJson = assetSource.loadDefaultConfig()
 
             val parsed = parser.parse(defaultJson)
 
             applyConfig(parsed)
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("config.initialize.duration", duration.milliseconds)
 
             isInitialized = true
             _isReady.value = true

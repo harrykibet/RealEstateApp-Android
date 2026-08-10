@@ -9,7 +9,7 @@ import com.amplifyframework.core.Amplify
 import com.amplifyframework.logging.cloudwatch.AWSCloudWatchLoggingPlugin
 import com.amplifyframework.analytics.pinpoint.AWSPinpointAnalyticsPlugin
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
-import com.estatia.realestate.apps.core.network.interfaces.IBackendInitializer
+import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
