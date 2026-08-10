@@ -9,19 +9,33 @@ class DynamicBitratePolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {
 
+    /**
+     * BOLA-lite calculation that incorporates buffer occupancy to prioritize stall prevention.
+     */
     fun calculateMaxVideoBitrate(
         mediaType: MediaType,
-        environment: EnvironmentState
+        environment: EnvironmentState,
+        bufferSeconds: Double = 5.0
     ): Int {
         val deviceCap = deviceUtils.getMaxSupportedBitrate().coerceAtLeast(1_000_000)
         val networkCap = environment.estimatedThroughputBps.coerceAtLeast(1_000_000L)
 
         val base = minOf(deviceCap.toDouble(), networkCap.toDouble())
-        val adjusted = when {
+        
+        // 1. Environment & Device Throttling
+        var adjusted = when {
             environment.shouldThrottlePerformance -> base * 0.35
             deviceUtils.isLowRamDevice() -> base * 0.55
             environment.isMetered -> base * 0.7
             else -> base
+        }
+
+        // 2. BOLA-lite Buffer Penalty
+        // If buffer is critically low (< 2s), aggressively drop bitrate to prevent stall
+        if (bufferSeconds < 2.0) {
+            adjusted *= 0.5
+        } else if (bufferSeconds < 5.0) {
+            adjusted *= 0.8
         }
 
         val mediaAdjusted = when (mediaType) {

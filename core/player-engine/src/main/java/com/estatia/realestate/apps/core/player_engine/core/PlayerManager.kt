@@ -143,10 +143,12 @@ internal class PlayerManager @Inject constructor(
             }
 
             override fun onRenderedFirstFrame() {
+                val bufferSeconds = (managed.player.bufferedPosition - managed.player.currentPosition) / 1000.0
                 dynamicBitrateController.apply(
                     managed.player,
                     managed.mediaType,
                     environmentCoordinator.environment.value,
+                    bufferSeconds = bufferSeconds,
                     startupPhase = false
                 )
             }

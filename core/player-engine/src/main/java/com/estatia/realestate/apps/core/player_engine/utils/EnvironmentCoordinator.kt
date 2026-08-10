@@ -54,7 +54,8 @@ class EnvironmentCoordinator @Inject constructor(
                 EnvironmentState(
                     isMetered = isMetered,
                     shouldThrottlePerformance = networkThrottle || batteryThrottle,
-                    estimatedThroughputBps = bandwidth
+                    estimatedThroughputBps = bandwidth,
+                    recentStallCount = 0 // Initial implementation
                 )
             }
                 .distinctUntilChanged()

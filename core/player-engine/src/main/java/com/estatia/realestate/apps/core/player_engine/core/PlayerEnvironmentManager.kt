@@ -34,7 +34,13 @@ internal class PlayerEnvironmentManager @Inject constructor(
                 val newSize = sizingPolicy.calculateMaxPoolSize()
                 pool.updateMaxPoolSize(newSize, activeMediaId)
                 pool.forEachPlayer { player, mediaType ->
-                    dynamicBitrateController.apply(player, mediaType, env)
+                    val bufferSeconds = (player.bufferedPosition - player.currentPosition) / 1000.0
+                    dynamicBitrateController.apply(
+                        player = player,
+                        mediaType = mediaType,
+                        environment = env,
+                        bufferSeconds = bufferSeconds
+                    )
                 }
             }
         }

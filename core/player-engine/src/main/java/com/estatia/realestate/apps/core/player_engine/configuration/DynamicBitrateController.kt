@@ -15,7 +15,7 @@ class DynamicBitrateController @Inject constructor(
 
     /**
      * Applies adaptive bitrate constraints based on
-     * media type and current environment.
+     * media type, current environment, and real-time buffer health.
      *
      * Safe to call repeatedly. Idempotent.
      */
@@ -23,12 +23,14 @@ class DynamicBitrateController @Inject constructor(
         player: ExoPlayer,
         mediaType: MediaType,
         environment: EnvironmentState,
+        bufferSeconds: Double = 5.0,
         startupPhase: Boolean = false
     ) {
         val targetBitrate =
             bitratePolicy.calculateMaxVideoBitrate(
                 mediaType = mediaType,
-                environment = environment
+                environment = environment,
+                bufferSeconds = bufferSeconds
             )
 
         val effectiveBitrate = if (startupPhase) {
