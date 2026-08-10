@@ -11,6 +11,8 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.work.runtime.ktx)
 
+    implementation(libs.bundles.lifecycle)
+
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 

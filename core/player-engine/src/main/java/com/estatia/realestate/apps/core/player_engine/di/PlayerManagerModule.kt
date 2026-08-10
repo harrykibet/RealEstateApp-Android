@@ -6,6 +6,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
+import com.estatia.realestate.apps.core.common.system.SystemResourcesMonitor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlaybackConfigurationProvider
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
@@ -142,13 +143,15 @@ abstract class PlayerManagerModule {
             networkStateProvider: INetworkStateProvider,
             batteryManager: IBatteryManager,
             bandwidthMeter: BandwidthMeter,
-            connectivityManager: ConnectivityManager
+            connectivityManager: ConnectivityManager,
+            resourcesMonitor: SystemResourcesMonitor
         ): EnvironmentCoordinator {
             return EnvironmentCoordinator(
                 networkStateProvider = networkStateProvider,
                 batteryManager = batteryManager,
                 bandwidthMeter = bandwidthMeter,
-                connectivityManager = connectivityManager
+                connectivityManager = connectivityManager,
+                resourcesMonitor = resourcesMonitor
             )
         }
     }

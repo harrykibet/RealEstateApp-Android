@@ -31,8 +31,17 @@ internal class PlayerEnvironmentManager @Inject constructor(
         environmentCoordinator.start(engineScope)
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
-                val newSize = sizingPolicy.calculateMaxPoolSize()
+                // 1. React to app backgrounding: aggressive release
+                if (!env.isAppVisible) {
+                    pool.releaseAll()
+                    return@collect
+                }
+
+                // 2. Dynamic pool sizing based on environment (memory, battery, etc.)
+                val newSize = sizingPolicy.calculateMaxPoolSize(env)
                 pool.updateMaxPoolSize(newSize, activeMediaId)
+                
+                // 3. Update bitrate for all active players
                 pool.forEachPlayer { player, mediaType ->
                     val bufferSeconds = (player.bufferedPosition - player.currentPosition) / 1000.0
                     dynamicBitrateController.apply(

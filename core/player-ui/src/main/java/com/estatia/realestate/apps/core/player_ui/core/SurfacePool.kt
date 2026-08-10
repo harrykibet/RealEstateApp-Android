@@ -3,6 +3,9 @@ package com.estatia.realestate.apps.core.player_ui.core
 import android.content.Context
 import android.view.SurfaceView
 import android.view.ViewGroup
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,9 +15,11 @@ import kotlin.collections.ArrayDeque
  * A thread-safe pool for reusing [SurfaceView] instances.
  * Dynamically adjusts its capacity based on [IPlayerPoolSizingPolicy].
  */
+@OptIn(UnstableApi::class)
 @Singleton
 class SurfacePool @Inject constructor(
-    private val sizingPolicy: IPlayerPoolSizingPolicy
+    private val sizingPolicy: IPlayerPoolSizingPolicy,
+    private val environmentCoordinator: EnvironmentCoordinator
 ) {
     private val pool = ArrayDeque<SurfaceView>()
 
@@ -29,7 +34,7 @@ class SurfacePool @Inject constructor(
             // Detach from previous parent if any
             (surfaceView.parent as? ViewGroup)?.removeView(surfaceView)
             
-            val maxPoolSize = sizingPolicy.calculateMaxPoolSize()
+            val maxPoolSize = sizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
             
             if (pool.size < maxPoolSize) {
                 pool.addLast(surfaceView)

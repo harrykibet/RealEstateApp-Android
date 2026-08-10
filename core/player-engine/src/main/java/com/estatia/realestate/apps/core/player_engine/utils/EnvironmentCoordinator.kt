@@ -7,6 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.system.BatteryState
+import com.estatia.realestate.apps.core.common.system.SystemResourcesMonitor
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import kotlinx.coroutines.CoroutineScope
@@ -23,14 +24,17 @@ class EnvironmentCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val batteryManager: IBatteryManager,
     private val bandwidthMeter: BandwidthMeter,
-    private val connectivityManager: ConnectivityManager
+    private val connectivityManager: ConnectivityManager,
+    private val resourcesMonitor: SystemResourcesMonitor
 ) {
 
     private val _environment = MutableStateFlow(
         EnvironmentState(
             isMetered = false,
             shouldThrottlePerformance = false,
-            estimatedThroughputBps = bandwidthMeter.bitrateEstimate
+            estimatedThroughputBps = bandwidthMeter.bitrateEstimate,
+            memoryTrimLevel = resourcesMonitor.memoryTrimLevel.value,
+            isAppVisible = resourcesMonitor.isAppVisible.value
         )
     )
 
@@ -46,8 +50,10 @@ class EnvironmentCoordinator @Inject constructor(
             combine(
                 observeNetworkThrottle(),
                 observeBatteryThrottle(),
-                observeBandwidth()
-            ) { networkThrottle, batteryThrottle, bandwidth ->
+                observeBandwidth(),
+                resourcesMonitor.memoryTrimLevel,
+                resourcesMonitor.isAppVisible
+            ) { networkThrottle, batteryThrottle, bandwidth, memoryTrim, isVisible ->
 
                 val isMetered = isNetworkMetered()
 
@@ -55,7 +61,9 @@ class EnvironmentCoordinator @Inject constructor(
                     isMetered = isMetered,
                     shouldThrottlePerformance = networkThrottle || batteryThrottle,
                     estimatedThroughputBps = bandwidth,
-                    recentStallCount = 0 // Initial implementation
+                    recentStallCount = 0,
+                    memoryTrimLevel = memoryTrim,
+                    isAppVisible = isVisible
                 )
             }
                 .distinctUntilChanged()

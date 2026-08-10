@@ -4,5 +4,7 @@ data class EnvironmentState(
     val isMetered: Boolean,
     val shouldThrottlePerformance: Boolean,
     val estimatedThroughputBps: Long,
-    val recentStallCount: Int = 0
+    val recentStallCount: Int = 0,
+    val memoryTrimLevel: Int = 0,
+    val isAppVisible: Boolean = true
 )

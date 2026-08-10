@@ -31,6 +31,8 @@ import java.util.concurrent.Executors
 class PlayerManagerTest {
 
     private lateinit var pool: PlayerPool
+    private lateinit var environmentManager: PlayerEnvironmentManager
+    private lateinit var audioFocusManager: AudioFocusManager
     private lateinit var environmentCoordinator: EnvironmentCoordinator
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private lateinit var dynamicBitrateController: DynamicBitrateController
@@ -51,11 +53,13 @@ class PlayerManagerTest {
         every { Uri.parse(any()) } returns mockk(relaxed = true)
         
         pool = mockk(relaxed = true)
+        environmentManager = mockk(relaxed = true)
+        audioFocusManager = mockk(relaxed = true)
         environmentCoordinator = mockk(relaxed = true) {
             every { environment } returns environmentFlow
         }
         sizingPolicy = mockk {
-            every { calculateMaxPoolSize() } returns 3
+            every { calculateMaxPoolSize(any()) } returns 3
         }
         dynamicBitrateController = mockk(relaxed = true)
         streamingPipeline = mockk(relaxed = true)
@@ -64,11 +68,11 @@ class PlayerManagerTest {
 
         playerManager = PlayerManager(
             pool,
-            environmentCoordinator,
-            sizingPolicy,
+            environmentManager,
+            audioFocusManager,
             dynamicBitrateController,
+            environmentCoordinator,
             streamingPipeline,
-            context,
             testScope,
             playerDispatcher
         )
@@ -86,7 +90,7 @@ class PlayerManagerTest {
         val uri = Uri.parse("https://example.com/video.mp4")
         val mediaType = MediaType.VOD
         val mockPlayer = mockk<ExoPlayer>(relaxed = true)
-        val mockManagedPlayer = PlayerPool.ManagedPlayer(
+        val mockManagedPlayer = ManagedPlayer(
             mediaId, mediaType, mockPlayer, mockk(relaxed = true), PlaybackStateReducer()
         )
         coEvery { pool.getOrCreate(mediaId, uri, mediaType) } returns mockManagedPlayer
@@ -96,18 +100,5 @@ class PlayerManagerTest {
 
         // Then
         verify { mockPlayer.play() }
-    }
-
-    @Test
-    fun `environment update triggers pool resize and bitrate adjustment`() = runTest {
-        // Given
-        every { sizingPolicy.calculateMaxPoolSize() } returns 5
-        
-        // When
-        environmentFlow.value = environmentFlow.value.copy(isMetered = true)
-
-        // Then (wait for collection)
-        // We use verify with timeout because PlayerManager uses a real background thread (playerDispatcher)
-        verify(timeout = 2000) { pool.updateMaxPoolSize(5, any()) }
     }
 }

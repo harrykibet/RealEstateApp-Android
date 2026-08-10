@@ -47,6 +47,9 @@ internal class AudioFocusManager @Inject constructor(
     }
 
     fun request(): Boolean {
+        // Idempotency check: don't churn requests if we already have an active one
+        if (activeFocusRequest != null) return true
+
         val audioManager = audioManager ?: return false
 
         val attributes = AudioAttributes.Builder()

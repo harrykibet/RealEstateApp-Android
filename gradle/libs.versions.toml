@@ -160,7 +160,8 @@ android = [
 lifecycle = [
     "lifecycle-runtime-ktx",
     "lifecycle-viewmodel-ktx",
-    "lifecycle-livedata-ktx"
+    "lifecycle-livedata-ktx",
+    "lifecycle-process"
 ]
 
 navigation = [
@@ -286,6 +287,7 @@ google-accompanist = { group = "com.google.accompanist", name = "accompanist-pag
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidx-lifecycle" }
 
 
 # Firebase

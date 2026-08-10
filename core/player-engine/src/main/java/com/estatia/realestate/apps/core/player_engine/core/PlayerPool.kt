@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,7 @@ internal class PlayerPool @Inject constructor(
     private val playerFactory: PlayerFactory,
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
+    private val environmentCoordinator: EnvironmentCoordinator,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
     private val confinementThread: Thread = Looper.getMainLooper().thread
@@ -39,7 +41,7 @@ internal class PlayerPool @Inject constructor(
     }
 
     private val poolUpdates = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize()
+    private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
     private val players = LinkedHashMap<String, ManagedPlayer>(16, 0.75f, true)
     private val idlePlayers = ArrayDeque<IdleManagedPlayer>()
     private val prewarmBudget: Int

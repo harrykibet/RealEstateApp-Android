@@ -6,7 +6,7 @@ package com.estatia.realestate.apps.core.player_engine.utils
  */
 interface IPlayerPoolSizingPolicy {
     /**
-     * Calculates the target maximum pool size.
+     * Calculates the target maximum pool size based on current environment state.
      */
-    fun calculateMaxPoolSize(): Int
+    fun calculateMaxPoolSize(environmentState: EnvironmentState): Int
 }
