@@ -90,6 +90,7 @@ abstract class BaseVideoPlaybackViewModel(
         return when (state) {
             PlaybackStateReducer.State.Idle -> PlayerUiState.Idle
             PlaybackStateReducer.State.Buffering -> PlayerUiState.Buffering
+            PlaybackStateReducer.State.Reconnecting -> PlayerUiState.Reconnecting
             PlaybackStateReducer.State.Ready -> PlayerUiState.Ready
             PlaybackStateReducer.State.Playing -> PlayerUiState.Playing
             PlaybackStateReducer.State.Paused -> PlayerUiState.Paused

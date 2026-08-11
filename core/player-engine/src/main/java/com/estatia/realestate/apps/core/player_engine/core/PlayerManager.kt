@@ -13,10 +13,13 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,6 +34,7 @@ internal class PlayerManager @Inject constructor(
     private val audioFocusManager: AudioFocusManager,
     private val dynamicBitrateController: DynamicBitrateController,
     private val environmentCoordinator: EnvironmentCoordinator,
+    private val networkStateProvider: INetworkStateProvider,
     private val streamingPipeline: IStreamingPipeline,
     @param:EngineScope private val engineScope: CoroutineScope,
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
@@ -58,6 +62,24 @@ internal class PlayerManager @Inject constructor(
                 }
             }
         )
+
+        // Robust Network Recovery: Auto-retry when connection returns
+        engineScope.launch(playerDispatcher) {
+            networkStateProvider.observe().collect { state ->
+                if (state is NetworkState.Connected) {
+                    pool.forEachPlayer { player, _ ->
+                        val mediaId = pool.getMediaId(player)
+                        if (mediaId != null) {
+                            val managed = pool.get(mediaId)
+                            if (managed?.reducer?.state?.value is PlaybackStateReducer.State.Reconnecting) {
+                                player.prepare()
+                                managed.reducer.dispatch(PlaybackStateReducer.Event.NetworkRestored)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType) =
@@ -135,6 +157,13 @@ internal class PlayerManager @Inject constructor(
         }
     }
 
+    private fun isNetworkError(error: PlaybackException): Boolean {
+        return error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED ||
+                error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT ||
+                error.errorCode == PlaybackException.ERROR_CODE_IO_CLEARTEXT_NOT_PERMITTED ||
+                error.errorCode == PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS
+    }
+
     private fun attachListenerIfNeeded(managed: ManagedPlayer) {
         if (!attachedPlayers.add(managed.player)) return
 
@@ -155,7 +184,16 @@ internal class PlayerManager @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
+                engineScope.launch {
+                    val isNetworkError = isNetworkError(error)
+                    val networkState = networkStateProvider.current()
+                    
+                    if (isNetworkError && networkState !is NetworkState.Connected) {
+                        managed.reducer.dispatch(PlaybackStateReducer.Event.NetworkLost)
+                    } else {
+                        managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
+                    }
+                }
             }
 
             override fun onRenderedFirstFrame() {

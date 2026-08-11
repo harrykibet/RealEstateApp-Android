@@ -20,6 +20,7 @@ class PlaybackStateReducer {
         data object Playing : State
         data object Paused : State
         data object Ended : State
+        data object Reconnecting : State
         data class Error(val error: PlaybackException) : State
     }
 
@@ -33,6 +34,8 @@ class PlaybackStateReducer {
         data object Play : Event
         data object Pause : Event
         data object PlaybackEnded : Event
+        data object NetworkLost : Event
+        data object NetworkRestored : Event
         data class PlaybackError(val error: PlaybackException) : Event
     }
 
@@ -51,6 +54,8 @@ class PlaybackStateReducer {
             Event.Play -> State.Playing
             Event.Pause -> State.Paused
             Event.PlaybackEnded -> State.Ended
+            Event.NetworkLost -> State.Reconnecting
+            Event.NetworkRestored -> State.Buffering
             is Event.PlaybackError -> State.Error(event.error)
         }
     }

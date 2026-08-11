@@ -108,6 +108,12 @@ fun EngineVideoFeed(
                         )
                     }
 
+                    PlayerUiState.Reconnecting -> {
+                        PlaybackReconnectingView(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+
                     is PlayerUiState.Error -> {
                         PlaybackErrorView(
                             errorState = state,

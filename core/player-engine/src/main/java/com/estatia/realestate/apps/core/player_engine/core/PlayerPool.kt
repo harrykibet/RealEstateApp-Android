@@ -160,6 +160,11 @@ internal class PlayerPool @Inject constructor(
         players.values.forEach { block(it.player, it.mediaType) }
     }
 
+    fun getMediaId(player: ExoPlayer): String? {
+        checkConfinement()
+        return players.entries.find { it.value.player === player }?.key
+    }
+
     fun markAccessed(mediaId: String) {
         checkConfinement()
         players[mediaId]
