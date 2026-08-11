@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.search.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -16,8 +17,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,
-    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase
+    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    companion object {
+        private const val KEY_SCROLL_PAGE = "search_scroll_page"
+    }
 
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
@@ -41,9 +47,11 @@ class SearchViewModel @Inject constructor(
             _uiState.value = SearchUiState.Loading
             when (val result = searchRepository.searchProperties(query, 20)) {
                 is AppResult.Success -> {
+                    val savedPage = savedStateHandle.get<Int>(KEY_SCROLL_PAGE) ?: 0
                     _uiState.value = SearchUiState.Success(
                         results = result.data,
                         query = query,
+                        initialPage = savedPage
                     )
                 }
                 is AppResult.Error -> {
@@ -76,6 +84,14 @@ class SearchViewModel @Inject constructor(
     fun toggleLike(propertyId: String, isCurrentlyLiked: Boolean) {
         viewModelScope.launch {
             togglePropertyLikeUseCase(propertyId, isCurrentlyLiked)
+        }
+    }
+
+    fun onPageChanged(page: Int) {
+        savedStateHandle[KEY_SCROLL_PAGE] = page
+        val current = _uiState.value
+        if (current is SearchUiState.Success) {
+            _uiState.value = current.copy(initialPage = page)
         }
     }
 }

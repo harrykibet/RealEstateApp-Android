@@ -5,5 +5,6 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 data class HomeUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val properties: List<PropertyDomainModel> = emptyList()
+    val properties: List<PropertyDomainModel> = emptyList(),
+    val initialPage: Int = 0
 )

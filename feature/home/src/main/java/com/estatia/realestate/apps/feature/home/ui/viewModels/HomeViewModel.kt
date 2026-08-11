@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.home.ui.viewModels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
@@ -18,10 +19,17 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,
-    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase
+    private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
+    companion object {
+        private const val KEY_SCROLL_PAGE = "home_scroll_page"
+    }
+
+    private val _uiState = MutableStateFlow(HomeUiState(
+        initialPage = savedStateHandle.get<Int>(KEY_SCROLL_PAGE) ?: 0
+    ))
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private var cursor: PropertyCursor? = null
@@ -72,5 +80,10 @@ class HomeViewModel @Inject constructor(
             togglePropertyLikeUseCase(propertyId, isCurrentlyLiked)
             // Ideally, we should update the UI state locally here or refresh the properties
         }
+    }
+
+    fun onPageChanged(page: Int) {
+        savedStateHandle[KEY_SCROLL_PAGE] = page
+        _uiState.update { it.copy(initialPage = page) }
     }
 }

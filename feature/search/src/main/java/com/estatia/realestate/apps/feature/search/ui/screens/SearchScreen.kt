@@ -79,6 +79,7 @@ fun SearchRoute(
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
         playbackViewModel = playbackViewModel,
+        onPageChanged = viewModel::onPageChanged,
         modifier = modifier
     )
 }
@@ -92,6 +93,7 @@ fun SearchScreen(
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackViewModel: SearchVideoPlaybackViewModel,
+    onPageChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -151,6 +153,8 @@ fun SearchScreen(
                     } else {
                         PropertyFeedScreen(
                             listings = listings,
+                            initialPage = uiState.initialPage,
+                            onPageChanged = onPageChanged,
                             playbackCoordinator = { pagerState, items ->
                                 RememberFeedPlaybackCoordinator(
                                     pagerState = pagerState,
@@ -306,7 +310,8 @@ fun SearchScreenHistoryPreview() {
                 onLikeClick = {},
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
-                playbackViewModel = hiltViewModel()
+                playbackViewModel = hiltViewModel(),
+                onPageChanged = {}
             )
         }
     }

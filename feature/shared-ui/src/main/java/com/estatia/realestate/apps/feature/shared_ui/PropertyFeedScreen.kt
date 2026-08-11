@@ -26,14 +26,20 @@ fun PropertyFeedScreen(
     playbackCoordinator: @Composable (PagerState, List<ListingUiModel>) -> Unit,
     itemContent: @Composable (ListingUiModel, Boolean, (String) -> Unit) -> Unit,
     commentsContent: @Composable (String) -> Unit,
+    initialPage: Int = 0,
+    onPageChanged: (Int) -> Unit = {},
     onNavigateToDetails: (String) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(
-        initialPage = 0,
+        initialPage = initialPage,
         pageCount = { listings.size }
     )
 
     var showCommentsForId by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(pagerState.currentPage) {
+        onPageChanged(pagerState.currentPage)
+    }
 
     playbackCoordinator(pagerState, listings)
 

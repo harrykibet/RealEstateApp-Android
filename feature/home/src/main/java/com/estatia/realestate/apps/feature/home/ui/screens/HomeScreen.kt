@@ -77,6 +77,7 @@ internal fun HomeRoute(
         onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
         onShareClick = { /* TODO */ },
         onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
+        onPageChanged = viewModel::onPageChanged,
     )
 }
 
@@ -94,6 +95,7 @@ internal fun HomeScreen(
     onLikeClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
+    onPageChanged: (Int) -> Unit,
 ) {
     val listings = remember(state.properties) {
         state.properties.map { it.toListingUiModel() }
@@ -103,6 +105,7 @@ internal fun HomeScreen(
         listings = listings,
         isLoading = state.isLoading,
         error = state.error,
+        initialPage = state.initialPage,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
         playbackUiState = playbackUiState,
@@ -114,6 +117,7 @@ internal fun HomeScreen(
         onLikeClick = onLikeClick,
         onShareClick = onShareClick,
         onRefresh = onRefresh,
+        onPageChanged = onPageChanged,
     )
 }
 
@@ -122,6 +126,7 @@ internal fun HomeFeedContent(
     listings: List<ListingUiModel>,
     isLoading: Boolean,
     error: String?,
+    initialPage: Int,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
@@ -133,6 +138,7 @@ internal fun HomeFeedContent(
     onLikeClick: (ListingUiModel) -> Unit,
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
+    onPageChanged: (Int) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLoading && listings.isEmpty()) {
@@ -151,6 +157,8 @@ internal fun HomeFeedContent(
         } else {
             PropertyFeedScreen(
                 listings = listings,
+                initialPage = initialPage,
+                onPageChanged = onPageChanged,
                 playbackCoordinator = { pagerState, items ->
                     RememberFeedPlaybackCoordinator(
                         pagerState = pagerState,
@@ -280,6 +288,7 @@ fun HomeLoadingPreview() {
                 listings = emptyList(),
                 isLoading = true,
                 error = null,
+                initialPage = 0,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
@@ -291,6 +300,7 @@ fun HomeLoadingPreview() {
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
+                onPageChanged = {},
             )
         }
     }
@@ -306,6 +316,7 @@ fun HomeEmptyPreview() {
                 listings = emptyList(),
                 isLoading = false,
                 error = null,
+                initialPage = 0,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
@@ -317,6 +328,7 @@ fun HomeEmptyPreview() {
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
+                onPageChanged = {},
             )
         }
     }
@@ -332,6 +344,7 @@ fun HomeErrorPreview() {
                 listings = emptyList(),
                 isLoading = false,
                 error = "Connection timeout. Please check your internet.",
+                initialPage = 0,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
@@ -343,6 +356,7 @@ fun HomeErrorPreview() {
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
+                onPageChanged = {},
             )
         }
     }
@@ -371,6 +385,7 @@ fun HomeContentPreview() {
                 ),
                 isLoading = false,
                 error = null,
+                initialPage = 0,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
@@ -382,6 +397,7 @@ fun HomeContentPreview() {
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
+                onPageChanged = {},
             )
         }
     }
@@ -409,6 +425,7 @@ fun HomeContentSwahiliPreview() {
                 ),
                 isLoading = false,
                 error = null,
+                initialPage = 0,
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
@@ -420,6 +437,7 @@ fun HomeContentSwahiliPreview() {
                 onLikeClick = {},
                 onShareClick = {},
                 onRefresh = {},
+                onPageChanged = {},
             )
         }
     }
