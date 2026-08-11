@@ -5,6 +5,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
@@ -15,6 +16,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CancellationException
@@ -24,12 +26,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.content.Context
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
 internal class PlayerManager @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val pool: PlayerPool,
     private val environmentManager: PlayerEnvironmentManager,
     private val audioFocusManager: AudioFocusManager,
@@ -45,6 +49,8 @@ internal class PlayerManager @Inject constructor(
     private val activeMediaIdFlow = MutableStateFlow<String?>(null)
     private val attachedPlayers = mutableSetOf<ExoPlayer>()
     private var wasPlayingBeforePause: Boolean = false
+    
+    private var mediaSession: MediaSession? = null
 
     init {
         audioFocusManager.setCallbacks(
@@ -83,9 +89,16 @@ internal class PlayerManager @Inject constructor(
         }
     }
 
-    override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean) =
+    override suspend fun play(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean,
+        title: String?,
+        artist: String?
+    ) =
         withContext(playerDispatcher) {
-            val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy)
+            val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy, title, artist)
             val environment = environmentCoordinator.environment.value
 
             if (activeMediaId != mediaId) {
@@ -95,6 +108,10 @@ internal class PlayerManager @Inject constructor(
             attachListenerIfNeeded(managed)
             managed.analyticsListener.markPlaybackStart()
             dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
+            
+            // 🎙️ System Media Session Update
+            updateMediaSession(managed.player)
+            
             managed.player.playWhenReady = true
             managed.player.prepare()
             managed.player.play()
@@ -109,10 +126,17 @@ internal class PlayerManager @Inject constructor(
         }
 
     @OptIn(UnstableApi::class)
-    override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean): ManagedPlayer? =
+    override suspend fun preload(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean,
+        title: String?,
+        artist: String?
+    ): ManagedPlayer? =
         withContext(playerDispatcher) {
             try {
-                val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy)
+                val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy, false, title, artist)
                 val environment = environmentCoordinator.environment.value
                 dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
                 attachListenerIfNeeded(managed)
@@ -140,6 +164,8 @@ internal class PlayerManager @Inject constructor(
         engineScope.launch(playerDispatcher) {
             pauseCurrentPlayer()
             audioFocusManager.abandon()
+            mediaSession?.release()
+            mediaSession = null
             pool.releaseAll()
             environmentManager.stop()
         }
@@ -147,6 +173,14 @@ internal class PlayerManager @Inject constructor(
 
     override fun isPlaying(): Boolean {
         return isCurrentlyPlaying()
+    }
+
+    private fun updateMediaSession(player: ExoPlayer) {
+        if (mediaSession == null) {
+            mediaSession = MediaSession.Builder(context, player).build()
+        } else {
+            mediaSession?.player = player
+        }
     }
 
     private fun pauseCurrentPlayer() {

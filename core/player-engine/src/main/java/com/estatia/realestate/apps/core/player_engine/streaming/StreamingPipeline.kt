@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -26,14 +27,22 @@ internal class StreamingPipeline @Inject constructor(
     override fun createMediaItem(
         mediaId: String,
         uri: Uri,
-        mediaType: MediaType
+        mediaType: MediaType,
+        title: String?,
+        artist: String?
     ): MediaItem {
         val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+
+        val metadata = MediaMetadata.Builder()
+            .setTitle(title)
+            .setArtist(artist)
+            .build()
 
         return MediaItem.Builder()
             .setUri(uri)
             .setMediaId(stableKey)
             .setCustomCacheKey(stableKey) // Stable key for caching unified with offline
+            .setMediaMetadata(metadata)
             .apply {
                 if (mediaType == MediaType.LIVE) {
                     setLiveConfiguration(

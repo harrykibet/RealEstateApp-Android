@@ -22,8 +22,17 @@ interface IPlayerManager {
      * @param uri The source URI for the media.
      * @param mediaType The type of media (e.g., LIVE or VOD).
      * @param forceLegacy Use a baseline legacy codec (e.g. H.264) regardless of device capability.
+     * @param title Optional title for media session metadata.
+     * @param artist Optional artist name for media session metadata.
      */
-    suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean = false)
+    suspend fun play(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean = false,
+        title: String? = null,
+        artist: String? = null
+    )
 
     /**
      * Pauses the currently active player.
@@ -48,10 +57,19 @@ interface IPlayerManager {
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
      * @param forceLegacy Use a baseline legacy codec override.
+     * @param title Optional title for media session metadata.
+     * @param artist Optional artist name for media session metadata.
      * @return A [ManagedPlayer] container holding the pre-prepared player.
      */
     @OptIn(UnstableApi::class)
-    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean = false): ManagedPlayer?
+    suspend fun preload(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean = false,
+        title: String? = null,
+        artist: String? = null
+    ): ManagedPlayer?
 
     /**
      * Returns a [Flow] observing the playback state for a specific media item.

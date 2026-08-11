@@ -47,7 +47,9 @@ class VideoPlaybackCoordinator @Inject constructor(
         uri: Uri,
         previous: List<FeedNeighborInfo>,
         next: List<FeedNeighborInfo>,
-        forceLegacy: Boolean = false
+        forceLegacy: Boolean = false,
+        title: String? = null,
+        artist: String? = null
     ) {
         if (currentMediaId == mediaId) return
         currentMediaId = mediaId
@@ -70,7 +72,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         playJob = scope.launch {
             delay(debounceTime.milliseconds)
             warmVisible(mediaId, uri)
-            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy)
+            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy, title, artist)
         }
 
         // Only prewarm neighbors if not flinging to reduce list virtualization pressure
@@ -80,13 +82,13 @@ class VideoPlaybackCoordinator @Inject constructor(
 
                 // 1. Symmetric Warming: Warm previous neighbor (N=1)
                 previous.firstOrNull()?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy, it.title, it.artist)
                     warmPrevious(it.mediaId, it.uri)
                 }
 
                 // 2. Deep Warming: Warm next neighbors (N=2)
                 next.getOrNull(0)?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy, it.title, it.artist)
                     warmNext(it.mediaId, it.uri)
                 }
 
@@ -160,5 +162,7 @@ class VideoPlaybackCoordinator @Inject constructor(
 
 data class FeedNeighborInfo(
     val mediaId: String,
-    val uri: Uri
+    val uri: Uri,
+    val title: String? = null,
+    val artist: String? = null
 )

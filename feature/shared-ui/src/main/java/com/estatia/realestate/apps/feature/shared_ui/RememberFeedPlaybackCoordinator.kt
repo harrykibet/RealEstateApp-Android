@@ -25,7 +25,12 @@ fun RememberFeedPlaybackCoordinator(
         val previous = mutableListOf<FeedNeighbor>()
         items.getOrNull(page - 1)?.let {
             it.videoUrl?.let { url ->
-                previous.add(FeedNeighbor(it.id, url.toUri()))
+                previous.add(FeedNeighbor(
+                    mediaId = it.id,
+                    uri = url.toUri(),
+                    title = it.title,
+                    artist = it.ownerName
+                ))
             }
         }
 
@@ -34,7 +39,12 @@ fun RememberFeedPlaybackCoordinator(
         for (i in 1..2) {
             items.getOrNull(page + i)?.let {
                 it.videoUrl?.let { url ->
-                    next.add(FeedNeighbor(it.id, url.toUri()))
+                    next.add(FeedNeighbor(
+                        mediaId = it.id,
+                        uri = url.toUri(),
+                        title = it.title,
+                        artist = it.ownerName
+                    ))
                 }
             }
         }
@@ -43,6 +53,8 @@ fun RememberFeedPlaybackCoordinator(
             FeedMediaContext(
                 mediaId = current.id,
                 uri = currentVideoUrl.toUri(),
+                title = current.title,
+                artist = current.ownerName,
                 previous = previous,
                 next = next
             )

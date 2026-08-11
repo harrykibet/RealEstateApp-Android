@@ -25,7 +25,9 @@ class PlayerConfigurationFactory @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacyCodec: Boolean
+        forceLegacyCodec: Boolean,
+        title: String?,
+        artist: String?
     ): PlayerConfiguration {
         // ⏱️ Optimization: Only wait for config if we actually need it for CDN resolution.
         // Idle players use Uri.EMPTY and shouldn't be blocked.
@@ -40,7 +42,7 @@ class PlayerConfigurationFactory @Inject constructor(
             uri
         }
 
-        val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType)
+        val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType, title, artist)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
         val loadControl = playbackConfigurationProvider.createLoadControl(mediaType)
         val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType)

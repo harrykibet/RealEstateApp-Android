@@ -65,7 +65,9 @@ fun EngineVideoFeed(
                 val previous = videos.getOrNull(page - 1)?.let {
                     listOf(FeedNeighbor(
                         mediaId = it.mediaId,
-                        uri = it.videoUrl.toUri()
+                        uri = it.videoUrl.toUri(),
+                        title = it.title,
+                        artist = it.description
                     ))
                 } ?: emptyList()
                 
@@ -74,7 +76,9 @@ fun EngineVideoFeed(
                     videos.getOrNull(page + i)?.let {
                         next.add(FeedNeighbor(
                             mediaId = it.mediaId,
-                            uri = it.videoUrl.toUri()
+                            uri = it.videoUrl.toUri(),
+                            title = it.title,
+                            artist = it.description
                         ))
                     }
                 }
@@ -83,6 +87,8 @@ fun EngineVideoFeed(
                     FeedMediaContext(
                         mediaId = video.mediaId,
                         uri = video.videoUrl.toUri(),
+                        title = video.title,
+                        artist = video.description,
                         previous = previous,
                         next = next
                     )

@@ -33,8 +33,16 @@ interface IStreamingPipeline {
      * @param mediaId Stable ID used as custom cache key to unify playback and offline caches.
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
+     * @param title Optional title for media session metadata.
+     * @param artist Optional artist name for media session metadata.
      */
-    fun createMediaItem(mediaId: String, uri: Uri, mediaType: MediaType): MediaItem
+    fun createMediaItem(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        title: String? = null,
+        artist: String? = null
+    ): MediaItem
 
     /**
      * Asynchronous prefetch entry point.

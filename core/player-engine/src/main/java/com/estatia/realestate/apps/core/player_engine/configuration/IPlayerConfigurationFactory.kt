@@ -22,6 +22,8 @@ interface IPlayerConfigurationFactory {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacyCodec: Boolean = false
+        forceLegacyCodec: Boolean = false,
+        title: String? = null,
+        artist: String? = null
     ): PlayerConfiguration
 }

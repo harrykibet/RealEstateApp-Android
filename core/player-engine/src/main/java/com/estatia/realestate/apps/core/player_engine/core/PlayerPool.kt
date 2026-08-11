@@ -75,14 +75,16 @@ internal class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean = false
+        forceLegacy: Boolean = false,
+        title: String? = null,
+        artist: String? = null
     ): ManagedPlayer {
         checkConfinement()
         // If forcing legacy, we should probably re-prepare even if it's in the pool
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
         }
-        return prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true)
+        return prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)
     }
 
     suspend fun prewarm(
@@ -90,7 +92,9 @@ internal class PlayerPool @Inject constructor(
         uri: Uri,
         mediaType: MediaType,
         forceLegacy: Boolean = false,
-        urgent: Boolean = false
+        urgent: Boolean = false,
+        title: String? = null,
+        artist: String? = null
     ): ManagedPlayer {
         checkConfinement()
         
@@ -111,8 +115,8 @@ internal class PlayerPool @Inject constructor(
             ensureIdlePlayers()
 
             val managed = idlePlayers.removeFirstOrNull()?.let { idle ->
-                bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy)
-            } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy)
+                bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy, title, artist)
+            } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy, title, artist)
 
             // 🏎️ Late-bound Capacity Check:
             // If the pool shrunk while we were building this player, and we're at or over capacity,
@@ -145,10 +149,12 @@ internal class PlayerPool @Inject constructor(
     private suspend fun ensureIdlePlayers() {
         while (idlePlayers.size < prewarmBudget) {
             val config = configurationFactory.create(
-                "idle_${System.currentTimeMillis()}",
-                Uri.EMPTY,
-                MediaType.VOD,
-                false
+                mediaId = "idle_${System.currentTimeMillis()}",
+                uri = Uri.EMPTY,
+                mediaType = MediaType.VOD,
+                forceLegacyCodec = false,
+                title = null,
+                artist = null
             )
             val created = playerFactory.create(config)
             
@@ -173,9 +179,11 @@ internal class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean
+        forceLegacy: Boolean,
+        title: String?,
+        artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy)
+        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy, title, artist)
         val listener = analyticsListenerProvider.get()
         
         idle.player.addAnalyticsListener(listener)
@@ -197,9 +205,11 @@ internal class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean
+        forceLegacy: Boolean,
+        title: String?,
+        artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy)
+        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy, title, artist)
         val created = playerFactory.create(config)
 
         val managed = ManagedPlayer(
