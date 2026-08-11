@@ -1,6 +1,8 @@
 package com.estatia.realestate.apps
 
 import android.os.Bundle
+import android.app.PictureInPictureParams
+import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -24,6 +26,7 @@ import com.estatia.realestate.apps.core.localization.api.*
 import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
@@ -58,6 +61,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authRepository: IAuthRepository
+
+    @Inject
+    lateinit var playerManager: IPlayerManager
 
     @Inject
     lateinit var surfacePool: SurfacePool
@@ -108,6 +114,7 @@ class MainActivity : ComponentActivity() {
 
             val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
             val isSystemDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
+            val isInPiPMode by viewModel.isInPiPMode.collectAsStateWithLifecycle()
 
             CompositionLocalProvider(
                 LocalAnalyticsHelper provides analyticsHelper,
@@ -118,10 +125,28 @@ class MainActivity : ComponentActivity() {
                 LocalSurfacePool provides surfacePool,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
-                    EstatiaApp(appState)
+                    EstatiaApp(
+                        appState = appState,
+                        isInPiPMode = isInPiPMode
+                    )
                 }
             }
         }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (playerManager.isPlaying()) {
+            enterPictureInPictureMode(PictureInPictureParams.Builder().build())
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration
+    ) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        viewModel.updatePiPMode(isInPictureInPictureMode)
     }
 
     override fun onResume() {

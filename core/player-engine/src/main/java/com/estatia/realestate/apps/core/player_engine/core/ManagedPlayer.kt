@@ -15,5 +15,5 @@ data class ManagedPlayer(
     val mediaType: MediaType,
     val player: ExoPlayer,
     var analyticsListener: PlaybackAnalyticsListener,
-    val reducer: PlaybackStateReducer = PlaybackStateReducer()
+    val reducer: PlaybackStateReducer
 )

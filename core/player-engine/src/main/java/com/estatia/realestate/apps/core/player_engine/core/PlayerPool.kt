@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfi
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -31,6 +33,7 @@ internal class PlayerPool @Inject constructor(
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
     private val environmentCoordinator: EnvironmentCoordinator,
+    @param:EngineScope private val scope: CoroutineScope,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
     private val confinementThread: Thread = Looper.getMainLooper().thread
@@ -159,7 +162,7 @@ internal class PlayerPool @Inject constructor(
             idlePlayers.addLast(
                 IdleManagedPlayer(
                     player = created.player,
-                    reducer = PlaybackStateReducer()
+                    reducer = PlaybackStateReducer(scope)
                 )
             )
         }
@@ -203,7 +206,8 @@ internal class PlayerPool @Inject constructor(
             mediaId = mediaId,
             mediaType = mediaType,
             player = created.player,
-            analyticsListener = created.analyticsListener
+            analyticsListener = created.analyticsListener,
+            reducer = PlaybackStateReducer(scope)
         )
 
         managed.player.playWhenReady = false

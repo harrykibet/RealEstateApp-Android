@@ -4,7 +4,6 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +17,6 @@ import kotlin.random.Random
 class CdnPolicyTest {
 
     private lateinit var environmentCoordinator: EnvironmentCoordinator
-    private lateinit var healthMonitor: CdnHealthMonitor
     private lateinit var random: Random
     private lateinit var policy: CdnPolicy
 
@@ -36,7 +34,6 @@ class CdnPolicyTest {
         environmentCoordinator = mockk {
             every { environment } returns environmentFlow
         }
-        healthMonitor = mockk()
         random = mockk {
             every { nextInt(any()) } returns 0
         }
@@ -46,11 +43,13 @@ class CdnPolicyTest {
     @Test
     fun `select stable network choose best latency`() = runTest {
         // Given
-        coEvery { healthMonitor.getHealth(endpoints[0]) } returns CdnHealth(latencyMs = 100, 0, 0, null)
-        coEvery { healthMonitor.getHealth(endpoints[1]) } returns CdnHealth(latencyMs = 50, 0, 0, null)
+        val snapshot = mapOf(
+            endpoints[0].baseUrl to CdnHealth(latencyMs = 100, 0, 0, null),
+            endpoints[1].baseUrl to CdnHealth(latencyMs = 50, 0, 0, null)
+        )
 
         // When
-        val selected = policy.select(endpoints, healthMonitor)
+        val selected = policy.select(endpoints, snapshot)
 
         // Then
         assertEquals(endpoints[1], selected)
@@ -62,7 +61,7 @@ class CdnPolicyTest {
         environmentFlow.value = environmentFlow.value.copy(isMetered = true)
 
         // When
-        val selected = policy.select(endpoints, healthMonitor)
+        val selected = policy.select(endpoints, emptyMap())
 
         // Then
         assertEquals(endpoints[0], selected) // random index 0 mocked
@@ -71,11 +70,13 @@ class CdnPolicyTest {
     @Test
     fun `select with open circuit skips that endpoint`() = runTest {
         // Given
-        coEvery { healthMonitor.getHealth(endpoints[0]) } returns CdnHealth(latencyMs = 10, 0, 0, System.currentTimeMillis() + 10000)
-        coEvery { healthMonitor.getHealth(endpoints[1]) } returns CdnHealth(latencyMs = 50, 0, 0, null)
+        val snapshot = mapOf(
+            endpoints[0].baseUrl to CdnHealth(latencyMs = 10, 0, 0, System.currentTimeMillis() + 10000),
+            endpoints[1].baseUrl to CdnHealth(latencyMs = 50, 0, 0, null)
+        )
 
         // When
-        val selected = policy.select(endpoints, healthMonitor)
+        val selected = policy.select(endpoints, snapshot)
 
         // Then
         assertEquals(endpoints[1], selected)

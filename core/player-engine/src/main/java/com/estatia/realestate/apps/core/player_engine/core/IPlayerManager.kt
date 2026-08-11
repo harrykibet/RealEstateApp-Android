@@ -65,4 +65,9 @@ interface IPlayerManager {
      * Releases all managed players and stops background orchestration services.
      */
     fun shutdown()
+
+    /**
+     * Returns true if a video is currently playing in the active player.
+     */
+    fun isPlaying(): Boolean
 }

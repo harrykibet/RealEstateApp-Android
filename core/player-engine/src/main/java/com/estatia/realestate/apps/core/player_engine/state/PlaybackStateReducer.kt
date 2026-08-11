@@ -1,14 +1,25 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.util.UnstableApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Reducer responsible for managing the logical playback state of a single player.
  * Maps low-level ExoPlayer events to consistent UI-ready states.
+ *
+ * Includes a watchdog mechanism to prevent hanging in the "Buffering" state
+ * when encountering corrupt or zero-duration media.
  */
-class PlaybackStateReducer {
+class PlaybackStateReducer(
+    private val scope: CoroutineScope
+) {
 
     /**
      * Represent the possible UI-visible states of a video player.
@@ -42,8 +53,15 @@ class PlaybackStateReducer {
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> = _state
 
+    private var watchdogJob: Job? = null
+
+    companion object {
+        private const val WATCHDOG_TIMEOUT_MS = 15_000L
+    }
+
     fun dispatch(event: Event) {
         _state.value = reduce(event)
+        handleWatchdog(event)
     }
 
     private fun reduce(event: Event): State {
@@ -58,5 +76,41 @@ class PlaybackStateReducer {
             Event.NetworkRestored -> State.Buffering
             is Event.PlaybackError -> State.Error(event.error)
         }
+    }
+
+    private fun handleWatchdog(event: Event) {
+        when (event) {
+            Event.BufferingStarted, Event.NetworkRestored -> {
+                startWatchdog()
+            }
+            Event.BufferingCompleted, is Event.PlaybackError, Event.Reset, Event.PlaybackEnded -> {
+                stopWatchdog()
+            }
+            else -> Unit
+        }
+    }
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    private fun startWatchdog() {
+        stopWatchdog()
+        watchdogJob = scope.launch {
+            delay(WATCHDOG_TIMEOUT_MS.milliseconds)
+            // If we reached here, it means we've been buffering for too long.
+            // Dispatch a synthetic error to unblock the UI.
+            dispatch(
+                Event.PlaybackError(
+                    PlaybackException(
+                        "Playback attempt timed out (Watchdog)",
+                        null,
+                        PlaybackException.ERROR_CODE_UNSPECIFIED
+                    )
+                )
+            )
+        }
+    }
+
+    private fun stopWatchdog() {
+        watchdogJob?.cancel()
+        watchdogJob = null
     }
 }

@@ -145,6 +145,10 @@ internal class PlayerManager @Inject constructor(
         }
     }
 
+    override fun isPlaying(): Boolean {
+        return isCurrentlyPlaying()
+    }
+
     private fun pauseCurrentPlayer() {
         activeMediaId?.let { pool.get(it)?.player?.pause() }
     }

@@ -5,6 +5,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -15,6 +17,7 @@ import org.junit.Test
 class CdnHealthMonitorTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var measurer: ILatencyMeasurer
     private lateinit var monitor: CdnHealthMonitor
     private val endpoint = CdnEndpoint("Test", "127.0.0.1")
@@ -22,37 +25,35 @@ class CdnHealthMonitorTest {
     @Before
     fun setup() {
         measurer = mockk()
-        monitor = CdnHealthMonitor(measurer, testDispatcher)
+        monitor = CdnHealthMonitor(measurer, testScope, testDispatcher)
     }
 
     @Test
-    fun `getHealth performs measurement on first call`() = runTest(testDispatcher) {
+    fun `refreshIfStale performs measurement in background`() = runTest(testDispatcher) {
         coEvery { measurer.measure(any(), any()) } returns 50L
 
-        val health = monitor.getHealth(endpoint)
+        monitor.refreshIfStale(listOf(endpoint))
+        testScope.advanceUntilIdle()
+
+        val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
         
         assertNotNull(health)
-        assertEquals(50L, health.latencyMs)
-        assertEquals(0, health.failureCount)
+        assertEquals(50L, health?.latencyMs)
+        assertEquals(0, health?.failureCount)
     }
 
     @Test
-    fun `getHealth returns cached value within TTL`() = runTest(testDispatcher) {
-        coEvery { measurer.measure(any(), any()) } returns 50L
+    fun `reportExternalFailure increments failure count and trips circuit breaker`() = runTest(testDispatcher) {
+        val baseUrl = endpoint.baseUrl
+        
+        // Report 3 failures (default threshold)
+        repeat(3) {
+            monitor.reportExternalFailure(baseUrl)
+        }
 
-        val health1 = monitor.getHealth(endpoint)
-        val health2 = monitor.getHealth(endpoint)
-
-        assertEquals(health1.lastCheckedAt, health2.lastCheckedAt)
-    }
-
-    @Test
-    fun `getHealth records failure when measurement throws`() = runTest(testDispatcher) {
-        coEvery { measurer.measure(any(), any()) } throws RuntimeException("Network Error")
-
-        val health = monitor.getHealth(endpoint)
-
-        assertEquals(null, health.latencyMs)
-        assertEquals(1, health.failureCount)
+        val health = monitor.getHealthSnapshot()[baseUrl]
+        assertNotNull(health)
+        assertEquals(3, health?.failureCount)
+        assertEquals(true, health?.isCircuitOpen)
     }
 }

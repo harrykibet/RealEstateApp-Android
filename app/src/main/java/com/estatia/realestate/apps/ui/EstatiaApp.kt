@@ -58,6 +58,7 @@ import com.estatia.realestate.apps.R
 @Composable
 fun EstatiaApp(
     appState: EstatiaAppState,
+    isInPiPMode: Boolean,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -76,6 +77,7 @@ fun EstatiaApp(
         windowAdaptiveInfo = windowAdaptiveInfo,
         onNavigateToTopLevelDestination = appState::navigateToTopLevelDestination,
         onNavigateToSearch = appState::navigateToSearch,
+        isInPiPMode = isInPiPMode,
         modifier = modifier,
     ) {
         EstatiaNavHost(
@@ -99,6 +101,7 @@ internal fun EstatiaAppContent(
     windowAdaptiveInfo: WindowAdaptiveInfo,
     onNavigateToTopLevelDestination: (TopLevelDestination) -> Unit,
     onNavigateToSearch: () -> Unit,
+    isInPiPMode: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -133,7 +136,7 @@ internal fun EstatiaAppContent(
 
             EstatiaNavigationSuiteScaffold(
                 navigationSuiteItems = {
-                    if (isUserAuthenticated) {
+                    if (isUserAuthenticated && !isInPiPMode) {
                         TopLevelDestination.entries.forEach { destination ->
                             val hasUnread = unreadDestinations.contains(destination)
                             val selected = currentDestination
@@ -159,7 +162,7 @@ internal fun EstatiaAppContent(
                     }
                 },
                 windowAdaptiveInfo = windowAdaptiveInfo,
-                layoutType = if (isUserAuthenticated) {
+                layoutType = if (isUserAuthenticated && !isInPiPMode) {
                     NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
                 } else {
                     NavigationSuiteType.None
@@ -173,21 +176,23 @@ internal fun EstatiaAppContent(
                     contentColor = MaterialTheme.colorScheme.onBackground,
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     snackbarHost = {
-                        SnackbarHost(
-                            snackbarHostState,
-                            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
-                        )
+                        if (!isInPiPMode) {
+                            SnackbarHost(
+                                snackbarHostState,
+                                modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+                            )
+                        }
                     },
                 ) { padding ->
                     Box(
                         Modifier
                             .fillMaxSize()
-                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                            .windowInsetsPadding(if (isInPiPMode) WindowInsets(0,0,0,0) else WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
                             .consumeWindowInsets(padding),
                     ) {
                         content()
 
-                        if (currentTopLevelDestination != null && currentTopLevelDestination.showSearch) {
+                        if (!isInPiPMode && currentTopLevelDestination != null && currentTopLevelDestination.showSearch) {
                             EstatiaTopAppBar(
                                 navigationIcon = EstatiaIcons.Search,
                                 navigationIconContentDescription = stringResource(
@@ -240,6 +245,7 @@ fun EstatiaAppPreviewAuthenticated() {
             windowAdaptiveInfo = currentWindowAdaptiveInfo(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
+            isInPiPMode = false,
         ) {
             Box(
                 modifier = Modifier
@@ -265,6 +271,7 @@ fun EstatiaAppPreviewUnauthenticated() {
             windowAdaptiveInfo = currentWindowAdaptiveInfo(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
+            isInPiPMode = false,
         ) {
             Box(
                 modifier = Modifier
@@ -290,6 +297,7 @@ fun EstatiaAppPreviewOffline() {
             windowAdaptiveInfo = currentWindowAdaptiveInfo(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
+            isInPiPMode = false,
         ) {
             Box(
                 modifier = Modifier

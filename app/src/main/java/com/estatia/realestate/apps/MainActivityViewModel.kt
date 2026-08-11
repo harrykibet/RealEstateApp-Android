@@ -7,10 +7,13 @@ import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +22,9 @@ class MainActivityViewModel @Inject constructor(
     authRepository: IAuthRepository,
     config: IConfigProvider
 ) : ViewModel() {
+    private val _isInPiPMode = MutableStateFlow(false)
+    val isInPiPMode = _isInPiPMode.asStateFlow()
+
     val uiState: StateFlow<MainActivityUiState> = combine(
         userDataRepository.userData,
         authRepository.isUserAuthenticated(),
@@ -47,5 +53,9 @@ class MainActivityViewModel @Inject constructor(
          * Returns `true` if the state wasn't loaded yet and it should keep showing the splash screen.
          */
         fun shouldKeepSplashScreen() = this is Loading
+    }
+
+    fun updatePiPMode(inPiP: Boolean) {
+        _isInPiPMode.value = inPiP
     }
 }

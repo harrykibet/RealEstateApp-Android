@@ -30,8 +30,9 @@
             tools:targetApi="29" />
         <activity
             android:name="com.estatia.realestate.apps.MainActivity"
-            android:configChanges="uiMode"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode"
             android:resizeableActivity="false"
+            android:supportsPictureInPicture="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

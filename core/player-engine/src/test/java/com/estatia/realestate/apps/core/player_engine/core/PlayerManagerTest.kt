@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeli
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -34,8 +35,7 @@ class PlayerManagerTest {
     private lateinit var environmentManager: PlayerEnvironmentManager
     private lateinit var audioFocusManager: AudioFocusManager
     private lateinit var environmentCoordinator: EnvironmentCoordinator
-    private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
-    private lateinit var dynamicBitrateController: DynamicBitrateController
+    private lateinit var networkStateProvider: INetworkStateProvider
     private lateinit var streamingPipeline: IStreamingPipeline
     private lateinit var context: Context
     private lateinit var playerManager: PlayerManager
@@ -58,10 +58,7 @@ class PlayerManagerTest {
         environmentCoordinator = mockk(relaxed = true) {
             every { environment } returns environmentFlow
         }
-        sizingPolicy = mockk {
-            every { calculateMaxPoolSize(any()) } returns 3
-        }
-        dynamicBitrateController = mockk(relaxed = true)
+        networkStateProvider = mockk(relaxed = true)
         streamingPipeline = mockk(relaxed = true)
         context = mockk(relaxed = true)
         every { context.getSystemService(any()) } returns null
@@ -70,8 +67,9 @@ class PlayerManagerTest {
             pool,
             environmentManager,
             audioFocusManager,
-            dynamicBitrateController,
+            mockk(relaxed = true), // dynamicBitrateController
             environmentCoordinator,
+            networkStateProvider,
             streamingPipeline,
             testScope,
             playerDispatcher
@@ -91,9 +89,9 @@ class PlayerManagerTest {
         val mediaType = MediaType.VOD
         val mockPlayer = mockk<ExoPlayer>(relaxed = true)
         val mockManagedPlayer = ManagedPlayer(
-            mediaId, mediaType, mockPlayer, mockk(relaxed = true), PlaybackStateReducer()
+            mediaId, mediaType, mockPlayer, mockk(relaxed = true), PlaybackStateReducer(testScope)
         )
-        coEvery { pool.getOrCreate(mediaId, uri, mediaType) } returns mockManagedPlayer
+        coEvery { pool.getOrCreate(mediaId, uri, mediaType, any()) } returns mockManagedPlayer
 
         // When
         playerManager.play(mediaId, uri, mediaType)
