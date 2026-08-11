@@ -49,14 +49,9 @@ class PlayerPool @Inject constructor(
     private val poolUpdates = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
     private val players = LinkedHashMap<String, ManagedPlayer>(16, 0.75f, true)
-    private val idlePlayers = ArrayDeque<IdleManagedPlayer>()
+    private val idlePlayers = ArrayDeque<ExoPlayer>()
     private val prewarmBudget: Int
-        get() = maxOf(1, minOf(2, maxPoolSize / 2))
-
-    private data class IdleManagedPlayer(
-        val player: ExoPlayer,
-        val reducer: PlaybackStateReducer
-    )
+        get() = if (maxPoolSize <= 1) 0 else maxOf(1, minOf(2, maxPoolSize / 2))
 
     fun get(mediaId: String): ManagedPlayer? {
         checkConfinement()
@@ -114,8 +109,8 @@ class PlayerPool @Inject constructor(
         return try {
             ensureIdlePlayers()
 
-            val managed = idlePlayers.removeFirstOrNull()?.let { idle ->
-                bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy, title, artist)
+            val managed = idlePlayers.removeFirstOrNull()?.let { player ->
+                bindIdlePlayer(player, mediaId, uri, mediaType, forceLegacy, title, artist)
             } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy, title, artist)
 
             // 🏎️ Late-bound Capacity Check:
@@ -148,34 +143,19 @@ class PlayerPool @Inject constructor(
 
     private suspend fun ensureIdlePlayers() {
         while (idlePlayers.size < prewarmBudget) {
-            val config = configurationFactory.create(
-                mediaId = "idle_${System.currentTimeMillis()}",
-                uri = Uri.EMPTY,
-                mediaType = MediaType.VOD,
-                forceLegacyCodec = false,
-                title = null,
-                artist = null
-            )
-            val created = playerFactory.create(config)
+            val created = playerFactory.createIdle()
             
             // Immediately detach listener for pooling
             created.player.removeAnalyticsListener(created.analyticsListener)
             created.analyticsListener.release()
             
-            created.player.clearMediaItems()
-            created.player.playWhenReady = false
             created.player.stop()
-            idlePlayers.addLast(
-                IdleManagedPlayer(
-                    player = created.player,
-                    reducer = PlaybackStateReducer(scope)
-                )
-            )
+            idlePlayers.addLast(created.player)
         }
     }
 
     private suspend fun bindIdlePlayer(
-        idle: IdleManagedPlayer,
+        player: ExoPlayer,
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
@@ -186,18 +166,18 @@ class PlayerPool @Inject constructor(
         val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy, title, artist)
         val listener = analyticsListenerProvider.get()
         
-        idle.player.addAnalyticsListener(listener)
-        idle.player.clearMediaItems()
-        idle.player.setMediaItem(config.mediaItem)
-        idle.player.playWhenReady = false
-        idle.player.prepare()
+        player.addAnalyticsListener(listener)
+        player.clearMediaItems()
+        player.setMediaItem(config.mediaItem)
+        player.playWhenReady = false
+        player.prepare()
         
         return ManagedPlayer(
             mediaId = mediaId,
             mediaType = mediaType,
-            player = idle.player,
+            player = player,
             analyticsListener = listener,
-            reducer = idle.reducer
+            reducer = PlaybackStateReducer(scope)
         )
     }
 
@@ -232,12 +212,12 @@ class PlayerPool @Inject constructor(
 
     fun getMediaId(player: ExoPlayer): String? {
         checkConfinement()
-        return players.entries.find { it.value.player === player }?.key
+        return players.entries.find { it.value.player == player }?.key
     }
 
     fun markAccessed(mediaId: String) {
         checkConfinement()
-        players[mediaId]
+        players.get(mediaId)
     }
 
     fun release(mediaId: String) {
@@ -251,12 +231,7 @@ class PlayerPool @Inject constructor(
             managed.player.stop()
             
             if (idlePlayers.size < prewarmBudget) {
-                idlePlayers.addLast(
-                    IdleManagedPlayer(
-                        player = managed.player,
-                        reducer = managed.reducer
-                    )
-                )
+                idlePlayers.addLast(managed.player)
             } else {
                 managed.player.release()
             }
@@ -274,9 +249,9 @@ class PlayerPool @Inject constructor(
         }
         players.clear()
 
-        idlePlayers.forEach { idle ->
-            idle.player.clearMediaItems()
-            idle.player.release()
+        idlePlayers.forEach { player ->
+            player.clearMediaItems()
+            player.release()
         }
         idlePlayers.clear()
         poolUpdates.tryEmit(Unit)

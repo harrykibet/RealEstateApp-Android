@@ -36,6 +36,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Set Executable Permission for Gradlew
+        run: chmod +x ./gradlew
+
       - name: Run All Unit Tests
         run: ./gradlew test --no-configuration-cache --info
 
@@ -53,6 +56,9 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: gradle
+
+      - name: Set Executable Permission for Gradlew
+        run: chmod +x ./gradlew
 
       - name: Run Lint
         run: ./gradlew lint --no-configuration-cache --info

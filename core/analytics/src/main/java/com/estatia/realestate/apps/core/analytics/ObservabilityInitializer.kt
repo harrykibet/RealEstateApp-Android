@@ -1,9 +1,12 @@
 package com.estatia.realestate.apps.core.analytics
 
+import com.estatia.realestate.apps.core.analytics.BuildConfig
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
+import io.micrometer.core.instrument.Metrics
+import io.micrometer.core.instrument.logging.LoggingMeterRegistry
 import javax.inject.Inject
 
 /**
@@ -26,6 +29,11 @@ internal class ObservabilityInitializer @Inject constructor(
         // Track user ID if already logged in
         authRepository.getCurrentUserId()?.let { userId ->
             crashReporter.setCustomKey("user_id", userId)
+        }
+
+        // 📊 Enable Metrics Egress for validation in debug builds
+        if (BuildConfig.DEBUG) {
+            Metrics.addRegistry(LoggingMeterRegistry())
         }
     }
 }

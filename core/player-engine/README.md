@@ -52,6 +52,8 @@ The engine implements a two-stage lifecycle response:
 
 ### Adaptive Player Pooling
 Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creation. The pool size is hard-capped by the device's physical hardware decoder limits (`MediaCodecInfo.maxSupportedInstances`).
+-   **Memory-Safe Management**: Uses `WeakHashMap` for listener tracking, ensuring that released player instances are eligible for garbage collection immediately.
+-   **Lightweight Refilling**: Implements an optimized "Idle creation" path that constructs hardware objects without the overhead of CDN resolution or configuration parsing.
 
 ### Automatic Decoder Fallback
 If a hardware decoder fails to initialize for high-efficiency formats (AV1/HEVC), the engine automatically retries the request with a `codec=h264_baseline` override, ensuring content visibility on all hardware.
@@ -62,5 +64,6 @@ If a hardware decoder fails to initialize for high-efficiency formats (AV1/HEVC)
 
 ---
 
-## 🛠️ 5. Diagnostics & Testing
-The engine includes a **ChaosDataSource** fuzzer, toggleable via Debug builds. This allows developers to simulate stalls, random IO failures, and bandwidth throttling to verify recovery logic deterministically.
+## 🛠️ 5. Diagnostics & Telemetry
+-   **ChaosDataSource**: Includes a fault-injection fuzzer to simulate stalls, random IO failures, and bandwidth throttling deterministically in Debug builds.
+-   **Integrated Metrics**: Wired to Micrometer with automatic logging of startup latency and buffering duration, enabling data-driven verification of engine performance in the field.

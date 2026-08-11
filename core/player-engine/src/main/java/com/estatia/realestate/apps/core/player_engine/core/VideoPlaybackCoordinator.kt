@@ -8,16 +8,16 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
-@Singleton
+@ViewModelScoped
 class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
     private val streamingPipeline: IStreamingPipeline,

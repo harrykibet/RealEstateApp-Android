@@ -14,6 +14,8 @@ import com.estatia.realestate.apps.core.player_engine.configuration.PlaybackConf
 import com.estatia.realestate.apps.core.player_engine.configuration.PlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
+import com.estatia.realestate.apps.core.player_engine.core.IMediaSessionProvider
+import com.estatia.realestate.apps.core.player_engine.core.MediaSessionProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -95,6 +97,12 @@ abstract class PlayerManagerModule {
     internal abstract fun bindCacheKeyFactory(
         cacheKeyFactory: DefaultCacheKeyFactory
     ): ICacheKeyFactory
+
+    @Binds
+    @Singleton
+    internal abstract fun bindMediaSessionProvider(
+        mediaSessionProvider: MediaSessionProvider
+    ): IMediaSessionProvider
 
     // -------------------------------------------------------
     // @Provides — must be static, goes in companion object

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.content.Context
+import java.util.WeakHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,13 +42,14 @@ class PlayerManager @Inject constructor(
     private val environmentCoordinator: EnvironmentCoordinator,
     private val networkStateProvider: INetworkStateProvider,
     private val streamingPipeline: IStreamingPipeline,
+    private val mediaSessionProvider: IMediaSessionProvider,
     @param:EngineScope private val engineScope: CoroutineScope,
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) : IPlayerManager {
 
     private var activeMediaId: String? = null
     private val activeMediaIdFlow = MutableStateFlow<String?>(null)
-    private val attachedPlayers = mutableSetOf<ExoPlayer>()
+    private val attachedPlayers = WeakHashMap<Player, Boolean>()
     private var wasPlayingBeforePause: Boolean = false
     
     private var mediaSession: MediaSession? = null
@@ -177,7 +179,7 @@ class PlayerManager @Inject constructor(
 
     private fun updateMediaSession(player: ExoPlayer) {
         if (mediaSession == null) {
-            mediaSession = MediaSession.Builder(context, player).build()
+            mediaSession = mediaSessionProvider.create(player)
         } else {
             mediaSession?.player = player
         }
@@ -209,46 +211,58 @@ class PlayerManager @Inject constructor(
     }
 
     private fun attachListenerIfNeeded(managed: ManagedPlayer) {
-        if (!attachedPlayers.add(managed.player)) return
+        if (attachedPlayers.containsKey(managed.player)) return
+        attachedPlayers[managed.player] = true
 
         managed.player.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                when (state) {
-                    Player.STATE_IDLE -> managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
-                    Player.STATE_BUFFERING -> managed.reducer.dispatch(PlaybackStateReducer.Event.BufferingStarted)
-                    Player.STATE_READY -> managed.reducer.dispatch(PlaybackStateReducer.Event.BufferingCompleted)
-                    Player.STATE_ENDED -> managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackEnded)
-                }
-            }
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                managed.reducer.dispatch(
-                    if (isPlaying) PlaybackStateReducer.Event.Play else PlaybackStateReducer.Event.Pause
-                )
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                engineScope.launch {
-                    val isNetworkError = isNetworkError(error)
-                    val networkState = networkStateProvider.current()
-                    
-                    if (isNetworkError && networkState !is NetworkState.Connected) {
-                        managed.reducer.dispatch(PlaybackStateReducer.Event.NetworkLost)
-                    } else {
-                        managed.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
+            override fun onEvents(player: Player, events: Player.Events) {
+                val currentManaged = resolveManaged(player) ?: return
+                
+                if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
+                    when (player.playbackState) {
+                        Player.STATE_IDLE -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.Reset)
+                        Player.STATE_BUFFERING -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.BufferingStarted)
+                        Player.STATE_READY -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.BufferingCompleted)
+                        Player.STATE_ENDED -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.PlaybackEnded)
                     }
                 }
+
+                if (events.contains(Player.EVENT_IS_PLAYING_CHANGED)) {
+                    currentManaged.reducer.dispatch(
+                        if (player.isPlaying) PlaybackStateReducer.Event.Play else PlaybackStateReducer.Event.Pause
+                    )
+                }
+
+                if (events.contains(Player.EVENT_PLAYER_ERROR)) {
+                    player.playerError?.let { error ->
+                        engineScope.launch {
+                            val isNetworkError = isNetworkError(error)
+                            val networkState = networkStateProvider.current()
+                            
+                            if (isNetworkError && networkState !is NetworkState.Connected) {
+                                currentManaged.reducer.dispatch(PlaybackStateReducer.Event.NetworkLost)
+                            } else {
+                                currentManaged.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
+                            }
+                        }
+                    }
+                }
+                
+                if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
+                    val bufferSeconds = (player.bufferedPosition - player.currentPosition) / 1000.0
+                    dynamicBitrateController.apply(
+                        player as ExoPlayer,
+                        currentManaged.mediaType,
+                        environmentCoordinator.environment.value,
+                        bufferSeconds = bufferSeconds,
+                        startupPhase = false
+                    )
+                }
             }
 
-            override fun onRenderedFirstFrame() {
-                val bufferSeconds = (managed.player.bufferedPosition - managed.player.currentPosition) / 1000.0
-                dynamicBitrateController.apply(
-                    managed.player,
-                    managed.mediaType,
-                    environmentCoordinator.environment.value,
-                    bufferSeconds = bufferSeconds,
-                    startupPhase = false
-                )
+            private fun resolveManaged(player: Player): ManagedPlayer? {
+                val mediaId = pool.getMediaId(player as ExoPlayer) ?: return null
+                return pool.get(mediaId)
             }
         })
     }

@@ -1,4 +1,4 @@
-# Estatia Media UI — Technical Specification
+lets fix th# Estatia Media UI — Technical Specification
 
 The `player-ui` module provides a high-performance, lifecycle-aware set of Jetpack Compose components designed for immersive, TikTok-style video feeds. It abstracts the complexities of hardware surface management, interaction debouncing, and multi-window adaptability.
 

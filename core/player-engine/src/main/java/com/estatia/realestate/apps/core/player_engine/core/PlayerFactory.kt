@@ -66,4 +66,27 @@ class PlayerFactory @Inject constructor(
 
         return CreatedPlayer(player, listener)
     }
+
+    /**
+     * Creates a lightweight idle player without media metadata or source configuration.
+     * Used for warming the pool without the overhead of CDN resolution.
+     */
+    fun createIdle(): CreatedPlayer {
+        val renderersFactory = DefaultRenderersFactory(context).apply {
+            setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+        }
+
+        val player = ExoPlayer.Builder(context, renderersFactory)
+            .setLooper(Looper.getMainLooper())
+            .setBandwidthMeter(bandwidthMeter)
+            .build()
+
+        player.repeatMode = Player.REPEAT_MODE_ONE
+        player.playWhenReady = false
+
+        val listener = analyticsListenerProvider.get()
+        player.addAnalyticsListener(listener)
+
+        return CreatedPlayer(player, listener)
+    }
 }
