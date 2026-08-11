@@ -68,21 +68,34 @@ internal class PlayerPool @Inject constructor(
             }
     }
 
-    suspend fun getOrCreate(mediaId: String, uri: Uri, mediaType: MediaType): ManagedPlayer {
+    suspend fun getOrCreate(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean = false
+    ): ManagedPlayer {
         checkConfinement()
-        players[mediaId]?.let { return it }
-        return prewarm(mediaId, uri, mediaType)
+        // If forcing legacy, we should probably re-prepare even if it's in the pool
+        players[mediaId]?.let {
+            if (forceLegacy) release(mediaId) else return it
+        }
+        return prewarm(mediaId, uri, mediaType, forceLegacy)
     }
 
-    suspend fun prewarm(mediaId: String, uri: Uri, mediaType: MediaType): ManagedPlayer = prewarmMutex.withLock {
+    suspend fun prewarm(
+        mediaId: String,
+        uri: Uri,
+        mediaType: MediaType,
+        forceLegacy: Boolean = false
+    ): ManagedPlayer = prewarmMutex.withLock {
         checkConfinement()
         players[mediaId]?.let { return@withLock it }
 
         ensureIdlePlayers()
 
         val managed = idlePlayers.removeFirstOrNull()?.let { idle ->
-            bindIdlePlayer(idle, mediaId, uri, mediaType)
-        } ?: createManagedPlayer(mediaId, uri, mediaType)
+            bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy)
+        } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy)
 
         players[mediaId] = managed
         poolUpdates.tryEmit(Unit)
@@ -92,7 +105,12 @@ internal class PlayerPool @Inject constructor(
 
     private suspend fun ensureIdlePlayers() {
         while (idlePlayers.size < prewarmBudget) {
-            val config = configurationFactory.create("idle_${System.currentTimeMillis()}", Uri.EMPTY, MediaType.VOD)
+            val config = configurationFactory.create(
+                "idle_${System.currentTimeMillis()}",
+                Uri.EMPTY,
+                MediaType.VOD,
+                false
+            )
             val created = playerFactory.create(config)
             
             // Immediately detach listener for pooling
@@ -115,9 +133,10 @@ internal class PlayerPool @Inject constructor(
         idle: IdleManagedPlayer,
         mediaId: String,
         uri: Uri,
-        mediaType: MediaType
+        mediaType: MediaType,
+        forceLegacy: Boolean
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType)
+        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy)
         val listener = analyticsListenerProvider.get()
         
         idle.player.addAnalyticsListener(listener)
@@ -138,9 +157,10 @@ internal class PlayerPool @Inject constructor(
     private suspend fun createManagedPlayer(
         mediaId: String,
         uri: Uri,
-        mediaType: MediaType
+        mediaType: MediaType,
+        forceLegacy: Boolean
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType)
+        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy)
         val created = playerFactory.create(config)
 
         val managed = ManagedPlayer(

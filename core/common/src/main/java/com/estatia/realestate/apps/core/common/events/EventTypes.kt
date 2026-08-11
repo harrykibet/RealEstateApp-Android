@@ -69,6 +69,7 @@ object EventTypes {
 
     // CDN Events
     const val EVENT_CDN_FAILURE = "CDN failure"
+    const val EVENT_DISK_FULL = "Device storage is full"
 
     // Analytics Events
     const val EVENT_PUSH_NOTIFICATION_RECEIVED = "User received push notification"

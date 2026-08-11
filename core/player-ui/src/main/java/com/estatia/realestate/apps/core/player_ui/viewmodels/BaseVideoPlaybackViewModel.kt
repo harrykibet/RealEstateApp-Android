@@ -41,6 +41,8 @@ abstract class BaseVideoPlaybackViewModel(
 
     private val activeMediaId = MutableStateFlow<String?>(null)
     private var lastMediaContext: FeedMediaContext? = null
+    private val decoderFailures = mutableSetOf<String>()
+
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
 
@@ -75,6 +77,16 @@ abstract class BaseVideoPlaybackViewModel(
             }
         }
         .onEach { uiState ->
+            // 🌡️ Automatic Decoder Fallback:
+            // If we hit a hardware decoder error, record it and try to fetch a baseline legacy rendition.
+            if (uiState is PlayerUiState.Error && uiState.type == PlayerErrorType.DECODER) {
+                val currentId = activeMediaId.value
+                if (currentId != null && !decoderFailures.contains(currentId)) {
+                    decoderFailures.add(currentId)
+                    retry(forceLegacy = true)
+                    return@onEach
+                }
+            }
             _uiState.value = uiState
         }
         .launchIn(viewModelScope)
@@ -95,18 +107,21 @@ abstract class BaseVideoPlaybackViewModel(
     fun onPageVisible(context: FeedMediaContext) {
         lastMediaContext = context
         activeMediaId.value = context.mediaId
+        val forceLegacy = decoderFailures.contains(context.mediaId)
+
         coordinator.onPageVisible(
             scope = viewModelScope,
             mediaId = context.mediaId,
             uri = context.uri,
             previous = context.previous.map { FeedNeighborInfo(it.mediaId, it.uri) },
-            next = context.next.map { FeedNeighborInfo(it.mediaId, it.uri) }
+            next = context.next.map { FeedNeighborInfo(it.mediaId, it.uri) },
+            forceLegacy = forceLegacy
         )
     }
 
-    fun retry() {
+    fun retry(forceLegacy: Boolean = false) {
         val context = lastMediaContext ?: return
-        coordinator.retry(viewModelScope, context.mediaId, context.uri)
+        coordinator.retry(viewModelScope, context.mediaId, context.uri, forceLegacy)
     }
 
     suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =

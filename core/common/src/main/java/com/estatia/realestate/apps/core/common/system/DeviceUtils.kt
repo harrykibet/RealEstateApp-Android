@@ -10,6 +10,7 @@ import android.view.Display
 import androidx.core.app.ActivityManagerCompat
 import androidx.core.content.getSystemService
 import android.media.MediaCodecInfo
+import android.os.StatFs
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import javax.inject.Inject
@@ -42,6 +43,12 @@ class DeviceUtils @Inject constructor(
     override fun supportsAV1(): Boolean {
         return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
             codec.supportedTypes.contains("video/av01")
+        }
+    }
+
+    override fun supportsHEVC(): Boolean {
+        return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
+            codec.supportedTypes.contains("video/hevc")
         }
     }
 
@@ -126,5 +133,14 @@ class DeviceUtils @Inject constructor(
         (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
             .getMemoryInfo(memInfo)
         return memInfo.availMem / (1024 * 1024)
+    }
+
+    override fun getAvailableStorageMB(): Long {
+        return try {
+            val stats = StatFs(context.cacheDir.absolutePath)
+            (stats.availableBlocksLong * stats.blockSizeLong) / (1024 * 1024)
+        } catch (_: Exception) {
+            -1L
+        }
     }
 }

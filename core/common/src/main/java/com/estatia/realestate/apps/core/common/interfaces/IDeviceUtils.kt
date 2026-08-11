@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.model.system.DeviceInfo
 interface IDeviceUtils {
     fun getDeviceInfo(): DeviceInfo
     fun supportsAV1(): Boolean
+    fun supportsHEVC(): Boolean
     fun supports10BitHdr(): Boolean
     fun supportsDolbyVision(): Boolean
     fun getMaxSupportedBitrate(): Long
@@ -14,4 +15,5 @@ interface IDeviceUtils {
     fun isLowRamDevice(): Boolean
     fun getRefreshRate(): Float
     fun getAvailableMemoryMB(): Long
+    fun getAvailableStorageMB(): Long
 }

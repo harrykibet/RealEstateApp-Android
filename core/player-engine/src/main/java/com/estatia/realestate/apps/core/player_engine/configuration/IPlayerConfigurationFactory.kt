@@ -21,6 +21,7 @@ interface IPlayerConfigurationFactory {
     suspend fun create(
         mediaId: String,
         uri: Uri,
-        mediaType: MediaType
+        mediaType: MediaType,
+        forceLegacyCodec: Boolean = false
     ): PlayerConfiguration
 }

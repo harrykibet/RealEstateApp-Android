@@ -6,7 +6,10 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSourceInputStream
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.HttpDataSource
+import com.estatia.realestate.apps.core.common.events.EventTypes
+import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import com.estatia.realestate.apps.core.player_engine.di.PlaybackCache
@@ -32,6 +35,8 @@ class MediaCacheWarmer @Inject constructor(
     private val environmentCoordinator: EnvironmentCoordinator,
     private val cdnHealthMonitor: CdnHealthMonitor,
     private val cacheKeyFactory: ICacheKeyFactory,
+    private val deviceUtils: IDeviceUtils,
+    private val analyticsTracker: IAnalyticsTracker,
     @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: ILogger
@@ -205,10 +210,25 @@ class MediaCacheWarmer @Inject constructor(
                     "Failed to prefetch uri: $uri. Max bytes: $maxBytes. Response code: ${e.responseCode}. Data: ${e.dataSpec}"
                 }
                 is java.io.IOException -> {
-                    // Feed network/timeout failure back to CDN health monitor
-                    val baseUrl = "${uri.scheme}://${uri.authority}"
-                    cdnHealthMonitor.reportExternalFailure(baseUrl)
-                    "Failed to prefetch uri: $uri. Max bytes: $maxBytes (IO Error)"
+                    // Check for disk full condition
+                    val isDiskFull = e.message?.contains("ENOSPC", ignoreCase = true) == true ||
+                            e.message?.contains("No space left on device", ignoreCase = true) == true ||
+                            deviceUtils.getAvailableStorageMB() < 50 // Critically low
+
+                    if (isDiskFull) {
+                        analyticsTracker.logEvent(
+                            message = "MediaCacheWarmer",
+                            eventType = EventTypes.EVENT_DISK_FULL,
+                            customMetadata = mapOf("uri" to uri.toString())
+                        )
+                        logger.w("MediaCacheWarmer", "Prefetch failed: Disk is full. uri: $uri")
+                        "Failed to prefetch uri: $uri. Max bytes: $maxBytes (Disk Full)"
+                    } else {
+                        // Feed network/timeout failure back to CDN health monitor
+                        val baseUrl = "${uri.scheme}://${uri.authority}"
+                        cdnHealthMonitor.reportExternalFailure(baseUrl)
+                        "Failed to prefetch uri: $uri. Max bytes: $maxBytes (IO Error)"
+                    }
                 }
                 else -> {
                     "Failed to prefetch uri: $uri. Max bytes: $maxBytes"

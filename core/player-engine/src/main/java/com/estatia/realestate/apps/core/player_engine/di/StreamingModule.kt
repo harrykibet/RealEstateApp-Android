@@ -15,6 +15,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
+import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.network.di.PlaybackClient
 import dagger.Module
 import dagger.Provides
@@ -55,11 +56,22 @@ object StreamingModule {
     @Singleton
     fun provideUpstreamFactory(
         @ApplicationContext context: Context,
-        @PlaybackClient okHttpClient: OkHttpClient
-    ): DataSource.Factory =
-        OkHttpDataSource.Factory(okHttpClient)
+        @PlaybackClient okHttpClient: OkHttpClient,
+        deviceUtils: IDeviceUtils
+    ): DataSource.Factory {
+        val caps = mutableListOf<String>()
+        if (deviceUtils.supportsAV1()) caps.add("av1")
+        if (deviceUtils.supportsHEVC()) caps.add("hevc")
+        if (deviceUtils.supports10BitHdr()) caps.add("hdr10")
+        if (context.packageManager.hasSystemFeature("android.hardware.dolbyvision")) caps.add("dolbyvision")
+        
+        return OkHttpDataSource.Factory(okHttpClient)
             .setUserAgent(Util.getUserAgent(context, "Estatia"))
-            .setDefaultRequestProperties(mapOf("Accept" to "*/*"))
+            .setDefaultRequestProperties(mapOf(
+                "Accept" to "*/*",
+                "X-Estatia-Capabilities" to caps.joinToString(",")
+            ))
+    }
 
     @Provides
     @Singleton

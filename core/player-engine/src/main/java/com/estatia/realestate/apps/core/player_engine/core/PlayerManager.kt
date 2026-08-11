@@ -82,9 +82,9 @@ internal class PlayerManager @Inject constructor(
         }
     }
 
-    override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType) =
+    override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean) =
         withContext(playerDispatcher) {
-            val managed = pool.getOrCreate(mediaId, uri, mediaType)
+            val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy)
             val environment = environmentCoordinator.environment.value
 
             if (activeMediaId != mediaId) {
@@ -107,9 +107,9 @@ internal class PlayerManager @Inject constructor(
             streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
 
-    override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType) =
+    override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean) =
         withContext(playerDispatcher) {
-            val managed = pool.prewarm(mediaId, uri, mediaType)
+            val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy)
             val environment = environmentCoordinator.environment.value
             dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
             attachListenerIfNeeded(managed)

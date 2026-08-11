@@ -24,14 +24,18 @@ class PlayerConfigurationFactory @Inject constructor(
     override suspend fun create(
         mediaId: String,
         uri: Uri,
-        mediaType: MediaType
+        mediaType: MediaType,
+        forceLegacyCodec: Boolean
     ): PlayerConfiguration {
         // ⏱️ Optimization: Only wait for config if we actually need it for CDN resolution.
         // Idle players use Uri.EMPTY and shouldn't be blocked.
         val env = environmentCoordinator.environment.value
         val resolvedUri = if (needsCdnResolution(uri)) {
             config.awaitReady()
-            resolveViaCdn(uri)
+            val base = resolveViaCdn(uri)
+            if (forceLegacyCodec) {
+                base.buildUpon().appendQueryParameter("codec", "h264_baseline").build()
+            } else base
         } else {
             uri
         }

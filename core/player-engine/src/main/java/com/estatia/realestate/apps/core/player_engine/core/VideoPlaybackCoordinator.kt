@@ -46,7 +46,8 @@ class VideoPlaybackCoordinator @Inject constructor(
         mediaId: String,
         uri: Uri,
         previous: List<FeedNeighborInfo>,
-        next: List<FeedNeighborInfo>
+        next: List<FeedNeighborInfo>,
+        forceLegacy: Boolean = false
     ) {
         if (currentMediaId == mediaId) return
         currentMediaId = mediaId
@@ -69,7 +70,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         playJob = scope.launch {
             delay(debounceTime.milliseconds)
             warmVisible(mediaId, uri)
-            playerController.play(mediaId, uri, MediaType.VOD)
+            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy)
         }
 
         // Only prewarm neighbors if not flinging to reduce list virtualization pressure
@@ -79,13 +80,13 @@ class VideoPlaybackCoordinator @Inject constructor(
 
                 // 1. Symmetric Warming: Warm previous neighbor (N=1)
                 previous.firstOrNull()?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy)
                     warmPrevious(it.mediaId, it.uri)
                 }
 
                 // 2. Deep Warming: Warm next neighbors (N=2)
                 next.getOrNull(0)?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy)
                     warmNext(it.mediaId, it.uri)
                 }
 
@@ -140,10 +141,10 @@ class VideoPlaybackCoordinator @Inject constructor(
 
     fun isMediaActive(mediaId: String): Boolean = currentMediaId == mediaId
 
-    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri) {
+    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri, forceLegacy: Boolean = false) {
         playJob?.cancel()
         playJob = scope.launch {
-            playerController.play(mediaId, uri, MediaType.VOD)
+            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy)
         }
     }
 
