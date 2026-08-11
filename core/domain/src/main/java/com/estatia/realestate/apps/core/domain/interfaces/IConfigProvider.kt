@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.domain.interfaces
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import kotlinx.coroutines.flow.StateFlow
 
 interface IConfigProvider {
@@ -42,6 +43,8 @@ interface IConfigProvider {
     val asymmetricKeyId: String
 
     val asymmetricSigningKeyId: String
+
+    val chaosConfig: ChaosConfig
 
     val configVersion: StateFlow<Long>
 }

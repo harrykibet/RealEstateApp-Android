@@ -15,7 +15,9 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
+import com.estatia.realestate.apps.core.player_engine.streaming.ChaosDataSourceFactory
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.network.di.PlaybackClient
 import dagger.Module
 import dagger.Provides
@@ -57,7 +59,8 @@ object StreamingModule {
     fun provideUpstreamFactory(
         @ApplicationContext context: Context,
         @PlaybackClient okHttpClient: OkHttpClient,
-        deviceUtils: IDeviceUtils
+        deviceUtils: IDeviceUtils,
+        configProvider: IConfigProvider
     ): DataSource.Factory {
         val caps = mutableListOf<String>()
         if (deviceUtils.supportsAV1()) caps.add("av1")
@@ -65,12 +68,20 @@ object StreamingModule {
         if (deviceUtils.supports10BitHdr()) caps.add("hdr10")
         if (context.packageManager.hasSystemFeature("android.hardware.dolbyvision")) caps.add("dolbyvision")
         
-        return OkHttpDataSource.Factory(okHttpClient)
+        val baseFactory = OkHttpDataSource.Factory(okHttpClient)
             .setUserAgent(Util.getUserAgent(context, "Estatia"))
             .setDefaultRequestProperties(mapOf(
                 "Accept" to "*/*",
                 "X-Estatia-Capabilities" to caps.joinToString(",")
             ))
+
+        // 🏎️ Chaos Injection: Wrap the factory in a Chaos decorator in debug builds
+        // to enable real-world failure simulation.
+        return if (com.estatia.realestate.apps.core.player_engine.BuildConfig.DEBUG) {
+            ChaosDataSourceFactory(baseFactory, configProvider)
+        } else {
+            baseFactory
+        }
     }
 
     @Provides

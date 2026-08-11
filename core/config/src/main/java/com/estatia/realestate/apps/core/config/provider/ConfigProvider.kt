@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -152,4 +153,7 @@ internal class ConfigProvider @Inject constructor(
 
     override val asymmetricSigningKeyId: String
         get() = requireConfig().encryptionKeys.asymmetricSigningKeyId
+
+    override val chaosConfig: ChaosConfig
+        get() = requireConfig().chaosConfig
 }

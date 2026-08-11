@@ -6,7 +6,8 @@ data class RemoteConfigModel(
     val keyPatterns: KeyPatterns,
     val encryptionKeys: EncryptionKeys,
     val cdnEndpoints: List<CdnEndpoint>,
-    val baseConfig: BaseConfig
+    val baseConfig: BaseConfig,
+    val chaosConfig: ChaosConfig = ChaosConfig()
 )
 
 data class KeyPatterns(
@@ -26,4 +27,11 @@ data class EncryptionKeys(
 data class BaseConfig(
     val baseUrl: String,
     val enableLogging: Boolean
+)
+
+data class ChaosConfig(
+    val simulateStall: Boolean = false,
+    val stallDurationMs: Long = 0,
+    val failureRate: Float = 0f,
+    val throttleBps: Long = 0
 )
