@@ -1,31 +1,66 @@
-# core:player-engine
+# Estatia Media Engine — Technical Specification
 
-The `player-engine` module is the backbone of media playback in the Estatia app. It provides a robust, thread-safe, and highly optimized orchestration layer on top of **Media3 ExoPlayer**.
+The `player-engine` module is a high-performance, resilient, and resource-aware orchestration layer built on top of **Media3 ExoPlayer**. It is engineered to deliver a fluid, "TikTok-class" video experience while maintaining strict device stability and battery discipline.
 
-## Key Features
+## 🏗️ 1. Performance Architecture
 
-- **Adaptive Player Pooling**: Efficiently reuses `ExoPlayer` instances to minimize the overhead of player creation and destruction during fast scrolling in vertical feeds.
-- **Thread Confinement**: Enforces strict Main-thread confinement for player mutations to prevent common Media3 threading violations.
-- **Smart Prefetching**: Integrates a `MediaCacheWarmer` that prefetches upcoming videos based on scroll direction and priority.
-- **CDN Resolution & Health Monitoring**: Dynamically rewrites media URIs to the healthiest CDN endpoint based on real-time latency measurements.
-- **Unified Caching**: Uses stable `mediaId` keys to ensure that offline-downloaded content and live playback share the same cache entries.
-- **Granular Analytics**: Tracks Quality of Service (QoS) metrics like startup time, buffering duration, and error types per playback session.
+### Fling Heuristic & Adaptive Debounce
+To minimize CPU and network churn during rapid navigation ("surfing"), the engine implements a velocity-aware debounce mechanism.
+-   **Standard Dwell**: 100ms settle window before committed playback.
+-   **Fling Mode**: If >3 pages are flipped in 300ms, the settle window increases to 250ms and neighbor preloading is suspended until velocity drops.
+-   **Jank-Awareness**: If the UI thread is dropping frames (>20% jank ratio), the engine automatically increases debounce to 400ms, prioritizing scroll smoothness over autoplay latency.
 
-## Architecture
+### Symmetric & Deep Prefetching
+The engine maintains a deep look-ahead window with **Priority Decay** to ensure seamless forward and backward scrolling.
+-   **Visible**: 100% byte budget (High priority).
+-   **Next (N+1)**: 70% budget.
+-   **Previous (N-1)**: 40% budget (Ensures instant back-scroll).
+-   **Far-Ahead (N+2)**: 20% budget (Speculative bytes only).
 
-The module follows a layered architecture to isolate the feature layer from Media3 internals:
+## 🛡️ 2. Fault Tolerance & Reliability
 
-1.  **Orchestration**: `PlayerManager` and `VideoPlaybackCoordinator` manage the high-level playback lifecycle.
-2.  **Resource Management**: `PlayerPool` handles the lifecycle of pooled player instances and their associated analytics listeners.
-3.  **Configuration**: `PlayerConfigurationFactory` handles URI resolution and player setup (LoadControl, BandwidthMeter, etc.).
-4.  **Streaming Stack**: `StreamingPipeline` abstracts the Media3 cache, data sources, and prefetch logic.
+### BOLA-lite (Buffer-Aware ABR)
+The ABR policy incorporates real-time buffer occupancy to proactively prevent stalls.
+-   **Critical Threshold**: If buffer < 2s, the bitrate cap is slashed by 50% regardless of throughput.
+-   **Precautionary Threshold**: If buffer < 5s, a 20% reduction is applied to allow the buffer to stabilize.
 
-## Key Interfaces
+### Robust Network Recovery
+The engine distinguishes between transient signal loss and terminal errors.
+-   **Reconnecting State**: Detected network failures surface a "Reconnecting" UI rather than a hard error.
+-   **Auto-Retry**: The system automatically prepares and resumes interrupted streams as soon as `INetworkStateProvider` reports a return to connectivity.
 
-- `IPlayerManager`: The primary API for playing, preloading, and observing media state.
-- `IStreamingPipeline`: Interface for creating media items and prefetching content.
-- `IPlayerConfigurationFactory`: Handles the construction of complex player configurations.
+### Buffering Watchdog
+A 15-second safety timer monitors every "Buffering" state. If the hardware decoder or network stream hangs without reporting an error, the watchdog triggers a synthetic recovery flow to unblock the UI.
 
-## Threading Model
+## 🔋 3. Resource & Power Discipline
 
-All interactions with the `PlayerPool` and `ExoPlayer` instances **must** happen on the Main thread. The `PlayerManager` uses a dedicated `playerDispatcher` (aliased to `Dispatchers.Main.immediate`) to ensure all operations are executed safely.
+### Granular Thermal Tiers
+Playback load is dynamically shed based on the device's physical temperature (`PowerManager.thermalStatus`).
+-   **Moderate**: 30% bitrate reduction.
+-   **Severe**: 65% bitrate reduction + **HDR Suppression** (disables high-GPU-load rendering).
+-   **Critical**: 85% bitrate reduction + 360p resolution cap.
+
+### Adaptive Storage Budgeting
+The media cache ceiling is not static. It is calculated on every startup as `min(512MB, availableStorage * 0.1)`, preventing the app from triggering system-level "Storage Full" warnings on constrained devices.
+
+### Graceful Backgrounding
+The engine implements a two-stage lifecycle response:
+-   **Immediate**: Playback pauses and audio focus is abandoned.
+-   **60s Grace Timer**: Hardware decoders are preserved for quick app-switches. After 60 seconds of inactivity, all pooled player instances are fully released.
+
+## 📱 4. Hardware & System Integration
+
+### Adaptive Player Pooling
+Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creation. The pool size is hard-capped by the device's physical hardware decoder limits (`MediaCodecInfo.maxSupportedInstances`).
+
+### Automatic Decoder Fallback
+If a hardware decoder fails to initialize for high-efficiency formats (AV1/HEVC), the engine automatically retries the request with a `codec=h264_baseline` override, ensuring content visibility on all hardware.
+
+### Picture-in-Picture & Media Sessions
+-   **Seamless PiP**: Automatically enters PiP mode on Home-press if a video is active.
+-   **System Controls**: Integrates with `MediaSession` to provide lock-screen metadata and standard Bluetooth/peripheral hardware controls.
+
+---
+
+## 🛠️ 5. Diagnostics & Testing
+The engine includes a **ChaosDataSource** fuzzer, toggleable via Debug builds. This allows developers to simulate stalls, random IO failures, and bandwidth throttling to verify recovery logic deterministically.

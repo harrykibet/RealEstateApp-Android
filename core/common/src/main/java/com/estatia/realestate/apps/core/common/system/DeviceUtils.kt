@@ -143,4 +143,23 @@ class DeviceUtils @Inject constructor(
             -1L
         }
     }
+
+    override fun getMaxSupportedVideoDecoders(): Int {
+        return try {
+            val codecList = MediaCodecList(MediaCodecList.ALL_CODECS)
+            // Use HEVC or AVC as a representative high-load decoder
+            val codecInfo = codecList.codecInfos.find { it.isEncoder.not() && 
+                (it.supportedTypes.contains("video/hevc") || it.supportedTypes.contains("video/avc")) 
+            }
+            
+            val mimeType = if (codecInfo?.supportedTypes?.contains("video/hevc") == true) "video/hevc" else "video/avc"
+            val caps = codecInfo?.getCapabilitiesForType(mimeType)
+            
+            val maxInstances = caps?.maxSupportedInstances ?: 4
+            // Reserved slots: return total - 1 to ensure system/other apps always have a slot
+            maxInstances.coerceAtLeast(1)
+        } catch (_: Exception) {
+            4 // Safe default for modern Android devices
+        }
+    }
 }

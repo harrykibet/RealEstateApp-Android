@@ -16,6 +16,8 @@ import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ChaosDataSourceFactory
+import com.estatia.realestate.apps.core.player_engine.streaming.ICacheSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.streaming.AdaptiveCacheSizingPolicy
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.network.di.PlaybackClient
@@ -86,14 +88,19 @@ object StreamingModule {
 
     @Provides
     @Singleton
+    fun provideCacheSizingPolicy(impl: AdaptiveCacheSizingPolicy): ICacheSizingPolicy = impl
+
+    @Provides
+    @Singleton
     @PlaybackCache
     fun providePlaybackCache(
         @ApplicationContext context: Context,
-        databaseProvider: StandaloneDatabaseProvider
+        databaseProvider: StandaloneDatabaseProvider,
+        cacheSizingPolicy: ICacheSizingPolicy
     ): SimpleCache =
         SimpleCache(
             File(context.cacheDir, "playback_cache"),
-            LeastRecentlyUsedCacheEvictor(512L * 1024 * 1024),
+            LeastRecentlyUsedCacheEvictor(cacheSizingPolicy.calculateCacheSizeBytes()),
             databaseProvider
         )
 

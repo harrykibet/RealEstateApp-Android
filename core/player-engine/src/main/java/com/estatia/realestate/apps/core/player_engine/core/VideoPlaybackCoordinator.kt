@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
+import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,7 +20,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @Singleton
 class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
-    private val streamingPipeline: IStreamingPipeline
+    private val streamingPipeline: IStreamingPipeline,
+    private val performanceMonitor: PerformanceMonitor
 ) {
     private var currentMediaId: String? = null
     private var playJob: Job? = null
@@ -31,6 +33,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     companion object {
         private const val MAX_WARMED_MEDIA = 8
         private const val DWELL_TIME_DEBOUNCE_MS = 100L
+        private const val JANK_AWARE_DEBOUNCE_MS = 400L
         private const val FLING_DEBOUNCE_MS = 250L
         private const val FAST_SCROLL_THRESHOLD_MS = 300L
         private const val FLING_COUNT_THRESHOLD = 3
@@ -64,7 +67,17 @@ class VideoPlaybackCoordinator @Inject constructor(
         lastPageChangeTime = now
 
         val isFlinging = consecutiveFastScrolls >= FLING_COUNT_THRESHOLD
-        val debounceTime = if (isFlinging) FLING_DEBOUNCE_MS else DWELL_TIME_DEBOUNCE_MS
+        
+        // 🏎️ Jank-Aware Interaction Blocking:
+        // If the UI is struggling to keep up with frame deadlines, aggressively increase the debounce
+        // to prioritize scroll smoothness over "magic" autoplay.
+        val isJanking = performanceMonitor.isJanking.value
+        
+        val debounceTime = when {
+            isJanking -> JANK_AWARE_DEBOUNCE_MS
+            isFlinging -> FLING_DEBOUNCE_MS
+            else -> DWELL_TIME_DEBOUNCE_MS
+        }
 
         playJob?.cancel()
         preloadJob?.cancel()

@@ -24,14 +24,17 @@ class AdaptivePlayerPoolSizingPolicy @Inject constructor(
             return 1
         }
 
-        // 3. Severe memory pressure from internal check
+        // 3. Hardware Decoder Constraint (Harden against "failed to initialize" errors)
+        // Reserve 1 slot for the OS/system
+        val hardwareLimit = (deviceUtils.getMaxSupportedVideoDecoders() - 1).coerceAtLeast(1)
+
+        // 4. Severe memory pressure from internal check
         val availableMemory = deviceUtils.getAvailableMemoryMB()
         if (availableMemory < 150) {
-            return 1
+            return 1.coerceAtMost(hardwareLimit)
         }
 
-        // 4. Default device-class based sizing
-        return when {
+        val deviceClassSize = when {
             deviceUtils.isLowRamDevice() -> 2
 
             deviceUtils.isHighEndDevice() -> {
@@ -43,5 +46,7 @@ class AdaptivePlayerPoolSizingPolicy @Inject constructor(
 
             else -> 2
         }
+
+        return deviceClassSize.coerceAtMost(hardwareLimit)
     }
 }

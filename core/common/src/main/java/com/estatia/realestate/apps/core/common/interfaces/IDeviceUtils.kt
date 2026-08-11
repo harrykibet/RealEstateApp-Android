@@ -16,4 +16,5 @@ interface IDeviceUtils {
     fun getRefreshRate(): Float
     fun getAvailableMemoryMB(): Long
     fun getAvailableStorageMB(): Long
+    fun getMaxSupportedVideoDecoders(): Int
 }
