@@ -39,6 +39,7 @@ internal class PlayerManager @Inject constructor(
     private var activeMediaId: String? = null
     private val activeMediaIdFlow = MutableStateFlow<String?>(null)
     private val attachedPlayers = mutableSetOf<ExoPlayer>()
+    private var wasPlayingBeforePause: Boolean = false
 
     init {
         audioFocusManager.setCallbacks(
@@ -47,8 +48,14 @@ internal class PlayerManager @Inject constructor(
         )
         environmentManager.start(
             onAppBackgrounded = {
+                wasPlayingBeforePause = isCurrentlyPlaying()
                 pause()
                 pool.notifyAppBackgrounded()
+            },
+            onAppForegrounded = {
+                if (wasPlayingBeforePause) {
+                    resumeCurrentPlayer()
+                }
             }
         )
     }
@@ -112,6 +119,10 @@ internal class PlayerManager @Inject constructor(
 
     private fun pauseCurrentPlayer() {
         activeMediaId?.let { pool.get(it)?.player?.pause() }
+    }
+
+    private fun isCurrentlyPlaying(): Boolean {
+        return activeMediaId?.let { pool.get(it)?.player?.isPlaying } ?: false
     }
 
     private fun resumeCurrentPlayer() {

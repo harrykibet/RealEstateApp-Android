@@ -30,13 +30,19 @@ internal class PlayerEnvironmentManager @Inject constructor(
 ) {
     private var activeMediaId: String? = null
     private var graceJob: Job? = null
+    private var wasEffectivelyBackgrounded = false
 
-    fun start(onAppBackgrounded: suspend () -> Unit) {
+    fun start(
+        onAppBackgrounded: suspend () -> Unit,
+        onAppForegrounded: suspend () -> Unit
+    ) {
         environmentCoordinator.start(engineScope)
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
-                // 1. React to app visibility changes
-                if (!env.isAppVisible) {
+                // 1. React to app visibility and interactivity changes
+                val isEffectivelyBackgrounded = !env.isAppVisible || !env.isInteractive
+                
+                if (isEffectivelyBackgrounded) {
                     // Immediate action: Stop playback and focus
                     onAppBackgrounded()
                     
@@ -47,11 +53,17 @@ internal class PlayerEnvironmentManager @Inject constructor(
                             pool.releaseAll()
                         }
                     }
+                    wasEffectivelyBackgrounded = true
                     return@collect
                 } else {
-                    // User returned: preserve warm resources
+                    // User returned: preserve warm resources or notify resume
                     graceJob?.cancel()
                     graceJob = null
+                    
+                    if (wasEffectivelyBackgrounded) {
+                        onAppForegrounded()
+                    }
+                    wasEffectivelyBackgrounded = false
                 }
 
                 // 2. Dynamic pool sizing based on environment (memory, battery, etc.)

@@ -34,7 +34,8 @@ class EnvironmentCoordinator @Inject constructor(
             shouldThrottlePerformance = false,
             estimatedThroughputBps = bandwidthMeter.bitrateEstimate,
             memoryTrimLevel = resourcesMonitor.memoryTrimLevel.value,
-            isAppVisible = resourcesMonitor.isAppVisible.value
+            isAppVisible = resourcesMonitor.isAppVisible.value,
+            isInteractive = resourcesMonitor.isInteractive.value
         )
     )
 
@@ -47,23 +48,33 @@ class EnvironmentCoordinator @Inject constructor(
 
         job = scope.launch {
 
-            combine(
+            val throttles = combine(
                 observeNetworkThrottle(),
-                observeBatteryThrottle(),
-                observeBandwidth(),
-                resourcesMonitor.memoryTrimLevel,
-                resourcesMonitor.isAppVisible
-            ) { networkThrottle, batteryThrottle, bandwidth, memoryTrim, isVisible ->
+                observeBatteryThrottle()
+            ) { nt, bt -> nt || bt }
 
+            val systemSignals = combine(
+                resourcesMonitor.memoryTrimLevel,
+                resourcesMonitor.isAppVisible,
+                resourcesMonitor.isInteractive
+            ) { trim, visible, interactive -> Triple(trim, visible, interactive) }
+
+            combine(
+                throttles,
+                observeBandwidth(),
+                systemSignals
+            ) { throttle, bandwidth, signals ->
+                val (memoryTrim, isVisible, isInteractive) = signals
                 val isMetered = isNetworkMetered()
 
                 EnvironmentState(
                     isMetered = isMetered,
-                    shouldThrottlePerformance = networkThrottle || batteryThrottle,
+                    shouldThrottlePerformance = throttle,
                     estimatedThroughputBps = bandwidth,
                     recentStallCount = 0,
                     memoryTrimLevel = memoryTrim,
-                    isAppVisible = isVisible
+                    isAppVisible = isVisible,
+                    isInteractive = isInteractive
                 )
             }
                 .distinctUntilChanged()
