@@ -39,6 +39,9 @@ jobs:
       - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
 
+      - name: Generate Local Properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
       - name: Run All Unit Tests
         run: ./gradlew test --no-configuration-cache --info
 
@@ -59,6 +62,9 @@ jobs:
 
       - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
+
+      - name: Generate Local Properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
       - name: Run Lint
         run: ./gradlew lint --no-configuration-cache --info
