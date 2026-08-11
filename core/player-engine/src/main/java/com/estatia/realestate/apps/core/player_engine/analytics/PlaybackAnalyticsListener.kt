@@ -41,6 +41,9 @@ class PlaybackAnalyticsListener @Inject constructor(
     @Volatile
     private var firstFrameSentAt: Long? = null
 
+    @Volatile
+    private var wasBackgroundedDuringBuffer: Boolean = false
+
     fun markPlaybackStart() {
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
@@ -51,12 +54,25 @@ class PlaybackAnalyticsListener @Inject constructor(
         // No-op: using shared EngineScope
     }
 
+    fun onAppBackgrounded() {
+        if (bufferingStartedAt != null) {
+            wasBackgroundedDuringBuffer = true
+        }
+    }
+
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
         scope.launch {
             when (state) {
                 Player.STATE_READY -> {
                     val startupTime = SystemClock.elapsedRealtime() - startupStartTime
-                    val bufferingMs = bufferingStartedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L
+                    
+                    // ⏱️ Optimization: Exclude metrics if backgrounded during buffer to avoid inflation
+                    val bufferingMs = if (wasBackgroundedDuringBuffer) {
+                        0L
+                    } else {
+                        bufferingStartedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L
+                    }
+                    wasBackgroundedDuringBuffer = false
 
                     metricsTracker.trackDuration("player.startup.duration", startupTime.milliseconds)
                     metricsTracker.trackDuration("player.buffering.duration", bufferingMs.milliseconds)

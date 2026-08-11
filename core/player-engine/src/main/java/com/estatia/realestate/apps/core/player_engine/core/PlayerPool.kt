@@ -207,6 +207,11 @@ internal class PlayerPool @Inject constructor(
         poolUpdates.tryEmit(Unit)
     }
 
+    fun notifyAppBackgrounded() {
+        checkConfinement()
+        players.values.forEach { it.analyticsListener.onAppBackgrounded() }
+    }
+
     fun updateMaxPoolSize(newSize: Int, activeMediaId: String?) {
         checkConfinement()
         if (newSize == maxPoolSize) return

@@ -46,7 +46,10 @@ internal class PlayerManager @Inject constructor(
             onGained = { resumeCurrentPlayer() }
         )
         environmentManager.start(
-            onAppBackgrounded = { pause() }
+            onAppBackgrounded = {
+                pause()
+                pool.notifyAppBackgrounded()
+            }
         )
     }
 
