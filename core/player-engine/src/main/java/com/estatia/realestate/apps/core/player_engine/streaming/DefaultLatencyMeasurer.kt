@@ -12,18 +12,20 @@ import androidx.core.net.toUri
 class DefaultLatencyMeasurer @Inject constructor() : ILatencyMeasurer {
     override suspend fun measure(host: String, timeout: Duration): Long {
         val start = System.currentTimeMillis()
+        val parsed = host.trim().toUri()
+        val normalizedHost = parsed.host ?: host.trim()
+        val port = parsed.port.takeIf { it > 0 } ?: if (parsed.scheme == "https") 443 else 80
+
+        val socket = Socket()
         return try {
             withTimeout(timeout) {
-                val parsed = host.trim().toUri()
-                val normalizedHost = parsed.host ?: host.trim()
-                val port = parsed.port.takeIf { it > 0 } ?: if (parsed.scheme == "https") 443 else 80
-                val socket = Socket()
                 socket.connect(InetSocketAddress(normalizedHost, port), timeout.inWholeMilliseconds.toInt())
-                socket.close()
             }
             System.currentTimeMillis() - start
         } catch (e: Exception) {
             throw RuntimeException("Latency probe failed", e)
+        } finally {
+            runCatching { socket.close() }
         }
     }
 }
