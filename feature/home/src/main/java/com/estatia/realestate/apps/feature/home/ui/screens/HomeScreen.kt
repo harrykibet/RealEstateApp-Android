@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,22 +67,37 @@ internal fun HomeRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    HomeScreen(
-        state = state,
-        onNavigateToPropertyDetail = onNavigateToPropertyDetail,
-        commentsContent = commentsContent,
-        playbackUiState = playbackUiState,
-        onPlaybackRetry = playbackViewModel::retry,
-        onPageVisible = playbackViewModel::onPageVisible,
-        getPlayer = playbackViewModel::getPlayer,
-        pausePlayback = playbackViewModel::pause,
-        isMediaActive = playbackViewModel::isMediaActive,
-        onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
-        onShareClick = { /* TODO */ },
-        onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
-        onPageChanged = viewModel::onPageChanged,
-    )
+    LaunchedEffect(playbackViewModel.meteredConnectionEvent) {
+        playbackViewModel.meteredConnectionEvent.collect {
+            snackbarHostState.showSnackbar(
+                message = "You're now using mobile data. Video quality may adjust to save data.",
+                duration = androidx.compose.material3.SnackbarDuration.Short
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        HomeScreen(
+            state = state,
+            onNavigateToPropertyDetail = onNavigateToPropertyDetail,
+            commentsContent = commentsContent,
+            playbackUiState = playbackUiState,
+            onPlaybackRetry = playbackViewModel::retry,
+            onPageVisible = playbackViewModel::onPageVisible,
+            getPlayer = playbackViewModel::getPlayer,
+            pausePlayback = playbackViewModel::pause,
+            isMediaActive = playbackViewModel::isMediaActive,
+            onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
+            onShareClick = { /* TODO */ },
+            onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
+            onPageChanged = viewModel::onPageChanged,
+            modifier = Modifier.padding(padding)
+        )
+    }
 }
 
 @Composable
@@ -96,6 +115,7 @@ internal fun HomeScreen(
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
     onPageChanged: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val listings = remember(state.properties) {
         state.properties.map { it.toListingUiModel() }
@@ -118,6 +138,7 @@ internal fun HomeScreen(
         onShareClick = onShareClick,
         onRefresh = onRefresh,
         onPageChanged = onPageChanged,
+        modifier = modifier
     )
 }
 
@@ -139,8 +160,9 @@ internal fun HomeFeedContent(
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
     onPageChanged: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         if (isLoading && listings.isEmpty()) {
             LoadingState(modifier = Modifier.align(Alignment.Center))
         } else if ((error != null) && listings.isEmpty()) {

@@ -24,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -70,6 +72,16 @@ fun SearchRoute(
     playbackViewModel: SearchVideoPlaybackViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(playbackViewModel.meteredConnectionEvent) {
+        playbackViewModel.meteredConnectionEvent.collect {
+            snackbarHostState.showSnackbar(
+                message = "You're now using mobile data. Video quality may adjust to save data.",
+                duration = androidx.compose.material3.SnackbarDuration.Short
+            )
+        }
+    }
 
     SearchScreen(
         uiState = uiState,
@@ -80,6 +92,7 @@ fun SearchRoute(
         commentsContent = commentsContent,
         playbackViewModel = playbackViewModel,
         onPageChanged = viewModel::onPageChanged,
+        snackbarHostState = snackbarHostState,
         modifier = modifier
     )
 }
@@ -94,12 +107,14 @@ fun SearchScreen(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackViewModel: SearchVideoPlaybackViewModel,
     onPageChanged: (Int) -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Box(
                 modifier = Modifier
@@ -311,7 +326,8 @@ fun SearchScreenHistoryPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackViewModel = hiltViewModel(),
-                onPageChanged = {}
+                onPageChanged = {},
+                snackbarHostState = remember { SnackbarHostState() }
             )
         }
     }

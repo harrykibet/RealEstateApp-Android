@@ -41,10 +41,14 @@ class EnvironmentCoordinator @Inject constructor(
 
     val environment: StateFlow<EnvironmentState> = _environment.asStateFlow()
 
+    private val _meteredConnectionDetected = MutableSharedFlow<Unit>(replay = 0)
+    val meteredConnectionDetected = _meteredConnectionDetected.asSharedFlow()
+
     private var job: Job? = null
     
     private var consecutiveLowBandwidthCount = 0
     private var isSustainedLowBandwidth = false
+    private var wasMetered = false
 
     companion object {
         private const val LOW_BANDWIDTH_BPS = 500_000L
@@ -75,6 +79,12 @@ class EnvironmentCoordinator @Inject constructor(
             ) { throttle, bandwidth, signals ->
                 val (memoryTrim, isVisible, isInteractive) = signals
                 val isMetered = isNetworkMetered()
+
+                // Detection: WiFi -> Cellular transition
+                if (!wasMetered && isMetered) {
+                    _meteredConnectionDetected.tryEmit(Unit)
+                }
+                wasMetered = isMetered
 
                 // Update detection logic
                 if (bandwidth < LOW_BANDWIDTH_BPS) {

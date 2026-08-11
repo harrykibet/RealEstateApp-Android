@@ -15,8 +15,10 @@ import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -41,6 +43,9 @@ abstract class BaseVideoPlaybackViewModel(
     private var lastMediaContext: FeedMediaContext? = null
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
+
+    private val _meteredConnectionEvent = MutableSharedFlow<Unit>(replay = 0)
+    val meteredConnectionEvent = _meteredConnectionEvent.asSharedFlow()
 
     init {
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -73,6 +78,10 @@ abstract class BaseVideoPlaybackViewModel(
             _uiState.value = uiState
         }
         .launchIn(viewModelScope)
+
+        environmentCoordinator.meteredConnectionDetected
+            .onEach { _meteredConnectionEvent.emit(Unit) }
+            .launchIn(viewModelScope)
     }
 
     private fun handleEngineState(engineState: PlaybackStateReducer.State) {

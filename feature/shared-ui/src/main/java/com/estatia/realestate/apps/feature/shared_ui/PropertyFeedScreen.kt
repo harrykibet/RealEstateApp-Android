@@ -28,6 +28,7 @@ fun PropertyFeedScreen(
     commentsContent: @Composable (String) -> Unit,
     initialPage: Int = 0,
     onPageChanged: (Int) -> Unit = {},
+    onMeteredNetworkDetected: () -> Unit = {},
     onNavigateToDetails: (String) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(
