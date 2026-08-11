@@ -42,6 +42,7 @@ abstract class BaseVideoPlaybackViewModel(
     private val activeMediaId = MutableStateFlow<String?>(null)
     private var lastMediaContext: FeedMediaContext? = null
     private val decoderFailures = mutableSetOf<String>()
+    private val isScreenVisible = MutableStateFlow(true)
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
@@ -62,10 +63,16 @@ abstract class BaseVideoPlaybackViewModel(
 
         combine(
             engineStateFlow,
-            environmentCoordinator.environment
-        ) { engineState, env ->
+            environmentCoordinator.environment,
+            isScreenVisible
+        ) { engineState, env, isVisible ->
             handleEngineState(engineState)
             
+            // ⏱️ Logic: If screen is not visible, force Idle/Paused to prevent "state stealing" on backstack.
+            if (!isVisible) {
+                return@combine PlayerUiState.Idle
+            }
+
             // ⏱️ Logic: If sustained low bandwidth is detected and we are actively trying to play/buffer,
             // surface the informative LowBandwidth state.
             if (env.isSustainedLowBandwidth && 
@@ -130,6 +137,15 @@ abstract class BaseVideoPlaybackViewModel(
     fun pause() = coordinator.pause(viewModelScope)
 
     fun isMediaActive(mediaId: String): Boolean = coordinator.isMediaActive(mediaId)
+
+    fun onScreenVisible() {
+        isScreenVisible.value = true
+    }
+
+    fun onScreenHidden() {
+        isScreenVisible.value = false
+        pause()
+    }
 
     protected open fun mapToUiState(state: PlaybackStateReducer.State): PlayerUiState {
         return when (state) {

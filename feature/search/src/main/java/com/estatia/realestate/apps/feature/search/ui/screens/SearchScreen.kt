@@ -29,6 +29,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -73,6 +74,13 @@ fun SearchRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    DisposableEffect(playbackViewModel) {
+        playbackViewModel.onScreenVisible()
+        onDispose {
+            playbackViewModel.onScreenHidden()
+        }
+    }
 
     LaunchedEffect(playbackViewModel.meteredConnectionEvent) {
         playbackViewModel.meteredConnectionEvent.collect {

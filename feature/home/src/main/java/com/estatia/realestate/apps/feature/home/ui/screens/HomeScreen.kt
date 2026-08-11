@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,13 @@ internal fun HomeRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    DisposableEffect(playbackViewModel) {
+        playbackViewModel.onScreenVisible()
+        onDispose {
+            playbackViewModel.onScreenHidden()
+        }
+    }
 
     LaunchedEffect(playbackViewModel.meteredConnectionEvent) {
         playbackViewModel.meteredConnectionEvent.collect {

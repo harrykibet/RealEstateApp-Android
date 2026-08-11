@@ -103,6 +103,7 @@ fun EngineVideoPlayer(
 
     DisposableEffect(mediaId) {
         onDispose {
+            onPause()
             surfacePool.release(surfaceView)
         }
     }
