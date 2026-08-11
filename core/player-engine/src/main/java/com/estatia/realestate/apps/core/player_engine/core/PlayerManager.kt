@@ -17,6 +17,7 @@ import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -107,13 +108,18 @@ internal class PlayerManager @Inject constructor(
             streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
 
-    override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean) =
+    @OptIn(UnstableApi::class)
+    override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean): ManagedPlayer? =
         withContext(playerDispatcher) {
-            val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy)
-            val environment = environmentCoordinator.environment.value
-            dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
-            attachListenerIfNeeded(managed)
-            managed
+            try {
+                val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy)
+                val environment = environmentCoordinator.environment.value
+                dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
+                attachListenerIfNeeded(managed)
+                managed
+            } catch (_: CancellationException) {
+                null
+            }
         }
 
     override suspend fun pause() {

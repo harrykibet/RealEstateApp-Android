@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -78,14 +79,15 @@ internal class PlayerPool @Inject constructor(
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
         }
-        return prewarm(mediaId, uri, mediaType, forceLegacy)
+        return prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true)
     }
 
     suspend fun prewarm(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean = false
+        forceLegacy: Boolean = false,
+        urgent: Boolean = false
     ): ManagedPlayer {
         checkConfinement()
         
@@ -109,14 +111,28 @@ internal class PlayerPool @Inject constructor(
                 bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy)
             } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy)
 
+            // 🏎️ Late-bound Capacity Check:
+            // If the pool shrunk while we were building this player, and we're at or over capacity,
+            // immediately release this instance unless it's an urgent request (active playback).
+            if (!urgent && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
+                managed.player.removeAnalyticsListener(managed.analyticsListener)
+                managed.analyticsListener.release()
+                managed.player.release()
+                throw CancellationException("Aborting prewarm for $mediaId: pool capacity reached ($maxPoolSize)")
+            }
+
             players[mediaId] = managed
             poolUpdates.tryEmit(Unit)
-            trimIfNeeded(excludeMediaId = null)
+            trimIfNeeded(excludeMediaId = if (urgent) mediaId else null)
             
             newDeferred.complete(managed)
             managed
         } catch (e: Throwable) {
-            newDeferred.completeExceptionally(e)
+            if (e !is CancellationException) {
+                newDeferred.completeExceptionally(e)
+            } else {
+                newDeferred.cancel(e)
+            }
             throw e
         } finally {
             inFlightCreations.remove(mediaId)

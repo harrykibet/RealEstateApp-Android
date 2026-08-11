@@ -51,7 +51,7 @@ interface IPlayerManager {
      * @return A [ManagedPlayer] container holding the pre-prepared player.
      */
     @OptIn(UnstableApi::class)
-    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean = false): ManagedPlayer
+    suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType, forceLegacy: Boolean = false): ManagedPlayer?
 
     /**
      * Returns a [Flow] observing the playback state for a specific media item.
