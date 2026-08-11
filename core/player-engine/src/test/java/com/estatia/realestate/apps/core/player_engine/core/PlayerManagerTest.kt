@@ -14,6 +14,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
+import androidx.core.net.toUri
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -62,6 +63,7 @@ class PlayerManagerTest {
         every { mockLooper.thread } returns Thread.currentThread()
         every { mockLooper.getThread() } returns Thread.currentThread()
         every { Looper.getMainLooper() } returns mockLooper
+        every { Looper.myLooper() } returns mockLooper
         
         pool = mockk(relaxed = true)
         environmentManager = mockk(relaxed = true)
@@ -95,10 +97,10 @@ class PlayerManagerTest {
     }
 
     @Test
-    fun `play calls pool getOrCreate and plays the player`() = runTest {
+    fun `play calls pool getOrCreate and plays the player`() = testScope.runTest {
         // Given
         val mediaId = "media_1"
-        val uri = Uri.parse("https://example.com/video.mp4")
+        val uri = "".toUri()
         val mediaType = MediaType.VOD
         val mockPlayer = mockk<ExoPlayer>(relaxed = true)
         every { mockPlayer.applicationLooper } returns Looper.getMainLooper()
@@ -106,7 +108,7 @@ class PlayerManagerTest {
         val mockManagedPlayer = ManagedPlayer(
             mediaId, mediaType, mockPlayer, mockk(relaxed = true), PlaybackStateReducer(testScope)
         )
-        coEvery { pool.getOrCreate(mediaId, uri, mediaType, any(), any(), any()) } returns mockManagedPlayer
+        coEvery { pool.getOrCreate(mediaId, any(), any(), any(), any(), any()) } returns mockManagedPlayer
 
         // When
         playerManager.play(mediaId, uri, mediaType)

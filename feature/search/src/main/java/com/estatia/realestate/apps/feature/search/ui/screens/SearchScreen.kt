@@ -209,6 +209,7 @@ fun SearchScreen(
                                                 getPlayer = playbackViewModel::getPlayer,
                                                 onPause = { playbackViewModel.pause() },
                                                 isActive = playbackViewModel.isMediaActive(videoUrl),
+                                                onLike = { onLikeClick(listing) },
                                                 modifier = Modifier.fillMaxSize()
                                             )
                                         }

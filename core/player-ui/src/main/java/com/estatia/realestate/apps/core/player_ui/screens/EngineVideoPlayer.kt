@@ -1,31 +1,34 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
 import android.net.Uri
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -33,6 +36,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.Player
+import coil.compose.AsyncImage
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import kotlinx.coroutines.delay
@@ -57,11 +61,14 @@ fun EngineVideoPlayer(
     getPlayer: suspend (String, Uri, MediaType) -> Player,
     onPause: () -> Unit,
     isActive: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    posterUri: Uri? = null,
+    onLike: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val surfacePool = LocalSurfacePool.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Stable player reference
     val playerState = remember(mediaId) {
@@ -82,19 +89,31 @@ fun EngineVideoPlayer(
 
     // Playback control state - Synced with Player via Listener
     var isPlaying by remember { mutableStateOf(false) }
-    var lastClickTime by remember { mutableLongStateOf(0L) }
+    var isBuffering by remember { mutableStateOf(true) }
+    var isMuted by remember { mutableStateOf(false) }
     var showIndicator by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
+    var bufferedProgress by remember { mutableFloatStateOf(0f) }
 
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
                 isPlaying = playing
             }
+            
+            override fun onPlaybackStateChanged(state: Int) {
+                isBuffering = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE
+            }
+
+            override fun onVolumeChanged(volume: Float) {
+                isMuted = volume == 0f
+            }
         }
         player?.addListener(listener)
         // Sync initial state
         isPlaying = player?.isPlaying ?: false
+        isBuffering = player?.playbackState == Player.STATE_BUFFERING || player?.playbackState == Player.STATE_IDLE
+        isMuted = player?.volume == 0f
 
         onDispose {
             player?.removeListener(listener)
@@ -110,14 +129,20 @@ fun EngineVideoPlayer(
 
     // Progress polling
     LaunchedEffect(player, isActive, isPlaying) {
-        if (player != null && isActive && isPlaying) {
+        if (player != null && isActive) {
             while (true) {
                 val current = player.currentPosition.toDouble()
                 val duration = player.duration.toDouble()
                 if (duration > 0) {
                     progress = (current / duration).toFloat()
                 }
-                delay(200.milliseconds)
+                
+                val buffered = player.bufferedPosition.toDouble()
+                if (duration > 0) {
+                    bufferedProgress = (buffered / duration).toFloat()
+                }
+                
+                delay(if (isPlaying) 200.milliseconds else 1000.milliseconds)
             }
         }
     }
@@ -153,35 +178,56 @@ fun EngineVideoPlayer(
     }
 
     Box(modifier = modifier) {
-        AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    val now = System.currentTimeMillis()
-                    if (now - lastClickTime < 200) return@clickable
-                    lastClickTime = now
-
-                    if (player != null) {
-                        if (player.isPlaying) {
-                            player.pause()
-                        } else {
-                            player.play()
-                        }
-                        showIndicator = true
-                    }
-                },
-            factory = { surfaceView }
-        )
+        Crossfade(
+            targetState = isBuffering && posterUri != null,
+            animationSpec = tween(durationMillis = 500),
+            label = "VideoPosterCrossfade"
+        ) { showPoster ->
+            if (showPoster) {
+                AsyncImage(
+                    model = posterUri,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                AndroidView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(player, isActive) {
+                            detectTapGestures(
+                                onDoubleTap = {
+                                    onLike()
+                                },
+                                onLongPress = {
+                                    player?.pause()
+                                },
+                                onPress = {
+                                    try {
+                                        awaitRelease()
+                                        if (isActive && player != null && !player.isPlaying) {
+                                            player.play()
+                                        }
+                                    } catch (_: Exception) {}
+                                },
+                                onTap = {
+                                    if (player != null) {
+                                        if (player.isPlaying) {
+                                            player.pause()
+                                        } else {
+                                            player.play()
+                                        }
+                                        showIndicator = true
+                                    }
+                                }
+                            )
+                        },
+                    factory = { surfaceView }
+                )
+            }
+        }
 
         // Play/Pause Indicator Overlay
-        val indicatorAlpha by animateFloatAsState(
-            targetValue = if (showIndicator && !isPlaying) 1f else 0f,
-            label = "IndicatorAlpha"
-        )
-
         if (showIndicator && !isPlaying) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
@@ -190,29 +236,48 @@ fun EngineVideoPlayer(
                 modifier = Modifier
                     .size(80.dp)
                     .align(Alignment.Center)
-                    .alpha(indicatorAlpha)
             )
 
-            // Auto-hide indicator if it was just a transient tap
+            // Auto-hide indicator
             LaunchedEffect(showIndicator) {
-                delay(800)
+                delay(800.milliseconds)
                 showIndicator = false
             }
         }
 
-        // Progress Bar at bottom
-        Box(
+        // 🏗️ Advanced Video Progress Bar
+        VideoProgressBar(
+            progress = progress,
+            bufferedProgress = bufferedProgress,
+            onSeekRequest = { seekTo ->
+                player?.let {
+                    val targetMs = (seekTo * it.duration).toLong()
+                    it.seekTo(targetMs)
+                }
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
                 .align(Alignment.BottomCenter)
-                .background(Color.White.copy(alpha = 0.2f))
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+
+        // 🔊 Mute Toggle
+        IconButton(
+            onClick = {
+                player?.let {
+                    val newVolume = if (it.volume == 0f) 1f else 0f
+                    it.volume = newVolume
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(progress.coerceIn(0f, 1f))
-                    .height(2.dp)
-                    .background(Color.White)
+            Icon(
+                imageVector = if (isMuted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+                contentDescription = if (isMuted) "Unmute" else "Mute",
+                tint = Color.White.copy(alpha = 0.6f),
+                modifier = Modifier.size(24.dp)
             )
         }
     }

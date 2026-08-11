@@ -21,7 +21,6 @@ interface IPlayerManager {
      * @param mediaId Unique identifier for the media asset.
      * @param uri The source URI for the media.
      * @param mediaType The type of media (e.g., LIVE or VOD).
-     * @param forceLegacy Use a baseline legacy codec (e.g. H.264) regardless of device capability.
      * @param title Optional title for media session metadata.
      * @param artist Optional artist name for media session metadata.
      */
@@ -29,7 +28,6 @@ interface IPlayerManager {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean = false,
         title: String? = null,
         artist: String? = null
     )
@@ -56,7 +54,6 @@ interface IPlayerManager {
      * @param mediaId Unique identifier for the media asset.
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
-     * @param forceLegacy Use a baseline legacy codec override.
      * @param title Optional title for media session metadata.
      * @param artist Optional artist name for media session metadata.
      * @return A [ManagedPlayer] container holding the pre-prepared player.
@@ -66,7 +63,6 @@ interface IPlayerManager {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean = false,
         title: String? = null,
         artist: String? = null
     ): ManagedPlayer?
@@ -88,4 +84,14 @@ interface IPlayerManager {
      * Returns true if a video is currently playing in the active player.
      */
     fun isPlaying(): Boolean
+
+    /**
+     * Returns true if the specified media ID is the currently active one.
+     */
+    fun isMediaActive(mediaId: String): Boolean
+
+    /**
+     * The ID of the currently active media item, if any.
+     */
+    val activeMediaId: String?
 }

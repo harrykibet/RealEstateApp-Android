@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.FeedNeighborInfo
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
@@ -98,7 +97,7 @@ abstract class BaseVideoPlaybackViewModel(
                 val currentId = activeMediaId.value
                 if (currentId != null && !decoderFailures.contains(currentId)) {
                     decoderFailures.add(currentId)
-                    retry(forceLegacy = true)
+                    retry()
                     return@onEach
                 }
             }
@@ -123,7 +122,6 @@ abstract class BaseVideoPlaybackViewModel(
         lastMediaContext = context
         activeMediaId.value = context.mediaId
         activeUri.value = context.uri
-        val forceLegacy = decoderFailures.contains(context.mediaId)
 
         coordinator.onPageVisible(
             scope = viewModelScope,
@@ -131,15 +129,14 @@ abstract class BaseVideoPlaybackViewModel(
             uri = context.uri,
             previous = context.previous.map { FeedNeighborInfo(it.mediaId, it.uri, it.title, it.artist) },
             next = context.next.map { FeedNeighborInfo(it.mediaId, it.uri, it.title, it.artist) },
-            forceLegacy = forceLegacy,
             title = context.title,
             artist = context.artist
         )
     }
 
-    fun retry(forceLegacy: Boolean = false) {
+    fun retry() {
         val context = lastMediaContext ?: return
-        coordinator.retry(viewModelScope, context.mediaId, context.uri, forceLegacy)
+        coordinator.retry(viewModelScope, context.mediaId, context.uri)
     }
 
     suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =

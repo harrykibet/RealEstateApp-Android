@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
@@ -56,7 +57,11 @@ class AudioFocusManager @Inject constructor(
 
     init {
         val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        context.registerReceiver(noisyReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(noisyReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(noisyReceiver, filter)
+        }
     }
 
     fun setCallbacks(onLost: () -> Unit, onGained: () -> Unit) {
@@ -90,5 +95,11 @@ class AudioFocusManager @Inject constructor(
             audioManager?.abandonAudioFocusRequest(request)
         }
         activeFocusRequest = null
+    }
+
+    fun cleanup() {
+        try {
+            context.unregisterReceiver(noisyReceiver)
+        } catch (_: Exception) { }
     }
 }

@@ -216,6 +216,7 @@ internal fun HomeFeedContent(
                                     getPlayer = getPlayer,
                                     onPause = pausePlayback,
                                     isActive = isMediaActive(videoUrl),
+                                    onLike = { onLikeClick(listing) },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }

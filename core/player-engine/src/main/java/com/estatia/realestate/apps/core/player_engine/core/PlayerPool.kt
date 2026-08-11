@@ -16,7 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
@@ -36,13 +36,12 @@ class PlayerPool @Inject constructor(
     @param:EngineScope private val scope: CoroutineScope,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
-    private val confinementThread: Thread = Looper.getMainLooper().thread
     private val inFlightCreations = mutableMapOf<String, CompletableDeferred<ManagedPlayer>>()
 
     private fun checkConfinement() {
-        check(Thread.currentThread() === confinementThread) {
-            "PlayerPool must only be accessed from the player dispatcher thread (Main). " +
-                    "Called from ${Thread.currentThread().name}, expected ${confinementThread.name}."
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("PlayerPool must only be accessed from the player dispatcher thread (Main). " +
+                    "Called from ${Thread.currentThread().name}, expected Main.")
         }
     }
 
@@ -62,7 +61,7 @@ class PlayerPool @Inject constructor(
     fun observeMediaState(mediaId: String): Flow<PlaybackStateReducer.State> {
         return poolUpdates.onStart { emit(Unit) }
             .flatMapLatest {
-                players[mediaId]?.reducer?.state ?: flow { emit(PlaybackStateReducer.State.Idle) }
+                players[mediaId]?.reducer?.state ?: flowOf(PlaybackStateReducer.State.Idle)
             }
     }
 
@@ -79,7 +78,8 @@ class PlayerPool @Inject constructor(
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
         }
-        return prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)
+        val result = prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)
+        return if (result is PrewarmResult.Success) result.managed else throw IllegalStateException("Critical: Urgent prewarm failed")
     }
 
     suspend fun prewarm(
@@ -90,16 +90,16 @@ class PlayerPool @Inject constructor(
         urgent: Boolean = false,
         title: String? = null,
         artist: String? = null
-    ): ManagedPlayer {
+    ): PrewarmResult {
         checkConfinement()
         
         // 1. Check if already active
-        players[mediaId]?.let { return it }
+        players[mediaId]?.let { return PrewarmResult.Success(it) }
 
         // 2. Check if creation is already in-flight for this specific ID
         val deferred = inFlightCreations[mediaId]
         if (deferred != null) {
-            return deferred.await()
+            return PrewarmResult.Success(deferred.await())
         }
 
         // 3. Start a new creation task
@@ -117,10 +117,8 @@ class PlayerPool @Inject constructor(
             // If the pool shrunk while we were building this player, and we're at or over capacity,
             // immediately release this instance unless it's an urgent request (active playback).
             if (!urgent && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
-                managed.player.removeAnalyticsListener(managed.analyticsListener)
-                managed.analyticsListener.release()
                 managed.player.release()
-                throw CancellationException("Aborting prewarm for $mediaId: pool capacity reached ($maxPoolSize)")
+                return PrewarmResult.Rejected
             }
 
             players[mediaId] = managed
@@ -128,24 +126,21 @@ class PlayerPool @Inject constructor(
             trimIfNeeded(excludeMediaId = if (urgent) mediaId else null)
             
             newDeferred.complete(managed)
-            managed
+            PrewarmResult.Success(managed)
         } catch (e: Throwable) {
-            if (e !is CancellationException) {
-                newDeferred.completeExceptionally(e)
-            } else {
-                newDeferred.cancel(e)
-            }
-            throw e
+            newDeferred.completeExceptionally(e)
+            PrewarmResult.Failure(e)
         } finally {
             inFlightCreations.remove(mediaId)
         }
     }
 
-    private suspend fun ensureIdlePlayers() {
+    private fun ensureIdlePlayers() {
         while (idlePlayers.size < prewarmBudget) {
             val created = playerFactory.createIdle()
             
-            // Immediately detach listener for pooling
+            // 🏎️ Lazy Listener Allocation: Don't attach an analytics listener to idle players.
+            // It will be attached in bindIdlePlayer or createManagedPlayer at bind-time.
             created.player.removeAnalyticsListener(created.analyticsListener)
             created.analyticsListener.release()
             

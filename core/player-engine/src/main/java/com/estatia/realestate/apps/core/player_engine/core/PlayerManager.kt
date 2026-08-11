@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
+import android.os.Looper
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -19,10 +20,7 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,9 +45,11 @@ class PlayerManager @Inject constructor(
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) : IPlayerManager {
 
-    private var activeMediaId: String? = null
-    private val activeMediaIdFlow = MutableStateFlow<String?>(null)
+    override var activeMediaId: String? = null
+        private set
+
     private val attachedPlayers = WeakHashMap<Player, Boolean>()
+    private val decoderFailures = mutableSetOf<String>()
     private var wasPlayingBeforePause: Boolean = false
     
     private var mediaSession: MediaSession? = null
@@ -95,15 +95,22 @@ class PlayerManager @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean,
         title: String?,
         artist: String?
     ) =
         withContext(playerDispatcher) {
+            checkConfinement()
+            
+            // 🌡️ Internal Decoder Fallback:
+            // The engine now automatically handles the decision to force legacy if previous attempts failed.
+            val forceLegacy = decoderFailures.contains(mediaId)
+
             val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy, title, artist)
             val environment = environmentCoordinator.environment.value
 
             if (activeMediaId != mediaId) {
+                // 🏎️ Authoritative Source Check:
+                // Ensure we pause any previous player correctly using the engine's pointer.
                 activeMediaId?.let { previous -> pool.get(previous)?.player?.pause() }
             }
 
@@ -121,7 +128,6 @@ class PlayerManager @Inject constructor(
             audioFocusManager.request()
             
             activeMediaId = mediaId
-            activeMediaIdFlow.value = mediaId
             environmentManager.updateActiveMediaId(mediaId)
             
             streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
@@ -132,20 +138,20 @@ class PlayerManager @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
-        forceLegacy: Boolean,
         title: String?,
         artist: String?
     ): ManagedPlayer? =
         withContext(playerDispatcher) {
-            try {
-                val managed = pool.prewarm(mediaId, uri, mediaType, forceLegacy, false, title, artist)
+            checkConfinement()
+            // Speculative preloads don't force legacy until they fail once
+            val result = pool.prewarm(mediaId, uri, mediaType, false, false, title, artist)
+            if (result is PrewarmResult.Success) {
+                val managed = result.managed
                 val environment = environmentCoordinator.environment.value
                 dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
                 attachListenerIfNeeded(managed)
                 managed
-            } catch (_: CancellationException) {
-                null
-            }
+            } else null
         }
 
     override suspend fun pause() {
@@ -166,6 +172,7 @@ class PlayerManager @Inject constructor(
         engineScope.launch(playerDispatcher) {
             pauseCurrentPlayer()
             audioFocusManager.abandon()
+            audioFocusManager.cleanup()
             mediaSession?.release()
             mediaSession = null
             pool.releaseAll()
@@ -174,7 +181,13 @@ class PlayerManager @Inject constructor(
     }
 
     override fun isPlaying(): Boolean {
+        checkConfinement()
         return isCurrentlyPlaying()
+    }
+
+    override fun isMediaActive(mediaId: String): Boolean {
+        checkConfinement()
+        return activeMediaId == mediaId
     }
 
     private fun updateMediaSession(player: ExoPlayer) {
@@ -190,7 +203,14 @@ class PlayerManager @Inject constructor(
     }
 
     private fun isCurrentlyPlaying(): Boolean {
+        checkConfinement()
         return activeMediaId?.let { pool.get(it)?.player?.isPlaying } ?: false
+    }
+
+    private fun checkConfinement() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("PlayerManager must only be accessed from the Main thread.")
+        }
     }
 
     private fun resumeCurrentPlayer() {
@@ -236,6 +256,11 @@ class PlayerManager @Inject constructor(
                 if (events.contains(Player.EVENT_PLAYER_ERROR)) {
                     player.playerError?.let { error ->
                         engineScope.launch {
+                            // 🌡️ Handle Decoder Failure internally
+                            if (error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED) {
+                                pool.getMediaId(player as ExoPlayer)?.let { decoderFailures.add(it) }
+                            }
+
                             val isNetworkError = isNetworkError(error)
                             val networkState = networkStateProvider.current()
                             

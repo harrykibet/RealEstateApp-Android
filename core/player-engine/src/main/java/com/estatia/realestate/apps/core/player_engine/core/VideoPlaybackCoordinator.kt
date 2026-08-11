@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
+import android.os.Looper
 import android.os.SystemClock
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -23,7 +24,6 @@ class VideoPlaybackCoordinator @Inject constructor(
     private val streamingPipeline: IStreamingPipeline,
     private val performanceMonitor: PerformanceMonitor
 ) {
-    private var currentMediaId: String? = null
     private var playJob: Job? = null
     private var preloadJob: Job? = null
 
@@ -50,13 +50,13 @@ class VideoPlaybackCoordinator @Inject constructor(
         uri: Uri,
         previous: List<FeedNeighborInfo>,
         next: List<FeedNeighborInfo>,
-        forceLegacy: Boolean = false,
         title: String? = null,
         artist: String? = null
     ) {
-        if (currentMediaId == mediaId) return
-        currentMediaId = mediaId
-
+        checkConfinement()
+        
+        if (playerController.activeMediaId == mediaId) return
+        
         // Fling Heuristic: detect rapid flicking
         val now = SystemClock.elapsedRealtime()
         if (now - lastPageChangeTime < FAST_SCROLL_THRESHOLD_MS) {
@@ -85,7 +85,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         playJob = scope.launch {
             delay(debounceTime.milliseconds)
             warmVisible(mediaId, uri)
-            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy, title, artist)
+            playerController.play(mediaId, uri, MediaType.VOD, title, artist)
         }
 
         // Only prewarm neighbors if not flinging to reduce list virtualization pressure
@@ -95,13 +95,13 @@ class VideoPlaybackCoordinator @Inject constructor(
 
                 // 1. Symmetric Warming: Warm previous neighbor (N=1)
                 previous.firstOrNull()?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy, it.title, it.artist)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
                     warmPrevious(it.mediaId, it.uri)
                 }
 
                 // 2. Deep Warming: Warm next neighbors (N=2)
                 next.getOrNull(0)?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, forceLegacy, it.title, it.artist)
+                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
                     warmNext(it.mediaId, it.uri)
                 }
 
@@ -113,11 +113,18 @@ class VideoPlaybackCoordinator @Inject constructor(
     }
 
     private fun markWarmed(mediaId: String): Boolean {
+        checkConfinement()
         val isNew = warmedMedia.add(mediaId)
         while (warmedMedia.size > MAX_WARMED_MEDIA) {
             warmedMedia.remove(warmedMedia.first())
         }
         return isNew
+    }
+
+    private fun checkConfinement() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("VideoPlaybackCoordinator must only be accessed from the Main thread.")
+        }
     }
 
     private fun warmVisible(mediaId: String, uri: Uri) {
@@ -154,12 +161,13 @@ class VideoPlaybackCoordinator @Inject constructor(
         }
     }
 
-    fun isMediaActive(mediaId: String): Boolean = currentMediaId == mediaId
+    fun isMediaActive(mediaId: String): Boolean = playerController.isMediaActive(mediaId)
 
-    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri, forceLegacy: Boolean = false) {
+    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri) {
+        checkConfinement()
         playJob?.cancel()
         playJob = scope.launch {
-            playerController.play(mediaId, uri, MediaType.VOD, forceLegacy)
+            playerController.play(mediaId, uri, MediaType.VOD)
         }
     }
 
@@ -167,8 +175,8 @@ class VideoPlaybackCoordinator @Inject constructor(
     fun onBufferingEnded() = streamingPipeline.onBufferingEnded()
 
     fun clear() {
+        checkConfinement()
         warmedMedia.clear()
-        currentMediaId = null
         consecutiveFastScrolls = 0
     }
 }

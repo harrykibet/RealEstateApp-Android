@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeli
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import javax.inject.Inject
 import androidx.core.net.toUri
 
@@ -18,7 +19,8 @@ class PlayerConfigurationFactory @Inject constructor(
     private val cdnSelector: CdnSelector,
     private val config: IConfigProvider,
     private val hdrConfiguration: HdrConfiguration,
-    private val environmentCoordinator: EnvironmentCoordinator
+    private val environmentCoordinator: EnvironmentCoordinator,
+    private val logger: ILogger
 ) : IPlayerConfigurationFactory {
 
     override suspend fun create(
@@ -63,7 +65,15 @@ class PlayerConfigurationFactory @Inject constructor(
      * optimization, not a playback precondition.
      */
     private fun resolveViaCdn(uri: Uri): Uri {
-        val endpoint = runCatching { cdnSelector.select() }.getOrNull() ?: return uri
+        if (!needsCdnResolution(uri)) return uri
+
+        val endpoint = try {
+            cdnSelector.select()
+        } catch (e: Exception) {
+            logger.e("CDN", "Resolution failure for $uri. Falling back to raw host.", e)
+            null
+        } ?: return uri
+        
         val endpointUri = endpoint.baseUrl.toUri()
         return uri.buildUpon()
             .scheme(endpointUri.scheme ?: uri.scheme)
