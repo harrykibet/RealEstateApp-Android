@@ -58,6 +58,9 @@ private fun ApplicationExtension.applyCommon(
             "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
+
+        // Required for AppAuth (AWS Cognito / OIDC) even in libraries/tests
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.estatia.realestate.apps.auth"
     }
 
     compileOptions {
@@ -103,6 +106,9 @@ private fun LibraryExtension.applyCommon(
             "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
+
+        // Required for AppAuth (AWS Cognito / OIDC) even in libraries/tests
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.estatia.realestate.apps.auth"
     }
 
     compileOptions {

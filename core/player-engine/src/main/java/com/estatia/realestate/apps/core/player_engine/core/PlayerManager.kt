@@ -32,7 +32,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-internal class PlayerManager @Inject constructor(
+class PlayerManager @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val pool: PlayerPool,
     private val environmentManager: PlayerEnvironmentManager,
@@ -252,4 +252,9 @@ internal class PlayerManager @Inject constructor(
             }
         })
     }
+
+    // region Testing Hooks
+    val debugActiveMediaId: String?
+        get() = activeMediaId
+    // endregion
 }

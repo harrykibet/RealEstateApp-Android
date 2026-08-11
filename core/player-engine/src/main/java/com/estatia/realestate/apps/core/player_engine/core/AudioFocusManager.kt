@@ -22,7 +22,7 @@ import javax.inject.Singleton
  */
 @UnstableApi
 @Singleton
-internal class AudioFocusManager @Inject constructor(
+class AudioFocusManager @Inject constructor(
     @ApplicationContext private val context: Context,
     @param:EngineScope private val engineScope: CoroutineScope,
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher

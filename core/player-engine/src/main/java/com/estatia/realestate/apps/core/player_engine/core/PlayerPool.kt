@@ -28,7 +28,7 @@ import javax.inject.Singleton
 
 @UnstableApi
 @Singleton
-internal class PlayerPool @Inject constructor(
+class PlayerPool @Inject constructor(
     private val playerFactory: PlayerFactory,
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
@@ -315,4 +315,17 @@ internal class PlayerPool @Inject constructor(
         }
         poolUpdates.tryEmit(Unit)
     }
+
+    // region Testing Hooks
+    val debugPlayerCount: Int
+        get() = players.size
+
+    val debugMaxPoolSize: Int
+        get() = maxPoolSize
+
+    fun debugHasDuplicateInstances(): Boolean {
+        val playerInstances = players.values.map { it.player }
+        return playerInstances.size != playerInstances.distinct().size
+    }
+    // endregion
 }

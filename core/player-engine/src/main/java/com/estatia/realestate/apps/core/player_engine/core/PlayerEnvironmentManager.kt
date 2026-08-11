@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @UnstableApi
 @Singleton
-internal class PlayerEnvironmentManager @Inject constructor(
+class PlayerEnvironmentManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val sizingPolicy: IPlayerPoolSizingPolicy,

@@ -31,8 +31,12 @@ class TestingConventionPlugin : Plugin<Project> {
                     libs.findLibrary("espresso.contrib").get(),
                     libs.findLibrary("core.testing").get(),
                     libs.findLibrary("androidx.test.ext.junit").get(),
-                    libs.findLibrary("espresso.core").get()
+                    libs.findLibrary("espresso.core").get(),
+                    libs.findLibrary("hilt.android.testing").get(),
+                    libs.findLibrary("androidx.compose.ui.test.junit4").get()
                 ).forEach { add("androidTestImplementation", it) }
+                
+                "debugImplementation"(libs.findLibrary("androidx.compose.ui.test.manifest").get())
             }
         }
     }
