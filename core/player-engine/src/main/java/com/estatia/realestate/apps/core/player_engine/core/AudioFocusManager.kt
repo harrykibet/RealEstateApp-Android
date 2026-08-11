@@ -1,6 +1,9 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -30,6 +33,16 @@ internal class AudioFocusManager @Inject constructor(
     private var onFocusLost: (() -> Unit)? = null
     private var onFocusGained: (() -> Unit)? = null
 
+    private val noisyReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                engineScope.launch(playerDispatcher) {
+                    onFocusLost?.invoke()
+                }
+            }
+        }
+    }
+
     private val audioFocusListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         engineScope.launch(playerDispatcher) {
             when (focusChange) {
@@ -39,6 +52,11 @@ internal class AudioFocusManager @Inject constructor(
                 AudioManager.AUDIOFOCUS_GAIN -> onFocusGained?.invoke()
             }
         }
+    }
+
+    init {
+        val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        context.registerReceiver(noisyReceiver, filter)
     }
 
     fun setCallbacks(onLost: () -> Unit, onGained: () -> Unit) {
