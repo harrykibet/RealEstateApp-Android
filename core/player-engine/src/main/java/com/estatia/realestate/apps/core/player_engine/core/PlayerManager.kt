@@ -45,7 +45,9 @@ internal class PlayerManager @Inject constructor(
             onLost = { pauseCurrentPlayer() },
             onGained = { resumeCurrentPlayer() }
         )
-        environmentManager.start()
+        environmentManager.start(
+            onAppBackgrounded = { pause() }
+        )
     }
 
     override suspend fun play(mediaId: String, uri: Uri, mediaType: MediaType) =

@@ -8,9 +8,12 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Orchestrates player pool adjustments and bitrate strategy based on environment changes.
@@ -26,15 +29,29 @@ internal class PlayerEnvironmentManager @Inject constructor(
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) {
     private var activeMediaId: String? = null
+    private var graceJob: Job? = null
 
-    fun start() {
+    fun start(onAppBackgrounded: suspend () -> Unit) {
         environmentCoordinator.start(engineScope)
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
-                // 1. React to app backgrounding: aggressive release
+                // 1. React to app visibility changes
                 if (!env.isAppVisible) {
-                    pool.releaseAll()
+                    // Immediate action: Stop playback and focus
+                    onAppBackgrounded()
+                    
+                    // Delayed action: Reclaim hardware resources after 60s
+                    if (graceJob == null) {
+                        graceJob = launch {
+                            delay(60000.milliseconds)
+                            pool.releaseAll()
+                        }
+                    }
                     return@collect
+                } else {
+                    // User returned: preserve warm resources
+                    graceJob?.cancel()
+                    graceJob = null
                 }
 
                 // 2. Dynamic pool sizing based on environment (memory, battery, etc.)
