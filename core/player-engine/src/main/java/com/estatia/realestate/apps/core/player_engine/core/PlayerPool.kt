@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CompletableDeferred
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -34,7 +33,7 @@ internal class PlayerPool @Inject constructor(
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
     private val confinementThread: Thread = Looper.getMainLooper().thread
-    private val prewarmMutex = Mutex()
+    private val inFlightCreations = mutableMapOf<String, CompletableDeferred<ManagedPlayer>>()
 
     private fun checkConfinement() {
         check(Thread.currentThread() === confinementThread) {
@@ -87,20 +86,41 @@ internal class PlayerPool @Inject constructor(
         uri: Uri,
         mediaType: MediaType,
         forceLegacy: Boolean = false
-    ): ManagedPlayer = prewarmMutex.withLock {
+    ): ManagedPlayer {
         checkConfinement()
-        players[mediaId]?.let { return@withLock it }
+        
+        // 1. Check if already active
+        players[mediaId]?.let { return it }
 
-        ensureIdlePlayers()
+        // 2. Check if creation is already in-flight for this specific ID
+        val deferred = inFlightCreations[mediaId]
+        if (deferred != null) {
+            return deferred.await()
+        }
 
-        val managed = idlePlayers.removeFirstOrNull()?.let { idle ->
-            bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy)
-        } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy)
+        // 3. Start a new creation task
+        val newDeferred = CompletableDeferred<ManagedPlayer>()
+        inFlightCreations[mediaId] = newDeferred
 
-        players[mediaId] = managed
-        poolUpdates.tryEmit(Unit)
-        trimIfNeeded(excludeMediaId = null)
-        return@withLock managed
+        return try {
+            ensureIdlePlayers()
+
+            val managed = idlePlayers.removeFirstOrNull()?.let { idle ->
+                bindIdlePlayer(idle, mediaId, uri, mediaType, forceLegacy)
+            } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy)
+
+            players[mediaId] = managed
+            poolUpdates.tryEmit(Unit)
+            trimIfNeeded(excludeMediaId = null)
+            
+            newDeferred.complete(managed)
+            managed
+        } catch (e: Throwable) {
+            newDeferred.completeExceptionally(e)
+            throw e
+        } finally {
+            inFlightCreations.remove(mediaId)
+        }
     }
 
     private suspend fun ensureIdlePlayers() {
