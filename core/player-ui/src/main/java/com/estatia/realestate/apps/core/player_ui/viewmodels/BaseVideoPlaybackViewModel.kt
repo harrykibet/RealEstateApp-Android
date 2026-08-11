@@ -40,6 +40,7 @@ abstract class BaseVideoPlaybackViewModel(
 ) : ViewModel() {
 
     private val activeMediaId = MutableStateFlow<String?>(null)
+    private val activeUri = MutableStateFlow<Uri?>(null)
     private var lastMediaContext: FeedMediaContext? = null
     private val decoderFailures = mutableSetOf<String>()
     private val isScreenVisible = MutableStateFlow(true)
@@ -64,13 +65,20 @@ abstract class BaseVideoPlaybackViewModel(
         combine(
             engineStateFlow,
             environmentCoordinator.environment,
-            isScreenVisible
-        ) { engineState, env, isVisible ->
+            isScreenVisible,
+            activeUri
+        ) { engineState, env, isVisible, uri ->
             handleEngineState(engineState)
             
             // ⏱️ Logic: If screen is not visible, force Idle/Paused to prevent "state stealing" on backstack.
             if (!isVisible) {
                 return@combine PlayerUiState.Idle
+            }
+
+            // 🌡️ Logic: URI Sanity Check
+            // If the URI is malformed or empty, surface a content error immediately.
+            if (uri != null && !isValidMediaUri(uri)) {
+                return@combine PlayerUiState.Error("Invalid video link", PlayerErrorType.INVALID_URI)
             }
 
             // ⏱️ Logic: If sustained low bandwidth is detected and we are actively trying to play/buffer,
@@ -114,6 +122,7 @@ abstract class BaseVideoPlaybackViewModel(
     fun onPageVisible(context: FeedMediaContext) {
         lastMediaContext = context
         activeMediaId.value = context.mediaId
+        activeUri.value = context.uri
         val forceLegacy = decoderFailures.contains(context.mediaId)
 
         coordinator.onPageVisible(
@@ -177,5 +186,18 @@ abstract class BaseVideoPlaybackViewModel(
 
     override fun onCleared() {
         coordinator.clear()
+    }
+
+    private fun isValidMediaUri(uri: Uri): Boolean {
+        val scheme = uri.scheme ?: return false
+        val validSchemes = listOf("http", "https", "file", "content")
+        if (scheme !in validSchemes) return false
+
+        // For network URIs, host must be present
+        if (scheme == "http" || scheme == "https") {
+            if (uri.host.isNullOrBlank()) return false
+        }
+
+        return true
     }
 }

@@ -45,6 +45,8 @@ fun PlaybackErrorView(
             Icons.Default.ErrorOutline to "Video format not supported on this device."
         PlayerErrorType.NOT_FOUND -> 
             Icons.Default.ErrorOutline to "Video not found."
+        PlayerErrorType.INVALID_URI -> 
+            Icons.Default.ErrorOutline to "This video is currently unavailable."
         PlayerErrorType.UNKNOWN -> 
             Icons.Default.ErrorOutline to (errorState.message ?: "An unexpected error occurred.")
     }
