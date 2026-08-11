@@ -8,8 +8,8 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.collections.ArrayDeque
 
 /**
@@ -17,16 +17,24 @@ import kotlin.collections.ArrayDeque
  * Dynamically adjusts its capacity based on [IPlayerPoolSizingPolicy].
  */
 @OptIn(UnstableApi::class)
-@Singleton
+@ActivityRetainedScoped
 class SurfacePool @Inject constructor(
     private val sizingPolicy: IPlayerPoolSizingPolicy,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val hdrConfiguration: HdrConfiguration
 ) {
     private val pool = ArrayDeque<SurfaceView>()
+    private var lastContextHash: Int? = null
 
     fun acquire(context: Context): SurfaceView {
         return synchronized(this) {
+            val currentContextHash = System.identityHashCode(context)
+            if (lastContextHash != null && lastContextHash != currentContextHash) {
+                // Activity was recreated (config change). Evict stale surfaces to prevent leaks and artifacts.
+                pool.clear()
+            }
+            lastContextHash = currentContextHash
+
             pool.removeFirstOrNull() ?: createSurface(context)
         }
     }
