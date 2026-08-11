@@ -61,6 +61,31 @@ class CdnHealthMonitor @Inject constructor(
         }
     }
 
+    /**
+     * Reports an external failure (like a 500 error or timeout) for a specific endpoint.
+     * This allows the circuit breaker to react to real-world media loading issues.
+     */
+    suspend fun reportExternalFailure(baseUrl: String) {
+        mutexFor(baseUrl).withLock {
+            val previous = healthMap[baseUrl]
+            val now = clock()
+            
+            val failures = (previous?.failureCount ?: 0) + 1
+            val circuitOpenUntil = if (failures >= failureThreshold) {
+                now + circuitOpenDuration.inWholeMilliseconds
+            } else {
+                previous?.circuitOpenUntil
+            }
+
+            healthMap[baseUrl] = CdnHealth(
+                latencyMs = previous?.latencyMs,
+                failureCount = failures,
+                lastCheckedAt = now,
+                circuitOpenUntil = circuitOpenUntil
+            )
+        }
+    }
+
     private suspend fun measure(
         endpoint: CdnEndpoint,
         previous: CdnHealth?

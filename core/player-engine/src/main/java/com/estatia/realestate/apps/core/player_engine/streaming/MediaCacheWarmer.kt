@@ -30,6 +30,7 @@ import javax.inject.Singleton
 class MediaCacheWarmer @Inject constructor(
     @param:PlaybackCache private val playbackDataSourceFactory: DataSource.Factory,
     private val environmentCoordinator: EnvironmentCoordinator,
+    private val cdnHealthMonitor: CdnHealthMonitor,
     @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: ILogger
@@ -189,9 +190,20 @@ class MediaCacheWarmer @Inject constructor(
         } catch (e: Exception) {
             val message = when (e) {
                 is HttpDataSource.InvalidResponseCodeException -> {
+                    // Feed failure back to CDN health monitor
+                    val baseUrl = "${uri.scheme}://${uri.authority}"
+                    cdnHealthMonitor.reportExternalFailure(baseUrl)
                     "Failed to prefetch uri: $uri. Max bytes: $maxBytes. Response code: ${e.responseCode}. Data: ${e.dataSpec}"
                 }
-                else -> "Failed to prefetch uri: $uri. Max bytes: $maxBytes"
+                is java.io.IOException -> {
+                    // Feed network/timeout failure back to CDN health monitor
+                    val baseUrl = "${uri.scheme}://${uri.authority}"
+                    cdnHealthMonitor.reportExternalFailure(baseUrl)
+                    "Failed to prefetch uri: $uri. Max bytes: $maxBytes (IO Error)"
+                }
+                else -> {
+                    "Failed to prefetch uri: $uri. Max bytes: $maxBytes"
+                }
             }
             logger.e("MediaCacheWarmer", message, e)
         }
