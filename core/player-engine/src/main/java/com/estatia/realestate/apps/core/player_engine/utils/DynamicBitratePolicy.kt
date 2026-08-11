@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
+import android.os.PowerManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.property.MediaType
 import javax.inject.Inject
@@ -30,7 +31,15 @@ class DynamicBitratePolicy @Inject constructor(
             else -> base
         }
 
-        // 2. BOLA-lite Buffer Penalty
+        // 2. Thermal Tiers (Harden performance reduction during overheating)
+        adjusted *= when {
+            environment.thermalStatus >= PowerManager.THERMAL_STATUS_CRITICAL -> 0.15
+            environment.thermalStatus >= PowerManager.THERMAL_STATUS_SEVERE -> 0.35
+            environment.thermalStatus >= PowerManager.THERMAL_STATUS_MODERATE -> 0.7
+            else -> 1.0
+        }
+
+        // 3. BOLA-lite Buffer Penalty
         // If buffer is critically low (< 2s), aggressively drop bitrate to prevent stall
         if (bufferSeconds < 2.0) {
             adjusted *= 0.5

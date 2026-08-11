@@ -23,15 +23,20 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 sealed class BatteryState {
+    abstract val level: Int
+    abstract val isCharging: Boolean
+    abstract val thermalStatus: Int
+
     data class Normal(
-        val level: Int,
-        val isCharging: Boolean
+        override val level: Int,
+        override val isCharging: Boolean,
+        override val thermalStatus: Int = 0
     ) : BatteryState()
 
     data class Throttled(
-        val level: Int,
-        val isCharging: Boolean,
-        val thermalStatus: Int
+        override val level: Int,
+        override val isCharging: Boolean,
+        override val thermalStatus: Int
     ) : BatteryState()
 }
 
@@ -107,7 +112,8 @@ class BatteryOptimizationManager @Inject constructor(
         } else {
             BatteryState.Normal(
                 level = currentBatteryLevel,
-                isCharging = isCharging
+                isCharging = isCharging,
+                thermalStatus = thermalStatus
             )
         }
     }

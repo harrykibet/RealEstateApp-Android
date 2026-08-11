@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.CdnSelector
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import javax.inject.Inject
@@ -16,7 +17,8 @@ class PlayerConfigurationFactory @Inject constructor(
     private val playbackConfigurationProvider: IPlaybackConfigurationProvider,
     private val cdnSelector: CdnSelector,
     private val config: IConfigProvider,
-    private val hdrConfiguration: HdrConfiguration
+    private val hdrConfiguration: HdrConfiguration,
+    private val environmentCoordinator: EnvironmentCoordinator
 ) : IPlayerConfigurationFactory {
 
     override suspend fun create(
@@ -26,6 +28,7 @@ class PlayerConfigurationFactory @Inject constructor(
     ): PlayerConfiguration {
         // ⏱️ Optimization: Only wait for config if we actually need it for CDN resolution.
         // Idle players use Uri.EMPTY and shouldn't be blocked.
+        val env = environmentCoordinator.environment.value
         val resolvedUri = if (needsCdnResolution(uri)) {
             config.awaitReady()
             resolveViaCdn(uri)
@@ -43,7 +46,7 @@ class PlayerConfigurationFactory @Inject constructor(
             mediaSourceFactory = mediaSourceFactory,
             loadControl = loadControl,
             livePlaybackSpeedControl = speedControl,
-            hdrMode = hdrConfiguration.getBestSupportedMode()
+            hdrMode = hdrConfiguration.getBestSupportedMode(env.thermalStatus)
         )
     }
 

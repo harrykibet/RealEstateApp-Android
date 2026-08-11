@@ -35,7 +35,8 @@ class EnvironmentCoordinator @Inject constructor(
             estimatedThroughputBps = bandwidthMeter.bitrateEstimate,
             memoryTrimLevel = resourcesMonitor.memoryTrimLevel.value,
             isAppVisible = resourcesMonitor.isAppVisible.value,
-            isInteractive = resourcesMonitor.isInteractive.value
+            isInteractive = resourcesMonitor.isInteractive.value,
+            thermalStatus = 0
         )
     )
 
@@ -75,8 +76,9 @@ class EnvironmentCoordinator @Inject constructor(
             combine(
                 throttles,
                 observeBandwidth(),
-                systemSignals
-            ) { throttle, bandwidth, signals ->
+                systemSignals,
+                batteryManager.observeBatteryState()
+            ) { throttle, bandwidth, signals, battery ->
                 val (memoryTrim, isVisible, isInteractive) = signals
                 val isMetered = isNetworkMetered()
 
@@ -107,7 +109,8 @@ class EnvironmentCoordinator @Inject constructor(
                     memoryTrimLevel = memoryTrim,
                     isAppVisible = isVisible,
                     isInteractive = isInteractive,
-                    isSustainedLowBandwidth = isSustainedLowBandwidth
+                    isSustainedLowBandwidth = isSustainedLowBandwidth,
+                    thermalStatus = battery.thermalStatus
                 )
             }
                 .distinctUntilChanged()

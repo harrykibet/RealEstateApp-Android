@@ -8,5 +8,6 @@ data class EnvironmentState(
     val memoryTrimLevel: Int = 0,
     val isAppVisible: Boolean = true,
     val isInteractive: Boolean = true,
-    val isSustainedLowBandwidth: Boolean = false
+    val isSustainedLowBandwidth: Boolean = false,
+    val thermalStatus: Int = 0
 )

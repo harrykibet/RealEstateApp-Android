@@ -24,7 +24,13 @@ class HdrConfiguration @Inject constructor(
         object None : HdrMode(PixelFormat.RGB_565, 21)
     }
 
-    fun getBestSupportedMode(): HdrMode {
+    fun getBestSupportedMode(thermalStatus: Int = 0): HdrMode {
+        // 🌡️ Hardening: Suppress HDR if device is overheating (SEVERE or higher)
+        // HDR rendering puts significant stress on the GPU, exacerbating thermal issues.
+        if (thermalStatus >= 3) {
+            return HdrMode.None
+        }
+
         return when {
             deviceUtils.supportsDolbyVision() && Build.VERSION.SDK_INT >= 29 -> HdrMode.DolbyVision
             deviceUtils.supports10BitHdr() -> HdrMode.HDR10
