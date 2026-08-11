@@ -2,6 +2,7 @@ package com.estatia.realestate.apps
 
 import android.os.Bundle
 import android.app.PictureInPictureParams
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -136,7 +137,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (playerManager.isPlaying()) {
+        val supportsPiP = packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+        if (supportsPiP && playerManager.isPlaying()) {
             enterPictureInPictureMode(PictureInPictureParams.Builder().build())
         }
     }
