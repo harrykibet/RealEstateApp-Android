@@ -4,6 +4,7 @@ sealed class PlayerUiState {
     object Idle : PlayerUiState()
     object Buffering : PlayerUiState()
     object Reconnecting : PlayerUiState()
+    object LowBandwidth : PlayerUiState()
     object Playing : PlayerUiState()
     object Paused : PlayerUiState()
     object Ended : PlayerUiState()

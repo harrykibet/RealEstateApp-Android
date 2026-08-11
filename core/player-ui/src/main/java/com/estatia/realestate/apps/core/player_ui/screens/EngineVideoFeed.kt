@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.player_ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -111,6 +112,14 @@ fun EngineVideoFeed(
                     PlayerUiState.Reconnecting -> {
                         PlaybackReconnectingView(
                             modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+
+                    PlayerUiState.LowBandwidth -> {
+                        PlaybackLowBandwidthView(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 64.dp)
                         )
                     }
 

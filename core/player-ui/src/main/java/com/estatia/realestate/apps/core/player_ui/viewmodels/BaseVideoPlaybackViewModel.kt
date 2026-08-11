@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.FeedNeighborInfo
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
@@ -11,11 +12,13 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.PlayerErrorType
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -28,8 +31,10 @@ import kotlinx.coroutines.flow.onEach
  * Manages the mapping of engine-level states to UI-friendly [PlayerUiState] and
  * handles per-screen state isolation.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 abstract class BaseVideoPlaybackViewModel(
-    protected val coordinator: VideoPlaybackCoordinator
+    protected val coordinator: VideoPlaybackCoordinator,
+    protected val environmentCoordinator: EnvironmentCoordinator
 ) : ViewModel() {
 
     private val activeMediaId = MutableStateFlow<String?>(null)
@@ -39,7 +44,7 @@ abstract class BaseVideoPlaybackViewModel(
 
     init {
         @OptIn(ExperimentalCoroutinesApi::class)
-        activeMediaId
+        val engineStateFlow = activeMediaId
             .flatMapLatest { mediaId ->
                 if (mediaId != null) {
                     coordinator.observeState(mediaId)
@@ -47,11 +52,27 @@ abstract class BaseVideoPlaybackViewModel(
                     flowOf(PlaybackStateReducer.State.Idle)
                 }
             }
-            .onEach { engineState ->
-                handleEngineState(engineState)
-                _uiState.value = mapToUiState(engineState)
+
+        combine(
+            engineStateFlow,
+            environmentCoordinator.environment
+        ) { engineState, env ->
+            handleEngineState(engineState)
+            
+            // ⏱️ Logic: If sustained low bandwidth is detected and we are actively trying to play/buffer,
+            // surface the informative LowBandwidth state.
+            if (env.isSustainedLowBandwidth && 
+                (engineState is PlaybackStateReducer.State.Buffering || engineState is PlaybackStateReducer.State.Playing)
+            ) {
+                PlayerUiState.LowBandwidth
+            } else {
+                mapToUiState(engineState)
             }
-            .launchIn(viewModelScope)
+        }
+        .onEach { uiState ->
+            _uiState.value = uiState
+        }
+        .launchIn(viewModelScope)
     }
 
     private fun handleEngineState(engineState: PlaybackStateReducer.State) {

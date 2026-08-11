@@ -7,5 +7,6 @@ data class EnvironmentState(
     val recentStallCount: Int = 0,
     val memoryTrimLevel: Int = 0,
     val isAppVisible: Boolean = true,
-    val isInteractive: Boolean = true
+    val isInteractive: Boolean = true,
+    val isSustainedLowBandwidth: Boolean = false
 )

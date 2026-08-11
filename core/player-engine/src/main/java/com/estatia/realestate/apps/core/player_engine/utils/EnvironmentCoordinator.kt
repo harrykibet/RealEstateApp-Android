@@ -42,6 +42,15 @@ class EnvironmentCoordinator @Inject constructor(
     val environment: StateFlow<EnvironmentState> = _environment.asStateFlow()
 
     private var job: Job? = null
+    
+    private var consecutiveLowBandwidthCount = 0
+    private var isSustainedLowBandwidth = false
+
+    companion object {
+        private const val LOW_BANDWIDTH_BPS = 500_000L
+        private const val RECOVERY_BANDWIDTH_BPS = 800_000L
+        private const val CONSECUTIVE_THRESHOLD = 3
+    }
 
     fun start(scope: CoroutineScope) {
         job?.cancel()
@@ -67,6 +76,19 @@ class EnvironmentCoordinator @Inject constructor(
                 val (memoryTrim, isVisible, isInteractive) = signals
                 val isMetered = isNetworkMetered()
 
+                // Update detection logic
+                if (bandwidth < LOW_BANDWIDTH_BPS) {
+                    consecutiveLowBandwidthCount++
+                } else if (bandwidth > RECOVERY_BANDWIDTH_BPS) {
+                    consecutiveLowBandwidthCount = 0
+                }
+
+                if (consecutiveLowBandwidthCount >= CONSECUTIVE_THRESHOLD) {
+                    isSustainedLowBandwidth = true
+                } else if (consecutiveLowBandwidthCount == 0) {
+                    isSustainedLowBandwidth = false
+                }
+
                 EnvironmentState(
                     isMetered = isMetered,
                     shouldThrottlePerformance = throttle,
@@ -74,7 +96,8 @@ class EnvironmentCoordinator @Inject constructor(
                     recentStallCount = 0,
                     memoryTrimLevel = memoryTrim,
                     isAppVisible = isVisible,
-                    isInteractive = isInteractive
+                    isInteractive = isInteractive,
+                    isSustainedLowBandwidth = isSustainedLowBandwidth
                 )
             }
                 .distinctUntilChanged()
