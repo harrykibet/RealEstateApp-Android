@@ -48,8 +48,8 @@ internal class StreamingPipeline @Inject constructor(
             .build()
     }
 
-    override fun warm(uri: Uri, priority: WarmPriority) =
-        cacheWarmer.prefetch(uri, priority)
+    override fun warm(mediaId: String, uri: Uri, priority: WarmPriority) =
+        cacheWarmer.prefetch(mediaId, uri, priority)
 
     override fun onBufferingStarted() =
         cacheWarmer.onBufferingStarted()

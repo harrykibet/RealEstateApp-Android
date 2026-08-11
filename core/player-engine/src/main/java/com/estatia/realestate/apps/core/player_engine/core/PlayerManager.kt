@@ -104,7 +104,7 @@ internal class PlayerManager @Inject constructor(
             activeMediaIdFlow.value = mediaId
             environmentManager.updateActiveMediaId(mediaId)
             
-            streamingPipeline.warm(uri, WarmPriority.VISIBLE)
+            streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
 
     override suspend fun preload(mediaId: String, uri: Uri, mediaType: MediaType) =

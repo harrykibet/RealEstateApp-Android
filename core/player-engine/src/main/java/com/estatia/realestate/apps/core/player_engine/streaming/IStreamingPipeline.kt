@@ -40,10 +40,11 @@ interface IStreamingPipeline {
      * Asynchronous prefetch entry point.
      * Feature layer may call this to warm the cache for upcoming media.
      * 
+     * @param mediaId Stable ID used as custom cache key.
      * @param uri The URI to prefetch.
      * @param priority The priority of the prefetch request.
      */
-    fun warm(uri: Uri, priority: WarmPriority)
+    fun warm(mediaId: String, uri: Uri, priority: WarmPriority)
 
     /**
      * Notifies the pipeline that buffering has started, allowing it to adjust prefetch logic.

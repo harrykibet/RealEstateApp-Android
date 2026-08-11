@@ -106,25 +106,25 @@ class VideoPlaybackCoordinator @Inject constructor(
 
     private fun warmVisible(mediaId: String, uri: Uri) {
         if (markWarmed(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.VISIBLE)
+            streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
     }
 
     private fun warmNext(mediaId: String, uri: Uri) {
         if (markWarmed(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.NEXT)
+            streamingPipeline.warm(mediaId, uri, WarmPriority.NEXT)
         }
     }
 
     private fun warmPrevious(mediaId: String, uri: Uri) {
         if (markWarmed(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.PREVIOUS)
+            streamingPipeline.warm(mediaId, uri, WarmPriority.PREVIOUS)
         }
     }
 
     private fun warmLow(mediaId: String, uri: Uri) {
         if (markWarmed(mediaId)) {
-            streamingPipeline.warm(uri, WarmPriority.LOW)
+            streamingPipeline.warm(mediaId, uri, WarmPriority.LOW)
         }
     }
 

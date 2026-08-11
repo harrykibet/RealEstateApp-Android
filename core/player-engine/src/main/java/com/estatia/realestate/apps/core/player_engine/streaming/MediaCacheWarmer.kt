@@ -31,6 +31,7 @@ class MediaCacheWarmer @Inject constructor(
     @param:PlaybackCache private val playbackDataSourceFactory: DataSource.Factory,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val cdnHealthMonitor: CdnHealthMonitor,
+    private val cacheKeyFactory: ICacheKeyFactory,
     @param:EngineScope private val scope: CoroutineScope,
     @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: ILogger
@@ -64,8 +65,8 @@ class MediaCacheWarmer @Inject constructor(
         }
     }
 
-    fun prefetch(uri: Uri, priority: WarmPriority) {
-        requests.tryEmit(WarmRequest(uri, priority))
+    fun prefetch(mediaId: String, uri: Uri, priority: WarmPriority) {
+        requests.tryEmit(WarmRequest(uri, priority, mediaId))
     }
 
     fun onBufferingStarted() {
@@ -85,6 +86,7 @@ class MediaCacheWarmer @Inject constructor(
 
         visibleJob = scope.launch {
             prefetchInternal(
+                mediaId = request.mediaId,
                 uri = request.uri,
                 maxBytes = adaptivePrefetchSize(WarmPriority.VISIBLE)
             )
@@ -98,6 +100,7 @@ class MediaCacheWarmer @Inject constructor(
 
         nextJob = scope.launch {
             prefetchInternal(
+                mediaId = request.mediaId,
                 uri = request.uri,
                 maxBytes = adaptivePrefetchSize(WarmPriority.NEXT)
             )
@@ -111,6 +114,7 @@ class MediaCacheWarmer @Inject constructor(
 
         previousJob = scope.launch {
             prefetchInternal(
+                mediaId = request.mediaId,
                 uri = request.uri,
                 maxBytes = adaptivePrefetchSize(WarmPriority.PREVIOUS)
             )
@@ -124,6 +128,7 @@ class MediaCacheWarmer @Inject constructor(
 
         lowJob = scope.launch {
             prefetchInternal(
+                mediaId = request.mediaId,
                 uri = request.uri,
                 maxBytes = adaptivePrefetchSize(WarmPriority.LOW)
             )
@@ -160,13 +165,17 @@ class MediaCacheWarmer @Inject constructor(
      * Fully cancellable and IO-isolated.
      */
     private suspend fun prefetchInternal(
+        mediaId: String,
         uri: Uri,
         maxBytes: Long
     ) = withContext(ioDispatcher) {
 
         try {
+            val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+
             val dataSpec = DataSpec.Builder()
                 .setUri(uri)
+                .setKey(stableKey)
                 .setLength(maxBytes)
                 .setFlags(DataSpec.FLAG_ALLOW_CACHE_FRAGMENTATION)
                 .build()
