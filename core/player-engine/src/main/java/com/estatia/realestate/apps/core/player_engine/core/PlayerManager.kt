@@ -52,8 +52,15 @@ class PlayerManager @Inject constructor(
 
     override val environment: StateFlow<EnvironmentState> = environmentCoordinator.environment
 
-    private val attachedPlayers = WeakHashMap<Player, Boolean>()
-    private val decoderFailures = mutableSetOf<String>()
+    private val attachedPlayers = WeakHashMap<ExoPlayer, Boolean>()
+    
+    // 🌡️ Bounded Failure Tracker: Cap at 50 to prevent unbounded memory growth in long sessions
+    private val decoderFailures = object : LinkedHashMap<String, Boolean>(50, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Boolean>?): Boolean {
+            return size > 50
+        }
+    }
+
     private val composedMediaIds = mutableSetOf<String>()
     private var wasPlayingBeforePause: Boolean = false
     
@@ -108,7 +115,7 @@ class PlayerManager @Inject constructor(
             
             // 🌡️ Internal Decoder Fallback:
             // The engine now automatically handles the decision to force legacy if previous attempts failed.
-            val forceLegacy = decoderFailures.contains(mediaId)
+            val forceLegacy = decoderFailures.containsKey(mediaId)
 
             val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy, title, artist)
             val environment = environmentCoordinator.environment.value
@@ -138,14 +145,13 @@ class PlayerManager @Inject constructor(
             streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
 
-    @OptIn(UnstableApi::class)
     override suspend fun preload(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
         title: String?,
         artist: String?
-    ): ManagedPlayer? =
+    ) {
         withContext(playerDispatcher) {
             checkConfinement()
             // Speculative preloads don't force legacy until they fail once
@@ -155,9 +161,9 @@ class PlayerManager @Inject constructor(
                 val environment = environmentCoordinator.environment.value
                 dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
                 attachListenerIfNeeded(managed)
-                managed
-            } else null
+            }
         }
+    }
 
     override suspend fun pause() {
         withContext(playerDispatcher) {
@@ -255,10 +261,11 @@ class PlayerManager @Inject constructor(
 
         managed.player.addListener(object : Player.Listener {
             override fun onEvents(player: Player, events: Player.Events) {
-                val currentManaged = resolveManaged(player) ?: return
+                val exoPlayer = player as? ExoPlayer ?: return
+                val currentManaged = pool.getMediaId(exoPlayer)?.let { pool.get(it) } ?: return
                 
                 if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
-                    when (player.playbackState) {
+                    when (exoPlayer.playbackState) {
                         Player.STATE_IDLE -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.Reset)
                         Player.STATE_BUFFERING -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.BufferingStarted)
                         Player.STATE_READY -> currentManaged.reducer.dispatch(PlaybackStateReducer.Event.BufferingCompleted)
@@ -268,45 +275,47 @@ class PlayerManager @Inject constructor(
 
                 if (events.contains(Player.EVENT_IS_PLAYING_CHANGED)) {
                     currentManaged.reducer.dispatch(
-                        if (player.isPlaying) PlaybackStateReducer.Event.Play else PlaybackStateReducer.Event.Pause
+                        if (exoPlayer.isPlaying) PlaybackStateReducer.Event.Play else PlaybackStateReducer.Event.Pause
                     )
                 }
 
                 if (events.contains(Player.EVENT_PLAYER_ERROR)) {
-                    player.playerError?.let { error ->
-                        engineScope.launch {
+                    val mediaIdForError = pool.getMediaId(exoPlayer)
+                    exoPlayer.playerError?.let { error ->
+                        // 🏎️ CRITICAL FIX: Explicitly use playerDispatcher (Main) to avoid
+                        // background thread confinement crashes when querying the pool.
+                        engineScope.launch(playerDispatcher) {
                             // 🌡️ Handle Decoder Failure internally
                             if (error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED) {
-                                pool.getMediaId(player as ExoPlayer)?.let { decoderFailures.add(it) }
+                                mediaIdForError?.let { id ->
+                                    decoderFailures.remove(id)
+                                    decoderFailures[id] = true 
+                                }
                             }
 
+                            val currentManagedInError = mediaIdForError?.let { pool.get(it) } ?: return@launch
                             val isNetworkError = isNetworkError(error)
                             val networkState = networkStateProvider.current()
                             
                             if (isNetworkError && networkState !is NetworkState.Connected) {
-                                currentManaged.reducer.dispatch(PlaybackStateReducer.Event.NetworkLost)
+                                currentManagedInError.reducer.dispatch(PlaybackStateReducer.Event.NetworkLost)
                             } else {
-                                currentManaged.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
+                                currentManagedInError.reducer.dispatch(PlaybackStateReducer.Event.PlaybackError(error))
                             }
                         }
                     }
                 }
                 
                 if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
-                    val bufferSeconds = (player.bufferedPosition - player.currentPosition) / 1000.0
+                    val bufferSeconds = (exoPlayer.bufferedPosition - exoPlayer.currentPosition) / 1000.0
                     dynamicBitrateController.apply(
-                        player as ExoPlayer,
+                        exoPlayer,
                         currentManaged.mediaType,
                         environmentCoordinator.environment.value,
                         bufferSeconds = bufferSeconds,
                         startupPhase = false
                     )
                 }
-            }
-
-            private fun resolveManaged(player: Player): ManagedPlayer? {
-                val mediaId = pool.getMediaId(player as ExoPlayer) ?: return null
-                return pool.get(mediaId)
             }
         })
     }

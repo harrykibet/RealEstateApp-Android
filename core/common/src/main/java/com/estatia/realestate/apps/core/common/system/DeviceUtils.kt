@@ -39,34 +39,36 @@ class DeviceUtils @Inject constructor(
                 and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
     }
 
-    // region Media Capabilities
-    override fun supportsAV1(): Boolean {
-        return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
+    // region Media Capabilities (Memoized)
+    private val supportsAV1Lazy by lazy {
+        MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
             codec.supportedTypes.contains("video/av01")
         }
     }
+    override fun supportsAV1(): Boolean = supportsAV1Lazy
 
-    override fun supportsHEVC(): Boolean {
-        return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
+    private val supportsHEVCLazy by lazy {
+        MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.any { codec ->
             codec.supportedTypes.contains("video/hevc")
         }
     }
+    override fun supportsHEVC(): Boolean = supportsHEVCLazy
 
-    override fun supports10BitHdr(): Boolean {
+    private val supports10BitHdrLazy by lazy {
         val codecList = MediaCodecList(MediaCodecList.ALL_CODECS)
-        return codecList.codecInfos.any { codec ->
+        codecList.codecInfos.any { codec ->
             codec.supportedTypes.any { mimeType ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     codec.getCapabilitiesForType(mimeType).colorFormats.contains(
                         MediaCodecInfo.CodecCapabilities.COLOR_Format32bitABGR2101010
                     )
                 } else {
-                    false // Safely return false for versions below TIRAMISU
+                    false
                 }
             }
         }
     }
-
+    override fun supports10BitHdr(): Boolean = supports10BitHdrLazy
 
     override fun supportsDolbyVision(): Boolean {
         return context.packageManager.hasSystemFeature("android.hardware.dolbyvision")
@@ -144,8 +146,8 @@ class DeviceUtils @Inject constructor(
         }
     }
 
-    override fun getMaxSupportedVideoDecoders(): Int {
-        return try {
+    private val maxSupportedVideoDecodersLazy by lazy {
+        try {
             val codecList = MediaCodecList(MediaCodecList.ALL_CODECS)
             // Use HEVC or AVC as a representative high-load decoder
             val codecInfo = codecList.codecInfos.find { it.isEncoder.not() && 
@@ -162,4 +164,5 @@ class DeviceUtils @Inject constructor(
             4 // Safe default for modern Android devices
         }
     }
+    override fun getMaxSupportedVideoDecoders(): Int = maxSupportedVideoDecodersLazy
 }

@@ -37,10 +37,6 @@ import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPol
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class StreamingDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
 annotation class IODispatcher
 
 @Qualifier
@@ -120,14 +116,6 @@ abstract class PlayerManagerModule {
         @IODispatcher
         fun provideIODispatcher(): CoroutineDispatcher =
             Executors.newFixedThreadPool(2).asCoroutineDispatcher()
-
-        @Provides
-        @Singleton
-        @StreamingDispatcher
-        fun provideStreamingDispatcher(): CoroutineDispatcher =
-            Executors.newSingleThreadExecutor { r ->
-                Thread(r, "StreamingThread")
-            }.asCoroutineDispatcher()
 
         @Provides
         @Singleton

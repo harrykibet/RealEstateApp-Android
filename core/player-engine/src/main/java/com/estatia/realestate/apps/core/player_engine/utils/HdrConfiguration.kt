@@ -10,18 +10,10 @@ import javax.inject.Singleton
 class HdrConfiguration @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {
-    sealed class HdrMode(val format: Int, val requiresApi: Int) {
-        object HDR10 : HdrMode(
-            format = PixelFormat.RGBA_1010102,
-            requiresApi = 24
-        )
-
-        object DolbyVision : HdrMode(
-            format = PixelFormat.RGBA_1010102,
-            requiresApi = 29
-        )
-
-        object None : HdrMode(PixelFormat.RGB_565, 21)
+    sealed class HdrMode(val format: Int) {
+        object HDR10 : HdrMode(PixelFormat.RGBA_1010102)
+        object DolbyVision : HdrMode(PixelFormat.RGBA_1010102)
+        object None : HdrMode(PixelFormat.RGB_565)
     }
 
     fun getBestSupportedMode(thermalStatus: Int = 0): HdrMode {

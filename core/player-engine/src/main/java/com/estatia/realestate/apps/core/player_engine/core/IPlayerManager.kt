@@ -57,7 +57,6 @@ interface IPlayerManager {
      * @param mediaType The type of media.
      * @param title Optional title for media session metadata.
      * @param artist Optional artist name for media session metadata.
-     * @return A [ManagedPlayer] container holding the pre-prepared player.
      */
     @OptIn(UnstableApi::class)
     suspend fun preload(
@@ -66,7 +65,7 @@ interface IPlayerManager {
         mediaType: MediaType,
         title: String? = null,
         artist: String? = null
-    ): ManagedPlayer?
+    )
 
     /**
      * Returns a [Flow] observing the playback state for a specific media item.

@@ -108,6 +108,7 @@ fun EngineVideoPlayer(
     var isMuted by remember { mutableStateOf(false) }
     var showIndicator by remember { mutableStateOf(false) }
     var isHoldingPause by remember { mutableStateOf(false) }
+    var wasPlayingBeforeHold by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
     var bufferedProgress by remember { mutableFloatStateOf(0f) }
 
@@ -224,21 +225,25 @@ fun EngineVideoPlayer(
                                 },
                                 onLongPress = {
                                     // ✋ Hold-to-Pause: Long press pauses.
+                                    // 🏎️ Snapshot state: only resume on release if it was actually playing.
+                                    wasPlayingBeforeHold = player?.isPlaying == true
                                     isHoldingPause = true
                                     player?.pause()
                                 },
                                 onPress = {
                                     try {
                                         awaitRelease()
-                                        // Resume on release ONLY if we were holding a pause
-                                        if (isHoldingPause) {
+                                        // Resume on release ONLY if we were holding a pause AND it was playing before
+                                        if (isHoldingPause && wasPlayingBeforeHold) {
                                             if (isActive && player != null) {
                                                 player.play()
                                             }
-                                            isHoldingPause = false
                                         }
+                                        isHoldingPause = false
+                                        wasPlayingBeforeHold = false
                                     } catch (_: Exception) {
                                         isHoldingPause = false
+                                        wasPlayingBeforeHold = false
                                     }
                                 },
                                 onTap = {

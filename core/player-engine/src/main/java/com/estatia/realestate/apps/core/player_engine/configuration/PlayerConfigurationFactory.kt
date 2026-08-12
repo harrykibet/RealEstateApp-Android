@@ -84,6 +84,7 @@ class PlayerConfigurationFactory @Inject constructor(
 
     private fun needsCdnResolution(uri: Uri): Boolean {
         val host = uri.host ?: return false
-        return host.contains("estatia.com")
+        // 🏗️ Strict Host Check: Only rewrite if it's genuinely an internal domain
+        return host == "estatia.com" || host.endsWith(".estatia.com")
     }
 }

@@ -61,6 +61,7 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 -   **Lightweight Refilling**: Implements an optimized "Idle creation" path that constructs hardware objects without the overhead of CDN resolution or configuration parsing. Refilling is done proactively in the background to avoid blocking the user thread.
 -   **Urgency Promotion**: In-flight creation tasks are automatically promoted if an urgent `play()` request arrives, ensuring playback never deadlocks due to speculative preloads.
 -   **O(1) Resolution**: Playback events are resolved via an `IdentityHashMap`, ensuring constant-time performance regardless of pool scale.
+-   **Race-Resilient Prewarming**: Proactively refills the idle pool in the background, only blocking the main thread if the pool is completely exhausted, maintaining 60fps during feed flings.
 
 ### Robust Content Identification & Caching
 -   **Strict ID Enforcement**: Every media asset is identified by a stable content ID (e.g. `propertyId`). Fallback to volatile URIs is prohibited to prevent cache orphaning during URL/Token rotation.
@@ -75,7 +76,8 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 
 ## 🛠️ 5. Diagnostics & Telemetry
 -   **ChaosDataSource**: Includes a fault-injection fuzzer to simulate stalls, random IO failures, and bandwidth throttling deterministically in Debug builds.
--   **Integrated Metrics**: Wired to Micrometer with automatic logging of startup latency and buffering duration, enabling data-driven verification of engine performance in the field.
+-   **Integrated Metrics**: Wired to Micrometer with automatic logging of startup latency, buffering duration, and **real-time watch-time/completion rates**. Telemetry is toggleable via remote config for production data-driven ranking.
+-   **Bounded Diagnostics**: Failure trackers (e.g. `decoderFailures`) are LRU-bounded to prevent memory growth during long app sessions.
 
 ## 🧵 Threading Model
 All mutations to pooled player state are strictly confined to the **Main thread**. Thread safety is enforced via `checkConfinement()` assertions in all core scheduling classes (`PlayerPool`, `VideoPlaybackCoordinator`, etc.), preventing race conditions by construction.

@@ -229,15 +229,13 @@ class PlayerPool @Inject constructor(
         return playerToIdMap[player]
     }
 
-    fun markAccessed(mediaId: String) {
-        checkConfinement()
-        players.get(mediaId)
-    }
-
     fun release(mediaId: String) {
         checkConfinement()
         players.remove(mediaId)?.let { managed ->
             playerToIdMap.remove(managed.player)
+            // 🛡️ Hygiene: Reset state to cancel in-flight watchdog jobs before recycling
+            managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
+
             // Detach and kill analytics scope on recycle
             managed.player.removeAnalyticsListener(managed.analyticsListener)
             managed.analyticsListener.release()
