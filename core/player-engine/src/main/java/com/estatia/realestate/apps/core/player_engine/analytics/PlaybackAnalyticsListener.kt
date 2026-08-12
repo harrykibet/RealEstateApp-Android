@@ -44,6 +44,12 @@ class PlaybackAnalyticsListener @Inject constructor(
     @Volatile
     private var wasBackgroundedDuringBuffer: Boolean = false
 
+    @Volatile
+    private var lastPlayStartTime: Long? = null
+
+    @Volatile
+    private var loopCount: Int = 0
+
     fun markPlaybackStart() {
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
@@ -57,6 +63,48 @@ class PlaybackAnalyticsListener @Inject constructor(
     fun onAppBackgrounded() {
         if (bufferingStartedAt != null) {
             wasBackgroundedDuringBuffer = true
+        }
+        recordWatchTime()
+    }
+
+    private fun recordWatchTime() {
+        val start = lastPlayStartTime ?: return
+        val sessionWatchTime = SystemClock.elapsedRealtime() - start
+        if (sessionWatchTime > 0) {
+            metricsTracker.trackDuration("player.watch.duration", sessionWatchTime.milliseconds)
+            lastPlayStartTime = SystemClock.elapsedRealtime()
+        }
+    }
+
+    override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
+        if (isPlaying) {
+            lastPlayStartTime = SystemClock.elapsedRealtime()
+        } else {
+            recordWatchTime()
+            lastPlayStartTime = null
+        }
+    }
+
+    override fun onPositionDiscontinuity(
+        eventTime: AnalyticsListener.EventTime,
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
+        if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION && oldPosition.mediaItemIndex == newPosition.mediaItemIndex) {
+            // 🔄 Loop detected: Standard behavior for short-form feed items
+            loopCount++
+            metricsTracker.incrementCounter("player.loop.count")
+            scope.launch {
+                analyticsClient.logEvent(
+                    message = "PlaybackAnalyticsListener",
+                    eventType = EventTypes.EVENT_MEDIA_PLAYER_PLAYBACK_START, // Or a dedicated LOOP event
+                    customMetadata = mapOf(
+                        "session_id" to sessionId,
+                        "loop_index" to loopCount.toString()
+                    )
+                )
+            }
         }
     }
 

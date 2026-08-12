@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
@@ -35,8 +36,13 @@ class PlayerPool @Inject constructor(
     @param:EngineScope private val scope: CoroutineScope,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
-    private val inFlightCreations = mutableMapOf<String, CompletableDeferred<ManagedPlayer>>()
+    private val inFlightCreations = mutableMapOf<String, InFlightRequest>()
     private val playerToIdMap = IdentityHashMap<Player, String>()
+
+    private data class InFlightRequest(
+        val deferred: CompletableDeferred<ManagedPlayer>,
+        var isUrgent: Boolean
+    )
 
     private fun checkConfinement() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -79,8 +85,11 @@ class PlayerPool @Inject constructor(
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
         }
-        val result = prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)
-        return if (result is PrewarmResult.Success) result.managed else throw IllegalStateException("Critical: Urgent prewarm failed")
+        return when (val result = prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)) {
+            is PrewarmResult.Success -> result.managed
+            is PrewarmResult.Failure -> throw result.throwable
+            PrewarmResult.Rejected -> throw PoolCapacityExceededException("Urgent request rejected (should not happen)")
+        }
     }
 
     suspend fun prewarm(
@@ -98,27 +107,41 @@ class PlayerPool @Inject constructor(
         players[mediaId]?.let { return PrewarmResult.Success(it) }
 
         // 2. Check if creation is already in-flight for this specific ID
-        val deferred = inFlightCreations[mediaId]
-        if (deferred != null) {
-            return PrewarmResult.Success(deferred.await())
+        val existing = inFlightCreations[mediaId]
+        if (existing != null) {
+            // 🏎️ Urgency Promotion: If a new urgent request arrives for a non-urgent in-flight task,
+            // promote it so it becomes exempt from capacity rejection.
+            if (urgent && !existing.isUrgent) {
+                existing.isUrgent = true
+            }
+            return PrewarmResult.Success(existing.deferred.await())
         }
 
         // 3. Start a new creation task
         val newDeferred = CompletableDeferred<ManagedPlayer>()
-        inFlightCreations[mediaId] = newDeferred
+        val request = InFlightRequest(newDeferred, urgent)
+        inFlightCreations[mediaId] = request
 
         return try {
-            ensureIdlePlayers()
+            // 🏎️ Proactive Refill: trigger background refill but don't wait for it here
+            // unless the idle pool is completely empty.
+            if (idlePlayers.isEmpty()) {
+                ensureIdlePlayers()
+            } else {
+                scope.launch { ensureIdlePlayers() }
+            }
 
             val managed = idlePlayers.removeFirstOrNull()?.let { player ->
                 bindIdlePlayer(player, mediaId, uri, mediaType, forceLegacy, title, artist)
             } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy, title, artist)
 
             // 🏎️ Late-bound Capacity Check:
-            // If the pool shrunk while we were building this player, and we're at or over capacity,
-            // immediately release this instance unless it's an urgent request (active playback).
-            if (!urgent && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
+            // Check the LATEST urgency state (may have been promoted while suspended).
+            val currentUrgency = request.isUrgent
+            if (!currentUrgency && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
                 managed.player.release()
+                val error = PoolCapacityExceededException("Capacity reached ($maxPoolSize)")
+                newDeferred.completeExceptionally(error)
                 return PrewarmResult.Rejected
             }
 

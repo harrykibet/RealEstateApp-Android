@@ -76,12 +76,9 @@ fun EngineVideoPlayer(
         mutableStateOf<Player?>(null)
     }
 
-    // Acquire player only when mediaId/uri changes - with debounce
+    // Acquire player only when mediaId/uri changes - reaction is now immediate
     LaunchedEffect(mediaId, uri, mediaType, isActive) {
         if (isActive) {
-            // ⏱️ Debounce Surface Binding:
-            // Match the coordinator's settle window to reduce pool pressure during fast scrolls.
-            delay(250.milliseconds)
             playerState.value = getPlayer(mediaId, uri, mediaType)
         } else {
             playerState.value = null
@@ -110,6 +107,7 @@ fun EngineVideoPlayer(
     var isBuffering by remember { mutableStateOf(true) }
     var isMuted by remember { mutableStateOf(false) }
     var showIndicator by remember { mutableStateOf(false) }
+    var isHoldingPause by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
     var bufferedProgress by remember { mutableFloatStateOf(0f) }
 
@@ -225,15 +223,23 @@ fun EngineVideoPlayer(
                                     onLike()
                                 },
                                 onLongPress = {
+                                    // ✋ Hold-to-Pause: Long press pauses.
+                                    isHoldingPause = true
                                     player?.pause()
                                 },
                                 onPress = {
                                     try {
                                         awaitRelease()
-                                        if (isActive && player != null && !player.isPlaying) {
-                                            player.play()
+                                        // Resume on release ONLY if we were holding a pause
+                                        if (isHoldingPause) {
+                                            if (isActive && player != null) {
+                                                player.play()
+                                            }
+                                            isHoldingPause = false
                                         }
-                                    } catch (_: Exception) {}
+                                    } catch (_: Exception) {
+                                        isHoldingPause = false
+                                    }
                                 },
                                 onTap = {
                                     if (player != null) {

@@ -127,6 +127,9 @@ internal class ConfigProvider @Inject constructor(
     override val isLoggingEnabled: Boolean
         get() = requireConfig().baseConfig.enableLogging
 
+    override val isTelemetryEnabled: Boolean
+        get() = requireConfig().baseConfig.enableTelemetry
+
     override val googleKeyPattern: Regex
         get() = googleRegex
 

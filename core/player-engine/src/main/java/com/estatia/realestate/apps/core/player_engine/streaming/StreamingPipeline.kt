@@ -29,9 +29,10 @@ internal class StreamingPipeline @Inject constructor(
         uri: Uri,
         mediaType: MediaType,
         title: String?,
-        artist: String?
+        artist: String?,
+        qualityHint: String?
     ): MediaItem {
-        val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+        val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId, qualityHint)
 
         val metadata = MediaMetadata.Builder()
             .setTitle(title)

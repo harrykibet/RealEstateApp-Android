@@ -40,7 +40,7 @@ class PlaybackStateReducerTest {
     }
 
     @Test
-    fun `watchdog triggers Error if stuck in Buffering for 15s`() = testScope.runTest {
+    fun `watchdog triggers Error if stuck in Buffering for 7s`() = testScope.runTest {
         reducer.state.test {
             assertEquals(PlaybackStateReducer.State.Idle, awaitItem())
 
@@ -48,7 +48,7 @@ class PlaybackStateReducerTest {
             assertEquals(PlaybackStateReducer.State.Buffering, awaitItem())
 
             // Advance time to just before timeout
-            advanceTimeBy(14999.milliseconds)
+            advanceTimeBy(6999.milliseconds)
             expectNoEvents()
 
             // Advance past timeout
@@ -72,7 +72,7 @@ class PlaybackStateReducerTest {
             assertEquals(PlaybackStateReducer.State.Ready, awaitItem())
 
             // Advance past the original timeout
-            advanceTimeBy(11000.milliseconds)
+            advanceTimeBy(3000.milliseconds)
             expectNoEvents()
         }
     }
@@ -88,7 +88,7 @@ class PlaybackStateReducerTest {
             reducer.dispatch(PlaybackStateReducer.Event.Reset)
             assertEquals(PlaybackStateReducer.State.Idle, awaitItem())
 
-            advanceTimeBy(16000.milliseconds)
+            advanceTimeBy(8000.milliseconds)
             expectNoEvents()
         }
     }

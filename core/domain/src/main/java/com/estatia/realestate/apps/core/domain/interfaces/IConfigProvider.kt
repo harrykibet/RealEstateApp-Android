@@ -26,6 +26,8 @@ interface IConfigProvider {
 
     val isLoggingEnabled: Boolean
 
+    val isTelemetryEnabled: Boolean
+
     val googleKeyPattern: Regex
 
     val genericKeyPattern: Regex

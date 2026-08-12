@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.core
 
 import android.content.Context
+import android.os.Looper
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.annotation.OptIn
@@ -26,29 +27,33 @@ class SurfacePool @Inject constructor(
     private val pool = ArrayDeque<SurfaceView>()
     private var lastContextHash: Int? = null
 
-    fun acquire(context: Context): SurfaceView {
-        return synchronized(this) {
-            val currentContextHash = System.identityHashCode(context)
-            if (lastContextHash != null && lastContextHash != currentContextHash) {
-                // Activity was recreated (config change). Evict stale surfaces to prevent leaks and artifacts.
-                pool.clear()
-            }
-            lastContextHash = currentContextHash
-
-            pool.removeFirstOrNull() ?: createSurface(context)
+    private fun checkConfinement() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("SurfacePool must only be accessed from the Main thread.")
         }
     }
 
+    fun acquire(context: Context): SurfaceView {
+        checkConfinement()
+        val currentContextHash = System.identityHashCode(context)
+        if (lastContextHash != null && lastContextHash != currentContextHash) {
+            // Activity was recreated (config change). Evict stale surfaces to prevent leaks and artifacts.
+            pool.clear()
+        }
+        lastContextHash = currentContextHash
+
+        return pool.removeFirstOrNull() ?: createSurface(context)
+    }
+
     fun release(surfaceView: SurfaceView) {
-        synchronized(this) {
-            // Detach from previous parent if any
-            (surfaceView.parent as? ViewGroup)?.removeView(surfaceView)
-            
-            val maxPoolSize = sizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
-            
-            if (pool.size < maxPoolSize) {
-                pool.addLast(surfaceView)
-            }
+        checkConfinement()
+        // Detach from previous parent if any
+        (surfaceView.parent as? ViewGroup)?.removeView(surfaceView)
+        
+        val maxPoolSize = sizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
+        
+        if (pool.size < maxPoolSize) {
+            pool.addLast(surfaceView)
         }
     }
 

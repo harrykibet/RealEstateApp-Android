@@ -41,6 +41,7 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 },
                 useDynamicColor = it.useDynamicColor,
                 shouldHideOnboarding = it.shouldHideOnboarding,
+                isMuted = it.isMuted,
             )
         }
 
@@ -190,6 +191,12 @@ class EstatiaPreferencesDataSource @Inject constructor(
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
         userPreferences.updateData {
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
+        }
+    }
+
+    suspend fun setIsMuted(isMuted: Boolean) {
+        userPreferences.updateData {
+            it.copy { this.isMuted = isMuted }
         }
     }
 }

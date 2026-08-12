@@ -314,5 +314,8 @@ class PlayerManager @Inject constructor(
     // region Testing Hooks
     val debugActiveMediaId: String?
         get() = activeMediaId
+
+    val debugAttachedPlayersCount: Int
+        get() = attachedPlayers.size
     // endregion
 }

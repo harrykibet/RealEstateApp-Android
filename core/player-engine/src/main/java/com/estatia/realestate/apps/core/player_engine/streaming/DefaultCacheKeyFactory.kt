@@ -8,7 +8,7 @@ import javax.inject.Inject
  */
 internal class DefaultCacheKeyFactory @Inject constructor() : ICacheKeyFactory {
 
-    override fun resolveStableKey(uri: Uri, providedId: String?): String {
+    override fun resolveStableKey(uri: Uri, providedId: String?, qualityHint: String?): String {
         // 🏗️ Strict ID Enforcement:
         // Every media item in Estatia MUST be identified by a stable content ID (mediaId/propertyId).
         // This prevents cache orphaning when delivery URLs (with signed tokens) rotate.
@@ -17,6 +17,13 @@ internal class DefaultCacheKeyFactory @Inject constructor() : ICacheKeyFactory {
             throw IllegalArgumentException("Estatia media must have a stable identifier. Received null/blank ID for URI: $uri")
         }
 
-        return providedId
+        // 🌡️ Quality Awareness:
+        // Append quality hint (if provided) to prevent cache collisions between different renditions
+        // of the same media ID (e.g. progressive MP4 bitrate tiers).
+        return if (qualityHint != null) {
+            "$providedId:$qualityHint"
+        } else {
+            providedId
+        }
     }
 }

@@ -44,7 +44,8 @@ class PlayerConfigurationFactory @Inject constructor(
             uri
         }
 
-        val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType, title, artist)
+        val qualityHint = if (forceLegacyCodec) "legacy" else "standard"
+        val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType, title, artist, qualityHint)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
         val loadControl = playbackConfigurationProvider.createLoadControl(mediaType, env)
         val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType, env)

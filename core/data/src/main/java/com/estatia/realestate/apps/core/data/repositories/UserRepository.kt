@@ -64,4 +64,8 @@ internal class UserRepository @Inject constructor(
     override suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
         estatiaPreferencesDataSource.setShouldHideOnboarding(shouldHideOnboarding)
     }
+
+    override suspend fun setIsMuted(isMuted: Boolean) {
+        estatiaPreferencesDataSource.setIsMuted(isMuted)
+    }
 }

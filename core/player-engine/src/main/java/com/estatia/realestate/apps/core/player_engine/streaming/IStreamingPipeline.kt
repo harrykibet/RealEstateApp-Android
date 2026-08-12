@@ -41,7 +41,8 @@ interface IStreamingPipeline {
         uri: Uri,
         mediaType: MediaType,
         title: String? = null,
-        artist: String? = null
+        artist: String? = null,
+        qualityHint: String? = null
     ): MediaItem
 
     /**

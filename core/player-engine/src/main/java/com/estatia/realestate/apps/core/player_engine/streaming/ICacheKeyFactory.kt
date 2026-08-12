@@ -12,7 +12,8 @@ interface ICacheKeyFactory {
      * 
      * @param uri The media source URI.
      * @param providedId An optional identifier provided by the caller (e.g., property ID).
+     * @param qualityHint An optional hint about the media quality/bitrate to prevent collisions.
      * @return A stable string key to be used for caching and media identification.
      */
-    fun resolveStableKey(uri: Uri, providedId: String? = null): String
+    fun resolveStableKey(uri: Uri, providedId: String? = null, qualityHint: String? = null): String
 }

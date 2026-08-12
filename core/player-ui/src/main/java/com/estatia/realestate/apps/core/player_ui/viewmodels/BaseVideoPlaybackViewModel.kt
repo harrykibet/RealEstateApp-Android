@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
 import com.estatia.realestate.apps.core.player_ui.state.PlayerErrorType
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +24,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.launch
 
 /**
  * Base ViewModel providing shared logic for video playback coordination in feeds.
@@ -35,7 +40,8 @@ import kotlinx.coroutines.flow.onEach
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator,
-    protected val environmentCoordinator: EnvironmentCoordinator
+    protected val environmentCoordinator: EnvironmentCoordinator,
+    protected val userRepository: IUserRepository
 ) : ViewModel() {
 
     private val activeMediaId = MutableStateFlow<String?>(null)
@@ -46,6 +52,9 @@ abstract class BaseVideoPlaybackViewModel(
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Idle)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
+
+    val isMuted = userRepository.userData.map { it.isMuted }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     private val _meteredConnectionEvent = MutableSharedFlow<Unit>(replay = 0)
     val meteredConnectionEvent = _meteredConnectionEvent.asSharedFlow()
@@ -180,6 +189,12 @@ abstract class BaseVideoPlaybackViewModel(
                 }
                 PlayerUiState.Error(state.error.message, errorType)
             }
+        }
+    }
+
+    fun toggleMute() {
+        viewModelScope.launch {
+            userRepository.setIsMuted(!isMuted.value)
         }
     }
 

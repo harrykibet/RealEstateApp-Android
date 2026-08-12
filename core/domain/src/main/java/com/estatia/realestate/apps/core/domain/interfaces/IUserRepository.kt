@@ -65,4 +65,9 @@ interface IUserRepository {
      * Sets onboarding completion status.
      */
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean)
+
+    /**
+     * Sets the global mute preference.
+     */
+    suspend fun setIsMuted(isMuted: Boolean)
 }

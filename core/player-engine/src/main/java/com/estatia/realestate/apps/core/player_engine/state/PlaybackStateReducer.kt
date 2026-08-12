@@ -56,7 +56,7 @@ class PlaybackStateReducer(
     private var watchdogJob: Job? = null
 
     companion object {
-        private const val WATCHDOG_TIMEOUT_MS = 15_000L
+        private const val WATCHDOG_TIMEOUT_MS = 7_000L
     }
 
     fun dispatch(event: Event) {

@@ -9,6 +9,7 @@ To minimize CPU and network churn during rapid navigation ("surfing"), the engin
 -   **Standard Dwell**: 100ms settle window before committed playback.
 -   **Fling Mode**: If >3 pages are flipped in 300ms, the settle window increases to 250ms and neighbor preloading is suspended until velocity drops.
 -   **Jank-Awareness**: If the UI thread is dropping frames (>20% jank ratio), the engine automatically increases debounce to 400ms, prioritizing scroll smoothness over autoplay latency.
+-   **Surface Binding**: Surface acquisition is debounced in the UI layer to match the engine's settle window, preventing unnecessary hardware-resource "locking" for skipped content.
 
 ### Symmetric & Deep Prefetching
 The engine maintains a deep look-ahead window with **Priority Decay** to ensure seamless forward and backward scrolling.
@@ -16,6 +17,7 @@ The engine maintains a deep look-ahead window with **Priority Decay** to ensure 
 -   **Next (N+1)**: 70% budget.
 -   **Previous (N-1)**: 40% budget (Ensures instant back-scroll).
 -   **Far-Ahead (N+2)**: 20% budget (Speculative bytes only).
+-   **Pinning Mechanism**: Every visible video is "pinned" in the pool. The eviction logic strictly respects these pins, ensuring that no video is released while its surface is still composed in the UI.
 
 ## 🛡️ 2. Fault Tolerance & Reliability
 
@@ -40,13 +42,15 @@ Playback load is dynamically shed based on the device's physical temperature (`P
 -   **Severe**: 65% bitrate reduction + **HDR Suppression** (disables high-GPU-load rendering).
 -   **Critical**: 85% bitrate reduction + 360p resolution cap.
 
-### Adaptive Storage Budgeting
-The media cache ceiling is not static. It is calculated on every startup as `min(512MB, availableStorage * 0.1)`, preventing the app from triggering system-level "Storage Full" warnings on constrained devices.
+### Adaptive Storage & Buffer Budgeting
+-   **Cache Scaling**: The media cache ceiling is calculated on startup as `min(512MB, availableStorage * 0.1)`, preventing the app from triggering system-level "Storage Full" warnings.
+-   **Buffer Adaptation**: Buffer targets automatically shrink on metered (Cellular) or poor connections. This minimizes "data leakage" on skipped videos while maintaining snappy starts.
 
-### Graceful Backgrounding
-The engine implements a two-stage lifecycle response:
+### Graceful Backgrounding & Resource Hygiene
 -   **Immediate**: Playback pauses and audio focus is abandoned.
--   **60s Grace Timer**: Hardware decoders are preserved for quick app-switches. After 60 seconds of inactivity, all pooled player instances are fully released.
+-   **60s Grace Timer**: Hardware decoders are preserved for quick app-switches, then released.
+-   **Memory Safety**: Uses `WeakHashMap` for listener tracking, ensuring that released hardware instances are eligible for immediate garbage collection.
+-   **Adaptive Polling**: Progress-bar telemetry throttles its refresh rate based on app visibility to save CPU cycles.
 
 ## 📱 4. Hardware & System Integration
 
@@ -54,10 +58,14 @@ The engine implements a two-stage lifecycle response:
 Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creation. 
 -   **Hardware Bounding**: The pool size is hard-capped by the device's physical hardware decoder limits (`MediaCodecInfo.maxSupportedInstances`).
 -   **Memory-Safe Management**: Uses `WeakHashMap` for listener tracking, ensuring that released player instances are eligible for garbage collection immediately.
--   **Lightweight Refilling**: Implements an optimized "Idle creation" path that constructs hardware objects without the overhead of CDN resolution or configuration parsing.
+-   **Lightweight Refilling**: Implements an optimized "Idle creation" path that constructs hardware objects without the overhead of CDN resolution or configuration parsing. Refilling is done proactively in the background to avoid blocking the user thread.
+-   **Urgency Promotion**: In-flight creation tasks are automatically promoted if an urgent `play()` request arrives, ensuring playback never deadlocks due to speculative preloads.
+-   **O(1) Resolution**: Playback events are resolved via an `IdentityHashMap`, ensuring constant-time performance regardless of pool scale.
 
-### Automatic Decoder Fallback
-If a hardware decoder fails to initialize for high-efficiency formats (AV1/HEVC), the engine automatically retries the request with a `codec=h264_baseline` override, ensuring content visibility on all hardware.
+### Robust Content Identification & Caching
+-   **Strict ID Enforcement**: Every media asset is identified by a stable content ID (e.g. `propertyId`). Fallback to volatile URIs is prohibited to prevent cache orphaning during URL/Token rotation.
+-   **Quality-Aware Keys**: Cache keys incorporate bitrate/quality hints, preventing data corruption if different renditions of the same asset are cached.
+-   **CDN manifest-only limitation**: CDN health-routing applies to the manifest/master URI. Segment-level failover depends on multi-CDN manifests.
 
 ### Picture-in-Picture & Media Sessions
 -   **Seamless PiP**: Automatically enters PiP mode on Home-press if a video is active.

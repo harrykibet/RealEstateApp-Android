@@ -26,7 +26,8 @@ data class EncryptionKeys(
 
 data class BaseConfig(
     val baseUrl: String,
-    val enableLogging: Boolean
+    val enableLogging: Boolean,
+    val enableTelemetry: Boolean = false
 )
 
 data class ChaosConfig(
