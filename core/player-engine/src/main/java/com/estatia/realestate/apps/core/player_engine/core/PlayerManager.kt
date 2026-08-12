@@ -50,6 +50,7 @@ class PlayerManager @Inject constructor(
 
     private val attachedPlayers = WeakHashMap<Player, Boolean>()
     private val decoderFailures = mutableSetOf<String>()
+    private val composedMediaIds = mutableSetOf<String>()
     private var wasPlayingBeforePause: Boolean = false
     
     private var mediaSession: MediaSession? = null
@@ -188,6 +189,20 @@ class PlayerManager @Inject constructor(
     override fun isMediaActive(mediaId: String): Boolean {
         checkConfinement()
         return activeMediaId == mediaId
+    }
+
+    override fun notifyMediaBound(mediaId: String) {
+        checkConfinement()
+        composedMediaIds.add(mediaId)
+        environmentManager.updatePinnedIds(composedMediaIds)
+        pool.updatePinnedIds(composedMediaIds)
+    }
+
+    override fun notifyMediaUnbound(mediaId: String) {
+        checkConfinement()
+        composedMediaIds.remove(mediaId)
+        environmentManager.updatePinnedIds(composedMediaIds)
+        pool.updatePinnedIds(composedMediaIds)
     }
 
     private fun updateMediaSession(player: ExoPlayer) {

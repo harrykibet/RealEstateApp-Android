@@ -30,6 +30,7 @@ class PlayerEnvironmentManager @Inject constructor(
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher
 ) {
     private var activeMediaId: String? = null
+    private var pinnedIds: Set<String> = emptySet()
     private var graceJob: Job? = null
     private var wasEffectivelyBackgrounded = false
 
@@ -70,7 +71,7 @@ class PlayerEnvironmentManager @Inject constructor(
 
                 // 2. Dynamic pool sizing based on environment (memory, battery, etc.)
                 val newSize = sizingPolicy.calculateMaxPoolSize(env)
-                pool.updateMaxPoolSize(newSize, activeMediaId)
+                pool.updateMaxPoolSize(newSize, pinnedIds + setOfNotNull(activeMediaId))
                 
                 // 3. Update bitrate for all active players
                 pool.forEachPlayer { player, mediaType ->
@@ -94,6 +95,11 @@ class PlayerEnvironmentManager @Inject constructor(
     fun updateActiveMediaId(mediaId: String?) {
         checkConfinement()
         activeMediaId = mediaId
+    }
+
+    fun updatePinnedIds(ids: Set<String>) {
+        checkConfinement()
+        pinnedIds = ids
     }
 
     private fun checkConfinement() {

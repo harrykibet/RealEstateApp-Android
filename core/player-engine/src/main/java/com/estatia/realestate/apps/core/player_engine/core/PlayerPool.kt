@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import android.net.Uri
 import android.os.Looper
 import androidx.core.net.toUri
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -37,6 +39,7 @@ class PlayerPool @Inject constructor(
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
     private val inFlightCreations = mutableMapOf<String, CompletableDeferred<ManagedPlayer>>()
+    private val playerToIdMap = IdentityHashMap<Player, String>()
 
     private fun checkConfinement() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -49,6 +52,7 @@ class PlayerPool @Inject constructor(
     private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
     private val players = LinkedHashMap<String, ManagedPlayer>(16, 0.75f, true)
     private val idlePlayers = ArrayDeque<ExoPlayer>()
+    private val pinnedMediaIds = mutableSetOf<String>()
     private val prewarmBudget: Int
         get() = if (maxPoolSize <= 1) 0 else maxOf(1, minOf(2, maxPoolSize / 2))
 
@@ -122,8 +126,9 @@ class PlayerPool @Inject constructor(
             }
 
             players[mediaId] = managed
+            playerToIdMap[managed.player] = mediaId
             poolUpdates.tryEmit(Unit)
-            trimIfNeeded(excludeMediaId = if (urgent) mediaId else null)
+            trimIfNeeded(pinnedMediaIds)
             
             newDeferred.complete(managed)
             PrewarmResult.Success(managed)
@@ -137,15 +142,9 @@ class PlayerPool @Inject constructor(
 
     private fun ensureIdlePlayers() {
         while (idlePlayers.size < prewarmBudget) {
-            val created = playerFactory.createIdle()
-            
-            // 🏎️ Lazy Listener Allocation: Don't attach an analytics listener to idle players.
-            // It will be attached in bindIdlePlayer or createManagedPlayer at bind-time.
-            created.player.removeAnalyticsListener(created.analyticsListener)
-            created.analyticsListener.release()
-            
-            created.player.stop()
-            idlePlayers.addLast(created.player)
+            val player = playerFactory.createIdle()
+            player.stop()
+            idlePlayers.addLast(player)
         }
     }
 
@@ -207,7 +206,7 @@ class PlayerPool @Inject constructor(
 
     fun getMediaId(player: ExoPlayer): String? {
         checkConfinement()
-        return players.entries.find { it.value.player == player }?.key
+        return playerToIdMap[player]
     }
 
     fun markAccessed(mediaId: String) {
@@ -218,6 +217,7 @@ class PlayerPool @Inject constructor(
     fun release(mediaId: String) {
         checkConfinement()
         players.remove(mediaId)?.let { managed ->
+            playerToIdMap.remove(managed.player)
             // Detach and kill analytics scope on recycle
             managed.player.removeAnalyticsListener(managed.analyticsListener)
             managed.analyticsListener.release()
@@ -243,6 +243,7 @@ class PlayerPool @Inject constructor(
             managed.player.release()
         }
         players.clear()
+        playerToIdMap.clear()
 
         idlePlayers.forEach { player ->
             player.clearMediaItems()
@@ -257,30 +258,38 @@ class PlayerPool @Inject constructor(
         players.values.forEach { it.analyticsListener.onAppBackgrounded() }
     }
 
-    fun updateMaxPoolSize(newSize: Int, activeMediaId: String?) {
+    fun updatePinnedIds(ids: Set<String>) {
+        checkConfinement()
+        pinnedMediaIds.clear()
+        pinnedMediaIds.addAll(ids)
+        trimIfNeeded(pinnedMediaIds)
+    }
+
+    fun updateMaxPoolSize(newSize: Int, pinnedIds: Set<String>) {
         checkConfinement()
         if (newSize == maxPoolSize) return
         if (newSize < maxPoolSize) {
             maxPoolSize = newSize
-            trimIfNeeded(excludeMediaId = activeMediaId)
+            updatePinnedIds(pinnedIds)
         } else {
             maxPoolSize = newSize
         }
     }
 
-    fun trimIfNeeded(excludeMediaId: String?) {
+    fun trimIfNeeded(pinnedIds: Set<String>) {
         checkConfinement()
         if (players.size <= maxPoolSize) return
 
         val iterator = players.entries.iterator()
         while (iterator.hasNext() && players.size > maxPoolSize) {
             val entry = iterator.next()
-            if (entry.key == excludeMediaId) continue
+            if (pinnedIds.contains(entry.key)) continue
             
             entry.value.player.removeAnalyticsListener(entry.value.analyticsListener)
             entry.value.analyticsListener.release()
             entry.value.player.clearMediaItems()
             entry.value.player.release()
+            playerToIdMap.remove(entry.value.player)
             iterator.remove()
         }
         poolUpdates.tryEmit(Unit)

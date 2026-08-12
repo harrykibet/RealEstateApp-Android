@@ -80,6 +80,16 @@ fun EngineVideoPlayer(
         playerState.value = getPlayer(mediaId, uri, mediaType)
     }
 
+    // 🏎️ Eviction Safety: Pin this mediaId while it's composed in the UI.
+    // This prevents the pool from releasing the hardware resources for a visible video.
+    val playerManager = com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager.current
+    DisposableEffect(mediaId) {
+        playerManager.notifyMediaBound(mediaId)
+        onDispose {
+            playerManager.notifyMediaUnbound(mediaId)
+        }
+    }
+
     val player = playerState.value
 
     // Stable surface lifecycle via Pool

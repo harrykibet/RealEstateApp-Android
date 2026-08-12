@@ -28,6 +28,7 @@ import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
+import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
 import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
@@ -124,6 +125,7 @@ class MainActivity : ComponentActivity() {
                 LocalNumberFormatter provides numberFormatter,
                 LocalMeasurementFormatter provides measurementFormatter,
                 LocalSurfacePool provides surfacePool,
+                LocalPlayerManager provides playerManager,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
                     EstatiaApp(

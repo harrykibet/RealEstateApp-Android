@@ -46,8 +46,8 @@ class PlayerConfigurationFactory @Inject constructor(
 
         val mediaItem = streamingPipeline.createMediaItem(mediaId, resolvedUri, mediaType, title, artist)
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
-        val loadControl = playbackConfigurationProvider.createLoadControl(mediaType)
-        val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType)
+        val loadControl = playbackConfigurationProvider.createLoadControl(mediaType, env)
+        val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType, env)
 
         return PlayerConfiguration(
             mediaItem = mediaItem,

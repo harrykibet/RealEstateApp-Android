@@ -94,4 +94,15 @@ interface IPlayerManager {
      * The ID of the currently active media item, if any.
      */
     val activeMediaId: String?
+
+    /**
+     * Notifies the manager that a specific media ID is currently bound to a UI component.
+     * This "pins" the player in the pool to prevent eviction during scrolling.
+     */
+    fun notifyMediaBound(mediaId: String)
+
+    /**
+     * Notifies the manager that a specific media ID is no longer bound to a UI component.
+     */
+    fun notifyMediaUnbound(mediaId: String)
 }
