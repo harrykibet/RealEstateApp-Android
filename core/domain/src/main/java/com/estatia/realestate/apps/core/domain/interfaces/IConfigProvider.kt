@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.domain.interfaces
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.config.ChaosConfig
+import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import kotlinx.coroutines.flow.StateFlow
 
 interface IConfigProvider {
@@ -47,6 +48,8 @@ interface IConfigProvider {
     val asymmetricSigningKeyId: String
 
     val chaosConfig: ChaosConfig
+
+    val playerTuning: PlayerTuningConfig
 
     val configVersion: StateFlow<Long>
 }

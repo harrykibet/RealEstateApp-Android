@@ -18,7 +18,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * when encountering corrupt or zero-duration media.
  */
 class PlaybackStateReducer(
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val watchdogTimeoutMs: Long = 7_000L
 ) {
 
     /**
@@ -55,10 +56,6 @@ class PlaybackStateReducer(
 
     private var watchdogJob: Job? = null
 
-    companion object {
-        private const val WATCHDOG_TIMEOUT_MS = 7_000L
-    }
-
     fun dispatch(event: Event) {
         _state.value = reduce(event)
         handleWatchdog(event)
@@ -94,7 +91,7 @@ class PlaybackStateReducer(
     private fun startWatchdog() {
         stopWatchdog()
         watchdogJob = scope.launch {
-            delay(WATCHDOG_TIMEOUT_MS.milliseconds)
+            delay(watchdogTimeoutMs.milliseconds)
             // If we reached here, it means we've been buffering for too long.
             // Dispatch a synthetic error to unblock the UI.
             dispatch(

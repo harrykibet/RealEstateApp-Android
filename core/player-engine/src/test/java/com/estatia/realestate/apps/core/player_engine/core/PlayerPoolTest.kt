@@ -9,6 +9,8 @@ import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalytic
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -30,6 +32,7 @@ class PlayerPoolTest {
     private lateinit var configurationFactory: IPlayerConfigurationFactory
     private lateinit var analyticsListenerProvider: Provider<PlaybackAnalyticsListener>
     private lateinit var environmentCoordinator: EnvironmentCoordinator
+    private lateinit var configProvider: IConfigProvider
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private val testScope = TestScope()
 
@@ -54,6 +57,9 @@ class PlayerPoolTest {
         environmentCoordinator = mockk(relaxed = true) {
             every { environment.value } returns mockk(relaxed = true)
         }
+        configProvider = mockk(relaxed = true) {
+            every { playerTuning } returns PlayerTuningConfig()
+        }
         sizingPolicy = mockk {
             every { calculateMaxPoolSize(any()) } returns 3
         }
@@ -63,6 +69,7 @@ class PlayerPoolTest {
             configurationFactory,
             analyticsListenerProvider,
             environmentCoordinator,
+            configProvider,
             testScope,
             sizingPolicy
         )

@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -22,7 +23,8 @@ import kotlin.time.Duration.Companion.milliseconds
 class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
     private val streamingPipeline: IStreamingPipeline,
-    private val performanceMonitor: PerformanceMonitor
+    private val performanceMonitor: PerformanceMonitor,
+    private val configProvider: IConfigProvider
 ) {
     private var playJob: Job? = null
     private var preloadJob: Job? = null
@@ -30,14 +32,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     private var lastPageChangeTime: Long = 0
     private var consecutiveFastScrolls: Int = 0
 
-    companion object {
-        private const val MAX_WARMED_MEDIA = 8
-        private const val DWELL_TIME_DEBOUNCE_MS = 100L
-        private const val JANK_AWARE_DEBOUNCE_MS = 400L
-        private const val FLING_DEBOUNCE_MS = 250L
-        private const val FAST_SCROLL_THRESHOLD_MS = 300L
-        private const val FLING_COUNT_THRESHOLD = 3
-    }
+    private val tuning get() = configProvider.playerTuning
 
     private val warmedMedia = LinkedHashSet<String>()
 
@@ -59,14 +54,14 @@ class VideoPlaybackCoordinator @Inject constructor(
         
         // Fling Heuristic: detect rapid flicking
         val now = SystemClock.elapsedRealtime()
-        if (now - lastPageChangeTime < FAST_SCROLL_THRESHOLD_MS) {
+        if (now - lastPageChangeTime < tuning.fastScrollThresholdMs) {
             consecutiveFastScrolls++
         } else {
             consecutiveFastScrolls = 0
         }
         lastPageChangeTime = now
 
-        val isFlinging = consecutiveFastScrolls >= FLING_COUNT_THRESHOLD
+        val isFlinging = consecutiveFastScrolls >= tuning.flingCountThreshold
         
         // 🏎️ Jank-Aware Interaction Blocking:
         // If the UI is struggling to keep up with frame deadlines, aggressively increase the debounce
@@ -74,9 +69,9 @@ class VideoPlaybackCoordinator @Inject constructor(
         val isJanking = performanceMonitor.isJanking.value
         
         val debounceTime = when {
-            isJanking -> JANK_AWARE_DEBOUNCE_MS
-            isFlinging -> FLING_DEBOUNCE_MS
-            else -> DWELL_TIME_DEBOUNCE_MS
+            isJanking -> tuning.jankAwareDebounceMs
+            isFlinging -> tuning.flingDebounceMs
+            else -> tuning.dwellTimeDebounceMs
         }
 
         playJob?.cancel()
@@ -115,7 +110,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     private fun markWarmed(mediaId: String): Boolean {
         checkConfinement()
         val isNew = warmedMedia.add(mediaId)
-        while (warmedMedia.size > MAX_WARMED_MEDIA) {
+        while (warmedMedia.size > tuning.maxWarmedMedia) {
             warmedMedia.remove(warmedMedia.first())
         }
         return isNew

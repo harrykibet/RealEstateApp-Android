@@ -3,16 +3,19 @@ package com.estatia.realestate.apps.core.player_engine.utils
 import android.content.ComponentCallbacks2
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AdaptivePlayerPoolSizingPolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
-    private val batteryManager: IBatteryManager
+    private val batteryManager: IBatteryManager,
+    private val configProvider: IConfigProvider
 ) : IPlayerPoolSizingPolicy {
 
     override fun calculateMaxPoolSize(environmentState: EnvironmentState): Int {
+        val tuning = configProvider.playerTuning
 
         // 1. Hard throttle scenarios (Low Battery or Background)
         if (batteryManager.shouldThrottlePerformance() || !environmentState.isAppVisible) {
@@ -30,7 +33,7 @@ class AdaptivePlayerPoolSizingPolicy @Inject constructor(
 
         // 4. Severe memory pressure from internal check
         val availableMemory = deviceUtils.getAvailableMemoryMB()
-        if (availableMemory < 150) {
+        if (availableMemory < tuning.lowRamMemoryThresholdMb) {
             return 1.coerceAtMost(hardwareLimit)
         }
 

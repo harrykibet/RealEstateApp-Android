@@ -8,6 +8,8 @@ import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalytic
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -22,6 +24,7 @@ import org.junit.Before
 import org.junit.Test
 import javax.inject.Provider
 import androidx.core.net.toUri
+import kotlin.time.Duration.Companion.milliseconds
 
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -32,6 +35,7 @@ class PlayerPoolDeadlockTest {
     private lateinit var configurationFactory: IPlayerConfigurationFactory
     private lateinit var analyticsListenerProvider: Provider<PlaybackAnalyticsListener>
     private lateinit var environmentCoordinator: EnvironmentCoordinator
+    private lateinit var configProvider: IConfigProvider
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private val testScope = TestScope()
 
@@ -56,6 +60,9 @@ class PlayerPoolDeadlockTest {
         environmentCoordinator = mockk(relaxed = true) {
             every { environment.value } returns mockk(relaxed = true)
         }
+        configProvider = mockk(relaxed = true) {
+            every { playerTuning } returns PlayerTuningConfig()
+        }
         sizingPolicy = mockk {
             every { calculateMaxPoolSize(any()) } returns 1 // Constraint to 1 for easier deadlock repro
         }
@@ -65,6 +72,7 @@ class PlayerPoolDeadlockTest {
             configurationFactory,
             analyticsListenerProvider,
             environmentCoordinator,
+            configProvider,
             testScope,
             sizingPolicy
         )
@@ -77,7 +85,7 @@ class PlayerPoolDeadlockTest {
         
         // 1. Simulate a slow non-urgent prewarm
         coEvery { configurationFactory.create(mediaId, any(), any(), any(), any(), any()) } coAnswers {
-            delay(1000) // Artificial suspension window
+            delay(1000.milliseconds) // Artificial suspension window
             mockk(relaxed = true)
         }
         

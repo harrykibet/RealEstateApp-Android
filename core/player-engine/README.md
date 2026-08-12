@@ -79,5 +79,15 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 -   **Integrated Metrics**: Wired to Micrometer with automatic logging of startup latency, buffering duration, and **real-time watch-time/completion rates**. Telemetry is toggleable via remote config for production data-driven ranking.
 -   **Bounded Diagnostics**: Failure trackers (e.g. `decoderFailures`) are LRU-bounded to prevent memory growth during long app sessions.
 
-## 🧵 Threading Model
+---
+
+## ⚙️ 6. Remote Tuning & Optimization
+The engine is fully configurable via the **Remote Config** system (`IConfigProvider`). This allows for real-time, cohort-based A/B tuning of all core performance parameters without app releases:
+-   **Debounce Intervals**: `dwellTimeDebounceMs`, `jankAwareDebounceMs`, etc.
+-   **ABR Thresholds**: BOLA-lite buffer penalty triggers and multipliers.
+-   **Cache Policies**: Global cache ceilings and storage-budget percentages.
+-   **Watchdog Timers**: SNI and hardware timeout values.
+-   **Buffer Targets**: Adaptive `DefaultLoadControl` durations for LIVE and VOD.
+
+## 🧵 7. Threading Model
 All mutations to pooled player state are strictly confined to the **Main thread**. Thread safety is enforced via `checkConfinement()` assertions in all core scheduling classes (`PlayerPool`, `VideoPlaybackCoordinator`, etc.), preventing race conditions by construction.

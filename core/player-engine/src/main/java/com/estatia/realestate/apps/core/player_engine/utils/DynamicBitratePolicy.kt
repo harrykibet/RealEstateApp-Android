@@ -3,11 +3,13 @@ package com.estatia.realestate.apps.core.player_engine.utils
 import android.os.PowerManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class DynamicBitratePolicy @Inject constructor(
-    private val deviceUtils: IDeviceUtils
+    private val deviceUtils: IDeviceUtils,
+    private val configProvider: IConfigProvider
 ) {
 
     /**
@@ -18,6 +20,7 @@ class DynamicBitratePolicy @Inject constructor(
         environment: EnvironmentState,
         bufferSeconds: Double = 5.0
     ): Int {
+        val tuning = configProvider.playerTuning
         val deviceCap = deviceUtils.getMaxSupportedBitrate().coerceAtLeast(1_000_000)
         val networkCap = environment.estimatedThroughputBps.coerceAtLeast(1_000_000L)
 
@@ -40,11 +43,11 @@ class DynamicBitratePolicy @Inject constructor(
         }
 
         // 3. BOLA-lite Buffer Penalty
-        // If buffer is critically low (< 2s), aggressively drop bitrate to prevent stall
-        if (bufferSeconds < 2.0) {
-            adjusted *= 0.5
-        } else if (bufferSeconds < 5.0) {
-            adjusted *= 0.8
+        // If buffer is critically low, aggressively drop bitrate to prevent stall
+        if (bufferSeconds < tuning.lowBufferThresholdS) {
+            adjusted *= tuning.lowBufferPenalty
+        } else if (bufferSeconds < tuning.precautionaryBufferThresholdS) {
+            adjusted *= tuning.precautionaryBufferPenalty
         }
 
         val mediaAdjusted = when (mediaType) {
