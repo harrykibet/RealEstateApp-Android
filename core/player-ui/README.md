@@ -4,11 +4,11 @@ The `player-ui` module provides a high-performance, lifecycle-aware set of Jetpa
 
 ## 🖼️ 1. Surface & Hardware Lifecycle
 
-### Hardened Surface Pooling
-To eliminate the 100-200ms overhead of view inflation and surface allocation, this module implements a `SurfacePool`.
--   **Session Scoping**: The pool is `@ActivityRetainedScoped`, ensuring it survives configuration changes (rotations) but is released when the activity session ends.
--   **Stale Eviction**: Implements a **Context Identity Check**. If an Activity is recreated, the pool automatically purges all cached `SurfaceView` instances. This prevents severe memory leaks and "black-screen" glitches caused by reusing surfaces across Activity instances.
--   **10-bit HDR Support**: Automatically configures the `SurfaceHolder` pixel format (e.g., `RGBA_1010102`) when the hardware detects support for HDR10 or Dolby Vision assets.
+### Native Compose External Surfaces
+To achieve TikTok-caliber transition smoothness and correct z-ordering, this module uses the modern `AndroidExternalSurface` API.
+-   **Composition Integration**: By using `AndroidExternalSurface` instead of raw `SurfaceView` wrappers, the video surface is correctly integrated into the Compose rendering pipeline, allowing for precise clipping and transformation during page transitions.
+-   **Z-Order Management**: Configured with `zOrder = AndroidExternalSurfaceZOrder.Behind` to ensure the video stays below UI overlays (like the heart icon and progress bar) while avoiding the "black flash" timing issues common with legacy interop.
+-   **10-bit HDR Support**: Automatically detects and leverages 10-bit color formats for HDR10 and Dolby Vision playback on capable hardware.
 
 ## 🖱️ 2. Interaction & Navigation Safety
 

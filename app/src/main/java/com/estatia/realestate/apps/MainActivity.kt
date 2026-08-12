@@ -30,8 +30,6 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
-import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
-import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -67,9 +65,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var playerManager: IPlayerManager
-
-    @Inject
-    lateinit var surfacePool: SurfacePool
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -126,7 +121,6 @@ class MainActivity : ComponentActivity() {
                 LocalCurrencyFormatter provides currencyFormatter,
                 LocalNumberFormatter provides numberFormatter,
                 LocalMeasurementFormatter provides measurementFormatter,
-                LocalSurfacePool provides surfacePool,
                 LocalPlayerManager provides playerManager,
                 LocalEnvironmentState provides environmentState,
             ) {

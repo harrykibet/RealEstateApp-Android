@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.core.player_ui.screens
 import android.net.Uri
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.AndroidExternalSurface
+import androidx.compose.foundation.AndroidExternalSurfaceZOrder
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,14 +33,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -67,7 +67,6 @@ fun EngineVideoPlayer(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val surfacePool = LocalSurfacePool.current
     val environmentState = com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -96,11 +95,6 @@ fun EngineVideoPlayer(
     }
 
     val player = playerState.value
-
-    // Stable surface lifecycle via Pool
-    val surfaceView = remember(mediaId) {
-        surfacePool.acquire(context)
-    }
 
     // Playback control state - Synced with Player via Listener
     var isPlaying by remember { mutableStateOf(false) }
@@ -140,7 +134,6 @@ fun EngineVideoPlayer(
     DisposableEffect(mediaId) {
         onDispose {
             onPause()
-            surfacePool.release(surfaceView)
         }
     }
 
@@ -168,15 +161,6 @@ fun EngineVideoPlayer(
                 
                 delay(pollInterval)
             }
-        }
-    }
-
-    // Attach surface ONLY when player changes
-    DisposableEffect(player, surfaceView) {
-        player?.setVideoSurfaceView(surfaceView)
-
-        onDispose {
-            player?.clearVideoSurfaceView(surfaceView)
         }
     }
 
@@ -215,7 +199,7 @@ fun EngineVideoPlayer(
                     contentScale = ContentScale.Crop
                 )
             } else {
-                AndroidView(
+                AndroidExternalSurface(
                     modifier = Modifier
                         .fillMaxSize()
                         .pointerInput(player, isActive) {
@@ -258,7 +242,15 @@ fun EngineVideoPlayer(
                                 }
                             )
                         },
-                    factory = { surfaceView }
+                    zOrder = AndroidExternalSurfaceZOrder.Behind,
+                    onInit = {
+                        onSurface { surface, _, _ ->
+                            player?.setVideoSurface(surface)
+                            surface.onDestroyed {
+                                player?.setVideoSurface(null)
+                            }
+                        }
+                    }
                 )
             }
         }
