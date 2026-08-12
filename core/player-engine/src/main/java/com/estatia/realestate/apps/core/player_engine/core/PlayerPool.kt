@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
 import android.os.Looper
-import androidx.core.net.toUri
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -18,10 +17,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import java.util.IdentityHashMap
 import javax.inject.Inject
@@ -305,6 +302,10 @@ class PlayerPool @Inject constructor(
     fun debugHasDuplicateInstances(): Boolean {
         val playerInstances = players.values.map { it.player }
         return playerInstances.size != playerInstances.distinct().size
+    }
+
+    fun debugIsIdActive(mediaId: String): Boolean {
+        return players.containsKey(mediaId)
     }
     // endregion
 }

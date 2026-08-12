@@ -15,12 +15,14 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,6 +49,8 @@ class PlayerManager @Inject constructor(
 
     override var activeMediaId: String? = null
         private set
+
+    override val environment: StateFlow<EnvironmentState> = environmentCoordinator.environment
 
     private val attachedPlayers = WeakHashMap<Player, Boolean>()
     private val decoderFailures = mutableSetOf<String>()

@@ -53,6 +53,14 @@ class FeedGestureChaosTest {
         // Wait for eventual settlement
         Thread.sleep(2000)
 
+        // 🏎️ Visibility Assertion:
+        // Prove that the settled video was NOT evicted during the chaos.
+        // We can find the mediaId from the active player in PlayerManager.
+        val settledId = playerManager.debugActiveMediaId
+        if (settledId != null) {
+            assertTrue("Visible video $settledId was evicted during chaos!", pool.debugIsIdActive(settledId))
+        }
+
         assertPoolInvariant()
     }
 

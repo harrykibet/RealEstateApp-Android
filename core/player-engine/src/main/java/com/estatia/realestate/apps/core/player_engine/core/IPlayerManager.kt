@@ -6,6 +6,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -94,6 +95,11 @@ interface IPlayerManager {
      * The ID of the currently active media item, if any.
      */
     val activeMediaId: String?
+
+    /**
+     * The current global environment state (network, battery, visibility).
+     */
+    val environment: StateFlow<EnvironmentState>
 
     /**
      * Notifies the manager that a specific media ID is currently bound to a UI component.

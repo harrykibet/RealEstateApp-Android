@@ -28,6 +28,7 @@ import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
+import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
 import com.estatia.realestate.apps.core.player_ui.core.LocalSurfacePool
 import com.estatia.realestate.apps.core.player_ui.core.SurfacePool
@@ -117,6 +118,7 @@ class MainActivity : ComponentActivity() {
             val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
             val isSystemDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
             val isInPiPMode by viewModel.isInPiPMode.collectAsStateWithLifecycle()
+            val environmentState by playerManager.environment.collectAsStateWithLifecycle()
 
             CompositionLocalProvider(
                 LocalAnalyticsHelper provides analyticsHelper,
@@ -126,6 +128,7 @@ class MainActivity : ComponentActivity() {
                 LocalMeasurementFormatter provides measurementFormatter,
                 LocalSurfacePool provides surfacePool,
                 LocalPlayerManager provides playerManager,
+                LocalEnvironmentState provides environmentState,
             ) {
                 EstatiaTheme(darkTheme = isSystemDarkTheme) {
                     EstatiaApp(

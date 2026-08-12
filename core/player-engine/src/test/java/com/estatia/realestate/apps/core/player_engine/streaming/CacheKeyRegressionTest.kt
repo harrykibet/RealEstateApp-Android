@@ -33,19 +33,9 @@ class CacheKeyRegressionTest {
         assertEquals("prop_999", key)
     }
 
-    @Test
-    fun `resolveStableKey falls back to URI stripping query if no ID provided`() {
+    @Test(expected = IllegalArgumentException::class)
+    fun `resolveStableKey throws if no ID provided`() {
         val uri = mockk<Uri>(relaxed = true)
-        val builder = mockk<Uri.Builder>(relaxed = true)
-        val cleanedUri = mockk<Uri>(relaxed = true)
-        
-        every { uri.buildUpon() } returns builder
-        every { builder.clearQuery() } returns builder
-        every { builder.build() } returns cleanedUri
-        every { cleanedUri.toString() } returns "https://cdn.com/video.mp4"
-        
-        val key = factory.resolveStableKey(uri, null)
-        
-        assertEquals("https://cdn.com/video.mp4", key)
+        factory.resolveStableKey(uri, null)
     }
 }

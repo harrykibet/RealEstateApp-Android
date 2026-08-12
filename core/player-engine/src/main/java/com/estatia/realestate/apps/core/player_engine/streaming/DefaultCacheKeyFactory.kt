@@ -9,19 +9,14 @@ import javax.inject.Inject
 internal class DefaultCacheKeyFactory @Inject constructor() : ICacheKeyFactory {
 
     override fun resolveStableKey(uri: Uri, providedId: String?): String {
-        // 1. If a high-level ID (like propertyId) is provided, it's the most stable key.
-        if (!providedId.isNullOrBlank()) {
-            return providedId
+        // 🏗️ Strict ID Enforcement:
+        // Every media item in Estatia MUST be identified by a stable content ID (mediaId/propertyId).
+        // This prevents cache orphaning when delivery URLs (with signed tokens) rotate.
+        if (providedId.isNullOrBlank()) {
+            // In a production environment, we should never fall back to volatile URIs.
+            throw IllegalArgumentException("Estatia media must have a stable identifier. Received null/blank ID for URI: $uri")
         }
 
-        // 2. Otherwise, derive from URI by stripping volatile components like query params (auth tokens).
-        val builder = uri.buildUpon().clearQuery()
-        
-        // If it's a file URI, we can just use the path.
-        if (uri.scheme == "file") {
-            return uri.path ?: uri.toString()
-        }
-
-        return builder.build().toString()
+        return providedId
     }
 }

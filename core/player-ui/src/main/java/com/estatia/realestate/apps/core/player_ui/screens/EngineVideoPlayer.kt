@@ -68,6 +68,7 @@ fun EngineVideoPlayer(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val surfacePool = LocalSurfacePool.current
+    val environmentState = com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState.current
     val coroutineScope = rememberCoroutineScope()
 
     // Stable player reference
@@ -75,9 +76,16 @@ fun EngineVideoPlayer(
         mutableStateOf<Player?>(null)
     }
 
-    // Acquire player only when mediaId/uri changes
-    LaunchedEffect(mediaId, uri, mediaType) {
-        playerState.value = getPlayer(mediaId, uri, mediaType)
+    // Acquire player only when mediaId/uri changes - with debounce
+    LaunchedEffect(mediaId, uri, mediaType, isActive) {
+        if (isActive) {
+            // ⏱️ Debounce Surface Binding:
+            // Match the coordinator's settle window to reduce pool pressure during fast scrolls.
+            delay(250.milliseconds)
+            playerState.value = getPlayer(mediaId, uri, mediaType)
+        } else {
+            playerState.value = null
+        }
     }
 
     // 🏎️ Eviction Safety: Pin this mediaId while it's composed in the UI.
@@ -137,9 +145,9 @@ fun EngineVideoPlayer(
         }
     }
 
-    // Progress polling
-    LaunchedEffect(player, isActive, isPlaying) {
-        if (player != null && isActive) {
+    // Progress polling - Environment aware
+    LaunchedEffect(player, isActive, isPlaying, environmentState.isAppVisible, environmentState.isInteractive) {
+        if (player != null && isActive && environmentState.isAppVisible && environmentState.isInteractive) {
             while (true) {
                 val current = player.currentPosition.toDouble()
                 val duration = player.duration.toDouble()
@@ -152,7 +160,14 @@ fun EngineVideoPlayer(
                     bufferedProgress = (buffered / duration).toFloat()
                 }
                 
-                delay(if (isPlaying) 200.milliseconds else 1000.milliseconds)
+                // ⏱️ Adaptive Polling: Reduce frequency when paused or throttled
+                val pollInterval = when {
+                    !isPlaying -> 1000.milliseconds
+                    environmentState.shouldThrottlePerformance -> 500.milliseconds
+                    else -> 200.milliseconds
+                }
+                
+                delay(pollInterval)
             }
         }
     }
