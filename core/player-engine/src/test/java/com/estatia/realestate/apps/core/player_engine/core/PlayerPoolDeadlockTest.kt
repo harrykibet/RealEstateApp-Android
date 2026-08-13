@@ -40,6 +40,7 @@ class PlayerPoolDeadlockTest {
     private val testScope = TestScope()
 
     @Before
+    @Suppress("UseKtx")
     fun setup() {
         mockkStatic(Uri::class)
         every { Uri.parse(any()) } returns mockk(relaxed = true)

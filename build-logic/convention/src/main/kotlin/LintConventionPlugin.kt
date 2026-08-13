@@ -11,6 +11,7 @@ class LintConventionPlugin : Plugin<Project> {
                     extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
                         lint {
                             checkDependencies = false
+                            checkTestSources = true
                             warningsAsErrors = true
                             abortOnError = true
                             disable.add("TrustAllX509TrustManager")
@@ -24,6 +25,7 @@ class LintConventionPlugin : Plugin<Project> {
                     extensions.configure<com.android.build.api.dsl.LibraryExtension> {
                         lint {
                             checkDependencies = false
+                            checkTestSources = true
                             warningsAsErrors = true
                             abortOnError = true
                             disable.add("TrustAllX509TrustManager")

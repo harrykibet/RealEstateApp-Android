@@ -53,6 +53,7 @@ class PlayerManagerTest {
     )
 
     @Before
+    @Suppress("UseKtx")
     fun setup() {
         mockkStatic(Uri::class)
         val mockUri = mockk<Uri>(relaxed = true)
@@ -74,7 +75,7 @@ class PlayerManagerTest {
         networkStateProvider = mockk(relaxed = true)
         streamingPipeline = mockk(relaxed = true)
         context = mockk(relaxed = true)
-        every { context.getSystemService(any()) } returns null
+        every { context.getSystemService(Context.AUDIO_SERVICE) } returns null
 
         playerManager = PlayerManager(
             context,

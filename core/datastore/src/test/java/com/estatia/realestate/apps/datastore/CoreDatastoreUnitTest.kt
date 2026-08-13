@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.datastore
+package com.estatia.realestate.apps.core.datastore
 
 import org.junit.Test
 

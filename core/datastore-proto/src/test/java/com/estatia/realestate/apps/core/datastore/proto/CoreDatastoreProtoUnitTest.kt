@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.datastore.proto
+package com.estatia.realestate.apps.core.datastore_proto
 
 import org.junit.Test
 import org.junit.Assert.assertEquals

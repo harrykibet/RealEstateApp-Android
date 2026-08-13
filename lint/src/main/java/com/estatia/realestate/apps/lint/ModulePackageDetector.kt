@@ -18,29 +18,39 @@ class ModulePackageDetector : Detector(), SourceCodeScanner {
                 val packageName = node.packageName
                 if (packageName.isBlank()) return
 
-                // Get relative path of the file from project root
-                val projectDir = context.project.dir.absolutePath
-                val fileDir = context.file.absolutePath
-                val relativePath = fileDir.removePrefix(projectDir).replace("\\", "/")
-
-                // Extract module info (e.g. /core/network/src/main/...)
-                val pathSegments = relativePath.split("/").filter { it.isNotBlank() }
-                if (pathSegments.size < 2) return
-
-                val layer = pathSegments[0] // e.g. "core"
-                val module = pathSegments[1] // e.g. "network"
+                // Use the project's folder structure to determine the expected package.
+                // In a multi-module project, context.project.dir points to the module folder.
+                val projectDir = context.project.dir.absolutePath.replace("\\", "/")
                 
-                // We only enforce this for our internal core/feature layers
-                if (layer != "core" && layer != "feature") return
-
-                val expectedPrefix = "com.estatia.realestate.apps.$layer.${module.replace("-", "_")}"
+                // We expect a path containing /core/module_name or /feature/module_name
+                val coreIndex = projectDir.lastIndexOf("/core/")
+                val featureIndex = projectDir.lastIndexOf("/feature/")
                 
-                if (!packageName.startsWith(expectedPrefix)) {
+                val layer: String
+                val module: String
+                
+                if (coreIndex != -1) {
+                    layer = "core"
+                    module = projectDir.substring(coreIndex + 6)
+                } else if (featureIndex != -1) {
+                    layer = "feature"
+                    module = projectDir.substring(featureIndex + 9)
+                } else {
+                    return
+                }
+
+                // Remove any sub-paths if the project dir includes them
+                val moduleName = module.split("/").first()
+
+                val expectedWithUnderscore = "com.estatia.realestate.apps.$layer.${moduleName.replace("-", "_")}"
+                val expectedPlain = "com.estatia.realestate.apps.$layer.${moduleName.replace("-", "")}"
+                
+                if (!packageName.startsWith(expectedWithUnderscore) && !packageName.startsWith(expectedPlain)) {
                     context.report(
                         ISSUE,
                         node,
                         context.getLocation(node),
-                        "Package name '$packageName' must start with '$expectedPrefix' to match module location."
+                        "Package name '$packageName' must start with either '$expectedWithUnderscore' or '$expectedPlain' to match module location ($layer:$moduleName)."
                     )
                 }
             }

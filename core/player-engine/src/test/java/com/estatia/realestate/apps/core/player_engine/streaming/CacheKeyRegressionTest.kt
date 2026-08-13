@@ -14,6 +14,7 @@ class CacheKeyRegressionTest {
     private lateinit var factory: DefaultCacheKeyFactory
 
     @Before
+    @Suppress("UseKtx")
     fun setup() {
         mockkStatic(Uri::class)
         val mockUri = mockk<Uri>(relaxed = true)
