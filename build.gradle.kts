@@ -53,125 +53,132 @@ extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("mod
  * with NIA-style colors. This replaces the default behavior of the
  * module-graph plugin for visualization purposes.
  */
-tasks.register("generateNiaModuleGraph") {
+/**
+ * Custom task to generate Graphviz dot files for module dependencies.
+ * If 'modules.graph.of.module' is provided, generates a graph for that module and its dependencies.
+ * Otherwise, generates a global graph and per-module graphs in each module's directory.
+ */
+tasks.register("generateModuleGraphs") {
     group = "reporting"
-    description = "Generates a Graphviz dot file and a Mermaid file for the module dependency graph."
+    description = "Generates Graphviz dot files for module dependency graphs."
 
     doLast {
         val ofModule = project.findProperty("modules.graph.of.module") as? String
-        val outputDir = "${project.layout.buildDirectory.get()}/reports/graph"
-        val dotFile = project.file("$outputDir/module_graph.gv")
-        val mermaidFile = project.file("$outputDir/module_graph.mmd")
-        dotFile.parentFile.mkdirs()
+        val dotBinary = "C:/Program Files/Graphviz/bin/dot.exe"
+        val hasDot = project.file(dotBinary).exists()
 
-        val modulesToInclude = mutableSetOf<Project>()
-        fun addProjectAndSubprojects(p: Project) {
-            modulesToInclude.add(p)
-            p.childProjects.values.forEach { addProjectAndSubprojects(it) }
-        }
-        
-        if (ofModule != null) {
-            val rootProj = project.rootProject.allprojects.find { it.path == ofModule } 
-                ?: throw IllegalArgumentException("Module $ofModule not found")
-            
-            fun collectModules(p: Project) {
+        fun generateGraphForProject(target: Project, outputFile: File) {
+            val modulesToInclude = mutableSetOf<Project>()
+            fun collectDependencies(p: Project) {
                 if (modulesToInclude.add(p)) {
                     p.configurations.forEach { config ->
                         config.dependencies.forEach { dep ->
                             if (dep is ProjectDependency) {
                                 try {
-                                    val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                    collectModules(target)
-                                } catch (_: Exception) {}
+                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                    collectDependencies(depProj)
+                                } catch (_: Exception) { }
                             }
                         }
                     }
                 }
             }
-            collectModules(rootProj)
+            collectDependencies(target)
+
+            outputFile.parentFile.mkdirs()
+            outputFile.printWriter().use { writer ->
+                writer.println("digraph {")
+                writer.println("  graph [label=\"${target.path} Dependencies\", labelloc=t, fontsize=20, ranksep=1.2];")
+                writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
+
+                // Colors
+                val appColor = "#CAFFBF"     // Light Green
+                val featureColor = "#FFD6A5" // Light Orange
+                val coreColor = "#9BF6FF"    // Light Blue
+                val testColor = "#A0C4FF"    // Periwinkle
+                val otherColor = "#BDB2FF"   // Purple
+
+                modulesToInclude.forEach { p ->
+                    val color = when {
+                        p.path == ":app" -> appColor
+                        p.path.startsWith(":feature") -> featureColor
+                        p.path.startsWith(":core") -> coreColor
+                        p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> testColor
+                        else -> otherColor
+                    }
+                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
+                }
+
+                modulesToInclude.forEach { p ->
+                    p.configurations.forEach { config ->
+                        config.dependencies.forEach { dep ->
+                            if (dep is ProjectDependency) {
+                                try {
+                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                    if (modulesToInclude.contains(depProj)) {
+                                        writer.println("  \"${p.path}\" -> \"${depProj.path}\"")
+                                    }
+                                } catch (_: Exception) { }
+                            }
+                        }
+                    }
+                }
+                writer.println("}")
+            }
+        }
+
+        if (ofModule != null) {
+            val targetProj = project.rootProject.allprojects.find { it.path == ofModule }
+                ?: throw IllegalArgumentException("Module $ofModule not found")
+            val output = project.file("${project.layout.buildDirectory.get()}/reports/graph/${targetProj.name}_graph.gv")
+            generateGraphForProject(targetProj, output)
+            println("Graph generated for $ofModule at ${output.absolutePath}")
         } else {
-            addProjectAndSubprojects(project.rootProject)
-        }
-
-        // Colors
-        val appColor = "#CAFFBF"
-        val featureColor = "#FFD6A5"
-        val coreColor = "#9BF6FF"
-        val testColor = "#A0C4FF"
-        val otherColor = "#BDB2FF"
-
-        // Generate DOT
-        dotFile.printWriter().use { writer ->
-            writer.println("digraph {")
-            writer.println("  graph [label=\"Estatia Module Graph\", labelloc=t, fontsize=30, ranksep=1.4];")
-            writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
-
-            modulesToInclude.forEach { p ->
-                val color = when {
-                    p.path == ":app" -> appColor
-                    p.path.startsWith(":feature") -> featureColor
-                    p.path.startsWith(":core") -> coreColor
-                    p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> testColor
-                    else -> otherColor
+            // 1. Generate Global Graph
+            val globalOutput = project.file("${project.layout.buildDirectory.get()}/reports/graph/global_module_graph.gv")
+            val allModules = project.rootProject.allprojects
+            
+            globalOutput.parentFile.mkdirs()
+            globalOutput.printWriter().use { writer ->
+                writer.println("digraph {")
+                writer.println("  graph [label=\"Estatia Global Module Graph\", labelloc=t, fontsize=30, ranksep=1.4];")
+                writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
+                
+                allModules.forEach { p ->
+                    val color = when {
+                        p.path == ":app" -> "#CAFFBF"
+                        p.path.startsWith(":feature") -> "#FFD6A5"
+                        p.path.startsWith(":core") -> "#9BF6FF"
+                        p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> "#A0C4FF"
+                        else -> "#BDB2FF"
+                    }
+                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
                 }
-                writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
-            }
 
-            modulesToInclude.forEach { p ->
-                p.configurations.forEach { config ->
-                    config.dependencies.forEach { dep ->
-                        if (dep is ProjectDependency) {
-                            try {
-                                val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                if (modulesToInclude.contains(target)) {
-                                    writer.println("  \"${p.path}\" -> \"${target.path}\"")
-                                }
-                            } catch (_: Exception) {}
+                allModules.forEach { p ->
+                    p.configurations.forEach { config ->
+                        config.dependencies.forEach { dep ->
+                            if (dep is ProjectDependency) {
+                                try {
+                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                    writer.println("  \"${p.path}\" -> \"${depProj.path}\"")
+                                } catch (_: Exception) { }
+                            }
                         }
                     }
                 }
+                writer.println("}")
             }
-            writer.println("}")
+            println("Global graph generated.")
+
+            // 2. Generate Per-Module Graphs
+            allModules.forEach { p ->
+                if (p == project.rootProject) return@forEach
+                val moduleOutput = project.file("${p.projectDir}/module_graph.gv")
+                generateGraphForProject(p, moduleOutput)
+            }
+            println("Per-module graphs generated in each module's root directory.")
         }
-
-        // Generate Mermaid
-        mermaidFile.printWriter().use { writer ->
-            writer.println("graph TD")
-            modulesToInclude.forEach { p ->
-                val color = when {
-                    p.path == ":app" -> "fill:#CAFFBF"
-                    p.path.startsWith(":feature") -> "fill:#FFD6A5"
-                    p.path.startsWith(":core") -> "fill:#9BF6FF"
-                    p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> "fill:#A0C4FF"
-                    else -> "fill:#BDB2FF"
-                }
-                writer.println("  ${p.name}[\"${p.path}\"]")
-                writer.println("  style ${p.name} $color")
-            }
-
-            modulesToInclude.forEach { p ->
-                val deps = mutableSetOf<String>()
-                p.configurations.forEach { config ->
-                    config.dependencies.forEach { dep ->
-                        if (dep is ProjectDependency) {
-                            try {
-                                val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                if (modulesToInclude.contains(target)) {
-                                    deps.add(target.name)
-                                }
-                            } catch (_: Exception) {}
-                        }
-                    }
-                }
-                deps.forEach { dep ->
-                    writer.println("  ${p.name.replace("-", "_")} --> ${dep.replace("-", "_")}")
-                }
-            }
-        }
-
-        println("Graphviz generated at: ${dotFile.absolutePath}")
-        println("Mermaid generated at: ${mermaidFile.absolutePath}")
-        println("NOTE: To see an image, render the DOT file with 'dot' or view the Mermaid file in a Mermaid-compatible viewer.")
     }
 }
 
