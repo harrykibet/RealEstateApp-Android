@@ -5,7 +5,10 @@ import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 
 class EstatiaIssueRegistry : IssueRegistry() {
-    override val issues = listOf(DesignSystemDetector.ISSUE)
+    override val issues = listOf(
+        DesignSystemDetector.ISSUE,
+        ModulePackageDetector.ISSUE
+    )
 
     override val api: Int = CURRENT_API
 

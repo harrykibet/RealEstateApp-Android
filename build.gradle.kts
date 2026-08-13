@@ -37,6 +37,15 @@ plugins {
 extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("moduleGraphAssert") {
     maxHeight = 10
     configurations = setOf("api", "implementation")
+    
+    // 🛡️ Architectural Guardrails:
+    // 1. Core modules must never depend on Features (No upward dependencies)
+    // 2. Features must never depend on each other (No feature coupling)
+    //    Exception: :feature:shared-ui is currently a shared provider (Tech Debt)
+    restricted = arrayOf(
+        ":core.* -X> :feature.*",
+        ":feature.* -X> :feature:(?!shared-ui).*"
+    )
 }
 
 /**
