@@ -1,3 +1,4 @@
+import java.io.File
 import org.gradle.api.artifacts.ProjectDependency
 
 buildscript {
@@ -68,62 +69,58 @@ tasks.register("generateModuleGraphs") {
         val hasDot = project.file(dotBinary).exists()
 
         fun generateGraphForProject(target: Project, outputFile: File) {
-            val modulesToInclude = mutableSetOf<Project>()
-            fun collectDependencies(p: Project) {
-                if (modulesToInclude.add(p)) {
-                    p.configurations.forEach { config ->
-                        config.dependencies.forEach { dep ->
-                            if (dep is ProjectDependency) {
-                                try {
-                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                    collectDependencies(depProj)
-                                } catch (_: Exception) { }
+            val modulesToInclude = mutableSetOf<String>()
+            val edges = mutableSetOf<Pair<String, String>>()
+            
+            fun collectDeps(p: Project) {
+                if (modulesToInclude.add(p.path)) {
+                    val buildFile = File(p.projectDir, "build.gradle.kts")
+                    if (buildFile.exists()) {
+                        val content = buildFile.readText()
+                        Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
+                            val layer = match.groups[1]?.value
+                            val nameRaw = match.groups[2]?.value
+                            if (layer != null && nameRaw != null) {
+                                val name = nameRaw.replace(Regex("([a-z])([A-Z])"), "$1-$2").lowercase()
+                                val depPath = ":$layer:$name"
+                                edges.add(p.path to depPath)
+                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
+                                if (depProj != null) collectDeps(depProj)
+                                else modulesToInclude.add(depPath)
                             }
                         }
                     }
                 }
             }
-            collectDependencies(target)
+            collectDeps(target)
 
             outputFile.parentFile.mkdirs()
             outputFile.printWriter().use { writer ->
                 writer.println("digraph {")
                 writer.println("  graph [label=\"${target.path} Dependencies\", labelloc=t, fontsize=20, ranksep=1.2];")
                 writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
-
-                // Colors
-                val appColor = "#CAFFBF"     // Light Green
-                val featureColor = "#FFD6A5" // Light Orange
-                val coreColor = "#9BF6FF"    // Light Blue
-                val testColor = "#A0C4FF"    // Periwinkle
-                val otherColor = "#BDB2FF"   // Purple
-
-                modulesToInclude.forEach { p ->
+                
+                modulesToInclude.forEach { path ->
                     val color = when {
-                        p.path == ":app" -> appColor
-                        p.path.startsWith(":feature") -> featureColor
-                        p.path.startsWith(":core") -> coreColor
-                        p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> testColor
-                        else -> otherColor
+                        path == ":app" -> "#CAFFBF"
+                        path.startsWith(":feature") -> "#FFD6A5"
+                        path.startsWith(":core") -> "#9BF6FF"
+                        else -> "#BDB2FF"
                     }
-                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
+                    writer.println("  \"$path\" [fillcolor=\"$color\"];")
                 }
 
-                modulesToInclude.forEach { p ->
-                    p.configurations.forEach { config ->
-                        config.dependencies.forEach { dep ->
-                            if (dep is ProjectDependency) {
-                                try {
-                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                    if (modulesToInclude.contains(depProj)) {
-                                        writer.println("  \"${p.path}\" -> \"${depProj.path}\"")
-                                    }
-                                } catch (_: Exception) { }
-                            }
-                        }
-                    }
+                edges.forEach { (from, to) ->
+                    writer.println("  \"$from\" -> \"$to\"")
                 }
                 writer.println("}")
+            }
+            
+            if (hasDot) {
+                try {
+                    val pngPath = outputFile.absolutePath.replace(".gv", ".png")
+                    ProcessBuilder(dotBinary, "-Tpng", outputFile.absolutePath, "-o", pngPath).start().waitFor()
+                } catch (_: Exception) { }
             }
         }
 
@@ -137,7 +134,23 @@ tasks.register("generateModuleGraphs") {
             // 1. Generate Global Graph
             val globalOutput = project.file("${project.layout.buildDirectory.get()}/reports/graph/global_module_graph.gv")
             val allModules = project.rootProject.allprojects
+            val globalEdges = mutableSetOf<Pair<String, String>>()
             
+            allModules.forEach { p ->
+                val buildFile = File(p.projectDir, "build.gradle.kts")
+                if (buildFile.exists()) {
+                    val content = buildFile.readText()
+                    Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
+                        val layer = match.groups[1]?.value
+                        val nameRaw = match.groups[2]?.value
+                        if (layer != null && nameRaw != null) {
+                            val name = nameRaw.replace(Regex("([a-z])([A-Z])"), "$1-$2").lowercase()
+                            globalEdges.add(p.path to ":$layer:$name")
+                        }
+                    }
+                }
+            }
+
             globalOutput.parentFile.mkdirs()
             globalOutput.printWriter().use { writer ->
                 writer.println("digraph {")
@@ -149,32 +162,28 @@ tasks.register("generateModuleGraphs") {
                         p.path == ":app" -> "#CAFFBF"
                         p.path.startsWith(":feature") -> "#FFD6A5"
                         p.path.startsWith(":core") -> "#9BF6FF"
-                        p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> "#A0C4FF"
                         else -> "#BDB2FF"
                     }
                     writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
                 }
 
-                allModules.forEach { p ->
-                    p.configurations.forEach { config ->
-                        config.dependencies.forEach { dep ->
-                            if (dep is ProjectDependency) {
-                                try {
-                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                    writer.println("  \"${p.path}\" -> \"${depProj.path}\"")
-                                } catch (_: Exception) { }
-                            }
-                        }
-                    }
+                globalEdges.forEach { (from, to) ->
+                    writer.println("  \"$from\" -> \"$to\"")
                 }
                 writer.println("}")
+            }
+            if (hasDot) {
+                try {
+                    val pngPath = globalOutput.absolutePath.replace(".gv", ".png")
+                    ProcessBuilder(dotBinary, "-Tpng", globalOutput.absolutePath, "-o", pngPath).start().waitFor()
+                } catch (_: Exception) { }
             }
             println("Global graph generated.")
 
             // 2. Generate Per-Module Graphs
             allModules.forEach { p ->
                 if (p == project.rootProject) return@forEach
-                val moduleOutput = project.file("${p.projectDir}/module_graph.gv")
+                val moduleOutput = File(p.projectDir, "module_graph.gv")
                 generateGraphForProject(p, moduleOutput)
             }
             println("Per-module graphs generated in each module's root directory.")
