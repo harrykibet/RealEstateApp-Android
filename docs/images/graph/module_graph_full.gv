@@ -1,0 +1,124 @@
+digraph {
+  graph [label="Estatia Module Graph", labelloc=t, fontsize=30, ranksep=1.4];
+  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
+  ":core:analytics" [fillcolor="#9BF6FF"];
+  ":core:analytics" -> ":core:data"
+  ":core:analytics" -> ":core:domain"
+  ":core:analytics" -> ":core:model"
+  ":core:analytics" -> ":core:common"
+  ":core:common" [fillcolor="#9BF6FF"];
+  ":core:common" -> ":core:model"
+  ":core:config" [fillcolor="#9BF6FF"];
+  ":core:config" -> ":core:model"
+  ":core:config" -> ":core:common"
+  ":core:config" -> ":core:domain"
+  ":core:data" [fillcolor="#9BF6FF"];
+  ":core:data" -> ":core:model"
+  ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:datastore"
+  ":core:data" -> ":core:common"
+  ":core:data" -> ":core:database"
+  ":core:data" -> ":core:security"
+  ":core:data" -> ":core:network"
+  ":core:database" [fillcolor="#9BF6FF"];
+  ":core:database" -> ":core:model"
+  ":core:database" -> ":core:common"
+  ":core:datastore" [fillcolor="#9BF6FF"];
+  ":core:datastore" -> ":core:model"
+  ":core:datastore" -> ":core:common"
+  ":core:datastore" -> ":core:network"
+  ":core:datastore" -> ":core:datastoreProto"
+  ":core:datastore-proto" [fillcolor="#9BF6FF"];
+  ":core:design-system" [fillcolor="#9BF6FF"];
+  ":core:design-system" -> ":core:model"
+  ":core:design-system" -> ":core:domain"
+  ":core:domain" [fillcolor="#9BF6FF"];
+  ":core:domain" -> ":core:model"
+  ":core:domain" -> ":core:common"
+  ":core:intelligence" [fillcolor="#9BF6FF"];
+  ":core:intelligence" -> ":core:model"
+  ":core:intelligence" -> ":core:domain"
+  ":core:intelligence" -> ":core:common"
+  ":core:localization" [fillcolor="#9BF6FF"];
+  ":core:localization" -> ":core:common"
+  ":core:model" [fillcolor="#9BF6FF"];
+  ":core:navigation" [fillcolor="#9BF6FF"];
+  ":core:network" [fillcolor="#9BF6FF"];
+  ":core:network" -> ":core:common"
+  ":core:network" -> ":core:domain"
+  ":core:network" -> ":core:model"
+  ":core:notifications" [fillcolor="#9BF6FF"];
+  ":core:notifications" -> ":core:model"
+  ":core:player-engine" [fillcolor="#9BF6FF"];
+  ":core:player-engine" -> ":core:data"
+  ":core:player-engine" -> ":core:domain"
+  ":core:player-engine" -> ":core:config"
+  ":core:player-engine" -> ":core:common"
+  ":core:player-engine" -> ":core:model"
+  ":core:player-engine" -> ":core:network"
+  ":core:player-ui" [fillcolor="#9BF6FF"];
+  ":core:player-ui" -> ":core:playerEngine"
+  ":core:player-ui" -> ":core:domain"
+  ":core:player-ui" -> ":core:model"
+  ":core:player-ui" -> ":core:designSystem"
+  ":core:security" [fillcolor="#9BF6FF"];
+  ":core:security" -> ":core:common"
+  ":core:security" -> ":core:model"
+  ":core:testing" [fillcolor="#9BF6FF"];
+  ":core:testing" -> ":core:model"
+  ":core:ui" [fillcolor="#9BF6FF"];
+  ":core:ui" -> ":core:designSystem"
+  ":feature:auth" [fillcolor="#FFD6A5"];
+  ":feature:chats" [fillcolor="#FFD6A5"];
+  ":feature:comments" [fillcolor="#FFD6A5"];
+  ":feature:favorites" [fillcolor="#FFD6A5"];
+  ":feature:favorites" -> ":core:playerUi"
+  ":feature:favorites" -> ":core:playerEngine"
+  ":feature:favorites" -> ":core:ui"
+  ":feature:favorites" -> ":feature:sharedUi"
+  ":feature:home" [fillcolor="#FFD6A5"];
+  ":feature:home" -> ":feature:sharedUi"
+  ":feature:home" -> ":core:ui"
+  ":feature:home" -> ":core:playerUi"
+  ":feature:home" -> ":core:playerEngine"
+  ":feature:home" -> ":core:localization"
+  ":feature:home" -> ":core:model"
+  ":feature:home" -> ":core:domain"
+  ":feature:home" -> ":core:common"
+  ":feature:intelligence" [fillcolor="#FFD6A5"];
+  ":feature:market" [fillcolor="#FFD6A5"];
+  ":feature:payments" [fillcolor="#FFD6A5"];
+  ":feature:profile" [fillcolor="#FFD6A5"];
+  ":feature:profile" -> ":core:designSystem"
+  ":feature:profile" -> ":core:ui"
+  ":feature:profile" -> ":core:localization"
+  ":feature:profile" -> ":core:model"
+  ":feature:property" [fillcolor="#FFD6A5"];
+  ":feature:property" -> ":core:designSystem"
+  ":feature:property" -> ":core:ui"
+  ":feature:property" -> ":core:playerUi"
+  ":feature:property" -> ":core:playerEngine"
+  ":feature:property" -> ":core:localization"
+  ":feature:property" -> ":core:model"
+  ":feature:property" -> ":core:domain"
+  ":feature:property" -> ":core:common"
+  ":feature:property" -> ":core:testing"
+  ":feature:search" [fillcolor="#FFD6A5"];
+  ":feature:search" -> ":core:security"
+  ":feature:search" -> ":core:playerUi"
+  ":feature:search" -> ":core:playerEngine"
+  ":feature:search" -> ":core:ui"
+  ":feature:search" -> ":feature:sharedUi"
+  ":feature:service" [fillcolor="#FFD6A5"];
+  ":feature:settings" [fillcolor="#FFD6A5"];
+  ":feature:settings" -> ":core:designSystem"
+  ":feature:settings" -> ":core:ui"
+  ":feature:settings" -> ":core:analytics"
+  ":feature:settings" -> ":core:domain"
+  ":feature:shared-ui" [fillcolor="#FFD6A5"];
+  ":feature:shared-ui" -> ":core:model"
+  ":feature:shared-ui" -> ":core:playerUi"
+  ":feature:shared-ui" -> ":core:designSystem"
+  ":feature:shared-ui" -> ":core:localization"
+  ":feature:shared-ui" -> ":core:ui"
+}

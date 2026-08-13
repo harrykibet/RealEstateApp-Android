@@ -1,0 +1,5 @@
+digraph {
+  graph [label="Estatia Module Graph", labelloc=t, fontsize=30, ranksep=1.4];
+  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
+  ":" [fillcolor="#BDB2FF"];
+}

@@ -55,52 +55,56 @@ extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("mod
  */
 tasks.register("generateNiaModuleGraph") {
     group = "reporting"
-    description = "Generates a Graphviz dot file for the module dependency graph with NIA-style colors."
+    description = "Generates a Graphviz dot file and a Mermaid file for the module dependency graph."
 
     doLast {
         val ofModule = project.findProperty("modules.graph.of.module") as? String
-        val outputFile = project.findProperty("modules.graph.output.gv") as? String
-            ?: "${project.layout.buildDirectory.get()}/reports/module_graph.gv"
-
-        val dotFile = project.file(outputFile)
+        val outputDir = "${project.layout.buildDirectory.get()}/reports/graph"
+        val dotFile = project.file("$outputDir/module_graph.gv")
+        val mermaidFile = project.file("$outputDir/module_graph.mmd")
         dotFile.parentFile.mkdirs()
 
-        // Use allprojects to ensure we see everything
-        val allProjects = project.allprojects
         val modulesToInclude = mutableSetOf<Project>()
-
+        fun addProjectAndSubprojects(p: Project) {
+            modulesToInclude.add(p)
+            p.childProjects.values.forEach { addProjectAndSubprojects(it) }
+        }
+        
         if (ofModule != null) {
-            val rootProj = allProjects.find { it.path == ofModule } ?: throw IllegalArgumentException("Module $ofModule not found")
+            val rootProj = project.rootProject.allprojects.find { it.path == ofModule } 
+                ?: throw IllegalArgumentException("Module $ofModule not found")
+            
             fun collectModules(p: Project) {
                 if (modulesToInclude.add(p)) {
                     p.configurations.forEach { config ->
-                        try {
-                            config.dependencies.forEach { dep ->
-                                if (dep is ProjectDependency) {
+                        config.dependencies.forEach { dep ->
+                            if (dep is ProjectDependency) {
+                                try {
                                     val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
                                     collectModules(target)
-                                }
+                                } catch (_: Exception) {}
                             }
-                        } catch (_: Exception) { }
+                        }
                     }
                 }
             }
             collectModules(rootProj)
         } else {
-            modulesToInclude.addAll(allProjects)
+            addProjectAndSubprojects(project.rootProject)
         }
 
+        // Colors
+        val appColor = "#CAFFBF"
+        val featureColor = "#FFD6A5"
+        val coreColor = "#9BF6FF"
+        val testColor = "#A0C4FF"
+        val otherColor = "#BDB2FF"
+
+        // Generate DOT
         dotFile.printWriter().use { writer ->
             writer.println("digraph {")
             writer.println("  graph [label=\"Estatia Module Graph\", labelloc=t, fontsize=30, ranksep=1.4];")
             writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
-
-            // NIA-inspired color palette
-            val appColor = "#CAFFBF"     // Light Green
-            val featureColor = "#FFD6A5" // Light Orange
-            val coreColor = "#9BF6FF"    // Light Blue
-            val testColor = "#A0C4FF"    // Periwinkle
-            val otherColor = "#BDB2FF"   // Purple
 
             modulesToInclude.forEach { p ->
                 val color = when {
@@ -113,24 +117,61 @@ tasks.register("generateNiaModuleGraph") {
                 writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
             }
 
-            // Generate edges
             modulesToInclude.forEach { p ->
                 p.configurations.forEach { config ->
-                    try {
-                        config.dependencies.forEach { dep ->
-                            if (dep is ProjectDependency) {
+                    config.dependencies.forEach { dep ->
+                        if (dep is ProjectDependency) {
+                            try {
                                 val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
                                 if (modulesToInclude.contains(target)) {
                                     writer.println("  \"${p.path}\" -> \"${target.path}\"")
                                 }
-                            }
+                            } catch (_: Exception) {}
                         }
-                    } catch (_: Exception) { }
+                    }
                 }
             }
             writer.println("}")
         }
-        println("NIA-style Graphviz generated at: ${dotFile.absolutePath}")
+
+        // Generate Mermaid
+        mermaidFile.printWriter().use { writer ->
+            writer.println("graph TD")
+            modulesToInclude.forEach { p ->
+                val color = when {
+                    p.path == ":app" -> "fill:#CAFFBF"
+                    p.path.startsWith(":feature") -> "fill:#FFD6A5"
+                    p.path.startsWith(":core") -> "fill:#9BF6FF"
+                    p.path.contains("benchmark") || p.path.contains("test") || p.path == ":lint" -> "fill:#A0C4FF"
+                    else -> "fill:#BDB2FF"
+                }
+                writer.println("  ${p.name}[\"${p.path}\"]")
+                writer.println("  style ${p.name} $color")
+            }
+
+            modulesToInclude.forEach { p ->
+                val deps = mutableSetOf<String>()
+                p.configurations.forEach { config ->
+                    config.dependencies.forEach { dep ->
+                        if (dep is ProjectDependency) {
+                            try {
+                                val target = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                if (modulesToInclude.contains(target)) {
+                                    deps.add(target.name)
+                                }
+                            } catch (_: Exception) {}
+                        }
+                    }
+                }
+                deps.forEach { dep ->
+                    writer.println("  ${p.name.replace("-", "_")} --> ${dep.replace("-", "_")}")
+                }
+            }
+        }
+
+        println("Graphviz generated at: ${dotFile.absolutePath}")
+        println("Mermaid generated at: ${mermaidFile.absolutePath}")
+        println("NOTE: To see an image, render the DOT file with 'dot' or view the Mermaid file in a Mermaid-compatible viewer.")
     }
 }
 
