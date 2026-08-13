@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
@@ -19,6 +20,7 @@ internal class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,
     private val propertyLocalDataSource: IPropertyLocalDataSource,
+    private val engagementRepository: IEngagementRepository,
     private val exceptionTranslator: IExceptionTranslator
 ) : ISearchRepository {
 
@@ -27,6 +29,8 @@ internal class SearchRepository @Inject constructor(
         limit: Int
     ): AppResult<List<PropertyDomainModel>> {
         searchLocalDataSource.saveSearchQuery(query) 
+        // 🏎️ Report engagement signal for personalization
+        engagementRepository.reportSearch(query)
 
         // 1. Try search cache
         val cachedIds = searchLocalDataSource.getCachedSearchResult(query).getOrNull()

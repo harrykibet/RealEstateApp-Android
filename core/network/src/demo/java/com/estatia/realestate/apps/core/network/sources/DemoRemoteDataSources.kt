@@ -66,7 +66,7 @@ class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRemoteDataso
     override suspend fun recordView(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun recordShare(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = AppResult.Success(emptyList())
-    override suspend fun fetchPropertiesPaginated(cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> {
+    override suspend fun fetchPropertiesPaginated(userId: String?, cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> {
         val allProperties = DemoData.sampleProperties
         val startIndex = (cursor?.documentId?.toIntOrNull() ?: 0)
         val endIndex = (startIndex + pageSize).coerceAtMost(allProperties.size)

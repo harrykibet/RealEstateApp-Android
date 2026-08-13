@@ -7,6 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import kotlin.time.Duration.Companion.milliseconds
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
+    private val engagementRepository: IEngagementRepository,
     private val metricsTracker: IMetricsTracker,
     @EngineScope private val scope: CoroutineScope
 ) : AnalyticsListener {
@@ -45,19 +47,47 @@ class PlaybackAnalyticsListener @Inject constructor(
     private var wasBackgroundedDuringBuffer: Boolean = false
 
     @Volatile
+    private var currentMediaId: String? = null
+
+    @Volatile
+    private var totalWatchTimeMs: Long = 0L
+
+    @Volatile
     private var lastPlayStartTime: Long? = null
 
     @Volatile
     private var loopCount: Int = 0
 
-    fun markPlaybackStart() {
+    fun markPlaybackStart(mediaId: String) {
+        currentMediaId = mediaId
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
         firstFrameSentAt = null
+        totalWatchTimeMs = 0L
+        loopCount = 0
     }
 
     fun release() {
-        // No-op: using shared EngineScope
+        // 🏎️ Close the Loop: Ship final engagement data before the listener is recycled/discarded
+        reportFinalEngagement()
+    }
+
+    private fun reportFinalEngagement() {
+        val mediaId = currentMediaId ?: return
+        recordWatchTime()
+
+        val watchTime = totalWatchTimeMs
+        val loops = loopCount
+
+        scope.launch {
+            // 🏎️ Authoritative Engagement Signal:
+            // Ship to the domain repository rather than directly to low-level analytics.
+            engagementRepository.reportMediaWatch(
+                mediaId = mediaId,
+                watchTimeMs = watchTime,
+                loopCount = loops
+            )
+        }
     }
 
     fun onAppBackgrounded() {
@@ -71,6 +101,7 @@ class PlaybackAnalyticsListener @Inject constructor(
         val start = lastPlayStartTime ?: return
         val sessionWatchTime = SystemClock.elapsedRealtime() - start
         if (sessionWatchTime > 0) {
+            totalWatchTimeMs += sessionWatchTime
             metricsTracker.trackDuration("player.watch.duration", sessionWatchTime.milliseconds)
             lastPlayStartTime = SystemClock.elapsedRealtime()
         }

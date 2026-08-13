@@ -5,6 +5,7 @@ import android.net.Uri
 data class FeedMediaContext(
     val mediaId: String,
     val uri: Uri,
+    val matchScore: Float = 0.5f,
     val title: String? = null,
     val artist: String? = null,
     val previous: List<FeedNeighbor> = emptyList(),
@@ -14,6 +15,7 @@ data class FeedMediaContext(
 data class FeedNeighbor(
     val mediaId: String,
     val uri: Uri,
+    val matchScore: Float = 0.5f,
     val title: String? = null,
     val artist: String? = null
 )

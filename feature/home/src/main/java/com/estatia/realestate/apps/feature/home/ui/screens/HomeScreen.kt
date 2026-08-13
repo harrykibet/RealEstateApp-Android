@@ -411,7 +411,8 @@ fun HomeContentPreview() {
                         ownerAvatarUrl = null,
                         likesCount = 120,
                         commentsCount = 45,
-                        sharesCount = 12
+                        sharesCount = 12,
+                        matchScore = 0.9f
                     )
                 ),
                 isLoading = false,
@@ -451,7 +452,8 @@ fun HomeContentSwahiliPreview() {
                         ownerAvatarUrl = null,
                         likesCount = 120,
                         commentsCount = 45,
-                        sharesCount = 12
+                        sharesCount = 12,
+                        matchScore = 0.9f
                     )
                 ),
                 isLoading = false,

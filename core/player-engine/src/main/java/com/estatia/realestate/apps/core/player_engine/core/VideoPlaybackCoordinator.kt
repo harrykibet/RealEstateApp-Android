@@ -90,18 +90,26 @@ class VideoPlaybackCoordinator @Inject constructor(
 
                 // 1. Symmetric Warming: Warm previous neighbor (N=1)
                 previous.firstOrNull()?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
-                    warmPrevious(it.mediaId, it.uri)
+                    if (it.matchScore > 0.5f) {
+                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
+                        warmPrevious(it.mediaId, it.uri)
+                    }
                 }
 
                 // 2. Deep Warming: Warm next neighbors (N=2)
                 next.getOrNull(0)?.let {
-                    playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
+                    // 🏎️ Intelligent Prewarming: 
+                    // High-match content gets deeper prefetch + hardware player prep
+                    if (it.matchScore > 0.8f) {
+                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
+                    }
                     warmNext(it.mediaId, it.uri)
                 }
 
                 next.getOrNull(1)?.let {
-                    warmLow(it.mediaId, it.uri)
+                    if (it.matchScore > 0.4f) {
+                        warmLow(it.mediaId, it.uri)
+                    }
                 }
             }
         }
@@ -179,6 +187,7 @@ class VideoPlaybackCoordinator @Inject constructor(
 data class FeedNeighborInfo(
     val mediaId: String,
     val uri: Uri,
+    val matchScore: Float = 0.5f,
     val title: String? = null,
     val artist: String? = null
 )

@@ -29,6 +29,7 @@ object EventTypes {
     const val EVENT_MEDIA_PLAYER_DURATION_CHANGED = "Media player duration changed"
     const val EVENT_MEDIA_PLAYER_STATE_CHANGED = "Media player state changed"
     const val EVENT_MEDIA_PLAYER_QUALITY_MONITORING = "Media player quality monitoring"
+    const val EVENT_PERSONALIZED_ENGAGEMENT = "Personalized content engagement"
 
     // Property Listing Events
     const val EVENT_PROPERTY_VIEWED = "Property viewed by user"

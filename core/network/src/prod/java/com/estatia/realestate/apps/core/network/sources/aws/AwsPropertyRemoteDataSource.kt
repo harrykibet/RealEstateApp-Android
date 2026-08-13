@@ -119,8 +119,56 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     override suspend fun recordShare(propertyId: String): AppResult<Unit> =
         AppResult.Success(Unit)
 
-    override suspend fun fetchPropertiesPaginated(cursor: PropertyCursor?, pageSize: Int): AppResult<PropertyRemotePage> {
-        // Pattern for listing properties via AppSync
-        return AppResult.Success(PropertyRemotePage(emptyList(), null))
+    override suspend fun fetchPropertiesPaginated(
+        userId: String?,
+        cursor: PropertyCursor?,
+        pageSize: Int
+    ): AppResult<PropertyRemotePage> {
+        // 🏎️ Server-Side Delegation:
+        // We invoke the 'getPersonalizedFeed' query which triggers our AppSync Lambda Resolver.
+        // The Lambda handles fetching from Aurora, computing match scores, and ranking.
+        val query = """
+            query GetPersonalizedFeed(${'$'}userId: ID, ${'$'}limit: Int, ${'$'}nextToken: String) {
+                getPersonalizedFeed(userId: ${'$'}userId, limit: ${'$'}limit, nextToken: ${'$'}nextToken) {
+                    items {
+                        id
+                        title
+                        description
+                        price
+                        imageUrl
+                        videoUrl
+                        video
+                        ownerId
+                        ownerName
+                        matchScore  # 🧠 Computed dynamically by the Lambda
+                    }
+                    nextToken
+                }
+            }
+        """.trimIndent()
+
+        val request = SimpleGraphQLRequest<PropertyRemotePage>(
+            query,
+            mapOf(
+                "userId" to userId,
+                "limit" to pageSize,
+                "nextToken" to cursor?.documentId
+            ),
+            PropertyRemotePage::class.java,
+            null
+        )
+
+        return networkClient.execute {
+            suspendCancellableCoroutine { continuation ->
+                Amplify.API.query(request,
+                    { response -> 
+                        val data = response.data
+                        if (data != null) continuation.resume(data)
+                        else continuation.resumeWith(Result.failure(DatabaseException.NotFound))
+                    },
+                    { error -> continuation.resumeWith(Result.failure(error)) }
+                )
+            }
+        }
     }
 }

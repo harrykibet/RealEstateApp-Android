@@ -48,6 +48,8 @@ internal object FirestorePropertyMapper {
             commentsCount = entity.commentsCount,
             sharesCount = entity.sharesCount,
 
+            matchScore = entity.matchScore,
+
             propertyType = entity.propertyType,
 
             bedrooms = entity.bedrooms,
@@ -89,6 +91,7 @@ internal object FirestorePropertyMapper {
             likesCount = domain.likesCount,
             commentsCount = domain.commentsCount,
             sharesCount = domain.sharesCount,
+            matchScore = domain.matchScore,
             propertyType = domain.propertyType,
             bedrooms = domain.bedrooms,
             bathrooms = domain.bathrooms,

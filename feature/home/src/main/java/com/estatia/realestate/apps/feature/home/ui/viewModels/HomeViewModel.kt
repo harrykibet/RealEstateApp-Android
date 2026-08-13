@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
+import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,
+    private val authRepository: IAuthRepository,
     private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -51,7 +53,8 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val result = api.fetchPropertiesPaginated(cursor, pageSize)
+                val userId = authRepository.getCurrentUserId()
+                val result = api.fetchPropertiesPaginated(userId, cursor, pageSize)
                 val page = result.getOrThrow()
                 
                 val newProperties = page.properties

@@ -20,7 +20,7 @@ Estatia digitizes and structures this ecosystem.
 
 * Location-aware property search
 * Map-based exploration
-* Media-rich vertical feed (image + video)
+* Personalized vertical media feed (match-aware prefetching)
 * Structured filtering (price, type, amenities)
 
 ### Listing Infrastructure
@@ -82,6 +82,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :core:database
 :core:security
 :core:datastore
+:core:intelligence
 :core:player-engine
 :core:player-ui
 :core:design-system
@@ -92,7 +93,6 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :feature:profile
 :feature:search
 :feature:property
-:feature:intelligence
 :feature:payments
 :feature:market
 :feature:chats

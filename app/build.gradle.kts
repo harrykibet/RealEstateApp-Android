@@ -81,7 +81,7 @@ dependencies {
     implementation(projects.core.designSystem)
     implementation(projects.core.notifications)
     implementation(projects.core.datastoreProto)
-
+    implementation(projects.core.intelligence)
 
     implementation(projects.feature.auth)
     implementation(projects.feature.home)
@@ -96,7 +96,6 @@ dependencies {
     implementation(projects.feature.payments)
     implementation(projects.feature.sharedUi)
     implementation(projects.feature.favorites)
-    implementation(projects.feature.intelligence)
 
     implementation(projects.lint)
 }

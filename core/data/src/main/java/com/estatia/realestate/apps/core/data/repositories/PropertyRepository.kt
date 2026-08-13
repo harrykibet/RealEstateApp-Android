@@ -6,6 +6,8 @@ import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
@@ -31,6 +33,7 @@ internal class PropertyRepository @Inject constructor(
     private val remoteDataSource: IPropertyRemoteDatasource,
     private val userRepository: IUserRepository,
     private val metricsTracker: IMetricsTracker,
+    private val engagementRepository: IEngagementRepository,
     private val exceptionTranslator: IExceptionTranslator
 ) : IPropertyRepository {
 
@@ -215,22 +218,28 @@ internal class PropertyRepository @Inject constructor(
     }
 
     override suspend fun recordView(propertyId: String): AppResult<Unit> {
+        // 🏎️ Report engagement signal for personalization
+        engagementRepository.reportInteraction(propertyId, EngagementAction.VIEW)
         return remoteDataSource.recordView(propertyId)
             .translatePropertyFailures(exceptionTranslator)
     }
 
     override suspend fun recordShare(propertyId: String): AppResult<Unit> {
+        // 🏎️ Report engagement signal for personalization
+        engagementRepository.reportInteraction(propertyId, EngagementAction.SHARE)
         return remoteDataSource.recordShare(propertyId)
             .translatePropertyFailures(exceptionTranslator)
     }
 
     override suspend fun fetchPropertiesPaginated(
+        userId: String?,
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyPage> {
 
         // 1. Try to serve from cache if first page and not stale
-        if (cursor == null) {
+        // Personalized feeds are generally not cached locally to ensure fresh ML ranking
+        if (cursor == null && userId == null) {
             val isStale = localDataSource.isCacheStale(MAX_CACHE_AGE_5_MIN).getOrNull() ?: true
             if (!isStale) {
                 val cached = localDataSource.getCachedProperties().getOrNull()
@@ -247,7 +256,7 @@ internal class PropertyRepository @Inject constructor(
 
         // 2. Fetch from remote
         val startTime = System.currentTimeMillis()
-        val remoteResult = remoteDataSource.fetchPropertiesPaginated(cursor, pageSize)
+        val remoteResult = remoteDataSource.fetchPropertiesPaginated(userId, cursor, pageSize)
         val duration = System.currentTimeMillis() - startTime
         metricsTracker.trackDuration("property.fetch_paginated.duration", duration.milliseconds)
 

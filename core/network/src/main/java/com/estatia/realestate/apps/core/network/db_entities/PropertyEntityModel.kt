@@ -31,6 +31,12 @@ data class PropertyEntityModel(
     val likesCount: Int = 0,
     val commentsCount: Int = 0,
 
+    /**
+     * Transient score (0.0 to 1.0) indicating how well this property matches
+     * the current user's preferences. Populated by the server at query-time.
+     */
+    val matchScore: Float = 0.5f,
+
     val propertyType: String? = null,
 
     val bedrooms: Int? = null,

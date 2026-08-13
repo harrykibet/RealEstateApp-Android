@@ -80,11 +80,13 @@ interface IPropertyRemoteDatasource {
     /**
      * Fetches properties using pagination.
      * 
+     * @param userId Optional user ID for personalized recommendations.
      * @param cursor The cursor for the next page, or null for the first page.
      * @param pageSize Number of items to fetch per page.
      * @return A [PropertyRemotePage] containing the list of items and the next cursor.
      */
     suspend fun fetchPropertiesPaginated(
+        userId: String?,
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyRemotePage>

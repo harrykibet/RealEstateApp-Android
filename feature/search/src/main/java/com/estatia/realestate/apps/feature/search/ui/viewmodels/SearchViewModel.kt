@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,
+    private val engagementRepository: IEngagementRepository,
     private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -92,6 +94,15 @@ class SearchViewModel @Inject constructor(
         val current = _uiState.value
         if (current is SearchUiState.Success) {
             _uiState.value = current.copy(initialPage = page)
+        }
+    }
+
+    fun onResultClicked(propertyId: String) {
+        val current = _uiState.value
+        if (current is SearchUiState.Success) {
+            viewModelScope.launch {
+                engagementRepository.reportSearch(current.query, propertyId)
+            }
         }
     }
 }

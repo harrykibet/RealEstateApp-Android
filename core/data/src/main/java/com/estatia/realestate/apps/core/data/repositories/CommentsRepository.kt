@@ -15,6 +15,8 @@ import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.data.util.translateCommentFailures
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -27,6 +29,7 @@ internal class CommentsRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val userRepository: IUserRepository,
     private val authRepository: IAuthRepository,
+    private val engagementRepository: IEngagementRepository,
     private val exceptionTranslator: IExceptionTranslator
 ) : ICommentsRepository {
 
@@ -42,6 +45,9 @@ internal class CommentsRepository @Inject constructor(
                 }.translateCommentFailures(exceptionTranslator)
             }
             .onStart {
+                // 🏎️ Report engagement signal for personalization
+                engagementRepository.reportInteraction(propertyId, EngagementAction.COMMENT_OPEN)
+
                 val cached = localDataSource.getCachedComments(propertyId).getOrNull()
                 if (!cached.isNullOrEmpty()) {
                     emit(AppResult.Success(cached.map(RoomCommentMapper::toDomain)))

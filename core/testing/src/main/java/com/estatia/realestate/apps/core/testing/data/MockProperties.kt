@@ -37,6 +37,7 @@ object MockProperties {
             likesCount = 45,
             commentsCount = 12,
             sharesCount = 6,
+            matchScore = 0.95f,
             propertyType = "Apartment",
             bedrooms = 2,
             bathrooms = 2,

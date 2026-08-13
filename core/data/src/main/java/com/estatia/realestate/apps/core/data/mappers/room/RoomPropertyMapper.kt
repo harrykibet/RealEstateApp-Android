@@ -87,6 +87,8 @@ internal object RoomPropertyMapper {
             commentsCount = entity.commentsCount,
             sharesCount = entity.sharesCount,
 
+            matchScore = 0.5f, // cache fallback score
+
             propertyType = null, // cache can omit optional enrichment fields
 
             bedrooms = null,

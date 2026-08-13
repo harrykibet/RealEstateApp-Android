@@ -53,6 +53,10 @@ abstract class DataModule {
 
     @Binds
     @Singleton
+    internal abstract fun bindEngagementRepo(repo: EngagementRepository): IEngagementRepository
+
+    @Binds
+    @Singleton
     internal abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
 
     companion object {

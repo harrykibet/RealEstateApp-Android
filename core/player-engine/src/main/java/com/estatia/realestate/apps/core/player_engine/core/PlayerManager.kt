@@ -127,7 +127,7 @@ class PlayerManager @Inject constructor(
             }
 
             attachListenerIfNeeded(managed)
-            managed.analyticsListener.markPlaybackStart()
+            managed.analyticsListener.markPlaybackStart(mediaId)
             dynamicBitrateController.apply(managed.player, mediaType, environment, startupPhase = true)
             
             // 🎙️ System Media Session Update

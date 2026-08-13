@@ -65,7 +65,7 @@ fun AddPropertyDraft.toDomain(
         likesCount = 0,
         commentsCount = 0,
         sharesCount = 0,
-
+        matchScore = 0.5f,
 
         propertyType = propertyType,
 

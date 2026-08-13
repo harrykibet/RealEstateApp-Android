@@ -14,6 +14,7 @@ data class ListingUiModel(
     val likesCount: Int,
     val commentsCount: Int,
     val sharesCount: Int,
+    val matchScore: Float,
 )
 
 fun PropertyDomainModel.toListingUiModel(): ListingUiModel =
@@ -28,4 +29,5 @@ fun PropertyDomainModel.toListingUiModel(): ListingUiModel =
         likesCount = likesCount,
         commentsCount = commentsCount,
         sharesCount = sharesCount,
+        matchScore = matchScore,
     )

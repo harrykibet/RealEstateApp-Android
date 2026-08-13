@@ -28,6 +28,7 @@ fun RememberFeedPlaybackCoordinator(
                 previous.add(FeedNeighbor(
                     mediaId = it.id,
                     uri = url.toUri(),
+                    matchScore = it.matchScore,
                     title = it.title,
                     artist = it.ownerName
                 ))
@@ -42,6 +43,7 @@ fun RememberFeedPlaybackCoordinator(
                     next.add(FeedNeighbor(
                         mediaId = it.id,
                         uri = url.toUri(),
+                        matchScore = it.matchScore,
                         title = it.title,
                         artist = it.ownerName
                     ))
@@ -53,6 +55,7 @@ fun RememberFeedPlaybackCoordinator(
             FeedMediaContext(
                 mediaId = current.id,
                 uri = currentVideoUrl.toUri(),
+                matchScore = current.matchScore,
                 title = current.title,
                 artist = current.ownerName,
                 previous = previous,

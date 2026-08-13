@@ -29,6 +29,8 @@ data class PropertyDomainModel(
     val commentsCount: Int,
     val sharesCount: Int,
 
+    val matchScore: Float,
+
     val propertyType: String?,
 
     val bedrooms: Int?,

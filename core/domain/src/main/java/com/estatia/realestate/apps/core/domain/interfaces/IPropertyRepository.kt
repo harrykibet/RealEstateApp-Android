@@ -110,8 +110,10 @@ interface IPropertyRepository {
 
     /**
      * Fetches properties using paginated results.
+     * Optionally personalized if [userId] is provided.
      */
     suspend fun fetchPropertiesPaginated(
+        userId: String?,
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyPage>

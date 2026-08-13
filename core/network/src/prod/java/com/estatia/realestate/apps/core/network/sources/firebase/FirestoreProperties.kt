@@ -313,6 +313,7 @@ internal class FirestoreProperties @Inject constructor(
     }
 
     override suspend fun fetchPropertiesPaginated(
+        userId: String?,
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyRemotePage> {
