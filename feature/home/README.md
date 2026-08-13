@@ -1,4 +1,4 @@
-# feature:home
+﻿# feature:home
 
 The `home` module implements the landing experience of the Estatia app, featuring a high-performance video feed of property listings.
 
@@ -13,3 +13,8 @@ The `home` module implements the landing experience of the Estatia app, featurin
 - `HomeRoute`: The entry point that ties together the `HomeViewModel` and `HomeVideoPlaybackViewModel`.
 - `HomeScreen`: Top-level Composable for state handling (Loading, Error, Empty, Success).
 - `HomeFeedContent`: Orchestrates the `PropertyFeedScreen` with specific property item content.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

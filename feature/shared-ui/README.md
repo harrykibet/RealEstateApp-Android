@@ -1,4 +1,4 @@
-# feature:shared-ui
+﻿# feature:shared-ui
 
 This module provides high-level, domain-aware UI components and screens that are shared across multiple feature modules (e.g., Home, Search, Favorites).
 
@@ -25,3 +25,8 @@ While this technically "breaks" the rule of total feature isolation, it is a pra
 
 > [!IMPORTANT]
 > If a component in this module becomes too specific to a single feature, it should be moved back into that feature's specific module. This module is reserved for **cross-cutting UI patterns** only.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

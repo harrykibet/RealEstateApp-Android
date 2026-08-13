@@ -1,4 +1,4 @@
-# core:network
+﻿# core:network
 
 The `network` module manages all external data communication, providing a robust layer over backend providers like Firebase and AWS. It follows a pluggable architecture, allowing you to swap between infrastructure providers without changing business logic or UI code.
 
@@ -47,3 +47,8 @@ Switching between backend providers is handled in the dependency injection layer
 ## Data Models
 
 The module uses `EntityModel` classes (e.g., `PropertyEntityModel`) which represent the structure of data as it exists on the server. These are shared across providers where possible to ensure the `core:data` repository layer remains provider-agnostic.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

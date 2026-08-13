@@ -1,4 +1,4 @@
-# core:domain
+﻿# core:domain
 
 The `domain` module contains the purest form of business logic in the application. It is completely independent of Android frameworks, UI, or specific data storage implementations.
 
@@ -13,3 +13,8 @@ The `domain` module contains the purest form of business logic in the applicatio
 1.  **Framework Independence**: Should not import any `android.*` or `androidx.*` packages (except for lightweight annotations).
 2.  **Stability**: Changes in API versions or database schemas should not leak into this module.
 3.  **Testability**: Logic is easily unit-testable without mocks for Android components.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

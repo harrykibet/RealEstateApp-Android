@@ -1,4 +1,4 @@
-# core:data
+﻿# core:data
 
 The `data` module implements the repository interfaces defined in `core:domain`. it acts as the "Source of Truth" for the entire application, orchestrating data from multiple sources.
 
@@ -12,3 +12,8 @@ The `data` module implements the repository interfaces defined in `core:domain`.
 ## Data Flow
 
 Data typically flows from a `RemoteDataSource` or `LocalDataSource` into a `Repository`, where it is mapped to a `DomainModel` before being exposed to the `domain` or `feature` layers.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

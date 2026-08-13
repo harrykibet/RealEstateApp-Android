@@ -1,3 +1,8 @@
-# :feature_auth module
+﻿# :feature_auth module
 ## Dependency graph
 ![Dependency graph](../../docs/images/graphs/dep_graph_feature_auth.svg)
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+

@@ -1,4 +1,4 @@
-# feature:property
+﻿# feature:property
 
 The `property` module handles detailed property views and listing management.
 
@@ -11,3 +11,8 @@ The `property` module handles detailed property views and listing management.
 
 - `PropertyDetailsScreen`: Displays full information for a specific property listing.
 - `PropertyFormScreen`: (Work in Progress) Form for creating or updating property data.
+
+
+## Dependency Graph
+![Module Graph](module_graph.png)
+
