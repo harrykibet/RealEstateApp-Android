@@ -8,7 +8,7 @@ data class UserEntityModel(
     val profilePictureUrl: String? = null,
     val bio: String? = null,
     val userType: String = "TENANT",  //DEFAULT VALUE, Storing as String for FireStore compatibility
-    val verified: Boolean = false,
+    val verificationLevel: String = "NONE",
     val likedProperties: List<String> = emptyList(),
     val propertyCount: Int = 0,
     val followerCount: Int = 0,

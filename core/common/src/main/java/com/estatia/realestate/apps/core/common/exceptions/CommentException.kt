@@ -23,6 +23,8 @@ sealed class CommentException(
         exception
     )
 
+    data class InvalidComment(val reason: String) : CommentException(reason)
+
 
     data object PermissionDenied :
         CommentException(

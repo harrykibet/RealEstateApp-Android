@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
+import com.estatia.realestate.apps.core.model.user.VerificationLevel
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -107,7 +108,7 @@ class SignUpViewModel @Inject constructor(
             phoneNumber = current.phone,
             profilePictureUrl = null,
             userType = UserType.valueOf(current.userType),
-            verified = false,
+            verificationLevel = VerificationLevel.NONE,
             likedProperties = emptyList()
         )
 

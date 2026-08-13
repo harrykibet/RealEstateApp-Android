@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.testing.data
 
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
+import com.estatia.realestate.apps.core.model.user.VerificationLevel
 
 val mockUsers = listOf(
     UserDomainModel(
@@ -11,7 +12,7 @@ val mockUsers = listOf(
         phoneNumber = "+254712345678",
         profilePictureUrl = "https://randomuser.me/api/portraits/women/1.jpg",
         userType = UserType.TENANT,
-        verified = true,
+        verificationLevel = VerificationLevel.IDENTITY_VERIFIED,
         likedProperties = listOf("property_101", "property_102")
     ),
     UserDomainModel(
@@ -21,7 +22,7 @@ val mockUsers = listOf(
         phoneNumber = "+254798765432",
         profilePictureUrl = "https://randomuser.me/api/portraits/men/2.jpg",
         userType = UserType.PROPERTY_OWNER,
-        verified = false,
+        verificationLevel = VerificationLevel.NONE,
         likedProperties = listOf("property_103")
     ),
     UserDomainModel(
@@ -31,7 +32,7 @@ val mockUsers = listOf(
         phoneNumber = "+254701234567",
         profilePictureUrl = "https://randomuser.me/api/portraits/women/3.jpg",
         userType = UserType.AGENT,
-        verified = true,
+        verificationLevel = VerificationLevel.TRUSTED_PARTNER,
         likedProperties = emptyList()
     )
 )

@@ -13,7 +13,9 @@ dependencies {
     implementation(libs.bundles.lifecycle)
 
     implementation(libs.bundles.mlkit)
+    implementation(libs.kotlinx.coroutines.play.services)
     
+    implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.common)
 }

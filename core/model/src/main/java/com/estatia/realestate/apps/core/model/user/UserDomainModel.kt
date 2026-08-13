@@ -8,7 +8,7 @@ data class UserDomainModel(
     val profilePictureUrl: String?,
     val bio: String? = null,
     val userType: UserType,
-    val verified: Boolean,
+    val verificationLevel: VerificationLevel,
     val likedProperties: List<String>,
     val propertyCount: Int = 0,
     val followerCount: Int = 0,

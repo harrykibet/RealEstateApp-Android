@@ -14,8 +14,10 @@ import com.estatia.realestate.apps.core.common.exceptions.CommentException
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
-import com.estatia.realestate.apps.core.data.util.translateCommentFailures
 import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.model.engagement.SafetyResult
+import com.estatia.realestate.apps.core.data.util.translateCommentFailures
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,6 +32,7 @@ internal class CommentsRepository @Inject constructor(
     private val userRepository: IUserRepository,
     private val authRepository: IAuthRepository,
     private val engagementRepository: IEngagementRepository,
+    private val contentSafetyService: IContentSafetyService,
     private val exceptionTranslator: IExceptionTranslator
 ) : ICommentsRepository {
 
@@ -66,6 +69,11 @@ internal class CommentsRepository @Inject constructor(
         message: String
     ): AppResult<Unit> {
 
+        // 🛡️ Proactive On-Device Moderation
+        val safetyResult = contentSafetyService.validateText(message)
+        if (safetyResult is SafetyResult.Flagged) {
+            return AppResult.Error(CommentException.InvalidComment(safetyResult.reason))
+        }
 
         val userId =
             authRepository.getCurrentUserId()

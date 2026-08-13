@@ -87,7 +87,7 @@ object DemoData {
         name = "Harry Kemboi",
         email = "truman948@gmail.com",
         userType = "AGENT",
-        verified = true,
+        verificationLevel = "TRUSTED_PARTNER",
         likedProperties = listOf("1")
     )
 }
