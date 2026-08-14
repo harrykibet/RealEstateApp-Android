@@ -1,4 +1,4 @@
-﻿# :feature_favorites module
+﻿# src module
 
 ## Dependency Graph
 ![Module Graph](module_graph.png)

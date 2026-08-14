@@ -77,6 +77,19 @@ tasks.register("generateModuleGraphs") {
                     val buildFile = File(p.projectDir, "build.gradle.kts")
                     if (buildFile.exists()) {
                         val content = buildFile.readText()
+                        
+                        // 1. Detect implicit feature dependencies
+                        if (content.contains("estatia.android.feature")) {
+                            val featureDeps = listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system")
+                            featureDeps.forEach { depPath ->
+                                edges.add(p.path to depPath)
+                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
+                                if (depProj != null) collectDeps(depProj)
+                                else modulesToInclude.add(depPath)
+                            }
+                        }
+
+                        // 2. Parse explicit projects.layer.name
                         Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
                             val layer = match.groups[1]?.value
                             val nameRaw = match.groups[2]?.value
@@ -140,6 +153,15 @@ tasks.register("generateModuleGraphs") {
                 val buildFile = File(p.projectDir, "build.gradle.kts")
                 if (buildFile.exists()) {
                     val content = buildFile.readText()
+                    
+                    // 1. Implicit feature dependencies
+                    if (content.contains("estatia.android.feature")) {
+                        listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
+                            globalEdges.add(p.path to it)
+                        }
+                    }
+
+                    // 2. Explicit dependencies
                     Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
                         val layer = match.groups[1]?.value
                         val nameRaw = match.groups[2]?.value
