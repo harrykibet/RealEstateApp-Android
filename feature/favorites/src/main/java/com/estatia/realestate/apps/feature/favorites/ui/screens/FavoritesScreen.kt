@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
-import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

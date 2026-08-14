@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.player_engine.core
 import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory

@@ -261,20 +261,24 @@ class PlayerPool @Inject constructor(
 
     fun releaseAll() {
         checkConfinement()
-        players.values.forEach { managed ->
+        val playersToRelease = players.values.toList()
+        players.clear()
+        playerToIdMap.clear()
+
+        playersToRelease.forEach { managed ->
+            managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
             managed.player.removeAnalyticsListener(managed.analyticsListener)
             managed.analyticsListener.release()
             managed.player.clearMediaItems()
             managed.player.release()
         }
-        players.clear()
-        playerToIdMap.clear()
 
-        idlePlayers.forEach { player ->
+        val idleToRelease = idlePlayers.toList()
+        idlePlayers.clear()
+        idleToRelease.forEach { player ->
             player.clearMediaItems()
             player.release()
         }
-        idlePlayers.clear()
         poolUpdates.tryEmit(Unit)
     }
 
@@ -305,19 +309,28 @@ class PlayerPool @Inject constructor(
         checkConfinement()
         if (players.size <= maxPoolSize) return
 
+        val toRemove = mutableListOf<String>()
         val iterator = players.entries.iterator()
-        while (iterator.hasNext() && players.size > maxPoolSize) {
+        while (iterator.hasNext() && (players.size - toRemove.size) > maxPoolSize) {
             val entry = iterator.next()
             if (pinnedIds.contains(entry.key)) continue
-            
-            entry.value.player.removeAnalyticsListener(entry.value.analyticsListener)
-            entry.value.analyticsListener.release()
-            entry.value.player.clearMediaItems()
-            entry.value.player.release()
-            playerToIdMap.remove(entry.value.player)
-            iterator.remove()
+            toRemove.add(entry.key)
         }
-        poolUpdates.tryEmit(Unit)
+
+        toRemove.forEach { mediaId ->
+            players.remove(mediaId)?.let { managed ->
+                managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
+                managed.player.removeAnalyticsListener(managed.analyticsListener)
+                managed.analyticsListener.release()
+                managed.player.clearMediaItems()
+                managed.player.release()
+                playerToIdMap.remove(managed.player)
+            }
+        }
+
+        if (toRemove.isNotEmpty()) {
+            poolUpdates.tryEmit(Unit)
+        }
     }
 
     // region Testing Hooks

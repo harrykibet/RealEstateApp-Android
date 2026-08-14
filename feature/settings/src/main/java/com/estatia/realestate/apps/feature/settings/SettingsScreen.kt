@@ -45,8 +45,6 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
-import com.estatia.realestate.apps.core.analytics.TrackScreenViewEvent
-import com.estatia.realestate.apps.core.analytics.LocalAnalyticsHelper
 
 @Composable
 fun SettingsScreen(
@@ -144,10 +142,6 @@ internal fun SettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
-    TrackScreenViewEvent(
-        screenName = "Settings",
-        analyticsHelper = LocalAnalyticsHelper.current
-    )
 }
 
 @Composable

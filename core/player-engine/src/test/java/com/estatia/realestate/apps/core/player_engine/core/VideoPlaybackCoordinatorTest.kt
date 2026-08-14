@@ -7,6 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
+import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
@@ -84,7 +85,7 @@ class VideoPlaybackCoordinatorTest {
         val mediaId = "video_1"
         val uri = mockk<Uri>(relaxed = true)
 
-        coordinator.onPageVisible(this, mediaId, uri, emptyList(), emptyList())
+        coordinator.onPageVisible(this, mediaId, uri, 1.0f, emptyList(), emptyList())
 
         // Before debounce
         advanceTimeBy(50.milliseconds)
@@ -102,12 +103,12 @@ class VideoPlaybackCoordinatorTest {
         // Simulate 3 fast scrolls (fling)
         repeat(tuning.flingCountThreshold) { i ->
             every { SystemClock.elapsedRealtime() } returns (i * 100L) // 100ms apart
-            coordinator.onPageVisible(this, "video_$i", uri, emptyList(), emptyList())
+            coordinator.onPageVisible(this, "video_$i", uri, 1.0f, emptyList(), emptyList())
         }
 
         val targetId = "video_final"
         every { SystemClock.elapsedRealtime() } returns (tuning.flingCountThreshold * 100L)
-        coordinator.onPageVisible(this, targetId, uri, emptyList(), emptyList())
+        coordinator.onPageVisible(this, targetId, uri, 1.0f, emptyList(), emptyList())
 
         // Standard debounce (100ms) should NOT fire
         advanceTimeBy(101.milliseconds)
@@ -127,7 +128,7 @@ class VideoPlaybackCoordinatorTest {
         val mediaId = "video_jank"
         val uri = mockk<Uri>(relaxed = true)
 
-        coordinator.onPageVisible(this, mediaId, uri, emptyList(), emptyList())
+        coordinator.onPageVisible(this, mediaId, uri, 1.0f, emptyList(), emptyList())
 
         // Even fling debounce (250ms) shouldn't fire
         advanceTimeBy(251.milliseconds)
@@ -142,10 +143,10 @@ class VideoPlaybackCoordinatorTest {
     fun `neighbor warming is triggered after debounce`() = testScope.runTest {
         val mediaId = "main_video"
         val uri = mockk<Uri>(relaxed = true)
-        val prev = listOf(FeedNeighborInfo("prev_1", mockk(relaxed = true)))
-        val next = listOf(FeedNeighborInfo("next_1", mockk(relaxed = true)), FeedNeighborInfo("next_2", mockk(relaxed = true)))
+        val prev = listOf(FeedNeighbor("prev_1", mockk(relaxed = true), matchScore = 1.0f))
+        val next = listOf(FeedNeighbor("next_1", mockk(relaxed = true), matchScore = 1.0f), FeedNeighbor("next_2", mockk(relaxed = true), matchScore = 1.0f))
 
-        coordinator.onPageVisible(this, mediaId, uri, prev, next)
+        coordinator.onPageVisible(this, mediaId, uri, 1.0f, prev, next)
 
         advanceTimeBy(101.milliseconds)
 
@@ -168,7 +169,7 @@ class VideoPlaybackCoordinatorTest {
         val uri = mockk<Uri>(relaxed = true)
         every { playerController.activeMediaId } returns mediaId
 
-        coordinator.onPageVisible(this, mediaId, uri, emptyList(), emptyList())
+        coordinator.onPageVisible(this, mediaId, uri, 1.0f, emptyList(), emptyList())
 
         advanceTimeBy(1000.milliseconds)
         coVerify(exactly = 0) { playerController.play(any(), any(), any(), any(), any()) }
