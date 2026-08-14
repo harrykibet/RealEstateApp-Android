@@ -27,6 +27,11 @@ sealed class PropertyException(
             "Property already exists"
         )
 
+    data class SafetyViolation(val reason: String) :
+        PropertyException(
+            "Content safety violation: $reason"
+        )
+
     data class Unknown(
         val throwable: Throwable? = null
     ) : PropertyException(

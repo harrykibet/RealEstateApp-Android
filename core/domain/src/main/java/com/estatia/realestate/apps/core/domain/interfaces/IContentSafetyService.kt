@@ -23,4 +23,9 @@ interface IContentSafetyService {
      * Scans an image for explicit or prohibited content.
      */
     suspend fun validateImage(imageUri: Uri): SafetyResult
+
+    /**
+     * Scans a video for explicit or prohibited content by analyzing keyframes.
+     */
+    suspend fun validateVideo(videoUri: Uri): SafetyResult
 }

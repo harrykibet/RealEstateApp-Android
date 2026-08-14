@@ -15,6 +15,9 @@ import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDataso
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.model.engagement.SafetyResult
+import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.data.util.translatePropertyFailures
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyDraftMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
@@ -34,6 +37,7 @@ internal class PropertyRepository @Inject constructor(
     private val userRepository: IUserRepository,
     private val metricsTracker: IMetricsTracker,
     private val engagementRepository: IEngagementRepository,
+    private val contentSafetyService: IContentSafetyService,
     private val exceptionTranslator: IExceptionTranslator
 ) : IPropertyRepository {
 
@@ -78,6 +82,30 @@ internal class PropertyRepository @Inject constructor(
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> {
+
+        // 🛡️ Proactive On-Device Moderation: Text
+        property.description?.let { desc ->
+            val textSafety = contentSafetyService.validateText(desc)
+            if (textSafety is SafetyResult.Flagged) {
+                return AppResult.Error(PropertyException.SafetyViolation("Description: ${textSafety.reason}"))
+            }
+        }
+
+        // 🛡️ Proactive On-Device Moderation: Images
+        imageUris.forEach { uri ->
+            val imageSafety = contentSafetyService.validateImage(uri)
+            if (imageSafety is SafetyResult.Flagged) {
+                return AppResult.Error(PropertyException.SafetyViolation("Image: ${imageSafety.reason}"))
+            }
+        }
+
+        // 🛡️ Proactive On-Device Moderation: Videos
+        videoUris.forEach { uri ->
+            val videoSafety = contentSafetyService.validateVideo(uri)
+            if (videoSafety is SafetyResult.Flagged) {
+                return AppResult.Error(PropertyException.SafetyViolation("Video: ${videoSafety.reason}"))
+            }
+        }
 
         val startTime = System.currentTimeMillis()
         val result = remoteDataSource
