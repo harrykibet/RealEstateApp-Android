@@ -60,6 +60,23 @@ object StreamingModule {
         @ApplicationContext context: Context
     ): StandaloneDatabaseProvider = StandaloneDatabaseProvider(context)
 
+    /**
+     * Provides the primary network DataSource factory for the streaming pipeline.
+     * 
+     * 🏗️ CAPABILITY NEGOTIATION PROTOCOL:
+     * This factory builds an 'X-Estatia-Capabilities' header which is sent with every 
+     * manifest and segment request. 
+     * 
+     * 📡 SERVER CONTRACT:
+     * The Estatia backend (Distribution Layer) must use these headers to:
+     * 1. Dynamically route manifest requests to the appropriate codec stack (AV1/HEVC/AVC).
+     * 2. Perform Just-In-Time (JIT) packaging or redirect to optimized caches.
+     * 
+     * 🌡️ DECODER FALLBACK:
+     * If the client-side decoder fails, the 'PlayerConfigurationFactory' will re-request 
+     * the manifest with '?codec=baseline'. The server must recognize this param and 
+     * serve a H.264 Baseline manifest regardless of the capability headers.
+     */
     @Provides
     @Singleton
     fun provideUpstreamFactory(

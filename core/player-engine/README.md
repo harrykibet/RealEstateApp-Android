@@ -66,7 +66,11 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 ### High-Integrity CDN Failover
 -   **Segment-Level Routing**: Unlike standard players that resolve CDN hosts once at the manifest level, Estatia uses a custom **`CdnFailoverDataSource`**. Every segment request is intercepted and routed to the healthiest CDN.
 -   **Mid-Stream Recovery**: If a segment load fails (e.g., 404, 503, or timeout), the system automatically triggers a circuit-breaker event, selects an alternative CDN, and retries the segment request transparently.
--   **Transparent Failover**: Sub-second switching ensures the user never sees a playback error, even if a major CDN provider goes offline during their session.
+
+### Capability-Aware Streaming
+-   **Multi-Codec Negotiation**: The engine detects hardware support for **AV1, HEVC, and Dolby Vision** and communicates these via the `X-Estatia-Capabilities` header.
+-   **Manifest Selection**: The `PlayerConfigurationFactory` proactively requests optimized codec stacks (e.g., `?codec=av1`) based on device capability, ensuring the most efficient data-to-quality ratio.
+-   **Deterministic Decoder Fallback**: If a high-efficiency decoder fails to initialize, the system automatically switches to the **H.264 Baseline Stack** (`?codec=baseline`), ensuring playback works even on devices with broken hardware implementations.
 
 ### Picture-in-Picture & Media Sessions
 -   **Seamless PiP**: Automatically enters PiP mode on Home-press if a video is active.

@@ -19,11 +19,12 @@ The client calls `getPersonalizedFeed(userId)`. The backend must:
 
 The client uploads a high-quality "Golden Source" MP4. The backend must:
 - **Trigger on Upload**: Detect new files in the S3 ingestion bucket.
-- **Transcode to HLS**: Generate a multi-rendition HLS ladder:
-    - `360p` (Low bandwidth fallback)
-    - `720p` (Standard)
-    - `1080p` (High Definition)
-- **Generate Master Manifest**: Create a `master.m3u8` file that groups these renditions.
+- **Transcode to Multi-Codec Ladders**: Generate different codec stacks to support global device fragmentation:
+    - **HEVC/AV1 Stack**: For modern devices (sent via `X-Estatia-Capabilities: av1,hevc`).
+    - **H.264 High Stack**: For standard playback.
+    - **H.264 Baseline Stack**: For low-end devices or decoder fallbacks (triggered via `?codec=baseline`).
+- **Capability-Aware Routing**: The CDN or AppSync resolver should inspect the `X-Estatia-Capabilities` header or `?codec` param to return the appropriate manifest path.
+- **Generate Master Manifest**: Create a `master.m3u8` file for each codec stack.
 - **Internal Domain Mapping**: The `hlsUrl` should use the project's internal media domain (e.g., `media.estatia.com`). The client-side player engine will automatically route these requests to the healthiest regional CDN and perform segment-level failover.
 - **Update Metadata**: Update the property record in Aurora/Firestore with the new `hlsUrl`.
 
