@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.domain.interfaces
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,8 @@ interface IConfigProvider {
     suspend fun refresh()
 
     val baseUrl: String
+
+    val apiEndpoints: List<ApiEndpoint>
 
     val isLoggingEnabled: Boolean
 

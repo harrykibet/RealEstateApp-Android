@@ -21,6 +21,18 @@
       "base_url": "https://backupcdn.estatia.com"
     }
   ],
+  "api_endpoints": [
+    {
+      "name": "primary-region",
+      "base_url": "https://api-us.estatia.com",
+      "priority": 0
+    },
+    {
+      "name": "failover-region",
+      "base_url": "https://api-eu.estatia.com",
+      "priority": 1
+    }
+  ],
   "base_config": {
     "base_url": "https://api.estatia.com/",
     "enable_logging": true

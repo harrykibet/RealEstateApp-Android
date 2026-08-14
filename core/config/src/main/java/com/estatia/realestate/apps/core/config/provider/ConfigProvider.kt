@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
@@ -124,6 +125,9 @@ internal class ConfigProvider @Inject constructor(
 
     override val baseUrl: String
         get() = requireConfig().baseConfig.baseUrl
+
+    override val apiEndpoints: List<ApiEndpoint>
+        get() = requireConfig().apiEndpoints
 
     override val isLoggingEnabled: Boolean
         get() = requireConfig().baseConfig.enableLogging

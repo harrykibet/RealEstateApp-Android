@@ -1,11 +1,13 @@
 package com.estatia.realestate.apps.core.model.config
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 
 data class RemoteConfigModel(
     val keyPatterns: KeyPatterns,
     val encryptionKeys: EncryptionKeys,
     val cdnEndpoints: List<CdnEndpoint>,
+    val apiEndpoints: List<ApiEndpoint> = emptyList(),
     val baseConfig: BaseConfig,
     val chaosConfig: ChaosConfig = ChaosConfig(),
     val playerTuning: PlayerTuningConfig = PlayerTuningConfig()
