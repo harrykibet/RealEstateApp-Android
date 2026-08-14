@@ -3,24 +3,17 @@ package com.estatia.realestate.apps.core.player_engine.configuration
 import android.net.Uri
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_engine.streaming.CdnSelector
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import javax.inject.Inject
-import androidx.core.net.toUri
 
 @UnstableApi
 class PlayerConfigurationFactory @Inject constructor(
     private val streamingPipeline: IStreamingPipeline,
     private val playbackConfigurationProvider: IPlaybackConfigurationProvider,
-    private val cdnSelector: CdnSelector,
-    private val config: IConfigProvider,
     private val hdrConfiguration: HdrConfiguration,
-    private val environmentCoordinator: EnvironmentCoordinator,
-    private val logger: ILogger
+    private val environmentCoordinator: EnvironmentCoordinator
 ) : IPlayerConfigurationFactory {
 
     override suspend fun create(
@@ -32,15 +25,16 @@ class PlayerConfigurationFactory @Inject constructor(
         title: String?,
         artist: String?
     ): PlayerConfiguration {
-        // ⏱️ Optimization: Only wait for config if we actually need it for CDN resolution.
-        // Idle players use Uri.EMPTY and shouldn't be blocked.
         val env = environmentCoordinator.environment.value
-        val resolvedUri = if (needsCdnResolution(uri)) {
-            config.awaitReady()
-            val base = resolveViaCdn(uri)
-            if (forceLegacyCodec) {
-                base.buildUpon().appendQueryParameter("codec", "h264_baseline").build()
-            } else base
+        
+        // 🏎️ Architecture Shift: Do NOT resolve CDN eagerly here.
+        // By giving the player the original internal URI (e.g. media.estatia.com),
+        // we ensure that relative segment paths in manifests are resolved back 
+        // to that same internal domain. 
+        // Our CdnFailoverDataSource then intercepts these requests and performs
+        // segment-level routing and failover transparently.
+        val resolvedUri = if (needsCdnResolution(uri) && forceLegacyCodec) {
+            uri.buildUpon().appendQueryParameter("codec", "h264_baseline").build()
         } else {
             uri
         }
@@ -63,31 +57,10 @@ class PlayerConfigurationFactory @Inject constructor(
     }
 
     /**
-     * Rewrites the request host to the currently healthiest CDN endpoint.
-     * Only applies to internal Estatia media domains.
-     * Falls back to the original URI on selection failure — CDN routing is an
-     * optimization, not a playback precondition.
+     * Checks if the URI belongs to an internal Estatia media domain.
      */
-    private fun resolveViaCdn(uri: Uri): Uri {
-        if (!needsCdnResolution(uri)) return uri
-
-        val endpoint = try {
-            cdnSelector.select()
-        } catch (e: Exception) {
-            logger.e("CDN", "Resolution failure for $uri. Falling back to raw host.", e)
-            null
-        } ?: return uri
-        
-        val endpointUri = endpoint.baseUrl.toUri()
-        return uri.buildUpon()
-            .scheme(endpointUri.scheme ?: uri.scheme)
-            .authority(endpointUri.authority ?: uri.authority)
-            .build()
-    }
-
     private fun needsCdnResolution(uri: Uri): Boolean {
         val host = uri.host ?: return false
-        // 🏗️ Strict Host Check: Only rewrite if it's genuinely an internal domain
         return host == "estatia.com" || host.endsWith(".estatia.com")
     }
 }

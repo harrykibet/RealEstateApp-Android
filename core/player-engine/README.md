@@ -63,10 +63,10 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 -   **O(1) Resolution**: Playback events are resolved via an `IdentityHashMap`, ensuring constant-time performance regardless of pool scale.
 -   **Race-Resilient Prewarming**: Proactively refills the idle pool in the background, only blocking the main thread if the pool is completely exhausted, maintaining 60fps during feed flings.
 
-### Robust Content Identification & Caching
--   **Strict ID Enforcement**: Every media asset is identified by a stable content ID (e.g. `propertyId`). Fallback to volatile URIs is prohibited to prevent cache orphaning during URL/Token rotation.
--   **Quality-Aware Keys**: Cache keys incorporate bitrate/quality hints, preventing data corruption if different renditions of the same asset are cached.
--   **CDN manifest-only limitation**: CDN health-routing applies to the manifest/master URI. Segment-level failover depends on multi-CDN manifests.
+### High-Integrity CDN Failover
+-   **Segment-Level Routing**: Unlike standard players that resolve CDN hosts once at the manifest level, Estatia uses a custom **`CdnFailoverDataSource`**. Every segment request is intercepted and routed to the healthiest CDN.
+-   **Mid-Stream Recovery**: If a segment load fails (e.g., 404, 503, or timeout), the system automatically triggers a circuit-breaker event, selects an alternative CDN, and retries the segment request transparently.
+-   **Transparent Failover**: Sub-second switching ensures the user never sees a playback error, even if a major CDN provider goes offline during their session.
 
 ### Picture-in-Picture & Media Sessions
 -   **Seamless PiP**: Automatically enters PiP mode on Home-press if a video is active.

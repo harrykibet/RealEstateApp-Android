@@ -62,8 +62,16 @@ class CdnHealthMonitor @Inject constructor(
     }
 
     /**
+     * Non-blocking version of failure reporting.
+     */
+    fun reportExternalFailureAsync(baseUrl: String) {
+        scope.launch {
+            reportExternalFailure(baseUrl)
+        }
+    }
+
+    /**
      * Reports an external failure (like a 500 error or timeout) for a specific endpoint.
-     * This allows the circuit breaker to react to real-world media loading issues.
      */
     suspend fun reportExternalFailure(baseUrl: String) {
         mutexFor(baseUrl).withLock {

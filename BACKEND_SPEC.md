@@ -24,6 +24,7 @@ The client uploads a high-quality "Golden Source" MP4. The backend must:
     - `720p` (Standard)
     - `1080p` (High Definition)
 - **Generate Master Manifest**: Create a `master.m3u8` file that groups these renditions.
+- **Internal Domain Mapping**: The `hlsUrl` should use the project's internal media domain (e.g., `media.estatia.com`). The client-side player engine will automatically route these requests to the healthiest regional CDN and perform segment-level failover.
 - **Update Metadata**: Update the property record in Aurora/Firestore with the new `hlsUrl`.
 
 ## 🛡️ 3. High-Precision Content Moderation

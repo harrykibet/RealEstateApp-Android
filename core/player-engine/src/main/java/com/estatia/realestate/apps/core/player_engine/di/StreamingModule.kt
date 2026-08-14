@@ -13,6 +13,10 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import com.estatia.realestate.apps.core.player_engine.streaming.CdnFailoverDataSourceFactory
+import com.estatia.realestate.apps.core.player_engine.streaming.CdnSelector
+import com.estatia.realestate.apps.core.player_engine.streaming.CdnHealthMonitor
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ChaosDataSourceFactory
@@ -62,7 +66,10 @@ object StreamingModule {
         @ApplicationContext context: Context,
         @PlaybackClient okHttpClient: OkHttpClient,
         deviceUtils: IDeviceUtils,
-        configProvider: IConfigProvider
+        configProvider: IConfigProvider,
+        cdnSelector: CdnSelector,
+        healthMonitor: CdnHealthMonitor,
+        logger: ILogger
     ): DataSource.Factory {
         val caps = mutableListOf<String>()
         if (deviceUtils.supportsAV1()) caps.add("av1")
@@ -77,12 +84,16 @@ object StreamingModule {
                 "X-Estatia-Capabilities" to caps.joinToString(",")
             ))
 
+        // 🏎️ High-Integrity Failover: Wrap the network factory in a failover decorator
+        // that handles segment-level CDN switching.
+        val failoverFactory = CdnFailoverDataSourceFactory(baseFactory, cdnSelector, healthMonitor, logger)
+
         // 🏎️ Chaos Injection: Wrap the factory in a Chaos decorator in debug builds
         // to enable real-world failure simulation.
         return if (com.estatia.realestate.apps.core.player_engine.BuildConfig.DEBUG) {
-            ChaosDataSourceFactory(baseFactory, configProvider)
+            ChaosDataSourceFactory(failoverFactory, configProvider)
         } else {
-            baseFactory
+            failoverFactory
         }
     }
 
