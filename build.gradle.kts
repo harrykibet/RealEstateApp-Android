@@ -75,6 +75,18 @@ tasks.register("generateModuleGraphs") {
             fun collectDeps(p: Project) {
                 if (modulesToInclude.add(p)) {
                     // 1. Implicit feature dependencies
+                    /**
+                     * 💡 ARCHITECTURAL NOTE ON IMPLICIT DEPENDENCIES:
+                     * Many core dependencies (UI, Domain, Navigation, etc.) are injected automatically 
+                     * via the 'estatia.android.feature' convention plugin. 
+                     * 
+                     * Because these are applied in 'build-logic' and not the local build file, 
+                     * Gradle's standard configuration analysis won't see them here. 
+                     * 
+                     * ⚠️ MAINTENANCE WARNING: 
+                     * If you add a new project dependency to 'AndroidFeatureConventionPlugin.kt', 
+                     * you MUST manually update the list below to ensure it appears in the module graphs.
+                     */
                     val buildFile = File(p.projectDir, "build.gradle.kts")
                     if (buildFile.exists()) {
                         val content = buildFile.readText()
@@ -149,6 +161,10 @@ tasks.register("generateModuleGraphs") {
             
             allModules.forEach { p ->
                 // Implicit
+                /**
+                 * 💡 NOTE: Synchronize this list with the one in 'generateGraphForProject'
+                 * if 'AndroidFeatureConventionPlugin.kt' is updated.
+                 */
                 val buildFile = File(p.projectDir, "build.gradle.kts")
                 if (buildFile.exists() && buildFile.readText().contains("estatia.android.feature")) {
                     listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
