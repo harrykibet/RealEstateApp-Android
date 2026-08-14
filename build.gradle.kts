@@ -69,39 +69,37 @@ tasks.register("generateModuleGraphs") {
         val hasDot = project.file(dotBinary).exists()
 
         fun generateGraphForProject(target: Project, outputFile: File) {
-            val modulesToInclude = mutableSetOf<String>()
+            val modulesToInclude = mutableSetOf<Project>()
             val edges = mutableSetOf<Pair<String, String>>()
             
             fun collectDeps(p: Project) {
-                if (modulesToInclude.add(p.path)) {
+                if (modulesToInclude.add(p)) {
+                    // 1. Implicit feature dependencies
                     val buildFile = File(p.projectDir, "build.gradle.kts")
                     if (buildFile.exists()) {
                         val content = buildFile.readText()
-                        
-                        // 1. Detect implicit feature dependencies
                         if (content.contains("estatia.android.feature")) {
-                            val featureDeps = listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system")
-                            featureDeps.forEach { depPath ->
-                                edges.add(p.path to depPath)
+                            listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach { depPath ->
                                 val depProj = p.rootProject.allprojects.find { it.path == depPath }
-                                if (depProj != null) collectDeps(depProj)
-                                else modulesToInclude.add(depPath)
+                                if (depProj != null) {
+                                    edges.add(p.path to depProj.path)
+                                    collectDeps(depProj)
+                                }
                             }
                         }
+                    }
 
-                        // 2. Parse explicit projects.layer.name
-                        Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
-                            val layer = match.groups[1]?.value
-                            val nameRaw = match.groups[2]?.value
-                            if (layer != null && nameRaw != null) {
-                                val name = nameRaw.replace(Regex("([a-z])([A-Z])"), "$1-$2").lowercase()
-                                val depPath = ":$layer:$name"
-                                edges.add(p.path to depPath)
-                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
-                                if (depProj != null) collectDeps(depProj)
-                                else modulesToInclude.add(depPath)
+                    // 2. Explicit dependencies through configurations
+                    p.configurations.forEach { config ->
+                        try {
+                            config.dependencies.forEach { dep ->
+                                if (dep is ProjectDependency) {
+                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                    edges.add(p.path to depProj.path)
+                                    collectDeps(depProj)
+                                }
                             }
-                        }
+                        } catch (_: Exception) { }
                     }
                 }
             }
@@ -113,14 +111,14 @@ tasks.register("generateModuleGraphs") {
                 writer.println("  graph [label=\"${target.path} Dependencies\", labelloc=t, fontsize=20, ranksep=1.2];")
                 writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
                 
-                modulesToInclude.forEach { path ->
+                modulesToInclude.forEach { p ->
                     val color = when {
-                        path == ":app" -> "#CAFFBF"
-                        path.startsWith(":feature") -> "#FFD6A5"
-                        path.startsWith(":core") -> "#9BF6FF"
+                        p.path == ":app" -> "#CAFFBF"
+                        p.path.startsWith(":feature") -> "#FFD6A5"
+                        p.path.startsWith(":core") -> "#9BF6FF"
                         else -> "#BDB2FF"
                     }
-                    writer.println("  \"$path\" [fillcolor=\"$color\"];")
+                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
                 }
 
                 edges.forEach { (from, to) ->
@@ -150,26 +148,23 @@ tasks.register("generateModuleGraphs") {
             val globalEdges = mutableSetOf<Pair<String, String>>()
             
             allModules.forEach { p ->
+                // Implicit
                 val buildFile = File(p.projectDir, "build.gradle.kts")
-                if (buildFile.exists()) {
-                    val content = buildFile.readText()
-                    
-                    // 1. Implicit feature dependencies
-                    if (content.contains("estatia.android.feature")) {
-                        listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
-                            globalEdges.add(p.path to it)
-                        }
+                if (buildFile.exists() && buildFile.readText().contains("estatia.android.feature")) {
+                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
+                        globalEdges.add(p.path to it)
                     }
-
-                    // 2. Explicit dependencies
-                    Regex("projects\\.([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)").findAll(content).forEach { match ->
-                        val layer = match.groups[1]?.value
-                        val nameRaw = match.groups[2]?.value
-                        if (layer != null && nameRaw != null) {
-                            val name = nameRaw.replace(Regex("([a-z])([A-Z])"), "$1-$2").lowercase()
-                            globalEdges.add(p.path to ":$layer:$name")
+                }
+                // Explicit
+                p.configurations.forEach { config ->
+                    try {
+                        config.dependencies.forEach { dep ->
+                            if (dep is ProjectDependency) {
+                                val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
+                                globalEdges.add(p.path to depProj.path)
+                            }
                         }
-                    }
+                    } catch (_: Exception) { }
                 }
             }
 
