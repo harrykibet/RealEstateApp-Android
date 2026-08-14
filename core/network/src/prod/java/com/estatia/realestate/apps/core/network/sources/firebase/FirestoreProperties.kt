@@ -76,7 +76,7 @@ internal class FirestoreProperties @Inject constructor(
                 property.copy(
                     id = propertyId,
                     imageUrl = images,
-                    videoUrl = videos,
+                    directVideoUrls = videos,
                     hlsUrl = emptyList() // HLS generation is server-side via Cloud Functions/Transcoder
                 )
 

@@ -74,7 +74,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
             mapOf("input" to property.copy(
                 id = propertyId, 
                 imageUrl = imageKeys,
-                videoUrl = videoKeys
+                directVideoUrls = videoKeys
             )),
             String::class.java,
             null
@@ -105,7 +105,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
                     description
                     price
                     imageUrl
-                    videoUrl
+                    directVideoUrls
                     hlsUrl
                     ownerId
                     ownerName
@@ -175,7 +175,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
                         description
                         price
                         imageUrl
-                        videoUrl
+                        directVideoUrls
                         hlsUrl
                         video
                         ownerId

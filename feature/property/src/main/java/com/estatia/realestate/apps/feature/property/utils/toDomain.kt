@@ -28,7 +28,7 @@ fun AddPropertyDraft.toDomain(
 
         imageUrls = emptyList(),
 
-        videoUrls = emptyList(),
+        directVideoUrls = emptyList(),
 
         hlsUrls = emptyList(),
 

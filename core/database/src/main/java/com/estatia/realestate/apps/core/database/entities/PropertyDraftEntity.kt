@@ -18,8 +18,8 @@ data class PropertyDraftEntity(
 
     @ColumnInfo(name = "image_urls")
     val imageUrls: String,
-    @ColumnInfo(name = "video_urls")
-    val videoUrls: String,
+    @ColumnInfo(name = "direct_video_urls")
+    val directVideoUrls: String,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long

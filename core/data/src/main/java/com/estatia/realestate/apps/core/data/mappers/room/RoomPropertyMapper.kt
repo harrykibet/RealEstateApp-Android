@@ -18,7 +18,7 @@ internal object RoomPropertyMapper {
             price = domain.price?.amount,
 
             imageUrls = JsonConverter.toJson(domain.imageUrls),
-            videoUrls = JsonConverter.toJson(domain.videoUrls),
+            directVideoUrls = JsonConverter.toJson(domain.directVideoUrls),
             hlsUrls = JsonConverter.toJson(domain.hlsUrls),
 
             videosAvailable = domain.videosAvailable,
@@ -58,7 +58,7 @@ internal object RoomPropertyMapper {
             },
 
             imageUrls = JsonConverter.fromJson(entity.imageUrls),
-            videoUrls = JsonConverter.fromJson(entity.videoUrls),
+            directVideoUrls = JsonConverter.fromJson(entity.directVideoUrls),
             hlsUrls = JsonConverter.fromJson(entity.hlsUrls),
 
             videosAvailable = entity.videosAvailable,

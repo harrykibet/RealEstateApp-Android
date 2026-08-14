@@ -8,7 +8,7 @@ data class PropertyDraftDomainModel(
     val price: Double?,
 
     val imageUrls: List<String>,
-    val videoUrls: List<String>,
+    val directVideoUrls: List<String>,
 
     val createdAt: Long
 )

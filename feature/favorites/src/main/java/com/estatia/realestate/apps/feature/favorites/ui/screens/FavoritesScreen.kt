@@ -74,7 +74,7 @@ fun FavoritesScreen(
                 onShareClick = { onShareClick(it.id) },
                 onRetry = { playbackViewModel.retry() },
                 videoPlayerContent = {
-                    val videoUri = (listing.hlsUrl ?: listing.videoUrl)?.toUri()
+                    val videoUri = (listing.hlsUrl ?: listing.directVideoUrl)?.toUri()
                     if (videoUri != null) {
                         EngineVideoPlayer(
                             mediaId = listing.id,

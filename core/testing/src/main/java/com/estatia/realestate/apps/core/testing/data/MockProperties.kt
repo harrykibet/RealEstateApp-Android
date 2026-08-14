@@ -19,7 +19,7 @@ object MockProperties {
                 "https://via.placeholder.com/600x400.png?text=Bedroom",
                 "https://via.placeholder.com/600x400.png?text=Kitchen"
             ),
-            videoUrls = listOf(
+            directVideoUrls = listOf(
                 "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
             ),
             hlsUrls = emptyList(),

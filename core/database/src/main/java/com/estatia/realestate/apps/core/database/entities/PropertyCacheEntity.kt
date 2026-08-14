@@ -18,8 +18,8 @@ data class PropertyCacheEntity(
 
     @ColumnInfo(name = "image_urls")
     val imageUrls: String, // stored as JSON string
-    @ColumnInfo(name = "video_urls")
-    val videoUrls: String,
+    @ColumnInfo(name = "direct_video_urls")
+    val directVideoUrls: String,
     @ColumnInfo(name = "hls_urls")
     val hlsUrls: String = "",
 

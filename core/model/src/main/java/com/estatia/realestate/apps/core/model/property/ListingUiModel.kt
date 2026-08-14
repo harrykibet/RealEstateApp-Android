@@ -8,7 +8,7 @@ data class ListingUiModel(
     val title: String,
     val description: String?,
     val price: Double?,
-    val videoUrl: String?,
+    val directVideoUrl: String?,
     val hlsUrl: String?,
     val ownerName: String,
     val ownerAvatarUrl: String?,
@@ -24,7 +24,7 @@ fun PropertyDomainModel.toListingUiModel(): ListingUiModel =
         title = title,
         description = description,
         price = price?.amount,
-        videoUrl = videoUrls.firstOrNull(),
+        directVideoUrl = directVideoUrls.firstOrNull(),
         hlsUrl = hlsUrls.firstOrNull(),
         ownerName = ownerName ?: "Unknown",
         ownerAvatarUrl = null, // Placeholder as PropertyDomainModel doesn't have it yet

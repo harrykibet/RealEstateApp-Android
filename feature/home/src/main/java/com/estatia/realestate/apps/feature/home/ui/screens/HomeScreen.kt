@@ -209,7 +209,7 @@ internal fun HomeFeedContent(
                         onShareClick = onShareClick,
                         onRetry = onPlaybackRetry,
                         videoPlayerContent = {
-                            val videoUri = (listing.hlsUrl ?: listing.videoUrl)?.toUri()
+                            val videoUri = (listing.hlsUrl ?: listing.directVideoUrl)?.toUri()
                             if (videoUri != null) {
                                 EngineVideoPlayer(
                                     mediaId = listing.id,
@@ -409,7 +409,7 @@ fun HomeContentPreview() {
                         title = "Modern Apartment",
                         description = "Luxury living in the heart of the city.",
                         price = 15000000.0,
-                        videoUrl = null,
+                        directVideoUrl = null,
                         hlsUrl = null,
                         ownerName = "jane_doe",
                         ownerAvatarUrl = null,
@@ -451,7 +451,7 @@ fun HomeContentSwahiliPreview() {
                         title = "Apartment ya Kisasa",
                         description = "Maisha ya kifahari katikati ya jiji.",
                         price = 15000000.0,
-                        videoUrl = null,
+                        directVideoUrl = null,
                         hlsUrl = null,
                         ownerName = "jane_doe",
                         ownerAvatarUrl = null,

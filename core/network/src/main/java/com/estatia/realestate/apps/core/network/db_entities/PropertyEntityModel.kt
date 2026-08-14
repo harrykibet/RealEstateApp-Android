@@ -9,7 +9,7 @@ data class PropertyEntityModel(
     val price: Double? = null,
 
     var imageUrl: List<String>? = null,
-    var videoUrl: List<String>? = null,
+    var directVideoUrls: List<String>? = null,
     var hlsUrl: List<String>? = null,
     val video: Boolean = false,
 

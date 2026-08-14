@@ -8,7 +8,7 @@ data class PropertyDomainModel(
     val price: Money?,
 
     val imageUrls: List<String>,
-    val videoUrls: List<String>,
+    val directVideoUrls: List<String>,
     val hlsUrls: List<String>,
     val videosAvailable: Boolean,
 

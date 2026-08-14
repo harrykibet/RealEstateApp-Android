@@ -151,7 +151,7 @@ private fun PropertyDetailsContent(
 ) {
     val scrollState = rememberScrollState()
     val images = property.imageUrls.filter { it.isNotBlank() }
-    val videos = property.videoUrls.filter { it.isNotBlank() }
+    val videos = property.directVideoUrls.filter { it.isNotBlank() }
     val allMedia = images + videos
     val pagerState = rememberPagerState { allMedia.size }
     val currencyFormatter = LocalCurrencyFormatter.current

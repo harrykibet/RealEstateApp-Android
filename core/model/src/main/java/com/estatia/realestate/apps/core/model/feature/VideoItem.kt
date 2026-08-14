@@ -8,5 +8,5 @@ data class VideoItem(
     val description: String = "",
     val thumbnailUrl: String = "",
     val mediaType: MediaType = MediaType.VOD,
-    val videoUrl: String = ""
+    val directVideoUrl: String = ""
 )

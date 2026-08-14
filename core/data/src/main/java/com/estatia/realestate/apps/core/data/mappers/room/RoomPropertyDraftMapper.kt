@@ -21,7 +21,7 @@ internal object RoomPropertyDraftMapper {
 
             imageUrls = JsonConverter.fromJson(entity.imageUrls),
 
-            videoUrls = JsonConverter.fromJson(entity.videoUrls),
+            directVideoUrls = JsonConverter.fromJson(entity.directVideoUrls),
 
             createdAt = entity.createdAt
         )
@@ -36,7 +36,7 @@ internal object RoomPropertyDraftMapper {
             description = domain.description,
             price = domain.price,
             imageUrls = JsonConverter.toJson(domain.imageUrls),
-            videoUrls = JsonConverter.toJson(domain.videoUrls),
+            directVideoUrls = JsonConverter.toJson(domain.directVideoUrls),
             createdAt = domain.createdAt
         )
     }

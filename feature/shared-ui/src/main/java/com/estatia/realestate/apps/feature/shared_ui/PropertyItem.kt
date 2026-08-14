@@ -42,8 +42,8 @@ fun PropertyItem(
         // ------------------------
         // MEDIA
         // ------------------------
-        val videoUrl = listing.videoUrl
-        if (videoUrl != null) {
+        val directVideoUrl = listing.directVideoUrl
+        if (directVideoUrl != null) {
             videoPlayerContent()
         } else {
             ImagePager(imageUrls)

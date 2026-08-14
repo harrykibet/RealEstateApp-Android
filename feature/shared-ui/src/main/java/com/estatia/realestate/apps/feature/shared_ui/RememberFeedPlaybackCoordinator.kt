@@ -19,12 +19,12 @@ fun RememberFeedPlaybackCoordinator(
         val page = pagerState.currentPage
         val current = items.getOrNull(page) ?: return@LaunchedEffect
 
-        val currentUri = (current.hlsUrl ?: current.videoUrl)?.toUri() ?: return@LaunchedEffect
+        val currentUri = (current.hlsUrl ?: current.directVideoUrl)?.toUri() ?: return@LaunchedEffect
 
         // Collect Previous Neighbors (N=1)
         val previous = mutableListOf<FeedNeighbor>()
         items.getOrNull(page - 1)?.let {
-            val uri = (it.hlsUrl ?: it.videoUrl)?.toUri()
+            val uri = (it.hlsUrl ?: it.directVideoUrl)?.toUri()
             if (uri != null) {
                 previous.add(FeedNeighbor(
                     mediaId = it.id,
@@ -40,7 +40,7 @@ fun RememberFeedPlaybackCoordinator(
         val next = mutableListOf<FeedNeighbor>()
         for (i in 1..2) {
             items.getOrNull(page + i)?.let {
-                val uri = (it.hlsUrl ?: it.videoUrl)?.toUri()
+                val uri = (it.hlsUrl ?: it.directVideoUrl)?.toUri()
                 if (uri != null) {
                     next.add(FeedNeighbor(
                         mediaId = it.id,
