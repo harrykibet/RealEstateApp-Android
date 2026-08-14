@@ -7,7 +7,6 @@ import io.mockk.mockkStatic
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import androidx.core.net.toUri
 
 class CacheKeyRegressionTest {
 

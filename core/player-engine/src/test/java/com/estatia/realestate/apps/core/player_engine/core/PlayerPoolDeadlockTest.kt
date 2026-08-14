@@ -49,7 +49,7 @@ class PlayerPoolDeadlockTest {
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
         every { mockLooper.thread } returns Thread.currentThread()
-        every { mockLooper.getThread() } returns Thread.currentThread()
+        every { mockLooper.thread } returns Thread.currentThread()
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
 
