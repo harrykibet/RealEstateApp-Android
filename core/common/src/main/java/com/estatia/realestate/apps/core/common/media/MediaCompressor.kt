@@ -6,8 +6,10 @@ import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.effect.Presentation
 import androidx.media3.transformer.Composition
 import androidx.media3.transformer.EditedMediaItem
+import androidx.media3.transformer.Effects
 import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
 import androidx.media3.transformer.Transformer
@@ -93,8 +95,21 @@ class MediaCompressor @Inject constructor(
         val outputFile = File(outputDir, "compressed_video_${System.currentTimeMillis()}.mp4")
 
         val mediaItem = MediaItem.fromUri(videoUri)
+        
+        // 🎞️ Resolution Hygiene:
+        // We cap at 1080p height for vertical video.
+        // Media3 Transformer with Presentation effect handles this gracefully:
+        // it downscales high-res but doesn't upscale low-res unless forced.
+        val effects = Effects(
+            /* audioProcessors = */ emptyList(),
+            /* videoEffects = */ listOf(
+                Presentation.createForHeight(1080)
+            )
+        )
+
         val editedMediaItem = EditedMediaItem.Builder(mediaItem)
             .setRemoveAudio(false)
+            .setEffects(effects)
             .build()
 
         val transformer = Transformer.Builder(context)

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 
 import android.content.Context
 import android.os.Looper
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -58,6 +59,7 @@ class PlayerFactory @Inject constructor(
         configuration.livePlaybackSpeedControl?.let { builder.setLivePlaybackSpeedControl(it) }
 
         val player = builder.build()
+        player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
         player.trackSelectionParameters = configuration.trackSelectionParameters
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.setMediaItem(configuration.mediaItem)
