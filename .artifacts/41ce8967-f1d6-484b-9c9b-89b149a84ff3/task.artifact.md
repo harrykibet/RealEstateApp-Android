@@ -1,6 +1,0 @@
-- [x] Align flavors between `:app` and `:benchmark`
-    - [x] Add `TestExtension` overload in `ConfigureFlavors.kt`
-    - [x] Support `com.android.test` in `AndroidFlavorsConventionPlugin.kt`
-    - [x] Apply flavors plugin in `benchmark/build.gradle.kts`
-- [x] Make package name dynamic in `StartupBenchmark.kt`
-- [x] Verify with Gradle sync

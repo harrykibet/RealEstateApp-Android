@@ -1,6 +1,0 @@
-- [x] Update `MainActivityViewModel.kt` to include authentication state
-- [x] Update `EstatiaAppState.kt` to use `Boolean?` for auth status
-- [x] Refactor `EstatiaNavHost.kt` for dynamic start destination and auth redirection
-- [x] Update `EstatiaApp.kt` to hide navigation components when unauthenticated
-- [x] Wire logout functionality in `ProfileNavigation.kt` and `ProfileScreen.kt`
-- [x] Verify navigation flows for both authenticated and unauthenticated users
