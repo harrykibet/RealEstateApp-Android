@@ -143,7 +143,7 @@ tasks.register("generateModuleGraphs") {
             println("Graph generated for $ofModule at ${output.absolutePath}")
         } else {
             // 1. Generate Global Graph
-            val globalOutput = project.file("${project.layout.buildDirectory.get()}/reports/graph/global_module_graph.gv")
+            val globalOutput = project.file("docs/images/graph/global_module_graph.gv")
             val allModules = project.rootProject.allprojects
             val globalEdges = mutableSetOf<Pair<String, String>>()
             

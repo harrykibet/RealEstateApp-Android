@@ -54,6 +54,8 @@ Estatia digitizes and structures this ecosystem.
 
 Estatia is built with strict modular boundaries and production-grade discipline.
 
+![Estatia Module Graph](docs/images/graph/global_module_graph.png)
+
 **Principles**
 
 * Clean Architecture
