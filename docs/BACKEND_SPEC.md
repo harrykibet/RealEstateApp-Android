@@ -44,7 +44,7 @@ While the client performs zero-latency safety checks, the backend is the **Sourc
 ---
 
 ## 🌪️ 5. Disaster Recovery & Durability
-The backend must adhere to the high-availability standards defined in [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md). This includes:
+The backend must adhere to the high-availability standards defined in [DISASTER_RECOVERY.md](DISASTER_RECOVERY.md). This includes:
 - **Aurora Global Database** configuration for sub-5min RPO.
 - **Firestore PITR** and scheduled export pipelines.
 - **S3 Cross-Region Replication** for the media distribution layer.
