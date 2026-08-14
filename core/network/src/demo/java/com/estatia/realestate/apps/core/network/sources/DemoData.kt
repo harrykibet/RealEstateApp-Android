@@ -16,6 +16,7 @@ object DemoData {
             areaSize = 450.0,
             imageUrl = listOf("https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1000"),
             videoUrl = listOf("https://vjs.zencdn.net/v/oceans.mp4"),
+            hlsUrl = listOf("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"),
             video = true,
             ownerName = "Harry Kemboi",
             ownerId = "demo_user"
@@ -31,6 +32,7 @@ object DemoData {
             areaSize = 120.0,
             imageUrl = listOf("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000"),
             videoUrl = listOf("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8"),
+            hlsUrl = listOf("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8"),
             video = true,
             ownerName = "Harry Kemboi",
             ownerId = "demo_user"

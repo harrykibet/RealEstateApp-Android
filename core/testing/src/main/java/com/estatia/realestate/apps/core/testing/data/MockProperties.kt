@@ -22,6 +22,7 @@ object MockProperties {
             videoUrls = listOf(
                 "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
             ),
+            hlsUrls = emptyList(),
             videosAvailable = true,
             coordinates = Coordinates(latitude = -1.2921, longitude = 36.8219),
             createdAt = 1_746_619_200_000,

@@ -107,6 +107,7 @@ class PlayerManager @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float,
         title: String?,
         artist: String?
     ) =
@@ -117,7 +118,7 @@ class PlayerManager @Inject constructor(
             // The engine now automatically handles the decision to force legacy if previous attempts failed.
             val forceLegacy = decoderFailures.containsKey(mediaId)
 
-            val managed = pool.getOrCreate(mediaId, uri, mediaType, forceLegacy, title, artist)
+            val managed = pool.getOrCreate(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
             val environment = environmentCoordinator.environment.value
 
             if (activeMediaId != mediaId) {
@@ -149,13 +150,14 @@ class PlayerManager @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float,
         title: String?,
         artist: String?
     ) {
         withContext(playerDispatcher) {
             checkConfinement()
             // Speculative preloads don't force legacy until they fail once
-            val result = pool.prewarm(mediaId, uri, mediaType, false, false, title, artist)
+            val result = pool.prewarm(mediaId, uri, mediaType, matchScore, false, false, title, artist)
             if (result is PrewarmResult.Success) {
                 val managed = result.managed
                 val environment = environmentCoordinator.environment.value
@@ -172,8 +174,8 @@ class PlayerManager @Inject constructor(
         }
     }
 
-    override suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =
-        withContext(playerDispatcher) { pool.getOrCreate(mediaId, uri, mediaType).player }
+    override suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float): Player =
+        withContext(playerDispatcher) { pool.getOrCreate(mediaId, uri, mediaType, matchScore).player }
 
     override fun observeState(mediaId: String): Flow<PlaybackStateReducer.State> =
         pool.observeMediaState(mediaId)

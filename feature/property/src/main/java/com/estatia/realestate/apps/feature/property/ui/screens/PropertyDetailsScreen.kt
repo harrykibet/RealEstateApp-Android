@@ -88,7 +88,7 @@ fun PropertyDetailsRoute(
         onBackClick = onBackClick,
         playbackUiState = playbackUiState,
         onPlaybackRetry = playbackViewModel::retry,
-        getPlayer = playbackViewModel::getPlayer,
+        getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
         onPausePlayback = playbackViewModel::pause,
         isMediaActive = playbackViewModel::isMediaActive
     )
@@ -100,7 +100,7 @@ fun PropertyDetailsScreen(
     onBackClick: () -> Unit,
     playbackUiState: PlayerUiState,
     onPlaybackRetry: () -> Unit,
-    getPlayer: suspend (String, Uri, MediaType) -> Player,
+    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     modifier: Modifier = Modifier,
@@ -145,7 +145,7 @@ private fun PropertyDetailsContent(
     onBackClick: () -> Unit,
     playbackUiState: PlayerUiState,
     onPlaybackRetry: () -> Unit,
-    getPlayer: suspend (String, Uri, MediaType) -> Player,
+    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
 ) {
@@ -183,13 +183,15 @@ private fun PropertyDetailsContent(
 
                         if (isVideo) {
                             Box(modifier = Modifier.fillMaxSize()) {
+                                val videoUri = (property.hlsUrls.getOrNull(videos.indexOf(mediaUrl)) ?: mediaUrl).toUri()
                                 EngineVideoPlayer(
-                                    mediaId = mediaUrl,
-                                    uri = mediaUrl.toUri(),
+                                    mediaId = property.id.value,
+                                    uri = videoUri,
                                     mediaType = MediaType.VOD,
+                                    matchScore = property.matchScore,
                                     getPlayer = getPlayer,
                                     onPause = onPausePlayback,
-                                    isActive = isMediaActive(mediaUrl),
+                                    isActive = isMediaActive(property.id.value),
                                     modifier = Modifier.fillMaxSize()
                                 )
 
@@ -365,7 +367,7 @@ fun PropertyDetailsScreenSuccessPreview() {
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
             )
@@ -383,7 +385,7 @@ fun PropertyDetailsScreenSwahiliPreview() {
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
             )
@@ -402,7 +404,7 @@ fun PropertyDetailsScreenLoadingPreview() {
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
             )
@@ -421,7 +423,7 @@ fun PropertyDetailsScreenErrorPreview() {
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
                 isMediaActive = { false }
             )

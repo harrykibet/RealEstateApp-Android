@@ -27,6 +27,7 @@ class PlayerConfigurationFactory @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float,
         forceLegacyCodec: Boolean,
         title: String?,
         artist: String?
@@ -49,11 +50,13 @@ class PlayerConfigurationFactory @Inject constructor(
         val mediaSourceFactory = streamingPipeline.mediaSourceFactory()
         val loadControl = playbackConfigurationProvider.createLoadControl(mediaType, env)
         val speedControl = playbackConfigurationProvider.createPlaybackSpeedControl(mediaType, env)
+        val trackSelectionParameters = playbackConfigurationProvider.createTrackSelectionParameters(matchScore, env)
 
         return PlayerConfiguration(
             mediaItem = mediaItem,
             mediaSourceFactory = mediaSourceFactory,
             loadControl = loadControl,
+            trackSelectionParameters = trackSelectionParameters,
             livePlaybackSpeedControl = speedControl,
             hdrMode = hdrConfiguration.getBestSupportedMode(env.thermalStatus)
         )

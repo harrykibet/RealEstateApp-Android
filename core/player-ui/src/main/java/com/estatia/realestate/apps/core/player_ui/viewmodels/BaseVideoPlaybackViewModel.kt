@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_engine.core.FeedNeighborInfo
+import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
@@ -127,19 +127,29 @@ abstract class BaseVideoPlaybackViewModel(
         }
     }
 
-    fun onPageVisible(context: FeedMediaContext) {
+    fun onPageVisible(
+        mediaId: String,
+        uri: Uri,
+        matchScore: Float,
+        previous: List<FeedNeighbor>,
+        next: List<FeedNeighbor>,
+        title: String?,
+        artist: String?
+    ) {
+        val context = FeedMediaContext(mediaId, uri, matchScore, title, artist, previous, next)
         lastMediaContext = context
-        activeMediaId.value = context.mediaId
-        activeUri.value = context.uri
+        activeMediaId.value = mediaId
+        activeUri.value = uri
 
         coordinator.onPageVisible(
             scope = viewModelScope,
-            mediaId = context.mediaId,
-            uri = context.uri,
-            previous = context.previous.map { FeedNeighborInfo(it.mediaId, it.uri, it.matchScore, it.title, it.artist) },
-            next = context.next.map { FeedNeighborInfo(it.mediaId, it.uri, it.matchScore, it.title, it.artist) },
-            title = context.title,
-            artist = context.artist
+            mediaId = mediaId,
+            uri = uri,
+            matchScore = matchScore,
+            previous = previous,
+            next = next,
+            title = title,
+            artist = artist
         )
     }
 
@@ -148,8 +158,8 @@ abstract class BaseVideoPlaybackViewModel(
         coordinator.retry(viewModelScope, context.mediaId, context.uri)
     }
 
-    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player =
-        coordinator.getPlayer(mediaId, uri, mediaType)
+    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float): Player =
+        coordinator.getPlayer(mediaId, uri, mediaType, matchScore)
 
     fun pause() = coordinator.pause(viewModelScope)
 

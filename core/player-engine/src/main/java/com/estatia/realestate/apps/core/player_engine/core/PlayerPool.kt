@@ -78,6 +78,7 @@ class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float = 0.5f,
         forceLegacy: Boolean = false,
         title: String? = null,
         artist: String? = null
@@ -87,7 +88,7 @@ class PlayerPool @Inject constructor(
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
         }
-        return when (val result = prewarm(mediaId, uri, mediaType, forceLegacy, urgent = true, title = title, artist = artist)) {
+        return when (val result = prewarm(mediaId, uri, mediaType, matchScore, forceLegacy, urgent = true, title = title, artist = artist)) {
             is PrewarmResult.Success -> result.managed
             is PrewarmResult.Failure -> throw result.throwable
             PrewarmResult.Rejected -> throw PoolCapacityExceededException("Urgent request rejected (should not happen)")
@@ -98,6 +99,7 @@ class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float = 0.5f,
         forceLegacy: Boolean = false,
         urgent: Boolean = false,
         title: String? = null,
@@ -134,8 +136,8 @@ class PlayerPool @Inject constructor(
             }
 
             val managed = idlePlayers.removeFirstOrNull()?.let { player ->
-                bindIdlePlayer(player, mediaId, uri, mediaType, forceLegacy, title, artist)
-            } ?: createManagedPlayer(mediaId, uri, mediaType, forceLegacy, title, artist)
+                bindIdlePlayer(player, mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+            } ?: createManagedPlayer(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
 
             // 🏎️ Late-bound Capacity Check:
             // Check the LATEST urgency state (may have been promoted while suspended).
@@ -175,14 +177,16 @@ class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float,
         forceLegacy: Boolean,
         title: String?,
         artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy, title, artist)
+        val config = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val listener = analyticsListenerProvider.get()
         
         player.addAnalyticsListener(listener)
+        player.trackSelectionParameters = config.trackSelectionParameters
         player.clearMediaItems()
         player.setMediaItem(config.mediaItem)
         player.playWhenReady = false
@@ -201,11 +205,12 @@ class PlayerPool @Inject constructor(
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float,
         forceLegacy: Boolean,
         title: String?,
         artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, forceLegacy, title, artist)
+        val config = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val created = playerFactory.create(config)
 
         val managed = ManagedPlayer(

@@ -19,6 +19,7 @@ internal object RoomPropertyMapper {
 
             imageUrls = JsonConverter.toJson(domain.imageUrls),
             videoUrls = JsonConverter.toJson(domain.videoUrls),
+            hlsUrls = JsonConverter.toJson(domain.hlsUrls),
 
             videosAvailable = domain.videosAvailable,
 
@@ -58,6 +59,7 @@ internal object RoomPropertyMapper {
 
             imageUrls = JsonConverter.fromJson(entity.imageUrls),
             videoUrls = JsonConverter.fromJson(entity.videoUrls),
+            hlsUrls = JsonConverter.fromJson(entity.hlsUrls),
 
             videosAvailable = entity.videosAvailable,
 

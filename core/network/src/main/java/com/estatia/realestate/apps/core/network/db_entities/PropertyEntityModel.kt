@@ -10,6 +10,7 @@ data class PropertyEntityModel(
 
     var imageUrl: List<String>? = null,
     var videoUrl: List<String>? = null,
+    var hlsUrl: List<String>? = null,
     val video: Boolean = false,
 
     val latitude: Double? = null,

@@ -22,6 +22,7 @@ interface IPlayerConfigurationFactory {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float = 0.5f,
         forceLegacyCodec: Boolean = false,
         title: String? = null,
         artist: String? = null

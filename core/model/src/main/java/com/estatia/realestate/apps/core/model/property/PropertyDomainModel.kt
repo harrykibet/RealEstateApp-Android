@@ -9,6 +9,7 @@ data class PropertyDomainModel(
 
     val imageUrls: List<String>,
     val videoUrls: List<String>,
+    val hlsUrls: List<String>,
     val videosAvailable: Boolean,
 
     val coordinates: Coordinates?,

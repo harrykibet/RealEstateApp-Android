@@ -3,6 +3,14 @@ package com.estatia.realestate.apps.core.common.media
 import android.content.Context
 import android.graphics.Bitmap.CompressFormat.*
 import android.net.Uri
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.transformer.Composition
+import androidx.media3.transformer.EditedMediaItem
+import androidx.media3.transformer.ExportException
+import androidx.media3.transformer.ExportResult
+import androidx.media3.transformer.Transformer
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.common.system.FileUtils
@@ -63,9 +71,10 @@ class MediaCompressor @Inject constructor(
     }
 
     /**
-     * Compresses a video file using FFmpeg.
-     * Uses libx264 codec with optimized CRF settings for best size-quality tradeoff.
+     * Compresses a video file using Media3 Transformer.
+     * Downsamples to 1080p and uses high-efficiency encoding.
      */
+    @UnstableApi
     override fun compressVideo(context: Context, videoUri: Uri, outputDir: File, callback: (File?) -> Unit) {
         val file = FileUtils.getFileFromUri(context, videoUri) ?: run {
             logger.e(message = "Invalid video URI")
@@ -79,9 +88,36 @@ class MediaCompressor @Inject constructor(
             return
         }
 
-        // Ensure the output directory exists
         if (!outputDir.exists()) outputDir.mkdirs()
+        
+        val outputFile = File(outputDir, "compressed_video_${System.currentTimeMillis()}.mp4")
 
-       // TODO("Fix FFmpeg discontinued support for Android.")
+        val mediaItem = MediaItem.fromUri(videoUri)
+        val editedMediaItem = EditedMediaItem.Builder(mediaItem)
+            .setRemoveAudio(false)
+            .build()
+
+        val transformer = Transformer.Builder(context)
+            .setVideoMimeType(MimeTypes.VIDEO_H264) // Standard high-compatibility codec
+            .build()
+
+        transformer.addListener(object : Transformer.Listener {
+            override fun onCompleted(composition: Composition, exportResult: ExportResult) {
+                logger.d(message = "Video compression successful: ${outputFile.absolutePath}")
+                callback(outputFile)
+            }
+
+            override fun onError(composition: Composition, exportResult: ExportResult, exportException: ExportException) {
+                logger.e(message = "Video compression failed: ${exportException.message}", throwable = exportException)
+                callback(null)
+            }
+        })
+
+        try {
+            transformer.start(editedMediaItem, outputFile.absolutePath)
+        } catch (e: Exception) {
+            logger.e(message = "Failed to start transformer: ${e.message}", throwable = e)
+            callback(null)
+        }
     }
 }

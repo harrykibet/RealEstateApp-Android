@@ -52,7 +52,7 @@ import com.estatia.realestate.apps.feature.shared_ui.RememberFeedPlaybackCoordin
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import androidx.media3.common.Player
-import com.estatia.realestate.apps.core.player_ui.state.FeedMediaContext
+import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.localization.R as LocalizationR
 
 @Composable
@@ -95,8 +95,10 @@ internal fun HomeRoute(
             commentsContent = commentsContent,
             playbackUiState = playbackUiState,
             onPlaybackRetry = playbackViewModel::retry,
-            onPageVisible = playbackViewModel::onPageVisible,
-            getPlayer = playbackViewModel::getPlayer,
+            onPageVisible = { id, uri, match, prev, next, title, artist ->
+                playbackViewModel.onPageVisible(id, uri, match, prev, next, title, artist)
+            },
+            getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
             pausePlayback = playbackViewModel::pause,
             isMediaActive = playbackViewModel::isMediaActive,
             onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
@@ -115,8 +117,8 @@ internal fun HomeScreen(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
     onPlaybackRetry: () -> Unit,
-    onPageVisible: (FeedMediaContext) -> Unit,
-    getPlayer: suspend (String, Uri, MediaType) -> Player,
+    onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
+    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -160,8 +162,8 @@ internal fun HomeFeedContent(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
     onPlaybackRetry: () -> Unit,
-    onPageVisible: (FeedMediaContext) -> Unit,
-    getPlayer: suspend (String, Uri, MediaType) -> Player,
+    onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
+    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -207,15 +209,16 @@ internal fun HomeFeedContent(
                         onShareClick = onShareClick,
                         onRetry = onPlaybackRetry,
                         videoPlayerContent = {
-                            val videoUrl = listing.videoUrl
-                            if (videoUrl != null) {
+                            val videoUri = (listing.hlsUrl ?: listing.videoUrl)?.toUri()
+                            if (videoUri != null) {
                                 EngineVideoPlayer(
-                                    mediaId = videoUrl,
-                                    uri = videoUrl.toUri(),
+                                    mediaId = listing.id,
+                                    uri = videoUri,
                                     mediaType = MediaType.VOD,
+                                    matchScore = listing.matchScore,
                                     getPlayer = getPlayer,
                                     onPause = pausePlayback,
-                                    isActive = isMediaActive(videoUrl),
+                                    isActive = isMediaActive(listing.id),
                                     onLike = { onLikeClick(listing) },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -324,8 +327,8 @@ fun HomeLoadingPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                onPageVisible = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                onPageVisible = { _, _, _, _, _, _, _ -> },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -352,8 +355,8 @@ fun HomeEmptyPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                onPageVisible = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                onPageVisible = { _, _, _, _, _, _, _ -> },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -380,8 +383,8 @@ fun HomeErrorPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                onPageVisible = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                onPageVisible = { _, _, _, _, _, _, _ -> },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -407,6 +410,7 @@ fun HomeContentPreview() {
                         description = "Luxury living in the heart of the city.",
                         price = 15000000.0,
                         videoUrl = null,
+                        hlsUrl = null,
                         ownerName = "jane_doe",
                         ownerAvatarUrl = null,
                         likesCount = 120,
@@ -422,8 +426,8 @@ fun HomeContentPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                onPageVisible = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                onPageVisible = { _, _, _, _, _, _, _ -> },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},
@@ -448,6 +452,7 @@ fun HomeContentSwahiliPreview() {
                         description = "Maisha ya kifahari katikati ya jiji.",
                         price = 15000000.0,
                         videoUrl = null,
+                        hlsUrl = null,
                         ownerName = "jane_doe",
                         ownerAvatarUrl = null,
                         likesCount = 120,
@@ -463,8 +468,8 @@ fun HomeContentSwahiliPreview() {
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
                 onPlaybackRetry = {},
-                onPageVisible = {},
-                getPlayer = { _, _, _ -> throw Exception("Not implemented") },
+                onPageVisible = { _, _, _, _, _, _, _ -> },
+                getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 pausePlayback = {},
                 isMediaActive = { false },
                 onLikeClick = {},

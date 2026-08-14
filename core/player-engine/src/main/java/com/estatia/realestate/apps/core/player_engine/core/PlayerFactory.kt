@@ -58,6 +58,7 @@ class PlayerFactory @Inject constructor(
         configuration.livePlaybackSpeedControl?.let { builder.setLivePlaybackSpeedControl(it) }
 
         val player = builder.build()
+        player.trackSelectionParameters = configuration.trackSelectionParameters
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.setMediaItem(configuration.mediaItem)
 

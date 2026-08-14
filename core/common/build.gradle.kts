@@ -16,5 +16,9 @@ dependencies {
     implementation(libs.glide)
     ksp(libs.glide.compiler)
 
+    implementation(libs.media3.transformer)
+    implementation(libs.media3.effect)
+    implementation(libs.media3.common)
+
     implementation(projects.core.model)
 }

@@ -30,6 +30,8 @@ fun AddPropertyDraft.toDomain(
 
         videoUrls = emptyList(),
 
+        hlsUrls = emptyList(),
+
         videosAvailable = videos.isNotEmpty(),
 
 

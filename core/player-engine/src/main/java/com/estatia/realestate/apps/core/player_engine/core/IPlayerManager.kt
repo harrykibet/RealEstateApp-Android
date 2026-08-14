@@ -29,6 +29,7 @@ interface IPlayerManager {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float = 0.5f,
         title: String? = null,
         artist: String? = null
     )
@@ -45,9 +46,15 @@ interface IPlayerManager {
      * @param mediaId Unique identifier for the media asset.
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
+     * @param matchScore The match score from the recommendation engine (0.0 to 1.0).
      * @return An active [Player] instance.
      */
-    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player
+    suspend fun getPlayer(
+        mediaId: String, 
+        uri: Uri, 
+        mediaType: MediaType,
+        matchScore: Float = 0.5f
+    ): Player
 
     /**
      * Prefetches media content into the cache and prepares a player instance in the background.
@@ -55,6 +62,7 @@ interface IPlayerManager {
      * @param mediaId Unique identifier for the media asset.
      * @param uri The source URI for the media.
      * @param mediaType The type of media.
+     * @param matchScore The match score from the recommendation engine (0.0 to 1.0).
      * @param title Optional title for media session metadata.
      * @param artist Optional artist name for media session metadata.
      */
@@ -63,6 +71,7 @@ interface IPlayerManager {
         mediaId: String,
         uri: Uri,
         mediaType: MediaType,
+        matchScore: Float = 0.5f,
         title: String? = null,
         artist: String? = null
     )

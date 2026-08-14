@@ -182,7 +182,9 @@ fun SearchScreen(
                                 RememberFeedPlaybackCoordinator(
                                     pagerState = pagerState,
                                     items = items,
-                                    onPageVisible = playbackViewModel::onPageVisible
+                                    onPageVisible = { id, uri, match, prev, next, title, artist ->
+                                        playbackViewModel.onPageVisible(id, uri, match, prev, next, title, artist)
+                                    }
                                 )
                             },
                             itemContent = { listing, isActive, onCommentClick ->
@@ -200,15 +202,16 @@ fun SearchScreen(
                                     onShareClick = {},
                                     onRetry = { playbackViewModel.retry() },
                                     videoPlayerContent = {
-                                        val videoUrl = listing.videoUrl
-                                        if (videoUrl != null) {
+                                        val videoUri = (listing.hlsUrl ?: listing.videoUrl)?.toUri()
+                                        if (videoUri != null) {
                                             EngineVideoPlayer(
-                                                mediaId = videoUrl,
-                                                uri = videoUrl.toUri(),
+                                                mediaId = listing.id,
+                                                uri = videoUri,
                                                 mediaType = MediaType.VOD,
-                                                getPlayer = playbackViewModel::getPlayer,
+                                                matchScore = listing.matchScore,
+                                                getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
                                                 onPause = { playbackViewModel.pause() },
-                                                isActive = playbackViewModel.isMediaActive(videoUrl),
+                                                isActive = playbackViewModel.isMediaActive(listing.id),
                                                 onLike = { onLikeClick(listing) },
                                                 modifier = Modifier.fillMaxSize()
                                             )

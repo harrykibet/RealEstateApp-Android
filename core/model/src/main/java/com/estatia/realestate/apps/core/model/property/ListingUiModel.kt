@@ -9,6 +9,7 @@ data class ListingUiModel(
     val description: String?,
     val price: Double?,
     val videoUrl: String?,
+    val hlsUrl: String?,
     val ownerName: String,
     val ownerAvatarUrl: String?,
     val likesCount: Int,
@@ -24,6 +25,7 @@ fun PropertyDomainModel.toListingUiModel(): ListingUiModel =
         description = description,
         price = price?.amount,
         videoUrl = videoUrls.firstOrNull(),
+        hlsUrl = hlsUrls.firstOrNull(),
         ownerName = ownerName ?: "Unknown",
         ownerAvatarUrl = null, // Placeholder as PropertyDomainModel doesn't have it yet
         likesCount = likesCount,

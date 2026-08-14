@@ -58,10 +58,11 @@ fun EngineVideoPlayer(
     mediaId: String,
     uri: Uri,
     mediaType: MediaType,
-    getPlayer: suspend (String, Uri, MediaType) -> Player,
+    modifier: Modifier = Modifier,
+    matchScore: Float = 0.5f,
+    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPause: () -> Unit,
     isActive: Boolean,
-    modifier: Modifier = Modifier,
     posterUri: Uri? = null,
     onLike: () -> Unit = {}
 ) {
@@ -76,9 +77,9 @@ fun EngineVideoPlayer(
     }
 
     // Acquire player only when mediaId/uri changes - reaction is now immediate
-    LaunchedEffect(mediaId, uri, mediaType, isActive) {
+    LaunchedEffect(mediaId, uri, mediaType, matchScore, isActive) {
         if (isActive) {
-            playerState.value = getPlayer(mediaId, uri, mediaType)
+            playerState.value = getPlayer(mediaId, uri, mediaType, matchScore)
         } else {
             playerState.value = null
         }

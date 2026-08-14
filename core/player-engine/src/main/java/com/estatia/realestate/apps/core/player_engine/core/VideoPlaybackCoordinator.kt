@@ -5,6 +5,7 @@ import android.os.Looper
 import android.os.SystemClock
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
@@ -43,8 +44,9 @@ class VideoPlaybackCoordinator @Inject constructor(
         scope: CoroutineScope,
         mediaId: String,
         uri: Uri,
-        previous: List<FeedNeighborInfo>,
-        next: List<FeedNeighborInfo>,
+        matchScore: Float,
+        previous: List<FeedNeighbor>,
+        next: List<FeedNeighbor>,
         title: String? = null,
         artist: String? = null
     ) {
@@ -80,7 +82,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         playJob = scope.launch {
             delay(debounceTime.milliseconds)
             warmVisible(mediaId, uri)
-            playerController.play(mediaId, uri, MediaType.VOD, title, artist)
+            playerController.play(mediaId, uri, MediaType.VOD, matchScore, title, artist)
         }
 
         // Only prewarm neighbors if not flinging to reduce list virtualization pressure
@@ -91,7 +93,7 @@ class VideoPlaybackCoordinator @Inject constructor(
                 // 1. Symmetric Warming: Warm previous neighbor (N=1)
                 previous.firstOrNull()?.let {
                     if (it.matchScore > 0.5f) {
-                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
+                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.matchScore, it.title, it.artist)
                         warmPrevious(it.mediaId, it.uri)
                     }
                 }
@@ -101,7 +103,7 @@ class VideoPlaybackCoordinator @Inject constructor(
                     // 🏎️ Intelligent Prewarming: 
                     // High-match content gets deeper prefetch + hardware player prep
                     if (it.matchScore > 0.8f) {
-                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.title, it.artist)
+                        playerController.preload(it.mediaId, it.uri, MediaType.VOD, it.matchScore, it.title, it.artist)
                     }
                     warmNext(it.mediaId, it.uri)
                 }
@@ -154,8 +156,8 @@ class VideoPlaybackCoordinator @Inject constructor(
         }
     }
 
-    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType): Player {
-        return playerController.getPlayer(mediaId, uri, mediaType)
+    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float = 0.5f): Player {
+        return playerController.getPlayer(mediaId, uri, mediaType, matchScore)
     }
 
     fun pause(scope: CoroutineScope) {
@@ -183,11 +185,3 @@ class VideoPlaybackCoordinator @Inject constructor(
         consecutiveFastScrolls = 0
     }
 }
-
-data class FeedNeighborInfo(
-    val mediaId: String,
-    val uri: Uri,
-    val matchScore: Float = 0.5f,
-    val title: String? = null,
-    val artist: String? = null
-)

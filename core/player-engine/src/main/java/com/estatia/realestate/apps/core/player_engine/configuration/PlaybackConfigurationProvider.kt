@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.configuration
 
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLivePlaybackSpeedControl
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -8,10 +9,13 @@ import androidx.media3.exoplayer.LoadControl
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @UnstableApi
 class PlaybackConfigurationProvider @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val configProvider: IConfigProvider
 ) : IPlaybackConfigurationProvider {
 
@@ -29,6 +33,27 @@ class PlaybackConfigurationProvider @Inject constructor(
                 .setFallbackMaxPlaybackSpeed(1.03f)
                 .build()
         } else null
+    }
+
+    override fun createTrackSelectionParameters(matchScore: Float, environment: EnvironmentState): TrackSelectionParameters {
+        val builder = TrackSelectionParameters.Builder(context)
+
+        // 🧠 Match-Aware Initial Rendition:
+        // High Match -> Start at 1080p if bandwidth allows.
+        // Low Match -> Start at 360p to save data.
+        if (matchScore > 0.9f) {
+            builder.setMaxVideoSize(1920, 1080)
+        } else if (matchScore < 0.4f) {
+            builder.setMaxVideoSize(640, 360)
+        }
+
+        // 🌡️ Thermal Mitigation:
+        // If device is hot, cap bitrate to reduce GPU/CPU load.
+        if (environment.thermalStatus >= 2) { // MODERATE or higher
+            builder.setMaxVideoBitrate(2_000_000) // 2Mbps cap
+        }
+
+        return builder.build()
     }
 
     private fun createLiveLoadControl(env: EnvironmentState): LoadControl {

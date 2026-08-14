@@ -20,6 +20,7 @@ internal object FirestorePropertyMapper {
 
             imageUrls = entity.imageUrl.orEmpty(),
             videoUrls = entity.videoUrl.orEmpty(),
+            hlsUrls = entity.hlsUrl.orEmpty(),
 
             videosAvailable = entity.video,
 
@@ -78,6 +79,7 @@ internal object FirestorePropertyMapper {
             price = domain.price?.amount,
             imageUrl = domain.imageUrls,
             videoUrl = domain.videoUrls,
+            hlsUrl = domain.hlsUrls,
             video = domain.videosAvailable,
             latitude = domain.coordinates?.latitude,
             longitude = domain.coordinates?.longitude,
