@@ -111,7 +111,7 @@ androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 org-jetbrains-dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
 
 # Static analysis
-org-sonarqube = { id = "org.sonarqube", version = "7.3.1.8318" }
+org-sonarqube = { id = "org.sonarqube", version = "7.4.0.8496" }
 
 # Firebase
 com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.7" }
