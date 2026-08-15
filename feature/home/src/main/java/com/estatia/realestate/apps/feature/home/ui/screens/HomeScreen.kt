@@ -67,6 +67,7 @@ internal fun HomeRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
+    val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     DisposableEffect(playbackViewModel) {
@@ -93,6 +94,8 @@ internal fun HomeRoute(
             onNavigateToPropertyDetail = onNavigateToPropertyDetail,
             commentsContent = commentsContent,
             playbackUiState = playbackUiState,
+            isMuted = isMuted,
+            onMuteToggle = playbackViewModel::toggleMute,
             onPlaybackRetry = playbackViewModel::retry,
             onPageVisible = { id, uri, match, prev, next, title, artist ->
                 playbackViewModel.onPageVisible(id, uri, match, prev, next, title, artist)
@@ -115,6 +118,8 @@ internal fun HomeScreen(
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
     onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
     getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
@@ -138,6 +143,8 @@ internal fun HomeScreen(
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
         playbackUiState = playbackUiState,
+        isMuted = isMuted,
+        onMuteToggle = onMuteToggle,
         onPlaybackRetry = onPlaybackRetry,
         onPageVisible = onPageVisible,
         getPlayer = getPlayer,
@@ -160,6 +167,8 @@ internal fun HomeFeedContent(
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackUiState: PlayerUiState?,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
     onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
     getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
@@ -218,6 +227,8 @@ internal fun HomeFeedContent(
                                     getPlayer = getPlayer,
                                     onPause = pausePlayback,
                                     isActive = isMediaActive(listing.id),
+                                    isMuted = isMuted,
+                                    onMuteToggle = onMuteToggle,
                                     onLike = { onLikeClick(listing) },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -325,6 +336,8 @@ fun HomeLoadingPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 onPageVisible = { _, _, _, _, _, _, _ -> },
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
@@ -353,6 +366,8 @@ fun HomeEmptyPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 onPageVisible = { _, _, _, _, _, _, _ -> },
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
@@ -381,6 +396,8 @@ fun HomeErrorPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 onPageVisible = { _, _, _, _, _, _, _ -> },
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
@@ -424,6 +441,8 @@ fun HomeContentPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 onPageVisible = { _, _, _, _, _, _, _ -> },
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
@@ -466,6 +485,8 @@ fun HomeContentSwahiliPreview() {
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 onPageVisible = { _, _, _, _, _, _, _ -> },
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },

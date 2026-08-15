@@ -63,6 +63,8 @@ fun EngineVideoPlayer(
     getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPause: () -> Unit,
     isActive: Boolean,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     posterUri: Uri? = null,
     onLike: () -> Unit = {}
 ) {
@@ -100,7 +102,6 @@ fun EngineVideoPlayer(
     // Playback control state - Synced with Player via Listener
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
-    var isMuted by remember { mutableStateOf(false) }
     var showIndicator by remember { mutableStateOf(false) }
     var isHoldingPause by remember { mutableStateOf(false) }
     var wasPlayingBeforeHold by remember { mutableStateOf(false) }
@@ -116,16 +117,11 @@ fun EngineVideoPlayer(
             override fun onPlaybackStateChanged(state: Int) {
                 isBuffering = state == Player.STATE_BUFFERING || state == Player.STATE_IDLE
             }
-
-            override fun onVolumeChanged(volume: Float) {
-                isMuted = volume == 0f
-            }
         }
         player?.addListener(listener)
         // Sync initial state
         isPlaying = player?.isPlaying ?: false
         isBuffering = player?.playbackState == Player.STATE_BUFFERING || player?.playbackState == Player.STATE_IDLE
-        isMuted = player?.volume == 0f
 
         onDispose {
             player?.removeListener(listener)
@@ -163,6 +159,11 @@ fun EngineVideoPlayer(
                 delay(pollInterval)
             }
         }
+    }
+
+    // Sync volume with persistent mute preference
+    LaunchedEffect(player, isMuted) {
+        player?.volume = if (isMuted) 0f else 1f
     }
 
     // Lifecycle handling
@@ -292,12 +293,7 @@ fun EngineVideoPlayer(
 
         // 🔊 Mute Toggle
         IconButton(
-            onClick = {
-                player?.let {
-                    val newVolume = if (it.volume == 0f) 1f else 0f
-                    it.volume = newVolume
-                }
-            },
+            onClick = onMuteToggle,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)

@@ -70,6 +70,7 @@ fun SearchRoute(
     playbackViewModel: SearchVideoPlaybackViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     DisposableEffect(playbackViewModel) {
@@ -93,6 +94,8 @@ fun SearchRoute(
         onSearch = viewModel::searchProperties,
         onClearHistory = viewModel::clearSearchHistory,
         onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual state */ },
+        isMuted = isMuted,
+        onMuteToggle = playbackViewModel::toggleMute,
         onNavigateToPropertyDetail = onNavigateToPropertyDetail,
         commentsContent = commentsContent,
         playbackViewModel = playbackViewModel,
@@ -108,6 +111,8 @@ fun SearchScreen(
     onSearch: (String) -> Unit,
     onClearHistory: () -> Unit,
     onLikeClick: (ListingUiModel) -> Unit,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackViewModel: SearchVideoPlaybackViewModel,
@@ -209,6 +214,8 @@ fun SearchScreen(
                                                 getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
                                                 onPause = { playbackViewModel.pause() },
                                                 isActive = playbackViewModel.isMediaActive(listing.id),
+                                                isMuted = isMuted,
+                                                onMuteToggle = onMuteToggle,
                                                 onLike = { onLikeClick(listing) },
                                                 modifier = Modifier.fillMaxSize()
                                             )
@@ -332,6 +339,8 @@ fun SearchScreenHistoryPreview() {
                 onSearch = {},
                 onClearHistory = {},
                 onLikeClick = {},
+                isMuted = false,
+                onMuteToggle = {},
                 onNavigateToPropertyDetail = {},
                 commentsContent = {},
                 playbackViewModel = hiltViewModel(),

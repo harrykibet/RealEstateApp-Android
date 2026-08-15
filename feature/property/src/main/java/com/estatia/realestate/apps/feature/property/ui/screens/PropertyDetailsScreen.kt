@@ -78,6 +78,7 @@ fun PropertyDetailsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val playbackUiState by playbackViewModel.uiState.collectAsStateWithLifecycle()
+    val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
 
     LaunchedEffect(propertyId) {
         viewModel.loadProperty(propertyId)
@@ -87,6 +88,8 @@ fun PropertyDetailsRoute(
         uiState = uiState,
         onBackClick = onBackClick,
         playbackUiState = playbackUiState,
+        isMuted = isMuted,
+        onMuteToggle = playbackViewModel::toggleMute,
         onPlaybackRetry = playbackViewModel::retry,
         getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
         onPausePlayback = playbackViewModel::pause,
@@ -99,6 +102,8 @@ fun PropertyDetailsScreen(
     uiState: PropertyDetailsUiState,
     onBackClick: () -> Unit,
     playbackUiState: PlayerUiState,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
     getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
@@ -122,6 +127,8 @@ fun PropertyDetailsScreen(
                         property = uiState.property,
                         onBackClick = onBackClick,
                         playbackUiState = playbackUiState,
+                        isMuted = isMuted,
+                        onMuteToggle = onMuteToggle,
                         onPlaybackRetry = onPlaybackRetry,
                         getPlayer = getPlayer,
                         onPausePlayback = onPausePlayback,
@@ -144,6 +151,8 @@ private fun PropertyDetailsContent(
     property: PropertyDomainModel,
     onBackClick: () -> Unit,
     playbackUiState: PlayerUiState,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
     getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
@@ -192,6 +201,8 @@ private fun PropertyDetailsContent(
                                     getPlayer = getPlayer,
                                     onPause = onPausePlayback,
                                     isActive = isMediaActive(property.id.value),
+                                    isMuted = isMuted,
+                                    onMuteToggle = onMuteToggle,
                                     modifier = Modifier.fillMaxSize()
                                 )
 
@@ -366,6 +377,8 @@ fun PropertyDetailsScreenSuccessPreview() {
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},
@@ -384,6 +397,8 @@ fun PropertyDetailsScreenSwahiliPreview() {
                 uiState = PropertyDetailsUiState.Success(MockProperties.single()),
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
+                isMuted = false,
+                onMuteToggle = {},
                 onPlaybackRetry = {},
                 getPlayer = { _, _, _, _ -> throw Exception("Not implemented") },
                 onPausePlayback = {},

@@ -24,10 +24,14 @@ fun FavoritesRoute(
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackViewModel: FavoritesVideoPlaybackViewModel = hiltViewModel()
 ) {
+    val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
+    
     FavoritesScreen(
         favoriteProperties = emptyList(), // TODO: Get from ViewModel
         onLikeClick = {},
         onShareClick = {},
+        isMuted = isMuted,
+        onMuteToggle = playbackViewModel::toggleMute,
         onPropertyClick = onPropertyClick,
         commentsContent = commentsContent,
         playbackViewModel = playbackViewModel
@@ -39,6 +43,8 @@ fun FavoritesScreen(
     favoriteProperties: List<PropertyDomainModel>,
     onLikeClick: (String) -> Unit,
     onShareClick: (String) -> Unit,
+    isMuted: Boolean,
+    onMuteToggle: () -> Unit,
     onPropertyClick: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     playbackViewModel: FavoritesVideoPlaybackViewModel
@@ -83,6 +89,8 @@ fun FavoritesScreen(
                             getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
                             onPause = { playbackViewModel.pause() },
                             isActive = playbackViewModel.isMediaActive(listing.id),
+                            isMuted = isMuted,
+                            onMuteToggle = onMuteToggle,
                             onLike = { onLikeClick(listing.id) },
                             modifier = Modifier.fillMaxSize()
                         )
