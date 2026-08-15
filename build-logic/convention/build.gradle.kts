@@ -29,6 +29,7 @@ dependencies {
     compileOnly(libs.dokka.gradle.plugin)
     compileOnly(libs.room.gradle.plugin)
     compileOnly(libs.sonarqube.gradle.plugin)
+    compileOnly(libs.androidx.baselineprofile.gradle.plugin)
     implementation(libs.truth)
 }
 

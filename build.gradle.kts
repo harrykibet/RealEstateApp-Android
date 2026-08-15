@@ -30,6 +30,7 @@ plugins {
     alias(libs.plugins.com.google.android.libraries.mapsplatform.secrets.gradle.plugin) apply false
     alias(libs.plugins.org.sonarqube) apply false
     alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.android.dynamic.feature) apply false
     alias(libs.plugins.module.graph)
     alias(libs.plugins.kotlin.serialization)  apply false

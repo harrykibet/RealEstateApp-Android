@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.bundles.navigation)
     implementation(libs.androidx.profileinstaller)
 
+    baselineProfile(projects.benchmark)
+
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.layout)
     implementation(libs.androidx.compose.material3.adaptive.navigation)

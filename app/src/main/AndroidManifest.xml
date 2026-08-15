@@ -50,6 +50,19 @@
 
         <!-- Disable collection of AD_ID for all build variants -->
         <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+
+        <!-- Remove default WorkManager initializer for on-demand initialization -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
         <!-- Firebase automatically adds the following property which we don't use so remove it -->
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"

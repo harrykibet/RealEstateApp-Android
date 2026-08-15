@@ -47,6 +47,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
 
         pluginManager.apply("com.android.application")
+        pluginManager.apply("androidx.baselineprofile")
         pluginManager.apply("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
         pluginManager.apply("com.estatia.realestate.apps.hilt")
         pluginManager.apply("com.estatia.realestate.apps.android.config")
@@ -133,6 +134,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     matchingFallbacks += listOf("release")
                     isDebuggable = false
                 }
+
+
             }
 
         }

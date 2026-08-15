@@ -33,9 +33,19 @@
 
 # Micrometer
 -dontwarn io.micrometer.context.ThreadLocalAccessor
+-dontwarn org.LatencyUtils.**
 
 # OpenTelemetry (Auto-configuration SPIs not needed for basic Android instrumentation)
 -dontwarn io.opentelemetry.sdk.autoconfigure.spi.**
 
 # SLF4J (Referenced by Micrometer logging bridge)
 -dontwarn org.slf4j.**
+
+# BouncyCastle
+-keep class org.bouncycastle.** { *; }
+-dontwarn org.bouncycastle.**
+
+# Hilt Worker
+-keep class * extends androidx.work.ListenableWorker {
+    <init>(android.content.Context, androidx.work.WorkerParameters);
+}
