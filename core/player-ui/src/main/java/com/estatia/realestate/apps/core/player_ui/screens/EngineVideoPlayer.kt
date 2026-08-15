@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -100,13 +101,13 @@ fun EngineVideoPlayer(
     val player = playerState.value
 
     // Playback control state - Synced with Player via Listener
-    var isPlaying by remember { mutableStateOf(false) }
-    var isBuffering by remember { mutableStateOf(true) }
-    var showIndicator by remember { mutableStateOf(false) }
-    var isHoldingPause by remember { mutableStateOf(false) }
-    var wasPlayingBeforeHold by remember { mutableStateOf(false) }
-    var progress by remember { mutableFloatStateOf(0f) }
-    var bufferedProgress by remember { mutableFloatStateOf(0f) }
+    var isPlaying by remember(mediaId) { mutableStateOf(false) }
+    var isBuffering by remember(mediaId) { mutableStateOf(true) }
+    var showIndicator by remember(mediaId) { mutableStateOf(false) }
+    var isHoldingPause by remember(mediaId) { mutableStateOf(false) }
+    var wasPlayingBeforeHold by remember(mediaId) { mutableStateOf(false) }
+    var progress by remember(mediaId) { mutableFloatStateOf(0f) }
+    var bufferedProgress by remember(mediaId) { mutableFloatStateOf(0f) }
 
     DisposableEffect(player) {
         val listener = object : Player.Listener {
@@ -189,6 +190,7 @@ fun EngineVideoPlayer(
                 AndroidExternalSurface(
                     modifier = Modifier
                         .fillMaxSize()
+                        .testTag("EngineVideoPlayer_Surface")
                         .pointerInput(player, isActive) {
                             detectTapGestures(
                                 onDoubleTap = {

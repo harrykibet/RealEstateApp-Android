@@ -47,6 +47,8 @@ fun PlaybackErrorView(
             Icons.Default.ErrorOutline to "Video not found."
         PlayerErrorType.INVALID_URI -> 
             Icons.Default.ErrorOutline to "This video is currently unavailable."
+        PlayerErrorType.WATCHDOG -> 
+            Icons.Default.ErrorOutline to "Playback was interrupted by the system."
         PlayerErrorType.UNKNOWN -> 
             Icons.Default.ErrorOutline to (errorState.message ?: "An unexpected error occurred.")
     }
