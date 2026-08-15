@@ -190,13 +190,14 @@ internal class FirestoreProperties @Inject constructor(
                 .documents.map { it.id }
 
             if (likedPropertyIds.isNotEmpty()) {
-                val propertiesSnapshot = database.collection(PROPERTIES)
-                    .whereIn(FieldPath.documentId(), likedPropertyIds)
-                    .get()
-                    .await()
-
-                propertiesSnapshot.documents.mapNotNull {
-                    it.toObject(PropertyEntityModel::class.java)
+                // 🛡️ Firestore whereIn limit is 30 values.
+                // Chunk the IDs to avoid "too many values in whereIn" error.
+                likedPropertyIds.chunked(30).flatMap { chunk ->
+                    database.collection(PROPERTIES)
+                        .whereIn(FieldPath.documentId(), chunk)
+                        .get()
+                        .await()
+                        .documents.mapNotNull { it.toObject(PropertyEntityModel::class.java) }
                 }
             } else {
                 emptyList()
