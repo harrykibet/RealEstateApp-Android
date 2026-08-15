@@ -52,8 +52,9 @@ interface IStreamingPipeline {
      * @param mediaId Stable ID used as custom cache key.
      * @param uri The URI to prefetch.
      * @param priority The priority of the prefetch request.
+     * @param qualityHint Optional hint about the media quality/bitrate.
      */
-    fun warm(mediaId: String, uri: Uri, priority: WarmPriority)
+    fun warm(mediaId: String, uri: Uri, priority: WarmPriority, qualityHint: String? = null)
 
     /**
      * Notifies the pipeline that buffering has started, allowing it to adjust prefetch logic.

@@ -165,4 +165,12 @@ class DeviceUtils @Inject constructor(
         }
     }
     override fun getMaxSupportedVideoDecoders(): Int = maxSupportedVideoDecodersLazy
+
+    override fun getVideoQualityHint(): String {
+        return when {
+            supportsAV1() -> "av1"
+            supportsHEVC() -> "hevc"
+            else -> "standard"
+        }
+    }
 }

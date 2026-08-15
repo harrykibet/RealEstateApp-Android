@@ -17,4 +17,9 @@ interface IDeviceUtils {
     fun getAvailableMemoryMB(): Long
     fun getAvailableStorageMB(): Long
     fun getMaxSupportedVideoDecoders(): Int
+
+    /**
+     * Resolves a stable string identifier for the device's video playback capability.
+     */
+    fun getVideoQualityHint(): String
 }

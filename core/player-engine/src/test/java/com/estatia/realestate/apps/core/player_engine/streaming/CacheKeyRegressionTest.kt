@@ -24,13 +24,35 @@ class CacheKeyRegressionTest {
     }
 
     @Test
-    fun `resolveStableKey uses providedId as primary key`() {
-        val uri = mockk<Uri>(relaxed = true)
+    fun `resolveStableKey incorporates path fingerprint`() {
+        val uri1 = mockk<Uri>(relaxed = true) { every { path } returns "/video1.mp4" }
+        val uri2 = mockk<Uri>(relaxed = true) { every { path } returns "/video2.mp4" }
         val propertyId = "prop_999"
-        
-        val key = factory.resolveStableKey(uri, propertyId)
-        
-        assertEquals("prop_999", key)
+
+        val key1 = factory.resolveStableKey(uri1, propertyId)
+        val key2 = factory.resolveStableKey(uri2, propertyId)
+
+        assert(key1 != key2)
+        assert(key1.startsWith(propertyId))
+        assert(key2.startsWith(propertyId))
+    }
+
+    @Test
+    fun `resolveStableKey is resilient to query parameter changes`() {
+        val uri1 = mockk<Uri>(relaxed = true)
+        every { uri1.path } returns "/video.mp4"
+        every { uri1.toString() } returns "https://cdn.com/video.mp4?token=1"
+
+        val uri2 = mockk<Uri>(relaxed = true)
+        every { uri2.path } returns "/video.mp4"
+        every { uri2.toString() } returns "https://cdn.com/video.mp4?token=2"
+
+        val propertyId = "prop_999"
+
+        val key1 = factory.resolveStableKey(uri1, propertyId)
+        val key2 = factory.resolveStableKey(uri2, propertyId)
+
+        assertEquals("Keys should be identical regardless of query tokens", key1, key2)
     }
 
     @Test(expected = IllegalArgumentException::class)

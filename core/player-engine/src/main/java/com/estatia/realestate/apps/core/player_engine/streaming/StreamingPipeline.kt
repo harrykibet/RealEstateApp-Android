@@ -16,7 +16,9 @@ internal class StreamingPipeline @Inject constructor(
     private val cacheWarmer: MediaCacheWarmer,
     private val mediaSourceFactory: MediaSource.Factory,
     private val offlineDownloadController: OfflineDownloadController,
-    private val cacheKeyFactory: ICacheKeyFactory
+    private val cacheKeyFactory: ICacheKeyFactory,
+    private val uriResolver: StreamingUriResolver,
+    private val deviceUtils: com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 ) : IStreamingPipeline {
 
 
@@ -58,8 +60,11 @@ internal class StreamingPipeline @Inject constructor(
             .build()
     }
 
-    override fun warm(mediaId: String, uri: Uri, priority: WarmPriority) =
-        cacheWarmer.prefetch(mediaId, uri, priority)
+    override fun warm(mediaId: String, uri: Uri, priority: WarmPriority, qualityHint: String?) {
+        val resolvedUri = uriResolver.resolve(uri)
+        val resolvedHint = qualityHint ?: deviceUtils.getVideoQualityHint()
+        cacheWarmer.prefetch(mediaId, resolvedUri, priority, resolvedHint)
+    }
 
     override fun onBufferingStarted() =
         cacheWarmer.onBufferingStarted()

@@ -70,8 +70,8 @@ class MediaCacheWarmer @Inject constructor(
         }
     }
 
-    fun prefetch(mediaId: String, uri: Uri, priority: WarmPriority) {
-        requests.tryEmit(WarmRequest(uri, priority, mediaId))
+    fun prefetch(mediaId: String, uri: Uri, priority: WarmPriority, qualityHint: String? = null) {
+        requests.tryEmit(WarmRequest(uri, priority, mediaId, qualityHint))
     }
 
     fun onBufferingStarted() {
@@ -93,6 +93,7 @@ class MediaCacheWarmer @Inject constructor(
             prefetchInternal(
                 mediaId = request.mediaId,
                 uri = request.uri,
+                qualityHint = request.qualityHint,
                 maxBytes = adaptivePrefetchSize(WarmPriority.VISIBLE)
             )
         }
@@ -107,6 +108,7 @@ class MediaCacheWarmer @Inject constructor(
             prefetchInternal(
                 mediaId = request.mediaId,
                 uri = request.uri,
+                qualityHint = request.qualityHint,
                 maxBytes = adaptivePrefetchSize(WarmPriority.NEXT)
             )
         }
@@ -121,6 +123,7 @@ class MediaCacheWarmer @Inject constructor(
             prefetchInternal(
                 mediaId = request.mediaId,
                 uri = request.uri,
+                qualityHint = request.qualityHint,
                 maxBytes = adaptivePrefetchSize(WarmPriority.PREVIOUS)
             )
         }
@@ -135,6 +138,7 @@ class MediaCacheWarmer @Inject constructor(
             prefetchInternal(
                 mediaId = request.mediaId,
                 uri = request.uri,
+                qualityHint = request.qualityHint,
                 maxBytes = adaptivePrefetchSize(WarmPriority.LOW)
             )
         }
@@ -172,11 +176,12 @@ class MediaCacheWarmer @Inject constructor(
     private suspend fun prefetchInternal(
         mediaId: String,
         uri: Uri,
+        qualityHint: String?,
         maxBytes: Long
     ) = withContext(ioDispatcher) {
 
         try {
-            val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId)
+            val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId, qualityHint)
 
             val dataSpec = DataSpec.Builder()
                 .setUri(uri)

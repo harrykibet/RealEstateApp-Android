@@ -12,5 +12,6 @@ enum class WarmPriority {
 data class WarmRequest(
     val uri: Uri,
     val priority: WarmPriority,
-    val mediaId: String
+    val mediaId: String,
+    val qualityHint: String? = null
 )

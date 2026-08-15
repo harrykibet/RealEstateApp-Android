@@ -17,13 +17,20 @@ internal class DefaultCacheKeyFactory @Inject constructor() : ICacheKeyFactory {
             throw IllegalArgumentException("Estatia media must have a stable identifier. Received null/blank ID for URI: $uri")
         }
 
-        // 🌡️ Quality Awareness:
-        // Append quality hint (if provided) to prevent cache collisions between different renditions
-        // of the same media ID (e.g. progressive MP4 bitrate tiers).
-        return if (qualityHint != null) {
-            "$providedId:$qualityHint"
-        } else {
-            providedId
+        // 🛡️ Content Fingerprinting:
+        // Incorporate a stable hash of the URI path to prevent "cache poisoning" between 
+        // different renditions (e.g. different bitrates or codecs) that share the same mediaId.
+        // We exclude query parameters to remain resilient to token rotation.
+        val fingerprint = uri.path?.hashCode()?.toUInt()?.toString(16) ?: "default"
+
+        return buildString {
+            append(providedId)
+            if (!qualityHint.isNullOrBlank()) {
+                append(":")
+                append(qualityHint)
+            }
+            append(":")
+            append(fingerprint)
         }
     }
 }
