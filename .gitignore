@@ -51,3 +51,4 @@ AppKeyStore/
 /.artifacts/
 /.kotlin/
 /.run/
+/.gradle_temp/

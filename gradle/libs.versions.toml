@@ -207,6 +207,7 @@ analytics = [
     "opentelemetry-exporter-otlp",
     "micrometer-core",
     "micrometer-registry-prometheus",
+    "micrometer-registry-otlp",
     "conscrypt-openjdk-uber"
 ]
 
@@ -430,8 +431,9 @@ caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.4"
 # Analytics and Perfomance
 opentelemetry-api = "io.opentelemetry:opentelemetry-api:1.63.0"
 opentelemetry-exporter-otlp = "io.opentelemetry:opentelemetry-exporter-otlp:1.63.0"
-micrometer-core = "io.micrometer:micrometer-core:1.17.0"
-micrometer-registry-prometheus = "io.micrometer:micrometer-registry-prometheus:1.17.0"
+micrometer-core = { module = "io.micrometer:micrometer-core", version = "1.17.0" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.17.0" }
+micrometer-registry-otlp = { module = "io.micrometer:micrometer-registry-otlp", version = "1.17.0" }
 conscrypt-openjdk-uber = "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
 metrics-performance = { group = "androidx.metrics", name = "metrics-performance", version.ref = "androidx-metrics" }
 play-services-appset = { group = "com.google.android.gms", name = "play-services-appset", version.ref = "google-android-play-services-appset" }
