@@ -9,7 +9,8 @@ import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
 import com.estatia.realestate.apps.core.security.models.HybridEncryptedPayload
-import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -28,7 +29,7 @@ class SecurityRepositoryTest {
     private lateinit var signatureManager: ISignatureManager
     private lateinit var hashManager: IHashManager
     private lateinit var tokenDataSource: ITokenLocalDataSource
-    private val gson = Gson()
+    private val json = Json { ignoreUnknownKeys = true }
     private lateinit var repository: SecurityRepository
 
     @Before
@@ -49,7 +50,7 @@ class SecurityRepositoryTest {
             signatureManager,
             hashManager,
             tokenDataSource,
-            gson
+            json
         )
     }
 
@@ -67,13 +68,13 @@ class SecurityRepositoryTest {
         val result = repository.symmetricEncrypt(data)
 
         assert(result is AppResult.Success)
-        assertEquals(gson.toJson(payload), (result as AppResult.Success).data)
+        assertEquals(json.encodeToString(payload), (result as AppResult.Success).data)
     }
 
     @Test
     fun `symmetricDecrypt parses json and calls engine`() = runTest {
         val payload = EncryptedPayload(1, byteArrayOf(1), byteArrayOf(2))
-        val encryptedData = gson.toJson(payload)
+        val encryptedData = json.encodeToString(payload)
         val decryptedData = "test"
         coEvery { aesGcmCryptoEngine.decrypt(any()) } returns AppResult.Success(decryptedData.toByteArray())
 
@@ -92,13 +93,13 @@ class SecurityRepositoryTest {
         val result = repository.asymmetricEncrypt(data)
 
         assert(result is AppResult.Success)
-        assertEquals(gson.toJson(payload), (result as AppResult.Success).data)
+        assertEquals(json.encodeToString(payload), (result as AppResult.Success).data)
     }
 
     @Test
     fun `asymmetricDecrypt parses json and calls engine`() = runTest {
         val payload = HybridEncryptedPayload(1, byteArrayOf(1), byteArrayOf(2), byteArrayOf(3))
-        val encryptedData = gson.toJson(payload)
+        val encryptedData = json.encodeToString(payload)
         val decryptedData = "test"
         coEvery { rsaCryptoEngine.decrypt(any()) } returns AppResult.Success(decryptedData.toByteArray())
 

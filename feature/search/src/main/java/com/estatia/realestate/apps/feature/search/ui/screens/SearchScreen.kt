@@ -73,6 +73,15 @@ fun SearchRoute(
     val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(playbackViewModel.autoAdvanceEvent) {
+        playbackViewModel.autoAdvanceEvent.collect {
+            snackbarHostState.showSnackbar(
+                message = "Skipping video due to slow connection...",
+                duration = androidx.compose.material3.SnackbarDuration.Short
+            )
+        }
+    }
+
     DisposableEffect(playbackViewModel) {
         playbackViewModel.onScreenVisible()
         onDispose {
@@ -100,6 +109,7 @@ fun SearchRoute(
         commentsContent = commentsContent,
         playbackViewModel = playbackViewModel,
         onPageChanged = viewModel::onPageChanged,
+        autoAdvanceEvent = playbackViewModel.autoAdvanceEvent,
         snackbarHostState = snackbarHostState,
         modifier = modifier
     )
@@ -118,7 +128,8 @@ fun SearchScreen(
     playbackViewModel: SearchVideoPlaybackViewModel,
     onPageChanged: (Int) -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    autoAdvanceEvent: kotlinx.coroutines.flow.Flow<Unit>? = null,
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
@@ -180,6 +191,7 @@ fun SearchScreen(
                             listings = listings,
                             initialPage = uiState.initialPage,
                             onPageChanged = onPageChanged,
+                            autoAdvanceEvent = autoAdvanceEvent,
                             playbackCoordinator = { pagerState, items ->
                                 RememberFeedPlaybackCoordinator(
                                     pagerState = pagerState,

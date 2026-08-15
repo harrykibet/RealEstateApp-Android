@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.estatia.android.core)
     alias(libs.plugins.estatia.firebase)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
 dependencies {
 
-    implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.bundles.firebase)
 

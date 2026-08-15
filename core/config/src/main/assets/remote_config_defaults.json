@@ -35,6 +35,16 @@
   ],
   "base_config": {
     "base_url": "https://api.estatia.com/",
-    "enable_logging": true
+    "enable_logging": true,
+    "enable_telemetry": false
+  },
+  "player_tuning": {
+    "watchdog_timeout_ms": 3500
+  },
+  "chaos_config": {
+    "simulate_stall": false,
+    "stall_duration_ms": 0,
+    "failure_rate": 0.0,
+    "throttle_bps": 0
   }
 }

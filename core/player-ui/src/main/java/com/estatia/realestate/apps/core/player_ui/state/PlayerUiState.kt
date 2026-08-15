@@ -22,5 +22,6 @@ enum class PlayerErrorType {
     NOT_FOUND,
     DECODER,
     INVALID_URI,
+    WATCHDOG,
     UNKNOWN
 }

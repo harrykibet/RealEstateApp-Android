@@ -15,7 +15,7 @@ dependencies {
 
     implementation(libs.okhttp)
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.retrofit.serialization)
     implementation(libs.logging.interceptor)
 
     implementation(libs.bundles.bouncy)

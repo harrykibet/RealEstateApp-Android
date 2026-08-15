@@ -20,8 +20,6 @@ dependencies {
 
     implementation(libs.navigation.fragment.ktx)
 
-    implementation(libs.gson)
-
     implementation(projects.core.testing)
 
     implementation(libs.play.services.location)

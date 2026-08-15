@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.estatia.android.core)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -22,6 +23,7 @@ dependencies {
 
     implementation(libs.security.crypto.ktx)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.core.common)
     implementation(projects.core.model)

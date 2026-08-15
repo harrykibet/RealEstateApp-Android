@@ -1,17 +1,18 @@
 package com.estatia.realestate.apps.core.data.mappers.room
 
-import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 internal object JsonConverter {
-    private val gson = Gson()
+    private val json = Json { ignoreUnknownKeys = true }
 
     // Convert a list of strings to JSON
-    fun toJson(list: List<String>): String = gson.toJson(list)
+    fun toJson(list: List<String>): String = json.encodeToString(list)
 
     // Convert a JSON string to a list of strings
-    fun fromJson(json: String): List<String> =
+    fun fromJson(jsonStr: String): List<String> =
         try {
-            gson.fromJson(json, Array<String>::class.java)?.toList() ?: emptyList()
+            json.decodeFromString<List<String>>(jsonStr)
         } catch (e: Exception) {
             emptyList()
         }

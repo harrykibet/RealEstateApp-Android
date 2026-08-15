@@ -70,6 +70,15 @@ internal fun HomeRoute(
     val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(playbackViewModel.autoAdvanceEvent) {
+        playbackViewModel.autoAdvanceEvent.collect {
+            snackbarHostState.showSnackbar(
+                message = "Skipping video due to slow connection...",
+                duration = androidx.compose.material3.SnackbarDuration.Short
+            )
+        }
+    }
+
     DisposableEffect(playbackViewModel) {
         playbackViewModel.onScreenVisible()
         onDispose {
@@ -107,6 +116,7 @@ internal fun HomeRoute(
             onShareClick = { /* TODO */ },
             onRefresh = { viewModel.fetchProperties(isFirstLoad = true, pageSize = 20) },
             onPageChanged = viewModel::onPageChanged,
+            autoAdvanceEvent = playbackViewModel.autoAdvanceEvent,
             modifier = Modifier.padding(padding)
         )
     }
@@ -129,6 +139,8 @@ internal fun HomeScreen(
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
     onPageChanged: (Int) -> Unit,
+    autoAdvanceEvent: kotlinx.coroutines.flow.Flow<Unit>? = null,
+    onAutoAdvanceAction: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val listings = remember(state.properties) {
@@ -154,6 +166,8 @@ internal fun HomeScreen(
         onShareClick = onShareClick,
         onRefresh = onRefresh,
         onPageChanged = onPageChanged,
+        autoAdvanceEvent = autoAdvanceEvent,
+        onAutoAdvanceAction = onAutoAdvanceAction,
         modifier = modifier
     )
 }
@@ -178,6 +192,8 @@ internal fun HomeFeedContent(
     onShareClick: (ListingUiModel) -> Unit,
     onRefresh: () -> Unit,
     onPageChanged: (Int) -> Unit,
+    autoAdvanceEvent: kotlinx.coroutines.flow.Flow<Unit>? = null,
+    onAutoAdvanceAction: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -199,6 +215,8 @@ internal fun HomeFeedContent(
                 listings = listings,
                 initialPage = initialPage,
                 onPageChanged = onPageChanged,
+                autoAdvanceEvent = autoAdvanceEvent,
+                onAutoAdvanceAction = onAutoAdvanceAction,
                 playbackCoordinator = { pagerState, items ->
                     RememberFeedPlaybackCoordinator(
                         pagerState = pagerState,

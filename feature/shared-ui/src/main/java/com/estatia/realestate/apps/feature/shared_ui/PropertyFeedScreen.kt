@@ -26,10 +26,13 @@ fun PropertyFeedScreen(
     playbackCoordinator: @Composable (PagerState, List<ListingUiModel>) -> Unit,
     itemContent: @Composable (ListingUiModel, Boolean, (String) -> Unit) -> Unit,
     commentsContent: @Composable (String) -> Unit,
+    modifier: Modifier = Modifier,
     initialPage: Int = 0,
     onPageChanged: (Int) -> Unit = {},
     onMeteredNetworkDetected: () -> Unit = {},
-    onNavigateToDetails: (String) -> Unit = {}
+    onNavigateToDetails: (String) -> Unit = {},
+    autoAdvanceEvent: kotlinx.coroutines.flow.Flow<Unit>? = null,
+    onAutoAdvanceAction: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(
         initialPage = initialPage,
@@ -42,11 +45,21 @@ fun PropertyFeedScreen(
         onPageChanged(pagerState.currentPage)
     }
 
+    LaunchedEffect(autoAdvanceEvent) {
+        autoAdvanceEvent?.collect {
+            if (pagerState.currentPage < listings.size - 1) {
+                onAutoAdvanceAction()
+                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+            }
+        }
+    }
+
     playbackCoordinator(pagerState, listings)
 
     BoxWithBottomSheet(
         showSheet = showCommentsForId != null,
         onDismissSheet = { showCommentsForId = null },
+        modifier = modifier,
         sheetContent = {
             showCommentsForId?.let { id ->
                 commentsContent(id)
@@ -103,9 +116,10 @@ private fun BoxWithBottomSheet(
     showSheet: Boolean,
     onDismissSheet: () -> Unit,
     sheetContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
+    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
         content()
 
         if (showSheet) {

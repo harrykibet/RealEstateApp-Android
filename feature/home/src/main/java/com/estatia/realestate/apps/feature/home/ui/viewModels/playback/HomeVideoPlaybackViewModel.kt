@@ -13,4 +13,4 @@ class HomeVideoPlaybackViewModel @Inject constructor(
     coordinator: VideoPlaybackCoordinator,
     environmentCoordinator: EnvironmentCoordinator,
     userRepository: IUserRepository
-) : BaseVideoPlaybackViewModel(coordinator, environmentCoordinator, userRepository)
+) : BaseVideoPlaybackViewModel(coordinator, environmentCoordinator, userRepository, shouldAutoAdvanceOnWatchdog = true)

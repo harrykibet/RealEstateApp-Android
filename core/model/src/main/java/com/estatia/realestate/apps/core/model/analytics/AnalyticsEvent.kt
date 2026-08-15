@@ -2,7 +2,9 @@ package com.estatia.realestate.apps.core.model.analytics
 
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import com.estatia.realestate.apps.core.model.user.UserLocation
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AnalyticsEvent(
     val eventId: String,
     val eventType: String,

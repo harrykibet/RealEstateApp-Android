@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -70,7 +71,6 @@ fun EngineVideoPlayer(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val environmentState = com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState.current
     val coroutineScope = rememberCoroutineScope()
 
     // Stable player reference
@@ -134,32 +134,17 @@ fun EngineVideoPlayer(
         }
     }
 
-    // Progress polling - Environment aware
-    LaunchedEffect(player, isActive, isPlaying, environmentState.isAppVisible, environmentState.isInteractive) {
-        if (player != null && isActive && environmentState.isAppVisible && environmentState.isInteractive) {
-            while (true) {
-                val current = player.currentPosition.toDouble()
-                val duration = player.duration.toDouble()
-                if (duration > 0) {
-                    progress = (current / duration).toFloat()
-                }
-                
-                val buffered = player.bufferedPosition.toDouble()
-                if (duration > 0) {
-                    bufferedProgress = (buffered / duration).toFloat()
-                }
-                
-                // ⏱️ Adaptive Polling: Reduce frequency when paused or throttled
-                val pollInterval = when {
-                    !isPlaying -> 1000.milliseconds
-                    environmentState.shouldThrottlePerformance -> 500.milliseconds
-                    else -> 200.milliseconds
-                }
-                
-                delay(pollInterval)
-            }
+    // 🏎️ Performance: Environment-aware polling is isolated to a sub-composable
+    // to prevent entire EngineVideoPlayer from recomposing on every bandwidth sample.
+    EnvironmentAwareProgressPoller(
+        player = player,
+        isActive = isActive,
+        isPlaying = isPlaying,
+        onProgressUpdate = { p, bp ->
+            progress = p
+            bufferedProgress = bp
         }
-    }
+    )
 
     // Sync volume with persistent mute preference
     LaunchedEffect(player, isMuted) {
@@ -304,6 +289,49 @@ fun EngineVideoPlayer(
                 tint = Color.White.copy(alpha = 0.6f),
                 modifier = Modifier.size(24.dp)
             )
+        }
+    }
+}
+
+/**
+ * Isolated helper to handle progress polling.
+ * Recomposes when [LocalEnvironmentState] changes, but prevents the larger
+ * [EngineVideoPlayer] from doing the same.
+ */
+@Composable
+private fun EnvironmentAwareProgressPoller(
+    player: Player?,
+    isActive: Boolean,
+    isPlaying: Boolean,
+    onProgressUpdate: (Float, Float) -> Unit
+) {
+    val environment = com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState.current
+
+    // Derived states ensure we only react to the specific fields we care about
+    val isAppVisible by remember { derivedStateOf { environment.isAppVisible } }
+    val isInteractive by remember { derivedStateOf { environment.isInteractive } }
+    val shouldThrottle by remember { derivedStateOf { environment.shouldThrottlePerformance } }
+
+    LaunchedEffect(player, isActive, isPlaying, isAppVisible, isInteractive) {
+        if (player != null && isActive && isAppVisible && isInteractive) {
+            while (true) {
+                val current = player.currentPosition.toDouble()
+                val duration = player.duration.toDouble()
+                if (duration > 0) {
+                    val progress = (current / duration).toFloat()
+                    val buffered = player.bufferedPosition.toDouble()
+                    val bufferedProgress = (buffered / duration).toFloat()
+                    onProgressUpdate(progress, bufferedProgress)
+                }
+
+                val pollInterval = when {
+                    !isPlaying -> 1000.milliseconds
+                    shouldThrottle -> 500.milliseconds
+                    else -> 200.milliseconds
+                }
+
+                delay(pollInterval)
+            }
         }
     }
 }

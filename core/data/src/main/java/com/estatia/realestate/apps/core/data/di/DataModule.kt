@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.di
 import com.estatia.realestate.apps.core.data.mappers.exceptions.ExceptionTranslator
 import com.estatia.realestate.apps.core.data.repositories.*
 import com.estatia.realestate.apps.core.domain.interfaces.*
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -62,6 +62,10 @@ abstract class DataModule {
     companion object {
         @Provides
         @Singleton
-        fun provideGson(): Gson = Gson()
+        fun provideJson(): Json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            encodeDefaults = true
+        }
     }
 }

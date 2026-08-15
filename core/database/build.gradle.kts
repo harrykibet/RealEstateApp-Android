@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.core.model)
     implementation(projects.core.common)

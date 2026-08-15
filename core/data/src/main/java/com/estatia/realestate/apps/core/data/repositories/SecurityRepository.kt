@@ -11,7 +11,8 @@ import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
 import com.estatia.realestate.apps.core.security.models.HybridEncryptedPayload
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import javax.inject.Inject
 
 
@@ -28,22 +29,22 @@ internal class SecurityRepository @Inject constructor(
     private val signatureManager: ISignatureManager,
     private val hashManager: IHashManager,
     private val tokenDataSource: ITokenLocalDataSource,
-    private val gson: Gson,
+    private val json: Json,
 ) : ISecurityRepository {
 
     override suspend fun asymmetricEncrypt(data: String): AppResult<String> =
-        rsaCryptoEngine.encrypt(data.toByteArray()).map { gson.toJson(it) }
+        rsaCryptoEngine.encrypt(data.toByteArray()).map { json.encodeToString(it) }
 
     override suspend fun asymmetricDecrypt(encryptedData: String): AppResult<String> {
-        val payload = gson.fromJson(encryptedData, HybridEncryptedPayload::class.java)
+        val payload = json.decodeFromString<HybridEncryptedPayload>(encryptedData)
         return rsaCryptoEngine.decrypt(payload).map { String(it) }
     }
 
     override suspend fun symmetricEncrypt(data: String): AppResult<String> =
-        aesGcmCryptoEngine.encrypt(data.toByteArray()).map { gson.toJson(it) }
+        aesGcmCryptoEngine.encrypt(data.toByteArray()).map { json.encodeToString(it) }
 
     override suspend fun symmetricDecrypt(encryptedData: String): AppResult<String> {
-        val payload = gson.fromJson(encryptedData, EncryptedPayload::class.java)
+        val payload = json.decodeFromString<EncryptedPayload>(encryptedData)
         return aesGcmCryptoEngine.decrypt(payload).map { String(it) }
     }
 

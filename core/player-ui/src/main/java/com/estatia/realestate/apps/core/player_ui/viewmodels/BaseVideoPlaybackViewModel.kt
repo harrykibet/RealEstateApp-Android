@@ -41,7 +41,8 @@ import kotlinx.coroutines.launch
 abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator,
     protected val environmentCoordinator: EnvironmentCoordinator,
-    protected val userRepository: IUserRepository
+    protected val userRepository: IUserRepository,
+    protected val shouldAutoAdvanceOnWatchdog: Boolean = false
 ) : ViewModel() {
 
     private val activeMediaId = MutableStateFlow<String?>(null)
@@ -55,6 +56,9 @@ abstract class BaseVideoPlaybackViewModel(
 
     val isMuted = userRepository.userData.map { it.isMuted }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    private val _autoAdvanceEvent = MutableSharedFlow<Unit>(replay = 0)
+    val autoAdvanceEvent = _autoAdvanceEvent.asSharedFlow()
 
     private val _meteredConnectionEvent = MutableSharedFlow<Unit>(replay = 0)
     val meteredConnectionEvent = _meteredConnectionEvent.asSharedFlow()
@@ -100,6 +104,16 @@ abstract class BaseVideoPlaybackViewModel(
             }
         }
         .onEach { uiState ->
+            // 🏎️ Watchdog Auto-Advance: 
+            // If the engine timed out and this ViewModel is configured for feeds,
+            // trigger an auto-advance event and suppress the error state.
+            if (uiState is PlayerUiState.Error && uiState.type == PlayerErrorType.WATCHDOG) {
+                if (shouldAutoAdvanceOnWatchdog) {
+                    _autoAdvanceEvent.emit(Unit)
+                    return@onEach
+                }
+            }
+
             // 🌡️ Automatic Decoder Fallback:
             // If we hit a hardware decoder error, record it and try to fetch a baseline legacy rendition.
             if (uiState is PlayerUiState.Error && uiState.type == PlayerErrorType.DECODER) {
@@ -195,7 +209,13 @@ abstract class BaseVideoPlaybackViewModel(
                     PlaybackException.ERROR_CODE_DECODER_INIT_FAILED,
                     PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED -> PlayerErrorType.DECODER
 
-                    else -> PlayerErrorType.UNKNOWN
+                    else -> {
+                        if (state.error.message?.contains("Watchdog") == true) {
+                            PlayerErrorType.WATCHDOG
+                        } else {
+                            PlayerErrorType.UNKNOWN
+                        }
+                    }
                 }
                 PlayerUiState.Error(state.error.message, errorType)
             }

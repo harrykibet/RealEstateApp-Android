@@ -1,7 +1,12 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,17 +30,33 @@ fun FavoritesRoute(
     playbackViewModel: FavoritesVideoPlaybackViewModel = hiltViewModel()
 ) {
     val isMuted by playbackViewModel.isMuted.collectAsStateWithLifecycle()
-    
-    FavoritesScreen(
-        favoriteProperties = emptyList(), // TODO: Get from ViewModel
-        onLikeClick = {},
-        onShareClick = {},
-        isMuted = isMuted,
-        onMuteToggle = playbackViewModel::toggleMute,
-        onPropertyClick = onPropertyClick,
-        commentsContent = commentsContent,
-        playbackViewModel = playbackViewModel
-    )
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(playbackViewModel.autoAdvanceEvent) {
+        playbackViewModel.autoAdvanceEvent.collect {
+            snackbarHostState.showSnackbar(
+                message = "Skipping video due to slow connection...",
+                duration = androidx.compose.material3.SnackbarDuration.Short
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        FavoritesScreen(
+            favoriteProperties = emptyList(), // TODO: Get from ViewModel
+            onLikeClick = {},
+            onShareClick = {},
+            isMuted = isMuted,
+            onMuteToggle = playbackViewModel::toggleMute,
+            autoAdvanceEvent = playbackViewModel.autoAdvanceEvent,
+            onPropertyClick = onPropertyClick,
+            commentsContent = commentsContent,
+            playbackViewModel = playbackViewModel,
+            modifier = Modifier.padding(padding)
+        )
+    }
 }
 
 @Composable
@@ -47,7 +68,9 @@ fun FavoritesScreen(
     onMuteToggle: () -> Unit,
     onPropertyClick: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
-    playbackViewModel: FavoritesVideoPlaybackViewModel
+    playbackViewModel: FavoritesVideoPlaybackViewModel,
+    modifier: Modifier = Modifier,
+    autoAdvanceEvent: kotlinx.coroutines.flow.Flow<Unit>? = null
 ) {
     val listings = remember(favoriteProperties) {
         favoriteProperties.map { it.toListingUiModel() }
@@ -55,6 +78,8 @@ fun FavoritesScreen(
 
     PropertyFeedScreen(
         listings = listings,
+        autoAdvanceEvent = autoAdvanceEvent,
+        modifier = modifier,
         playbackCoordinator = { pagerState, items ->
             RememberFeedPlaybackCoordinator(
                 pagerState = pagerState,

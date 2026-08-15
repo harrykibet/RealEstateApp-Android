@@ -12,7 +12,8 @@ import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataSource
 import com.estatia.realestate.apps.core.data.worker.AnalyticsSyncWorker
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -21,7 +22,7 @@ internal class AnalyticsTracker @Inject constructor(
     private val remoteDataSource: IAnalyticsRemoteDataSource,
     private val localDataSource: IAnalyticsLocalDataSource,
     private val logger: ILogger,
-    private val gson: Gson,
+    private val json: Json,
     @ApplicationContext private val context: Context
 ) : IAnalyticsTracker {
 
@@ -47,7 +48,7 @@ internal class AnalyticsTracker @Inject constructor(
             is AppResult.Success -> Unit
             is AppResult.Error -> {
                 logger.e(message = "Analytics logging failed, saving to outbox", throwable = result.exception)
-                localDataSource.saveEvent(gson.toJson(event))
+                localDataSource.saveEvent(json.encodeToString(event))
                 scheduleSync()
             }
         }
@@ -57,7 +58,7 @@ internal class AnalyticsTracker @Inject constructor(
         val pendingEvents = localDataSource.getAllEvents()
         if (pendingEvents is AppResult.Success) {
             pendingEvents.data.forEach { entity ->
-                val event = gson.fromJson(entity.eventJson, AnalyticsEvent::class.java)
+                val event = json.decodeFromString<AnalyticsEvent>(entity.eventJson)
                 when (remoteDataSource.logEvent(event)) {
                     is AppResult.Success -> localDataSource.deleteEvent(entity)
                     is AppResult.Error -> return@forEach // Stop if network still fails

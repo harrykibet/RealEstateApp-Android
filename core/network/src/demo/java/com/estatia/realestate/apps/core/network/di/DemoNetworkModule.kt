@@ -23,8 +23,10 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import okhttp3.OkHttpClient
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 @Module
@@ -136,10 +138,14 @@ object DemoNetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(@AuthClient okHttpClient: OkHttpClient): Retrofit {
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
         return Retrofit.Builder()
             .baseUrl("https://demo.estatia.com/")
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
 
