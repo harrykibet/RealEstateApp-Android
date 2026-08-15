@@ -13,9 +13,15 @@ import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -34,11 +40,13 @@ class PlayerPoolSafetyTest {
     private lateinit var environmentCoordinator: EnvironmentCoordinator
     private lateinit var configProvider: IConfigProvider
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
-    private val testScope = TestScope()
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     @Before
     @Suppress("UseKtx")
     fun setup() {
+        Dispatchers.setMain(testDispatcher)
         mockkStatic(Uri::class)
         every { Uri.parse(any()) } returns mockk(relaxed = true)
         mockkStatic("androidx.core.net.UriKt")
@@ -74,6 +82,12 @@ class PlayerPoolSafetyTest {
             testScope,
             sizingPolicy
         )
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+        unmockkAll()
     }
 
     @Test

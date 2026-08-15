@@ -24,6 +24,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.CancellationException
 import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
@@ -120,7 +122,17 @@ class PlayerPool @Inject constructor(
             if (urgent && !existing.isUrgent) {
                 existing.isUrgent = true
             }
-            return PrewarmResult.Success(existing.deferred.await())
+            return try {
+                PrewarmResult.Success(existing.deferred.await())
+            } catch (e: PoolCapacityExceededException) {
+                PrewarmResult.Rejected
+            } catch (e: CancellationException) {
+                // 🛡️ Structured Concurrency: If this specific caller is cancelled, rethrow.
+                // Other callers (including the one who started the creation) are unaffected.
+                throw e
+            } catch (e: Throwable) {
+                PrewarmResult.Failure(e)
+            }
         }
 
         // 3. Start a new creation task
@@ -129,37 +141,49 @@ class PlayerPool @Inject constructor(
         inFlightCreations[mediaId] = request
 
         return try {
-            // 🏎️ Proactive Refill: trigger background refill but don't wait for it here
-            // unless the idle pool is completely empty.
-            if (idlePlayers.isEmpty()) {
-                ensureIdlePlayers()
-            } else {
-                scope.launch { ensureIdlePlayers() }
+            // 🛡️ Use NonCancellable for shared state mutation. If the initiating caller
+            // is cancelled, the work still completes so other callers aren't left hanging.
+            val managed = withContext(NonCancellable) {
+                try {
+                    // 🏎️ Proactive Refill: trigger background refill but don't wait for it here
+                    // unless the idle pool is completely empty.
+                    if (idlePlayers.isEmpty()) {
+                        ensureIdlePlayers()
+                    } else {
+                        scope.launch { ensureIdlePlayers() }
+                    }
+
+                    val m = idlePlayers.removeFirstOrNull()?.let { player ->
+                        bindIdlePlayer(player, mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+                    } ?: createManagedPlayer(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+
+                    // 🏎️ Late-bound Capacity Check:
+                    // Check the LATEST urgency state (may have been promoted while suspended).
+                    val currentUrgency = request.isUrgent
+                    if (!currentUrgency && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
+                        m.player.release()
+                        throw PoolCapacityExceededException("Capacity reached ($maxPoolSize)")
+                    }
+
+                    players[mediaId] = m
+                    playerToIdMap[m.player] = mediaId
+                    poolUpdates.tryEmit(Unit)
+                    trimIfNeeded(pinnedMediaIds)
+                    
+                    newDeferred.complete(m)
+                    m
+                } catch (e: Throwable) {
+                    newDeferred.completeExceptionally(e)
+                    throw e
+                }
             }
-
-            val managed = idlePlayers.removeFirstOrNull()?.let { player ->
-                bindIdlePlayer(player, mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
-            } ?: createManagedPlayer(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
-
-            // 🏎️ Late-bound Capacity Check:
-            // Check the LATEST urgency state (may have been promoted while suspended).
-            val currentUrgency = request.isUrgent
-            if (!currentUrgency && players.size >= maxPoolSize && !players.containsKey(mediaId)) {
-                managed.player.release()
-                val error = PoolCapacityExceededException("Capacity reached ($maxPoolSize)")
-                newDeferred.completeExceptionally(error)
-                return PrewarmResult.Rejected
-            }
-
-            players[mediaId] = managed
-            playerToIdMap[managed.player] = mediaId
-            poolUpdates.tryEmit(Unit)
-            trimIfNeeded(pinnedMediaIds)
-            
-            newDeferred.complete(managed)
             PrewarmResult.Success(managed)
+        } catch (e: PoolCapacityExceededException) {
+            PrewarmResult.Rejected
+        } catch (e: CancellationException) {
+            // 🛡️ Rethrow cancellation so the caller's coroutine unwinds.
+            throw e
         } catch (e: Throwable) {
-            newDeferred.completeExceptionally(e)
             PrewarmResult.Failure(e)
         } finally {
             inFlightCreations.remove(mediaId)

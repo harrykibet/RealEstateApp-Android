@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
@@ -20,6 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.Executors
@@ -31,6 +34,7 @@ import androidx.core.net.toUri
 class PlayerPoolConcurrencyTest {
 
     private lateinit var pool: PlayerPool
+    private lateinit var configurationFactory: IPlayerConfigurationFactory
     private val mainThread = Thread.currentThread()
     private val mainDispatcher = StandardTestDispatcher()
     private val ioDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -40,7 +44,7 @@ class PlayerPoolConcurrencyTest {
     fun setup() {
         Dispatchers.setMain(mainDispatcher)
         mockkStatic(Uri::class)
-        every { Uri.parse(any()) } returns mockk(relaxed = true)
+        every { any<String>().toUri() } returns mockk(relaxed = true)
         mockkStatic("androidx.core.net.UriKt")
 
         mockkStatic(Looper::class)
@@ -52,7 +56,7 @@ class PlayerPoolConcurrencyTest {
         }
 
         val playerFactory = mockk<PlayerFactory>(relaxed = true)
-        val configurationFactory = mockk<IPlayerConfigurationFactory>(relaxed = true)
+        configurationFactory = mockk<IPlayerConfigurationFactory>(relaxed = true)
         val analyticsListenerProvider = mockk<Provider<PlaybackAnalyticsListener>> {
             every { get() } returns mockk(relaxed = true)
         }
@@ -114,5 +118,71 @@ class PlayerPoolConcurrencyTest {
         assertEquals(maxPoolSize, results.filterIsInstance<PrewarmResult.Success>().size)
         assertEquals(count - maxPoolSize, results.filterIsInstance<PrewarmResult.Rejected>().size)
         assertEquals(maxPoolSize, pool.debugPlayerCount)
+    }
+
+    @Test
+    fun `cancellation of initiator does not cancel coalesced requests`() = runTest {
+        val mediaId = "coalesced_id"
+        
+        // Mock a slow creation
+        coEvery { configurationFactory.create(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
+            delay(1000)
+            mockk(relaxed = true)
+        }
+
+        // Start initiator
+        val initiatorJob = launch(Dispatchers.Main) {
+            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+        }
+        
+        // Yield to let initiator start
+        runCurrent()
+        
+        // Start coalesced request
+        val coalescedDeferred = async(Dispatchers.Main) {
+            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+        }
+        
+        // Yield to let coalesced start
+        runCurrent()
+        
+        // Cancel initiator
+        initiatorJob.cancelAndJoin()
+        
+        // Advance time to finish the work (protected by NonCancellable)
+        advanceTimeBy(1500)
+        runCurrent()
+        
+        // The coalesced request should succeed
+        val result = coalescedDeferred.await()
+        assertTrue("Coalesced request should succeed despite initiator cancellation", result is PrewarmResult.Success)
+        assertEquals(1, pool.debugPlayerCount)
+    }
+
+    @Test
+    fun `prewarm propagates cancellation and does not return it as Failure`() = runTest {
+        val mediaId = "cancel_test"
+        
+        coEvery { configurationFactory.create(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
+            delay(1000)
+            mockk(relaxed = true)
+        }
+
+        val deferred = async(Dispatchers.Main) {
+            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+        }
+        
+        runCurrent()
+        delay(100)
+        deferred.cancel()
+        
+        try {
+            val result = deferred.await()
+            fail("Should have been cancelled, but got $result")
+        } catch (e: CancellationException) {
+            // Expected: async propagates cancellation when awaited
+        } catch (e: Throwable) {
+            fail("Expected CancellationException, but got ${e.javaClass.simpleName}")
+        }
     }
 }

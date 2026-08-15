@@ -1,14 +1,21 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
+import android.os.Looper
 import android.os.SystemClock
 import app.cash.turbine.test
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -17,15 +24,27 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlaybackStateReducerTest {
 
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
     private lateinit var reducer: PlaybackStateReducer
 
     @Before
     fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        mockkStatic(Looper::class)
+        val mockLooper = mockk<Looper>(relaxed = true)
+        every { Looper.getMainLooper() } returns mockLooper
+        every { Looper.myLooper() } returns mockLooper
+
         mockkStatic(SystemClock::class)
         every { SystemClock.elapsedRealtime() } returns 0L
         reducer = PlaybackStateReducer(testScope)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+        unmockkAll()
     }
 
     @Test
