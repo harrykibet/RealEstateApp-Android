@@ -19,7 +19,10 @@ internal class ObservabilityInitializer @Inject constructor(
     private val configProvider: IConfigProvider
 ) : IBackendInitializer {
 
-    override fun initialize() {
+    override suspend fun initialize() {
+        // Ensure config is ready before accessing it
+        configProvider.awaitReady()
+
         // Set baseline crashlytics keys
         val deviceInfo = deviceUtils.getDeviceInfo()
         

@@ -4,6 +4,11 @@
 
 android {
     namespace = "com.estatia.realestate.apps"
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
 }
 
  dokka {

@@ -15,7 +15,7 @@ internal class FirebaseBackendInitializer @Inject constructor(
     private val appCheckProxy: IFirebaseAppCheckProxy
 ) : IBackendInitializer {
 
-    override fun initialize() {
+    override suspend fun initialize() {
         if (FirebaseApp.getApps(context).isEmpty()) {
             FirebaseApp.initializeApp(context)
         }

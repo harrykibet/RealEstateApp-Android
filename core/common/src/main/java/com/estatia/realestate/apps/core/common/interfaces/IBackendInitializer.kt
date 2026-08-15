@@ -7,5 +7,5 @@ interface IBackendInitializer {
     /**
      * Called during application startup to initialize the backend SDKs or observability.
      */
-    fun initialize()
+    suspend fun initialize()
 }

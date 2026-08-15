@@ -21,7 +21,7 @@ internal class AwsBackendInitializer @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IBackendInitializer {
 
-    override fun initialize() {
+    override suspend fun initialize() {
         try {
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSApiPlugin())

@@ -10,7 +10,9 @@ import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 import javax.inject.Inject
@@ -35,26 +37,33 @@ class EstatiaApplication : Application(), Configuration.Provider  {
     lateinit var workerFactory: HiltWorkerFactory
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+        get() {
+            if (!::workerFactory.isInitialized) {
+                return Configuration.Builder().build()
+            }
+            return Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
+        }
 
     override fun onCreate() {
         super.onCreate()
-        initializeBackends()
         initializeBouncyCastle()
         configureGlobalExceptionHandler()
-        initializeConfig()
-    }
-
-    private fun initializeConfig() {
+        
         applicationScope.launch {
+            // 1. Initialize config first as others depend on it
             config.initialize()
+            
+            // 2. Initialize backends
+            initializeBackends()
         }
     }
 
-    private fun initializeBackends() {
-        backendInitializers.forEach { it.initialize() }
+    private suspend fun initializeBackends() {
+        withContext(Dispatchers.Main) {
+            backendInitializers.forEach { it.initialize() }
+        }
     }
 
 
