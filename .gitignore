@@ -52,3 +52,4 @@ AppKeyStore/
 /.kotlin/
 /.run/
 /.gradle_temp/
+/.android_temp/
