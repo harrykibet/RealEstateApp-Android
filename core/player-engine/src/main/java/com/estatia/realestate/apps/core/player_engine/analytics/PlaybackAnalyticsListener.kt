@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
 import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
-import com.estatia.realestate.apps.core.player_engine.di.EngineScope
+import com.estatia.realestate.apps.core.player_engine.di.BackgroundEngineScope
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
     private val engagementRepository: IEngagementRepository,
     private val metricsTracker: IMetricsTracker,
-    @EngineScope private val scope: CoroutineScope
+    @BackgroundEngineScope private val scope: CoroutineScope
 ) : AnalyticsListener {
 
     val sessionId: String = java.util.UUID.randomUUID().toString()

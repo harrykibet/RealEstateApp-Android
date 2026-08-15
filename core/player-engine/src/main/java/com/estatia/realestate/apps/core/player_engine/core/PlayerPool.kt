@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
@@ -164,7 +166,8 @@ class PlayerPool @Inject constructor(
         }
     }
 
-    private fun ensureIdlePlayers() {
+    private suspend fun ensureIdlePlayers() = withContext(Dispatchers.Main.immediate) {
+        checkConfinement()
         while (idlePlayers.size < prewarmBudget) {
             val player = playerFactory.createIdle()
             player.stop()

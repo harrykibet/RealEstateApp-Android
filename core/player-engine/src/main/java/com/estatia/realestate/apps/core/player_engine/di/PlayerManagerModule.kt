@@ -47,6 +47,10 @@ annotation class PlayerDispatcher
 @Retention(AnnotationRetention.BINARY)
 annotation class EngineScope
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BackgroundEngineScope
+
 @UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)
@@ -121,6 +125,13 @@ abstract class PlayerManagerModule {
         @Singleton
         @EngineScope
         fun provideEngineScope(
+            @PlayerDispatcher dispatcher: CoroutineDispatcher
+        ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+
+        @Provides
+        @Singleton
+        @BackgroundEngineScope
+        fun provideBackgroundEngineScope(
             @IODispatcher dispatcher: CoroutineDispatcher
         ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
