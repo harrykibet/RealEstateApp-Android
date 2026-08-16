@@ -16,6 +16,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.*
@@ -35,6 +36,7 @@ class PlayerPoolConcurrencyTest {
 
     private lateinit var pool: PlayerPool
     private lateinit var configurationFactory: IPlayerConfigurationFactory
+    private lateinit var playerFactory: PlayerFactory
     private val mainThread = Thread.currentThread()
     private val mainDispatcher = StandardTestDispatcher()
     private val ioDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -55,7 +57,7 @@ class PlayerPoolConcurrencyTest {
                 Thread.currentThread() == mainThread) mainLooper else null
         }
 
-        val playerFactory = mockk<PlayerFactory>(relaxed = true)
+        playerFactory = mockk<PlayerFactory>(relaxed = true)
         configurationFactory = mockk<IPlayerConfigurationFactory>(relaxed = true)
         val analyticsListenerProvider = mockk<Provider<PlaybackAnalyticsListener>> {
             every { get() } returns mockk(relaxed = true)
@@ -184,5 +186,35 @@ class PlayerPoolConcurrencyTest {
         } catch (e: Throwable) {
             fail("Expected CancellationException, but got ${e.javaClass.simpleName}")
         }
+    }
+
+    @Test
+    fun `ensureIdlePlayers respects budget under concurrent reentrant calls`() = runTest {
+        // prewarmBudget for maxPoolSize 10 is 2
+        val budget = 2
+        
+        every { playerFactory.createIdle() } returns mockk(relaxed = true)
+
+        // Trigger multiple concurrent prewarms on Main.
+        // We use launch to create multiple coroutines that will interleave at yield()
+        repeat(5) { i ->
+            launch(Dispatchers.Main) {
+                // This will trigger ensureIdlePlayers()
+                pool.prewarm("id_batch_$i", "".toUri(), MediaType.VOD)
+            }
+        }
+
+        // Processing one step at a time to ensure interleaving
+        runCurrent() 
+        advanceUntilIdle()
+        
+        // Even with 5 concurrent requests, createIdle should only be called up to budget
+        // plus any necessary immediate creations for the 5 items.
+        // However, prewarm consumes idle players immediately.
+        
+        // To strictly test the guard, we can verify createIdle count 
+        // doesn't exceed budget *in a single ensureIdlePlayers run*.
+        // Since we have the guard, only ONE ensureIdlePlayers run should happen at a time.
+        verify(atMost = budget) { playerFactory.createIdle() }
     }
 }

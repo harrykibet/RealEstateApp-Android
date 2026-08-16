@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.yield
 import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
@@ -44,6 +45,10 @@ class PlayerPool @Inject constructor(
 ) {
     private val inFlightCreations = mutableMapOf<String, InFlightRequest>()
     private val playerToIdMap = IdentityHashMap<Player, String>()
+
+    // Guards ensureIdlePlayers against reentrant/overlapping fills once we
+    // introduce a suspension point (yield) inside the fill loop.
+    private var isFillingIdlePool = false
 
     private data class InFlightRequest(
         val deferred: CompletableDeferred<ManagedPlayer>,
@@ -190,12 +195,30 @@ class PlayerPool @Inject constructor(
         }
     }
 
-    private suspend fun ensureIdlePlayers() = withContext(Dispatchers.Main.immediate) {
-        checkConfinement()
-        while (idlePlayers.size < prewarmBudget) {
-            val player = playerFactory.createIdle()
-            player.stop()
-            idlePlayers.addLast(player)
+    private suspend fun ensureIdlePlayers() {
+        if (isFillingIdlePool) return
+        isFillingIdlePool = true
+        try {
+            withContext(Dispatchers.Main.immediate) {
+                checkConfinement()
+                val quota = prewarmBudget
+                var createdCount = 0
+                while (idlePlayers.size < quota && createdCount < quota) {
+                    val player = playerFactory.createIdle()
+                    createdCount++
+                    player.stop()
+                    idlePlayers.addLast(player)
+
+                    // Give the Main-thread Looper a chance to process queued
+                    // input/frame work before constructing the next player,
+                    // instead of monopolizing the thread for the whole batch.
+                    if (idlePlayers.size < quota && createdCount < quota) {
+                        yield()
+                    }
+                }
+            }
+        } finally {
+            isFillingIdlePool = false
         }
     }
 
