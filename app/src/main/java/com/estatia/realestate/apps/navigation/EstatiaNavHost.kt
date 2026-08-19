@@ -103,7 +103,10 @@ fun EstatiaNavHost(
             }
         )
 
-        propertyAdditionGraph(onBackClick = navController::popBackStack)
+        propertyAdditionGraph(
+            navController = navController,
+            onBackClick = navController::popBackStack
+        )
 
         propertyDetailsScreen(onBackClick = navController::popBackStack)
 

@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.intelligence)
 
     implementation(libs.navigation.fragment.ktx)
 
@@ -26,4 +27,7 @@ dependencies {
     implementation(libs.play.services.maps)
 
     implementation(libs.bundles.lifecycle)
+    implementation(libs.bundles.camerax)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.accompanist.permissions)
 }

@@ -48,6 +48,9 @@ data class PropertyDetailRoute(val propertyId: String)
 data object PropertyRoute
 
 @Serializable
+data object PropertyMediaCaptureRoute
+
+@Serializable
 data object PropertyBaseRoute
 
 // --- Favorites ---

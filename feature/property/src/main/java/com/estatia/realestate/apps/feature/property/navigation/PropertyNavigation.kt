@@ -8,9 +8,11 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.estatia.realestate.apps.core.navigation.PropertyBaseRoute
 import com.estatia.realestate.apps.core.navigation.PropertyDetailRoute
+import com.estatia.realestate.apps.core.navigation.PropertyMediaCaptureRoute
 import com.estatia.realestate.apps.core.navigation.PropertyRoute
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyDetailsRoute
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyFormScreen
+import com.estatia.realestate.apps.feature.property.ui.screens.PropertyMediaCaptureScreen
 
 fun NavController.navigateToPropertyForm(navOptions: NavOptions? = null) =
     navigate(route = PropertyRoute, navOptions)
@@ -28,9 +30,15 @@ fun NavGraphBuilder.propertyDetailsScreen(
 }
 
 fun NavGraphBuilder.propertyAdditionGraph(
+    navController: NavController,
     onBackClick: () -> Unit,
 ) {
-    navigation<PropertyBaseRoute>(startDestination = PropertyRoute) {
+    navigation<PropertyBaseRoute>(startDestination = PropertyMediaCaptureRoute) {
+        composable<PropertyMediaCaptureRoute> {
+            PropertyMediaCaptureScreen(
+                onContinue = { navController.navigate(PropertyRoute) }
+            )
+        }
         composable<PropertyRoute> {
             PropertyFormScreen()
         }

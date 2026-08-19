@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
 import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyUiState
 import com.estatia.realestate.apps.feature.property.utils.PropertyData
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class AddPropertyViewModel @Inject constructor(
     private val repository: IPropertyRepository,
     private val authRepository: IAuthRepository,
+    private val intelligenceService: IMediaIntelligenceService,
     propertyData: PropertyData
 ) : ViewModel() {
 
@@ -43,6 +45,10 @@ class AddPropertyViewModel @Inject constructor(
 
     val draft: StateFlow<AddPropertyDraft> =
         _draft.asStateFlow()
+
+    val allMedia: StateFlow<List<Uri>> = _draft.map {
+        it.images + it.videos
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
 
     /**
@@ -251,6 +257,41 @@ class AddPropertyViewModel @Inject constructor(
         updateDraft {
             copy(
                 videos = videos
+            )
+        }
+    }
+
+    fun addImage(uri: Uri) {
+        updateDraft {
+            copy(images = images + uri)
+        }
+        analyzeImage(uri)
+    }
+
+    private fun analyzeImage(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val detectedAmenities = intelligenceService.extractAmenities(uri)
+                updateDraft {
+                    copy(amenities = amenities + detectedAmenities)
+                }
+            } catch (e: Exception) {
+                // Silently fail for intelligence features to not block UI
+            }
+        }
+    }
+
+    fun addVideo(uri: Uri) {
+        updateDraft {
+            copy(videos = videos + uri)
+        }
+    }
+
+    fun removeMedia(uri: Uri) {
+        updateDraft {
+            copy(
+                images = images - uri,
+                videos = videos - uri
             )
         }
     }
