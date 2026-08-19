@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun SearchRoute(
+    onBackClick: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
     commentsContent: @Composable (propertyId: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -100,6 +102,7 @@ fun SearchRoute(
 
     SearchScreen(
         uiState = uiState,
+        onBackClick = onBackClick,
         onSearch = viewModel::searchProperties,
         onClearHistory = viewModel::clearSearchHistory,
         onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual state */ },
@@ -118,6 +121,7 @@ fun SearchRoute(
 @Composable
 fun SearchScreen(
     uiState: SearchUiState,
+    onBackClick: () -> Unit,
     onSearch: (String) -> Unit,
     onClearHistory: () -> Unit,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -137,11 +141,19 @@ fun SearchScreen(
         modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = EstatiaIcons.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+                Spacer(modifier = Modifier.size(8.dp))
                 EstatiaTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
@@ -149,7 +161,7 @@ fun SearchScreen(
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                         imeAction = ImeAction.Search
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -348,6 +360,7 @@ fun SearchScreenHistoryPreview() {
         EstatiaBackground {
             SearchScreen(
                 uiState = SearchUiState.History(listOf("Nairobi", "Apartment", "Westlands")),
+                onBackClick = {},
                 onSearch = {},
                 onClearHistory = {},
                 onLikeClick = {},

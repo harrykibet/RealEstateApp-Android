@@ -21,6 +21,7 @@ fun NavGraphBuilder.searchGraph(
     navigation<SearchBaseRoute>(startDestination = SearchRoute) {
         composable<SearchRoute> {
             SearchScreenRoute(
+                onBackClick = onBackClick,
                 onNavigateToPropertyDetail = onNavigateToPropertyDetail,
                 commentsContent = commentsContent
             )
