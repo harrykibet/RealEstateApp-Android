@@ -101,7 +101,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :feature:favorites
 :feature:comments
 :feature:settings
-:feature:service
+:feature:shared-ui
 ```
 
 ---

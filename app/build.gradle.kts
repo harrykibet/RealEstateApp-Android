@@ -95,7 +95,6 @@ dependencies {
     implementation(projects.feature.chats)
     implementation(projects.feature.market)
     implementation(projects.feature.search)
-    implementation(projects.feature.service)
     implementation(projects.feature.profile)
     implementation(projects.feature.comments)
     implementation(projects.feature.property)

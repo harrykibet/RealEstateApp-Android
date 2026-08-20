@@ -22,6 +22,7 @@ import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDet
 import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionGraph
 import com.estatia.realestate.apps.feature.property.navigation.propertyDetailsScreen
 import com.estatia.realestate.apps.feature.chats.navigation.chatsGraph
+import com.estatia.realestate.apps.feature.market.navigation.marketGraph
 import com.estatia.realestate.apps.feature.search.navigation.searchGraph
 import com.estatia.realestate.apps.feature.settings.navigation.settingsGraph
 import com.estatia.realestate.apps.feature.settings.navigation.navigateToSettings
@@ -114,6 +115,12 @@ fun EstatiaNavHost(
         chatsGraph(
             onChatClick = { chatId ->
                 // TODO: Navigate to Chat Detail
+            }
+        )
+
+        marketGraph(
+            onItemClick = { itemId ->
+                // TODO: Navigate to Item Detail
             }
         )
 

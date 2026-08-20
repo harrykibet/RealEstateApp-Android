@@ -58,6 +58,9 @@ object EstatiaIcons {
     val Chat: ImageVector = Icons.AutoMirrored.Rounded.Chat
     val ChatBorder: ImageVector = Icons.AutoMirrored.Outlined.Chat
 
+    val Market: ImageVector = Icons.Rounded.Upcoming
+    val MarketBorder: ImageVector = Icons.Outlined.Upcoming
+
     val ArrowBack = Icons.AutoMirrored.Rounded.ArrowBack
     val Bookmarks = Icons.Rounded.Bookmarks
     val BookmarksBorder = Icons.Rounded.Bookmarks // Using Rounded as fallback if Outlined is missing

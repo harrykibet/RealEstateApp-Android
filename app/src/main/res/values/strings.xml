@@ -12,6 +12,7 @@
     <string name="add_property">Add</string>
     <string name="favorites">Favorites</string>
     <string name="chats">Chats</string>
+    <string name="market">Market</string>
     <string name="profile">Profile</string>
 
 </resources>

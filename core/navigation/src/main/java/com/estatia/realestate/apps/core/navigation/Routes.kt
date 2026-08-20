@@ -84,6 +84,13 @@ data object ChatsBaseRoute
 @Serializable
 data class ChatDetailRoute(val chatId: String)
 
+// --- Market ---
+@Serializable
+data object MarketRoute
+
+@Serializable
+data object MarketBaseRoute
+
 // --- Comments ---
 @Serializable
 data object CommentsBaseRoute

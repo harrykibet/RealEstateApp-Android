@@ -6,6 +6,8 @@ import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.navigation.ChatsBaseRoute
 import com.estatia.realestate.apps.core.navigation.ChatsRoute
+import com.estatia.realestate.apps.core.navigation.MarketBaseRoute
+import com.estatia.realestate.apps.core.navigation.MarketRoute
 import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.core.navigation.HomeRoute
 import com.estatia.realestate.apps.core.navigation.ProfileBaseRoute
@@ -50,6 +52,14 @@ enum class TopLevelDestination(
         titleTextId = R.string.chats,
         route = ChatsRoute::class,
         baseRoute = ChatsBaseRoute::class,
+    ),
+    MARKET(
+        selectedIcon = EstatiaIcons.Market,
+        unselectedIcon = EstatiaIcons.MarketBorder,
+        iconTextId = R.string.market,
+        titleTextId = R.string.market,
+        route = MarketRoute::class,
+        baseRoute = MarketBaseRoute::class,
     ),
     PROFILE(
         selectedIcon = EstatiaIcons.Profile,
