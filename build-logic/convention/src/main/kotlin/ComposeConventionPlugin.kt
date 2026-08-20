@@ -39,6 +39,8 @@ class ComposeConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("material-icons-extended").get())
                 "implementation"(libs.findLibrary("androidx-compose-foundation").get())
                 "implementation"(libs.findLibrary("androidx-compose-runtime").get())
+                "implementation"(libs.findLibrary("androidx-lifecycle-runtime-compose").get())
+                "implementation"(libs.findLibrary("androidx-lifecycle-viewModel-compose").get())
                 "implementation"(libs.findLibrary("coil-compose").get())
             }
         }

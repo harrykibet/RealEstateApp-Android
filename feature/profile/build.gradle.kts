@@ -7,10 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.designSystem)
-    implementation(projects.core.ui)
     implementation(projects.core.localization)
-    implementation(projects.core.model)
 
     implementation(libs.core.ktx)
     implementation(libs.appcompat)

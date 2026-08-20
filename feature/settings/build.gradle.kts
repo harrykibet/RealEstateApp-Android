@@ -11,8 +11,5 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(projects.core.designSystem)
-    implementation(projects.core.ui)
     implementation(projects.core.analytics)
-    implementation(projects.core.domain)
 }

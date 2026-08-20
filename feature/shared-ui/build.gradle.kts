@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.estatia.android.feature)
-    alias(libs.plugins.estatia.android.compose)
 }
 
 android {
@@ -20,9 +19,6 @@ dependencies {
     implementation(libs.media3.ui)
     implementation(libs.media3.exoplayer)
 
-    implementation(projects.core.model)
     implementation(projects.core.playerUi)
-    implementation(projects.core.designSystem)
     implementation(projects.core.localization)
-    implementation(projects.core.ui)
 }

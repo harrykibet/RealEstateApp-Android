@@ -9,13 +9,9 @@ android {
 dependencies {
 
     implementation(projects.feature.sharedUi)
-    implementation(projects.core.ui)
     implementation(projects.core.playerUi)
     implementation(projects.core.playerEngine)
     implementation(projects.core.localization)
-    implementation(projects.core.model)
-    implementation(projects.core.domain)
-    implementation(projects.core.common)
 
     implementation(libs.bundles.navigation)
     implementation(libs.media3.common)
