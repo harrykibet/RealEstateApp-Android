@@ -6,8 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.estatia.realestate.apps.core.navigation.SearchBaseRoute
-import com.estatia.realestate.apps.core.navigation.SearchRoute
+import com.estatia.realestate.apps.core.navigation.routes.SearchBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.SearchRoute
 import com.estatia.realestate.apps.feature.search.ui.screens.SearchRoute as SearchScreenRoute
 
 fun NavController.navigateToSearch(navOptions: NavOptions? = null) =

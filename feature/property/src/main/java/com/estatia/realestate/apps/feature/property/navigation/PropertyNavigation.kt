@@ -6,10 +6,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.estatia.realestate.apps.core.navigation.PropertyBaseRoute
-import com.estatia.realestate.apps.core.navigation.PropertyDetailRoute
-import com.estatia.realestate.apps.core.navigation.PropertyMediaCaptureRoute
-import com.estatia.realestate.apps.core.navigation.PropertyRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyDetailRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyMediaCaptureRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyRoute
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyDetailsRoute
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyFormScreen
 import com.estatia.realestate.apps.feature.property.ui.screens.PropertyMediaCaptureScreen

@@ -7,9 +7,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navDeepLink
-import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
-import com.estatia.realestate.apps.core.navigation.HomeRoute
-import com.estatia.realestate.apps.core.navigation.PropertyDetailRoute
+import com.estatia.realestate.apps.core.navigation.routes.HomeBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.HomeRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyDetailRoute
 import com.estatia.realestate.apps.feature.home.ui.screens.HomeRoute as HomeRouteScreen
 
 fun NavController.navigateToHome(navOptions: NavOptions? = null) =

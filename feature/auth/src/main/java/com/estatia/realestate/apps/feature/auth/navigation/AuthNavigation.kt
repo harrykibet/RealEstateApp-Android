@@ -4,12 +4,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.estatia.realestate.apps.core.navigation.AuthBaseRoute
-import com.estatia.realestate.apps.core.navigation.EmailVerificationRoute
-import com.estatia.realestate.apps.core.navigation.ForgotPasswordRoute
-import com.estatia.realestate.apps.core.navigation.LoginRoute
-import com.estatia.realestate.apps.core.navigation.PhoneVerificationRoute
-import com.estatia.realestate.apps.core.navigation.SignUpRoute
+import com.estatia.realestate.apps.core.navigation.routes.AuthBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.EmailVerificationRoute
+import com.estatia.realestate.apps.core.navigation.routes.ForgotPasswordRoute
+import com.estatia.realestate.apps.core.navigation.routes.LoginRoute
+import com.estatia.realestate.apps.core.navigation.routes.PhoneVerificationRoute
+import com.estatia.realestate.apps.core.navigation.routes.SignUpRoute
 import com.estatia.realestate.apps.feature.auth.ui.routes.EmailVerificationRoute as EmailVerificationScreen
 import com.estatia.realestate.apps.feature.auth.ui.routes.ForgotPasswordRoute as ForgotPasswordScreen
 import com.estatia.realestate.apps.feature.auth.ui.routes.LoginRoute as LoginScreen

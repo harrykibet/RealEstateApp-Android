@@ -5,8 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.estatia.realestate.apps.core.navigation.ChatsBaseRoute
-import com.estatia.realestate.apps.core.navigation.ChatsRoute
+import com.estatia.realestate.apps.core.navigation.routes.ChatsBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.ChatsRoute
 import com.estatia.realestate.apps.feature.chats.ui.ChatsRoute as ChatsScreen
 
 fun NavController.navigateToChats(navOptions: NavOptions? = null) =

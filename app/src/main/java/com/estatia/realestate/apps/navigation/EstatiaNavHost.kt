@@ -6,9 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.estatia.realestate.apps.core.navigation.AuthBaseRoute
-import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
-import com.estatia.realestate.apps.core.navigation.LoginRoute
+import com.estatia.realestate.apps.core.navigation.routes.AuthBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.HomeBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.LoginRoute
 import com.estatia.realestate.apps.feature.auth.navigation.authGraph
 import com.estatia.realestate.apps.feature.home.navigation.homeGraph
 import com.estatia.realestate.apps.feature.profile.navigation.profileGraph

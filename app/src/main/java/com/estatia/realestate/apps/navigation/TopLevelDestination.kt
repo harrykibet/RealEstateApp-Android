@@ -4,16 +4,16 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
-import com.estatia.realestate.apps.core.navigation.ChatsBaseRoute
-import com.estatia.realestate.apps.core.navigation.ChatsRoute
-import com.estatia.realestate.apps.core.navigation.MarketBaseRoute
-import com.estatia.realestate.apps.core.navigation.MarketRoute
-import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
-import com.estatia.realestate.apps.core.navigation.HomeRoute
-import com.estatia.realestate.apps.core.navigation.ProfileBaseRoute
-import com.estatia.realestate.apps.core.navigation.ProfileRoute
-import com.estatia.realestate.apps.core.navigation.PropertyBaseRoute
-import com.estatia.realestate.apps.core.navigation.PropertyRoute
+import com.estatia.realestate.apps.core.navigation.routes.ChatsBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.ChatsRoute
+import com.estatia.realestate.apps.core.navigation.routes.MarketBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.MarketRoute
+import com.estatia.realestate.apps.core.navigation.routes.HomeBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.HomeRoute
+import com.estatia.realestate.apps.core.navigation.routes.ProfileBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.ProfileRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyBaseRoute
+import com.estatia.realestate.apps.core.navigation.routes.PropertyRoute
 import kotlin.reflect.KClass
 
 /**
