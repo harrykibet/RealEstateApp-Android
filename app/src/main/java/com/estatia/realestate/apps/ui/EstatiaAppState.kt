@@ -25,6 +25,7 @@ import com.estatia.realestate.apps.feature.favorites.navigation.navigateToFavori
 import com.estatia.realestate.apps.feature.profile.navigation.navigateToProfile
 import com.estatia.realestate.apps.feature.property.navigation.navigateToPropertyForm
 import com.estatia.realestate.apps.feature.search.navigation.navigateToSearch
+import com.estatia.realestate.apps.feature.chats.navigation.navigateToChats
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -150,6 +151,7 @@ class EstatiaAppState(
             when (topLevelDestination) {
                 TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
                 TopLevelDestination.ADD_PROPERTY -> navController.navigateToPropertyForm(topLevelNavOptions)
+                TopLevelDestination.CHATS -> navController.navigateToChats(topLevelNavOptions)
                 TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)
             }
         }

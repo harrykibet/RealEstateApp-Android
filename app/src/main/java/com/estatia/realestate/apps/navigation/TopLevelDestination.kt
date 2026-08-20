@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.estatia.realestate.apps.R
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
+import com.estatia.realestate.apps.core.navigation.ChatsBaseRoute
+import com.estatia.realestate.apps.core.navigation.ChatsRoute
 import com.estatia.realestate.apps.core.navigation.HomeBaseRoute
 import com.estatia.realestate.apps.core.navigation.HomeRoute
 import com.estatia.realestate.apps.core.navigation.ProfileBaseRoute
@@ -40,6 +42,14 @@ enum class TopLevelDestination(
         titleTextId = R.string.add_property,
         route = PropertyRoute::class,
         baseRoute = PropertyBaseRoute::class,
+    ),
+    CHATS(
+        selectedIcon = EstatiaIcons.Chat,
+        unselectedIcon = EstatiaIcons.ChatBorder,
+        iconTextId = R.string.chats,
+        titleTextId = R.string.chats,
+        route = ChatsRoute::class,
+        baseRoute = ChatsBaseRoute::class,
     ),
     PROFILE(
         selectedIcon = EstatiaIcons.Profile,

@@ -21,6 +21,7 @@ import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.feature.home.navigation.navigateToPropertyDetail
 import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionGraph
 import com.estatia.realestate.apps.feature.property.navigation.propertyDetailsScreen
+import com.estatia.realestate.apps.feature.chats.navigation.chatsGraph
 import com.estatia.realestate.apps.feature.search.navigation.searchGraph
 import com.estatia.realestate.apps.feature.settings.navigation.settingsGraph
 import com.estatia.realestate.apps.feature.settings.navigation.navigateToSettings
@@ -109,6 +110,12 @@ fun EstatiaNavHost(
         )
 
         propertyDetailsScreen(onBackClick = navController::popBackStack)
+
+        chatsGraph(
+            onChatClick = { chatId ->
+                // TODO: Navigate to Chat Detail
+            }
+        )
 
         settingsGraph(
             onBackClick = navController::popBackStack,

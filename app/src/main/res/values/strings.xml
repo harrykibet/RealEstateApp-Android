@@ -11,6 +11,7 @@
     <string name="search">Search</string>
     <string name="add_property">Add</string>
     <string name="favorites">Favorites</string>
+    <string name="chats">Chats</string>
     <string name="profile">Profile</string>
 
 </resources>

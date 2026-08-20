@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.designsystem.icons
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Chat
 import androidx.compose.material.icons.automirrored.rounded.ShortText
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -52,6 +54,9 @@ object EstatiaIcons {
 
     val Profile: ImageVector = Icons.Rounded.Person
     val ProfileBorder: ImageVector = Icons.Outlined.Person
+
+    val Chat: ImageVector = Icons.AutoMirrored.Rounded.Chat
+    val ChatBorder: ImageVector = Icons.AutoMirrored.Outlined.Chat
 
     val ArrowBack = Icons.AutoMirrored.Rounded.ArrowBack
     val Bookmarks = Icons.Rounded.Bookmarks
