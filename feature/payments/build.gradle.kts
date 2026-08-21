@@ -7,8 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.android)
-    implementation(libs.material)
-
-    implementation(libs.bundles.lifecycle)
+    // projects.core.* are automatically included by the feature plugin
 }

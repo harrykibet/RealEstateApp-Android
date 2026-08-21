@@ -36,8 +36,12 @@ internal class FirebasePaymentsRemoteDataSource @Inject constructor(
                 .call(data)
                 .await()
 
-            // Map result.data to PaymentStatus
-            PaymentStatus.SUCCESS
+            val statusString = result.data as? String ?: "FAILED"
+            try {
+                PaymentStatus.valueOf(statusString.uppercase())
+            } catch (e: Exception) {
+                PaymentStatus.FAILED
+            }
         }
     }
 }

@@ -57,6 +57,10 @@ abstract class DataModule {
 
     @Binds
     @Singleton
+    internal abstract fun bindPaymentsRepo(repo: PaymentsRepository): IPaymentsRepository
+
+    @Binds
+    @Singleton
     internal abstract fun bindExceptionTranslator(translator: ExceptionTranslator): IExceptionTranslator
 
     companion object {

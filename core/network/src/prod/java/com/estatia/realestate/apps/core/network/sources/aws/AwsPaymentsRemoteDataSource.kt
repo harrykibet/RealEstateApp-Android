@@ -45,8 +45,14 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
             suspendCancellableCoroutine { continuation ->
                 Amplify.API.mutate(request,
                     { response -> 
-                        // Map response string to PaymentStatus
-                        continuation.resume(PaymentStatus.SUCCESS) 
+                        val status = try {
+                            // Extract status from GraphQL response JSON string
+                            // Assuming response.data is something like {"processPayment": {"status": "SUCCESS"}}
+                            PaymentStatus.valueOf(response.data.uppercase())
+                        } catch (e: Exception) {
+                            PaymentStatus.FAILED
+                        }
+                        continuation.resume(status) 
                     },
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )

@@ -23,6 +23,8 @@ import com.estatia.realestate.apps.feature.property.navigation.propertyAdditionG
 import com.estatia.realestate.apps.feature.property.navigation.propertyDetailsScreen
 import com.estatia.realestate.apps.feature.chats.navigation.chatsGraph
 import com.estatia.realestate.apps.feature.market.navigation.marketGraph
+import com.estatia.realestate.apps.feature.payments.navigation.paymentGraph
+import com.estatia.realestate.apps.core.navigation.routes.PaymentNavConstants.PAYMENT_RESULT_KEY
 import com.estatia.realestate.apps.feature.search.navigation.searchGraph
 import com.estatia.realestate.apps.feature.settings.navigation.settingsGraph
 import com.estatia.realestate.apps.feature.settings.navigation.navigateToSettings
@@ -121,6 +123,15 @@ fun EstatiaNavHost(
         marketGraph(
             onItemClick = { itemId ->
                 // TODO: Navigate to Item Detail
+            }
+        )
+
+        paymentGraph(
+            onPaymentDone = { result ->
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(PAYMENT_RESULT_KEY, result)
+                navController.popBackStack()
             }
         )
 
