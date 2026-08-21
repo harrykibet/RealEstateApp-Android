@@ -57,7 +57,7 @@ import com.estatia.realestate.apps.core.localization.R as LocalizationR
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(
         viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -126,7 +126,7 @@ internal fun HomeRoute(
 internal fun HomeScreen(
     state: HomeUiState,
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     playbackUiState: PlayerUiState?,
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
@@ -179,7 +179,7 @@ internal fun HomeFeedContent(
     error: String?,
     initialPage: Int,
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     playbackUiState: PlayerUiState?,
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
@@ -352,7 +352,7 @@ fun HomeLoadingPreview() {
                 error = null,
                 initialPage = 0,
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
                 onMuteToggle = {},
@@ -382,7 +382,7 @@ fun HomeEmptyPreview() {
                 error = null,
                 initialPage = 0,
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
                 onMuteToggle = {},
@@ -412,7 +412,7 @@ fun HomeErrorPreview() {
                 error = "Connection timeout. Please check your internet.",
                 initialPage = 0,
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
                 onMuteToggle = {},
@@ -457,7 +457,7 @@ fun HomeContentPreview() {
                 error = null,
                 initialPage = 0,
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
                 onMuteToggle = {},
@@ -501,7 +501,7 @@ fun HomeContentSwahiliPreview() {
                 error = null,
                 initialPage = 0,
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
                 onMuteToggle = {},

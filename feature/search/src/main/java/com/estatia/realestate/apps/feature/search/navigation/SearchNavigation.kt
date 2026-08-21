@@ -16,7 +16,7 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.searchGraph(
     onBackClick: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit
 ) {
     navigation<SearchBaseRoute>(startDestination = SearchRoute) {
         composable<SearchRoute> {

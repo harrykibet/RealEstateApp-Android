@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
+import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.ui.DevicePreviews
@@ -55,11 +56,36 @@ import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 fun CommentSheetContent(
     state: CommentsUiState,
     onAction: (CommentsAction) -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth().fillMaxHeight(0.6f),
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            EstatiaText(
+                text = "${state.comments.size} comments",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            
+            androidx.compose.material3.IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = EstatiaIcons.Close,
+                    contentDescription = "Close",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
         HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
 
         LazyColumn(
@@ -287,7 +313,8 @@ fun CommentSheetContentPreview() {
                     input = "Looking good!",
                     isSending = false
                 ),
-                onAction = {}
+                onAction = {},
+                onDismiss = {}
             )
         }
     }
@@ -304,7 +331,8 @@ fun CommentSheetContentSendingPreview() {
                     input = "Posting a comment...",
                     isSending = true
                 ),
-                onAction = {}
+                onAction = {},
+                onDismiss = {}
             )
         }
     }

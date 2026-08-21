@@ -25,7 +25,7 @@ fun PropertyFeedScreen(
     listings: List<ListingUiModel>,
     playbackCoordinator: @Composable (PagerState, List<ListingUiModel>) -> Unit,
     itemContent: @Composable (ListingUiModel, Boolean, (String) -> Unit) -> Unit,
-    commentsContent: @Composable (String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     initialPage: Int = 0,
     onPageChanged: (Int) -> Unit = {},
@@ -56,16 +56,19 @@ fun PropertyFeedScreen(
 
     playbackCoordinator(pagerState, listings)
 
+    val dismissComments = { showCommentsForId = null }
+
     BoxWithBottomSheet(
         showSheet = showCommentsForId != null,
-        onDismissSheet = { showCommentsForId = null },
+        onDismissSheet = dismissComments,
         modifier = modifier,
         sheetContent = {
             showCommentsForId?.let { id ->
-                commentsContent(id)
+                commentsContent(id, dismissComments)
             }
         }
-    ) {
+    )
+ {
         VerticalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
@@ -125,7 +128,7 @@ private fun BoxWithBottomSheet(
         if (showSheet) {
             ModalBottomSheet(
                 onDismissRequest = onDismissSheet,
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
                 modifier = Modifier.fillMaxWidth(),
                 dragHandle = {
                     androidx.compose.material3.BottomSheetDefaults.DragHandle()

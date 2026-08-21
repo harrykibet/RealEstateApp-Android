@@ -73,7 +73,7 @@ fun EstatiaNavHost(
             onNavigateToPropertyDetail = { propertyId ->
                 navController.navigateToPropertyDetail(propertyId)
             },
-            commentsContent = { propertyId ->
+            commentsContent = { propertyId, onDismiss ->
                 val commentsViewModel: CommentsViewModel = hiltViewModel()
                 LaunchedEffect(propertyId) {
                     commentsViewModel.onAction(CommentsAction.Load(propertyId))
@@ -81,7 +81,8 @@ fun EstatiaNavHost(
                 val commentsState by commentsViewModel.state.collectAsState()
                 CommentSheetContent(
                     state = commentsState,
-                    onAction = commentsViewModel::onAction
+                    onAction = commentsViewModel::onAction,
+                    onDismiss = onDismiss
                 )
             }
         )
@@ -94,7 +95,7 @@ fun EstatiaNavHost(
         searchGraph(
             onBackClick = navController::popBackStack,
             onNavigateToPropertyDetail = navController::navigateToPropertyDetail,
-            commentsContent = { propertyId ->
+            commentsContent = { propertyId, onDismiss ->
                 val commentsViewModel: CommentsViewModel = hiltViewModel()
                 LaunchedEffect(propertyId) {
                     commentsViewModel.onAction(CommentsAction.Load(propertyId))
@@ -102,7 +103,8 @@ fun EstatiaNavHost(
                 val commentsState by commentsViewModel.state.collectAsState()
                 CommentSheetContent(
                     state = commentsState,
-                    onAction = commentsViewModel::onAction
+                    onAction = commentsViewModel::onAction,
+                    onDismiss = onDismiss
                 )
             }
         )

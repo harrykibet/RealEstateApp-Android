@@ -20,7 +20,7 @@ fun NavController.navigateToPropertyDetail(propertyId: String) =
 
 fun NavGraphBuilder.homeGraph(
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
 ) {
     navigation<HomeBaseRoute>(startDestination = HomeRoute) {
         composable<HomeRoute>(

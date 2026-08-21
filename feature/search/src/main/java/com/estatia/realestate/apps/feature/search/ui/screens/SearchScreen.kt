@@ -66,7 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun SearchRoute(
     onBackClick: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
     playbackViewModel: SearchVideoPlaybackViewModel = hiltViewModel(),
@@ -128,7 +128,7 @@ fun SearchScreen(
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
     onNavigateToPropertyDetail: (String) -> Unit,
-    commentsContent: @Composable (propertyId: String) -> Unit,
+    commentsContent: @Composable (propertyId: String, onDismiss: () -> Unit) -> Unit,
     playbackViewModel: SearchVideoPlaybackViewModel,
     onPageChanged: (Int) -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -367,7 +367,7 @@ fun SearchScreenHistoryPreview() {
                 isMuted = false,
                 onMuteToggle = {},
                 onNavigateToPropertyDetail = {},
-                commentsContent = {},
+                commentsContent = { _, _ -> },
                 playbackViewModel = hiltViewModel(),
                 onPageChanged = {},
                 snackbarHostState = remember { SnackbarHostState() }
