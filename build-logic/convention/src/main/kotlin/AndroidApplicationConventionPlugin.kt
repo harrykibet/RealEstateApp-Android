@@ -74,6 +74,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
                 // Required for AppAuth (AWS Cognito / OIDC)
                 manifestPlaceholders["appAuthRedirectScheme"] = "com.estatia.realestate.apps.auth"
+                // Required for AWS Amplify Auth
+                manifestPlaceholders["amplify_auth_redirect_scheme"] = "com.estatia.realestate.apps.auth"
             }
 
             signingConfigs {

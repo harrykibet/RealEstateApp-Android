@@ -34,10 +34,11 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
             }
         """.trimIndent()
         
-        val request = SimpleGraphQLRequest<String>(
+        // Using a Map for the response to extract the status field from the nested JSON
+        val request = SimpleGraphQLRequest<Map<*, *>>(
             mutation,
             mapOf("amount" to amount.amount, "currency" to currency, "method" to method.toString()),
-            String::class.java,
+            Map::class.java,
             null
         )
 
@@ -45,10 +46,12 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
             suspendCancellableCoroutine { continuation ->
                 Amplify.API.mutate(request,
                     { response -> 
+                        val data = response.data as? Map<*, *>
+                        val processPayment = data?.get("processPayment") as? Map<*, *>
+                        val statusString = processPayment?.get("status") as? String
+                        
                         val status = try {
-                            // Extract status from GraphQL response JSON string
-                            // Assuming response.data is something like {"processPayment": {"status": "SUCCESS"}}
-                            PaymentStatus.valueOf(response.data.uppercase())
+                            PaymentStatus.valueOf(statusString?.uppercase() ?: "FAILED")
                         } catch (e: Exception) {
                             PaymentStatus.FAILED
                         }
