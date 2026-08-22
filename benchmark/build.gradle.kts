@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.test)
-    alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.estatia.android.flavors)
+    alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.android.test)
 }
 
 android {
