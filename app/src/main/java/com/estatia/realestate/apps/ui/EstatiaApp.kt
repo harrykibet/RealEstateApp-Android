@@ -17,7 +17,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.LaunchedEffect
@@ -60,7 +60,7 @@ fun EstatiaApp(
     appState: EstatiaAppState,
     isInPiPMode: Boolean,
     modifier: Modifier = Modifier,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
 ) {
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
@@ -242,7 +242,7 @@ fun EstatiaAppPreviewAuthenticated() {
             isUserAuthenticated = true,
             currentDestination = null,
             currentTopLevelDestination = TopLevelDestination.HOME,
-            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            windowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
             isInPiPMode = false,
@@ -268,7 +268,7 @@ fun EstatiaAppPreviewUnauthenticated() {
             isUserAuthenticated = false,
             currentDestination = null,
             currentTopLevelDestination = null,
-            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            windowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
             isInPiPMode = false,
@@ -294,7 +294,7 @@ fun EstatiaAppPreviewOffline() {
             isUserAuthenticated = true,
             currentDestination = null,
             currentTopLevelDestination = TopLevelDestination.HOME,
-            windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+            windowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
             onNavigateToTopLevelDestination = {},
             onNavigateToSearch = {},
             isInPiPMode = false,
