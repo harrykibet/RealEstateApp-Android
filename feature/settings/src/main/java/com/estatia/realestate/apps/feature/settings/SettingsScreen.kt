@@ -217,6 +217,6 @@ fun SettingsScreenDarkPreview() {
     }
 }
 
-private const val PRIVACY_POLICY_URL = "https://policies.google.com/privacy"
-private const val BRAND_GUIDELINES_URL = "https://developer.android.com/distribute/marketing-tools/brand-guidelines"
-private const val FEEDBACK_URL = "https://goo.gle/nia-app-feedback"
+private const val PRIVACY_POLICY_URL = "https://www.estatia.com/privacy"
+private const val BRAND_GUIDELINES_URL = "https://www.estatia.com/brand"
+private const val FEEDBACK_URL = "https://github.com/estatia/realestate-android/issues"

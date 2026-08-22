@@ -52,7 +52,7 @@ extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("mod
 
 /**
  * Custom task to generate a Graphviz dot file for module dependencies
- * with NIA-style colors. This replaces the default behavior of the
+ * with standard Estatia colors. This replaces the default behavior of the
  * module-graph plugin for visualization purposes.
  */
 /**
