@@ -17,7 +17,7 @@ import kotlin.coroutines.resume
  * Triggers a Lambda function via AWS AppSync (GraphQL).
  */
 internal class AwsPaymentsRemoteDataSource @Inject constructor(
-    private val networkClient: INetworkClient
+    private val networkClient: INetworkClient,
 ) : IPaymentsRemoteDataSource {
 
     override suspend fun processPayment(
@@ -26,9 +26,9 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
         method: PaymentMethod
     ): AppResult<PaymentStatus> {
 
-        val mutation = $$"""
-            mutation ProcessPayment($amount: Float!, $currency: String!, $method: String!) {
-                processPayment(amount: $amount, currency: $currency, method: $method) {
+        val mutation = """
+            mutation ProcessPayment(${'$'}amount: Float!, ${'$'}currency: String!, ${'$'}method: String!) {
+                processPayment(amount: ${'$'}amount, currency: ${'$'}currency, method: ${'$'}method) {
                     status
                 }
             }
@@ -44,15 +44,16 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
 
         return networkClient.execute {
             suspendCancellableCoroutine { continuation ->
-                Amplify.API.mutate(request,
+                Amplify.API.mutate(
+                    request,
                     { response -> 
-                        val data = response.data as? Map<*, *>
+                        val data = response.data
                         val processPayment = data?.get("processPayment") as? Map<*, *>
                         val statusString = processPayment?.get("status") as? String
                         
                         val status = try {
                             PaymentStatus.valueOf(statusString?.uppercase() ?: "FAILED")
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             PaymentStatus.FAILED
                         }
                         continuation.resume(status) 

@@ -1,9 +1,13 @@
-package com.estatia.realestate.apps.core.data.mappers.firestore
+package com.estatia.realestate.apps.core.data.mappers.remote
 
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 
-internal object FirestoreCommentMapper {
+/**
+ * Maps remote comment entities to domain models and vice versa.
+ * Used for both Firebase and AWS backends.
+ */
+internal object RemoteCommentMapper {
 
     // Map to Domain Model
     fun toDomain(comment: CommentEntityModel): CommentDomainModel {

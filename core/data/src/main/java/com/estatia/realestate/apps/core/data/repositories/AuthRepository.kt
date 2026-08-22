@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.data.mappers.auth.NetworkUserMapper
-import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
+import com.estatia.realestate.apps.core.data.mappers.remote.RemoteUserProfileMapper
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
@@ -21,7 +21,7 @@ internal class AuthRepository @Inject constructor(
         userId: String,
         user: UserDomainModel,
     ): AppResult<Unit> {
-        val firestoreUser = FirestoreUserProfileMapper.toEntity(user)
+        val firestoreUser = RemoteUserProfileMapper.toEntity(user)
         return remoteDataSource.createOrUpdateUserProfile(userId, firestoreUser)
     }
 

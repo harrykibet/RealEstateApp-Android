@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSo
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
-import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreCommentMapper
+import com.estatia.realestate.apps.core.data.mappers.remote.RemoteCommentMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomCommentMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
@@ -44,7 +44,7 @@ internal class CommentsRepository @Inject constructor(
             .observeComments(propertyId)
             .map { result ->
                 result.map { comments ->
-                    comments.map(FirestoreCommentMapper::toDomain)
+                    comments.map(RemoteCommentMapper::toDomain)
                 }.translateCommentFailures(exceptionTranslator)
             }
             .onStart {

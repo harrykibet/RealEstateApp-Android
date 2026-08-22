@@ -6,7 +6,10 @@ The `data` module implements the repository interfaces defined in `core:domain`.
 
 - **Repository Implementation**: Concrete implementations of `IPropertyRepository`, `IAuthRepository`, etc.
 - **Data Orchestration**: Managing logic between local storage (Room, DataStore) and remote sources (AWS Amplify via `core:network`).
-- **Mapping**: Converting infrastructure-specific entities (from `core:network` or `core:database`) into domain-level models.
+- **Mapping**: Converting infrastructure-specific entities into domain-level models.
+    - **Remote Mappers**: Located in `mappers/remote`, these map network entities (shared by Firebase and AWS) to domain models.
+    - **Local Mappers**: Located in `mappers/room`, these map local database entities to domain models.
+    - **Auth Mappers**: Specialized mappers for user authentication entities.
 - **Synchronization**: Logic for syncing local drafts or offline state with the remote server.
 
 ## Data Flow

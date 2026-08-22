@@ -1,12 +1,12 @@
 package com.estatia.realestate.apps.core.network.error_mappers.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
 import com.google.firebase.firestore.FirebaseFirestoreException
 import javax.inject.Inject
 
 
-class FirebaseFirestoreErrorMapper @Inject constructor() : IFirestoreErrorMapper {
+class FirebaseFirestoreErrorMapper @Inject constructor() : IDatabaseErrorMapper {
 
 
     override fun map(

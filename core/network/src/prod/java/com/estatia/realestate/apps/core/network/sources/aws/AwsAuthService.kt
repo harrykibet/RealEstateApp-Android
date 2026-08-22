@@ -1,13 +1,10 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
 import android.app.Activity
-import android.content.Context
 import com.amplifyframework.auth.AuthProvider
-import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
+import com.amplifyframework.auth.AuthUser
 import com.amplifyframework.auth.cognito.result.AWSCognitoAuthSignOutResult
 import com.amplifyframework.auth.options.AuthSignUpOptions
-import com.amplifyframework.auth.result.AuthSignInResult
-import com.amplifyframework.auth.result.AuthSignUpResult
 import com.amplifyframework.auth.AuthUserAttributeKey
 import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -17,7 +14,6 @@ import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -29,17 +25,18 @@ import kotlin.coroutines.resume
  * AWS implementation of [IAuthRemoteDataSource] using AWS Amplify.
  */
 internal class AwsAuthService @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {
+
+    private var cachedUser: AuthUser? = null
 
     override suspend fun signInInteractive(activity: Activity): AppResult<NetworkUserEntity> = 
         networkClient.execute {
             suspendCancellableCoroutine { continuation ->
-                Amplify.Auth.signInWithSocialWebUI(AuthProvider.GOOGLE, activity,
+                Amplify.Auth.signInWithSocialWebUI(AuthProvider.google(), activity,
                     { result ->
-                        if (result.isSignInComplete) {
-                            continuation.resume(fetchCurrentUserSync())
+                        if (result.isSignedIn) {
+                            continuation.resume(Unit)
                         } else {
                             continuation.resumeWith(Result.failure(AuthException.Unknown(Exception("Sign in incomplete: ${result.nextStep.signInStep}"))))
                         }
@@ -47,6 +44,7 @@ internal class AwsAuthService @Inject constructor(
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+            fetchAndCacheUser()
         }
 
     override suspend fun signInWithEmail(email: String, password: String): AppResult<NetworkUserEntity> =
@@ -54,8 +52,8 @@ internal class AwsAuthService @Inject constructor(
             suspendCancellableCoroutine { continuation ->
                 Amplify.Auth.signIn(email, password,
                     { result ->
-                        if (result.isSignInComplete) {
-                            continuation.resume(fetchCurrentUserSync())
+                        if (result.isSignedIn) {
+                            continuation.resume(Unit)
                         } else {
                             continuation.resumeWith(Result.failure(AuthException.Unknown(Exception("Sign in incomplete"))))
                         }
@@ -63,6 +61,7 @@ internal class AwsAuthService @Inject constructor(
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+            fetchAndCacheUser()
         }
 
     override suspend fun signUpWithEmail(email: String, password: String): AppResult<NetworkUserEntity> =
@@ -75,7 +74,7 @@ internal class AwsAuthService @Inject constructor(
                 Amplify.Auth.signUp(email, password, options,
                     { result ->
                         if (result.isSignUpComplete) {
-                            continuation.resume(fetchCurrentUserSync())
+                            continuation.resume(Unit)
                         } else {
                             continuation.resumeWith(Result.failure(AuthException.Unknown(Exception("Sign up incomplete"))))
                         }
@@ -83,11 +82,13 @@ internal class AwsAuthService @Inject constructor(
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+            fetchAndCacheUser()
         }
 
     override suspend fun signOut(): AppResult<Unit> = networkClient.execute {
         suspendCancellableCoroutine { continuation ->
             Amplify.Auth.signOut { result ->
+                cachedUser = null
                 when (result) {
                     is AWSCognitoAuthSignOutResult.CompleteSignOut -> continuation.resume(Unit)
                     is AWSCognitoAuthSignOutResult.PartialSignOut -> continuation.resume(Unit)
@@ -110,7 +111,7 @@ internal class AwsAuthService @Inject constructor(
     }
 
     override fun isUserAuthenticated(): Flow<Boolean> = flow {
-        val session = suspendCancellableCoroutine<Boolean> { continuation ->
+        val session = suspendCancellableCoroutine { continuation ->
             Amplify.Auth.fetchAuthSession(
                 { session -> continuation.resume(session.isSignedIn) },
                 { continuation.resume(false) }
@@ -119,27 +120,31 @@ internal class AwsAuthService @Inject constructor(
         emit(session)
     }
 
-    override fun getCurrentUserId(): String? {
-        val user = Amplify.Auth.currentUser
-        return user?.userId
-    }
+    override fun getCurrentUserId(): String? = cachedUser?.userId
 
-    override fun getCurrentUserEmail(): String? = null // Requires fetchUserAttributes, not easily synchronous
+    override fun getCurrentUserEmail(): String? = null // Requires fetchUserAttributes
 
     override fun getCurrentUser(): NetworkUserEntity? {
-        val user = Amplify.Auth.currentUser ?: return null
-        return NetworkUserEntity(
-            userId = user.userId,
-            displayName = user.username,
-            email = null,
-            phoneNumber = null,
-            photoUrl = null,
-            isEmailVerified = true
-        )
+        return cachedUser?.let { user ->
+            NetworkUserEntity(
+                userId = user.userId,
+                displayName = user.username,
+                email = null,
+                phoneNumber = null,
+                photoUrl = null,
+                isEmailVerified = true
+            )
+        }
     }
 
-    private fun fetchCurrentUserSync(): NetworkUserEntity {
-        val user = Amplify.Auth.currentUser ?: throw AuthException.UserNotAuthenticated
+    private suspend fun fetchAndCacheUser(): NetworkUserEntity {
+        val user = suspendCancellableCoroutine<AuthUser> { continuation ->
+            Amplify.Auth.getCurrentUser(
+                { continuation.resume(it) },
+                { continuation.resumeWith(Result.failure(it)) }
+            )
+        }
+        cachedUser = user
         return NetworkUserEntity(
             userId = user.userId,
             displayName = user.username,

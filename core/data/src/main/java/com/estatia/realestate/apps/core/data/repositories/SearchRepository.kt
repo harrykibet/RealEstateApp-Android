@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
-import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
 import com.estatia.realestate.apps.core.data.util.translateSearchFailures
@@ -44,7 +44,7 @@ internal class SearchRepository @Inject constructor(
         // 2. Remote search
         return remoteDataSource.searchProperties(query, limit)
             .map { entities ->
-                val domainModels = entities.map(FirestorePropertyMapper::toDomain)
+                val domainModels = entities.map(RemotePropertyMapper::toDomain)
                 
                 // 3. Update cache
                 searchLocalDataSource.cacheSearchResult(query, domainModels.map { it.id.value })
@@ -77,7 +77,7 @@ internal class SearchRepository @Inject constructor(
             radiusKm = radiusKm
         )
             .map { entities ->
-                entities.map(FirestorePropertyMapper::toDomain)
+                entities.map(RemotePropertyMapper::toDomain)
             }
             .translateSearchFailures(exceptionTranslator)
     }

@@ -1,13 +1,13 @@
 package com.estatia.realestate.apps.core.network.error_mappers.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
 import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
 
 
 class FirebaseStorageErrorMapper @Inject constructor()
-    : IFirebaseStorageErrorMapper {
+    : IStorageErrorMapper {
 
 
     override fun map(

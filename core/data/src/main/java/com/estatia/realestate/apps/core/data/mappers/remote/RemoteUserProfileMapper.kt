@@ -1,11 +1,15 @@
-package com.estatia.realestate.apps.core.data.mappers.firestore
+package com.estatia.realestate.apps.core.data.mappers.remote
 
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.core.model.user.VerificationLevel
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 
-internal object FirestoreUserProfileMapper {
+/**
+ * Maps remote user profile entities to domain models and vice versa.
+ * Used for both Firebase and AWS backends.
+ */
+internal object RemoteUserProfileMapper {
 
     // Map to Domain Model
     fun toDomain(user: UserEntityModel) : UserDomainModel {

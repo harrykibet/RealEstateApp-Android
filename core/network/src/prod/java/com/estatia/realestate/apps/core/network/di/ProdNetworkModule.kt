@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
-import com.estatia.realestate.apps.core.network.core.FirebaseNetworkClient
+import com.estatia.realestate.apps.core.network.core.ProductionNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.*
 import com.estatia.realestate.apps.core.network.interceptors.TracingInterceptor
 import com.estatia.realestate.apps.core.network.interfaces.*
@@ -126,6 +126,7 @@ object ProdNetworkModule {
         return baseClient.newBuilder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 
@@ -177,7 +178,7 @@ object ProdNetworkModule {
         exceptionMapper: IExceptionMapper,
         logger: ILogger
     ): INetworkClient {
-        return FirebaseNetworkClient(retryPolicy, exceptionMapper, logger)
+        return ProductionNetworkClient(retryPolicy, exceptionMapper, logger)
     }
 
     @Provides
@@ -192,17 +193,25 @@ object ProdNetworkModule {
     @Singleton
     fun provideExceptionMapper(
         networkMapper: INetworkErrorMapper,
-        authMapper: IAuthExceptionMapper,
-        databaseMapper: IFirestoreErrorMapper,
-        storageMapper: IFirebaseStorageErrorMapper,
-        fallbackFirebaseMapper: IFirebaseErrorMapper
+        @FirebaseMapper firebaseAuthMapper: IAuthExceptionMapper,
+        @AwsMapper awsAuthMapper: IAuthExceptionMapper,
+        @FirebaseMapper firebaseDatabaseMapper: IDatabaseErrorMapper,
+        @AwsMapper awsDatabaseMapper: IDatabaseErrorMapper,
+        @FirebaseMapper firebaseStorageMapper: IStorageErrorMapper,
+        @AwsMapper awsStorageMapper: IStorageErrorMapper,
+        @FirebaseMapper firebaseInfraMapper: IInfrastructureErrorMapper,
+        @AwsMapper awsInfraMapper: IInfrastructureErrorMapper
     ): IExceptionMapper {
         return ExceptionMapper(
             networkMapper,
-            authMapper,
-            databaseMapper,
-            storageMapper,
-            fallbackFirebaseMapper
+            firebaseAuthMapper,
+            awsAuthMapper,
+            firebaseDatabaseMapper,
+            awsDatabaseMapper,
+            firebaseStorageMapper,
+            awsStorageMapper,
+            firebaseInfraMapper,
+            awsInfraMapper
         )
     }
 

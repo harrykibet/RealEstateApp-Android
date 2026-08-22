@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
-import com.estatia.realestate.apps.core.data.mappers.firestore.FirestoreUserProfileMapper
+import com.estatia.realestate.apps.core.data.mappers.remote.RemoteUserProfileMapper
 import com.estatia.realestate.apps.core.data.util.translateUserFailures
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
@@ -23,7 +23,7 @@ internal class UserRepository @Inject constructor(
 
     override suspend fun getUserById(userId: String): AppResult<UserDomainModel> {
         return remoteDataSource.getUserById(userId)
-            .map(FirestoreUserProfileMapper::toDomain)
+            .map(RemoteUserProfileMapper::toDomain)
             .translateUserFailures(exceptionTranslator)
     }
 

@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.data.mappers.firestore
+package com.estatia.realestate.apps.core.data.mappers.remote
 
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
@@ -7,7 +7,11 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
-internal object FirestorePropertyMapper {
+/**
+ * Maps remote property entities to domain models and vice versa.
+ * Used for both Firebase and AWS backends.
+ */
+internal object RemotePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(
@@ -86,7 +90,7 @@ internal object FirestorePropertyMapper {
             createdAt = domain.createdAt,
             ownerId = domain.ownerId,
             ownerName = domain.ownerName,
-            contact = null, // Contact info is uploaded separately to a subcollection
+            contact = null, // Contact info is usually handled via specific upload flows
             county = domain.county,
             active = domain.active,
             viewsCount = domain.viewsCount,
@@ -109,7 +113,7 @@ internal object FirestorePropertyMapper {
     }
 
     fun PropertyEntityModel?.toDomainOrNull(): PropertyDomainModel? =
-        this?.let(FirestorePropertyMapper::toDomain)
+        this?.let(RemotePropertyMapper::toDomain)
 
     fun List<PropertyEntityModel?>.toDomainModels(): List<PropertyDomainModel> =
         mapNotNull { it.toDomainOrNull() }

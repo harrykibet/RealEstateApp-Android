@@ -7,9 +7,9 @@ import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseF
 import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseFirestoreErrorMapper
 import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IInfrastructureErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
@@ -112,25 +112,29 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    internal fun provideFirebaseFirestoreErrorMapper() : IFirestoreErrorMapper {
+    @FirebaseMapper
+    internal fun provideFirebaseFirestoreErrorMapper() : IDatabaseErrorMapper {
         return FirebaseFirestoreErrorMapper()
     }
 
     @Provides
     @Singleton
+    @FirebaseMapper
     internal fun provideFirebaseAuthenticationErrorMapper() : IAuthExceptionMapper {
         return FirebaseAuthErrorMapper()
     }
 
     @Provides
     @Singleton
-    internal fun provideFirebaseStorageErrorMapper() : IFirebaseStorageErrorMapper {
+    @FirebaseMapper
+    internal fun provideFirebaseStorageErrorMapper() : IStorageErrorMapper {
         return FirebaseStorageErrorMapper()
     }
 
     @Provides
     @Singleton
-    internal fun provideFirebaseFallbackErrorMapper() : IFirebaseErrorMapper {
+    @FirebaseMapper
+    internal fun provideFirebaseFallbackErrorMapper() : IInfrastructureErrorMapper {
         return FirebaseFallbackErrorMapper()
     }
 }

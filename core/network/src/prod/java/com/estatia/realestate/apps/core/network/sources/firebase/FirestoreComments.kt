@@ -8,7 +8,8 @@ import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
+import com.estatia.realestate.apps.core.network.di.FirebaseMapper
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -21,7 +22,7 @@ import javax.inject.Inject
 internal class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,
-    private val errorMapper: IFirestoreErrorMapper
+    @FirebaseMapper private val errorMapper: IDatabaseErrorMapper
 ) : ICommentsRemoteDataSource {
 
 

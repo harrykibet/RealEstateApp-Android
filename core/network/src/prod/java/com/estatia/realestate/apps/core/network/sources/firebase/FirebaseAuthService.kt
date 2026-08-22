@@ -13,6 +13,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.mappers.firebase.FirebaseUserMapper
+import com.estatia.realestate.apps.core.network.di.FirebaseMapper
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -38,7 +39,7 @@ import kotlin.coroutines.resumeWithException
 internal class FirebaseAuthService @Inject constructor(
     private val database: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
-    private val authErrorMapper: IAuthExceptionMapper,
+    @FirebaseMapper private val authErrorMapper: IAuthExceptionMapper,
     private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {
 

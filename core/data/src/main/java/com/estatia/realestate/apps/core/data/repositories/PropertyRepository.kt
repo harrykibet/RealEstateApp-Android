@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
-import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
+import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
@@ -110,7 +110,7 @@ internal class PropertyRepository @Inject constructor(
         val startTime = System.currentTimeMillis()
         val result = remoteDataSource
             .uploadProperty(
-                FirestorePropertyMapper.toEntity(property),
+                RemotePropertyMapper.toEntity(property),
                 PropertyContactEntity(
                     phone = property.contact.phone,
                     email = property.contact.email
@@ -166,7 +166,7 @@ internal class PropertyRepository @Inject constructor(
         return remoteDataSource
             .getPropertyById(propertyId)
             .map {
-                FirestorePropertyMapper.toDomain(it)
+                RemotePropertyMapper.toDomain(it)
             }
             .translatePropertyFailures(
                 exceptionTranslator
@@ -223,7 +223,7 @@ internal class PropertyRepository @Inject constructor(
         return remoteDataSource
             .fetchLikedProperties(userId)
             .map { properties ->
-                val domainModels = properties.map(FirestorePropertyMapper::toDomain)
+                val domainModels = properties.map(RemotePropertyMapper::toDomain)
                 localDataSource.cacheProperties(domainModels.toCacheEntities())
                 domainModels
             }
@@ -289,7 +289,7 @@ internal class PropertyRepository @Inject constructor(
         metricsTracker.trackDuration("property.fetch_paginated.duration", duration.milliseconds)
 
         return remoteResult.map { remotePage ->
-            val domainProperties = remotePage.properties.map(FirestorePropertyMapper::toDomain)
+            val domainProperties = remotePage.properties.map(RemotePropertyMapper::toDomain)
             
             // 3. Update cache if it's the first page
             if (cursor == null) {
