@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
   test:
     name: Unit Tests
@@ -27,7 +27,7 @@ jobs:
     needs: setup
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set Up JDK 17
         uses: actions/setup-java@v4
@@ -51,7 +51,7 @@ jobs:
     needs: setup
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set Up JDK 17
         uses: actions/setup-java@v4
@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -123,7 +123,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
