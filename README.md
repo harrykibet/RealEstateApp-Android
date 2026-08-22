@@ -65,6 +65,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 * Immutable state modeling
 * Lifecycle-safe concurrency
 * Zero business logic in UI
+* Role-based Interface Segregation (Config, Security, Analytics)
 
 **Module Structure**
 
@@ -113,7 +114,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 * MVVM
 * Hilt
 * Coroutines + Flow
-* Firebase (Auth, Firestore, Storage)
+* AWS Amplify (Auth, AppSync, S3, Pinpoint, AppConfig)
 * Google Maps SDK
 * ExoPlayer
 * Gradle Convention Plugins + Version Catalogs

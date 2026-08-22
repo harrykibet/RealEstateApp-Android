@@ -1,12 +1,10 @@
-# Estatia_ARCHITECTURE.md
-
 # Estatia — Architecture Deep Dive (Full Module Diagrams)
 
 ```mermaid
 flowchart TD
-    UI[":feature modules & :core-ui"] --> VM["ViewModels"] --> Domain[":core:domain"] --> Repos[":core:data"] --> Services[":core:network, :core:analytics"]
-    Repos --> Database[":core:database"]
-    Repos --> Storage[":core:datastore, :core:datastore-proto"]
+    UI[":feature modules & :core-ui"] --> VM["ViewModels"] --> Domain[":core:domain"] --> Repos[":core:data"] --> Services[":core:network (AWS Amplify), :core:analytics"]
+    Repos --> Database[":core:database (Room)"]
+    Repos --> Storage[":core:datastore (Proto)"]
     VM --> Player[":core:player-engine"]
     Player --> PlayerUI[":core:player-ui"]
     Security[":core:security"] --> Repos
@@ -14,24 +12,26 @@ flowchart TD
 
 ## Core Principles
 
-* Clean Architecture: separation of UI, domain, and data layers
-* Unidirectional Data Flow: deterministic state updates, immutable exposure
-* Dependency Inversion: features depend on domain interfaces
-* Module Isolation: strict boundaries; no cross-feature direct access
-* Lifecycle Safety: state handling across recomposition, process death, concurrency
-* Actor-style Concurrency: for media-heavy and async workflows
+* **Clean Architecture**: Separation of UI, domain, and data layers.
+* **Unidirectional Data Flow**: Deterministic state updates, immutable exposure.
+* **Dependency Inversion**: Features depend on domain interfaces.
+* **Interface Segregation**: Clients depend only on the specific configuration or repository roles they require (e.g., `INetworkConfig`, `IPlayerTuningConfig`).
+* **Module Isolation**: Strict boundaries; no cross-feature direct access.
+* **Lifecycle Safety**: State handling across recomposition, process death, concurrency.
+* **Actor-style Concurrency**: For media-heavy and async workflows.
 
 ## Module Responsibilities
 
 | Module              | Responsibility                                                           |
 | ------------------- | ------------------------------------------------------------------------ |
-| :core:domain        | Use cases, business rules, repository interfaces                         |
-| :core:data          | Repository implementations, Firebase/network orchestration               |
+| :core:domain        | Use cases, business rules, repo/config interfaces (ISP-segregated)        |
+| :core:data          | Repository implementations, AWS/network orchestration                    |
+| :core:network       | AWS Amplify (Auth, AppSync, S3, Pinpoint, AppConfig) integration         |
 | :core:ui            | Shared Compose components, theming, UI primitives                        |
 | :core:design-system | Design tokens, typography, colors, component library                     |
-| :core:player-engine | ExoPlayer orchestration, prefetch, lifecycle handling, actor-style state |
+| :core:player-engine | Media3 ExoPlayer orchestration, prefetch, adaptive pooling, actor-state |
 | :core:player-ui     | Player UI, minimal business logic                                        |
-| :core:security      | Role-based access, server-boundary enforcement, verification workflows   |
+| :core:security      | Key management, encryption, server-boundary enforcement                 |
 | Feature modules     | Own ViewModels, navigation, UI logic; depend only on domain interfaces   |
 
 ## Feature Module Architecture Examples
@@ -41,8 +41,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     HomeUI --> HomeVM --> HomeDomainUseCases --> Repos
-    Repos --> Database
-    Repos --> Storage
+    Repos --> AppSync[AWS AppSync]
+    Repos --> Database[Local Cache]
     HomeVM --> PlayerEngine
 ```
 
@@ -51,7 +51,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     PropertyUI --> PropertyVM --> PropertyDomainUseCases --> PropertyRepos
-    PropertyRepos --> FirestoreDB
+    PropertyRepos --> AppSync[AWS AppSync / Aurora]
+    PropertyRepos --> S3[AWS S3]
     PropertyVM --> PlayerEngine
 ```
 
@@ -60,8 +61,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     ProfileUI --> ProfileVM --> ProfileDomainUseCases --> ProfileRepos
-    ProfileRepos --> Database
-    ProfileVM --> Analytics
+    ProfileRepos --> AppSync
+    ProfileVM --> Analytics[AWS Pinpoint]
 ```
 
 ### :feature:search
@@ -69,13 +70,13 @@ flowchart TD
 ```mermaid
 flowchart TD
     SearchUI --> SearchVM --> SearchDomainUseCases --> SearchRepos
-    SearchRepos --> FirestoreDB
+    SearchRepos --> OpenSearch[AWS OpenSearch]
     SearchVM --> PlayerEngine
 ```
 
 ## Data Flow
 
-1. UI → ViewModel → Domain → Repositories → External Services
+1. UI → ViewModel → Domain → Repositories → External Services (AWS Amplify)
 2. Immutable state returned to ViewModel → UI
 
 ## Concurrency & Lifecycle
@@ -87,7 +88,8 @@ flowchart TD
 
 ## Scalability
 
-* Batched Firestore queries, optimized indexes
-* Prefetching and caching for media-heavy feeds
-* Modular isolation for independent deployment
-* Global services thread-safe
+* GraphQL query optimization with AppSync.
+* Personalized feed generation delegated to Lambda Resolvers.
+* Prefetching and caching for media-heavy feeds.
+* Modular isolation for independent deployment.
+* Global services thread-safe.

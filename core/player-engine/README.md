@@ -86,7 +86,7 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 ---
 
 ## âš™ï¸ 6. Remote Tuning & Optimization
-The engine is fully configurable via the **Remote Config** system (`IConfigProvider`). This allows for real-time, cohort-based A/B tuning of all core performance parameters without app releases:
+The engine is fully configurable via the **Remote Config** system (`IPlayerTuningConfig` and `IChaosConfig`). This allows for real-time, cohort-based A/B tuning of all core performance parameters without app releases:
 -   **Debounce Intervals**: `dwellTimeDebounceMs`, `jankAwareDebounceMs`, etc.
 -   **ABR Thresholds**: BOLA-lite buffer penalty triggers and multipliers.
 -   **Cache Policies**: Global cache ceilings and storage-budget percentages.

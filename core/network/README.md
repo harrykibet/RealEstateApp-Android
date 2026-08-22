@@ -16,7 +16,7 @@ The module is structured to support both **Firebase** and **AWS** backends. Each
 
 | Service | Firebase Provider | AWS Provider (Amplify/SDK) |
 | :--- | :--- | :--- |
-| **Auth** | Firebase Authentication | AWS Cognito / OIDC (via AppAuth) |
+| **Auth** | Firebase Authentication | AWS Cognito / Amplify Auth |
 | **Data (Properties/Users)** | Cloud Firestore | AWS AppSync + Amazon Aurora |
 | **Comments** | Cloud Firestore | AWS AppSync (Subscriptions) |
 | **Search** | Firestore Manual Matching | AWS OpenSearch (via AppSync) |
@@ -32,9 +32,9 @@ Switching between backend providers is handled in the dependency injection layer
 
 1.  **DI Configuration**: Open `ProdDataSourcesModule.kt` and update the `@Provides` bindings to point to your desired implementation (e.g., swapping `FirestoreProperties` for `AwsPropertyRemoteDataSource`).
 2.  **Provider Configuration**:
-    - **For Firebase**: Ensure `google-services.json` is present in the `app` module.
     - **For AWS**: Ensure `amplifyconfiguration.json` is placed in `app/src/main/res/raw/`.
-3.  **Initialization**: If activating AWS for the first time, uncomment the initialization logic in `AwsBackendInitializer.kt` to enable the Amplify plugins.
+    - **For Firebase**: Ensure `google-services.json` is present in the `app` module.
+3.  **Initialization**: AWS integration is managed via `AwsBackendInitializer.kt`, which registers the necessary Amplify plugins.
 
 ## Key Interfaces
 

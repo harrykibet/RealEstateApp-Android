@@ -1,51 +1,46 @@
-# Estatia_ENGINEERING.md
-
 # Estatia — Engineering Deep Dive (Feature-Specific Patterns + Diagrams)
 
 ## Coding Standards
 
-* Kotlin idiomatic practices; immutability preferred
-* SOLID principles enforced
-* Minimal boilerplate; explicit state and dependencies
-* Clear separation between UI, domain, and data logic
-* Defensive programming on critical paths
+* Kotlin idiomatic practices; immutability preferred.
+* SOLID principles enforced, with a focus on **Interface Segregation (ISP)** for configuration.
+* Minimal boilerplate; explicit state and dependencies via Hilt.
+* Clear separation between UI, domain, and data logic.
+* Defensive programming on critical paths (e.g., media playback and auth).
 
 ## Testing Strategy
 
-* Domain Layer: Unit tests for all use cases, edge/error scenarios
-* Data Layer: Integration tests for repositories, remote/local orchestration
-* UI / Feature Layer: Compose UI tests, navigation, interaction tests
-* Performance benchmarks for feed scroll, media prefetch, cache handling
+* **Domain Layer**: Unit tests for all UseCases using MockK, covering successful data flow and error scenarios (e.g., `AuthException.UserNotAuthenticated`).
+* **Data Layer**: Integration tests for repositories and DataSources. Instrumented tests for Room DAOs and Proto DataStore.
+* **UI / Feature Layer**: ViewModels are thoroughly tested for state transitions. Compose UI tests and navigation interaction tests.
+* **Performance**: Benchmarks for feed scrolling, media prefetch, and cache handling.
 
 ## Performance & Profiling
 
-* Baseline Profiles for startup, feed rendering, media playback
-* Memory-efficient media caching, ExoPlayer pooling
-* Firestore query tuning for large datasets
-* Coroutine dispatchers tuned per module for IO vs computation
+* **Baseline Profiles**: Used for startup, feed rendering, and media playback optimization.
+* **Media Orchestration**: Adaptive player pooling and look-ahead prefetching in `core:player-engine`.
+* **Adaptive Policies**: Cache sizing and player pool limits scale based on device hardware and thermal status.
+* **Observability**: Integrated with Micrometer for real-time telemetry (toggleable via AWS AppConfig).
 
 ## Security & Trust
 
-* Role-based access enforced via Firebase custom claims
-* Server-side verification for ownership/admin actions
-* Input validation on all endpoints
-* Clear client/server responsibility boundaries
+* **Authentication**: Managed via **AWS Cognito** and Amplify Auth.
+* **Authorization**: Role-based access control and server-side verification for ownership/admin actions.
+* **Data Protection**: AES-GCM and RSA encryption for sensitive local data and payload signing.
+* **API Validation**: `ApiKeyValidator` enforces regex patterns for service-specific keys.
 
 ## CI/CD & Build
 
-* Gradle convention plugins + version catalogs
-* Feature module isolation enforced via CI
-* Automated linting, static analysis, unit test coverage verification
-* Separate build variants: debug, staging, production
+* Gradle convention plugins + version catalogs for centralized build logic.
+* Feature module isolation enforced via architecture linting.
+* Automated security scanning with Dependabot.
+* Build variants: `demo` (mocked data) and `prod` (AWS-connected).
 
 ## Developer Guidelines
 
-* Feature modules depend only on domain interfaces
-* Core-ui and design-system modules for reusable components
-* All state exposed immutably; side effects explicit
-* PRs require architectural review and test coverage
-* Document non-obvious business rules or patterns
-* **UI Interaction Blocking**: To prevent gesture conflicts in vertical feeds, any future playback features requiring horizontal or precise gestures (e.g., tap-to-seek or scrub) must explicitly suppress the parent `Pager` scroll recognition (`userScrollEnabled = false`) while the scrub gesture is active.
+* **Domain Boundaries**: Feature modules depend only on domain interfaces (segregated by responsibility).
+* **State Management**: All state exposed as `StateFlow`; side effects are explicit.
+* **Media Gestures**: Any playback features requiring custom gestures must explicitly suppress parent `Pager` scrolling to prevent conflicts.
 
 ## Feature-Specific Patterns & Diagrams
 
@@ -57,13 +52,15 @@ sequenceDiagram
     participant VM
     participant Domain
     participant Repo
+    participant AppSync
     participant PlayerEngine
 
     UI->>VM: Request feed page
     VM->>Domain: Fetch feed use case
-    Domain->>Repo: Query Firestore & cache
-    Repo->>VM: Return feed items
-    VM->>PlayerEngine: Prefetch video/audio
+    Domain->>Repo: Query AppSync & cache
+    AppSync->>Repo: Return ranked listings
+    Repo->>VM: Return domain models
+    VM->>PlayerEngine: Prefetch next video
     PlayerEngine->>UI: Ready-to-play media state
 ```
 
@@ -75,14 +72,16 @@ sequenceDiagram
     participant VM
     participant Domain
     participant Repo
-    participant Storage
+    participant S3
+    participant AppSync
 
     UI->>VM: Upload property
-    VM->>Domain: Validate & prepare media
-    Domain->>Repo: Upload metadata to Firestore
-    Repo->>Storage: Upload images/videos
-    Storage->>Repo: Return media URLs
-    Repo->>Domain: Confirm persistence
+    VM->>Domain: Validate & compress media
+    Domain->>Repo: Upload loop
+    Repo->>S3: Upload images/videos
+    S3->>Repo: Return S3 keys
+    Repo->>AppSync: CreateProperty mutation
+    AppSync->>Repo: Return property ID
     Domain->>VM: Return result to UI
 ```
 
@@ -93,87 +92,50 @@ sequenceDiagram
     participant UI
     participant VM
     participant Domain
-    participant PaymentAPI
+    participant AppSync
+    participant Lambda
 
     UI->>VM: Initiate payment
-    VM->>Domain: Prepare transaction
-    Domain->>PaymentAPI: Request transaction
-    PaymentAPI->>Domain: Return success/failure
+    VM->>Domain: ProcessPaymentUseCase
+    Domain->>AppSync: ProcessPayment mutation
+    AppSync->>Lambda: Execute payment logic
+    Lambda->>AppSync: Return PaymentStatus
+    AppSync->>Domain: Result
     Domain->>VM: Update payment state
-    VM->>UI: Display confirmation/error
-```
-
-### :feature:profile — Owner Verification Flow
-
-```mermaid
-sequenceDiagram
-    participant UI
-    participant VM
-    participant Domain
-    participant Repo
-    participant Security
-
-    UI->>VM: Submit verification
-    VM->>Domain: Validate input
-    Domain->>Repo: Store verification data
-    Domain->>Security: Perform server-side validation
-    Security->>Domain: Return validation status
-    Domain->>VM: Update verification state
-    VM->>UI: Display result
-```
-
-### :feature:search — Filtered Query Flow
-
-```mermaid
-sequenceDiagram
-    participant UI
-    participant VM
-    participant Domain
-    participant Repo
-
-    UI->>VM: Enter search query
-    VM->>Domain: Debounce & prepare filters
-    Domain->>Repo: Query Firestore with filters
-    Repo->>VM: Return results
-    VM->>UI: Render results
+    VM->>UI: Display confirmation
 ```
 
 ## Example Patterns
 
-### Actor-style Media Playback (Kotlin)
+### Interface Segregation for Config
 
 ```kotlin
-sealed class PlayerCommand {
-    data class Play(val mediaId: String) : PlayerCommand()
-    object Stop : PlayerCommand()
+// Clients only see the properties they need
+interface IPlayerTuningConfig : IConfigLifecycle {
+    val playerTuning: PlayerTuningConfig
 }
 
-fun CoroutineScope.playerActor() = actor<PlayerCommand> {
-    for (cmd in channel) {
-        when(cmd) {
-            is PlayerCommand.Play -> exoPlayer.prepareAndPlay(cmd.mediaId)
-            PlayerCommand.Stop -> exoPlayer.stop()
-        }
-    }
+class PlaybackProvider @Inject constructor(
+    private val config: IPlayerTuningConfig
+) {
+    fun getBuffer() = config.playerTuning.minBufferMs
 }
 ```
 
-### Repository Pattern Example
+### Repository Pattern (GraphQL)
 
 ```kotlin
-interface PropertyRepository {
-    suspend fun getProperties(): List<PropertyModel>
-    suspend fun getPropertyById(id: String): PropertyModel?
+interface IPropertyRepository {
+    suspend fun getPropertyById(id: String): AppResult<PropertyDomainModel>
 }
 
-class PropertyRepositoryImpl(
-    private val firestore: FirebaseFirestore
-) : PropertyRepository {
-    override suspend fun getProperties(): List<PropertyModel> = 
-        firestore.collection("properties").get().await().map { it.toObject(PropertyModel::class.java) }
+class PropertyRepositoryImpl @Inject constructor(
+    private val remoteSource: IPropertyRemoteDatasource
+) : IPropertyRepository {
+    override suspend fun getPropertyById(id: String) = remoteSource.getPropertyById(id)
 }
 ```
 
 ---
 
-This engineering guide now combines **feature-specific diagrams, patterns, best practices, and flows**, giving developers both visual and code-level references for implementing, testing, and maintaining Estatia modules.
+This guide reflects the **AWS-native, ISP-compliant architecture** of Estatia, providing visual and code-level references for developers.

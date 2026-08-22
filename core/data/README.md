@@ -5,7 +5,7 @@ The `data` module implements the repository interfaces defined in `core:domain`.
 ## Key Responsibilities
 
 - **Repository Implementation**: Concrete implementations of `IPropertyRepository`, `IAuthRepository`, etc.
-- **Data Orchestration**: Managing logic between local storage (Room, DataStore) and remote sources (Firebase via `core:network`).
+- **Data Orchestration**: Managing logic between local storage (Room, DataStore) and remote sources (AWS Amplify via `core:network`).
 - **Mapping**: Converting infrastructure-specific entities (from `core:network` or `core:database`) into domain-level models.
 - **Synchronization**: Logic for syncing local drafts or offline state with the remote server.
 
