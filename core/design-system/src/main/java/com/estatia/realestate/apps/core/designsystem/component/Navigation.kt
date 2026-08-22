@@ -262,15 +262,19 @@ class EstatiaNavigationSuiteScope internal constructor(
 @ThemePreviews
 @Composable
 fun EstatiaNavigationBarPreview() {
-    val items = listOf("home", "add", "profile")
+    val items = listOf("home", "market", "add", "chats", "profile")
     val icons = listOf(
         EstatiaIcons.HomeBorder,
+        EstatiaIcons.MarketBorder,
         EstatiaIcons.AddCircleOutline,
+        EstatiaIcons.ChatBorder,
         EstatiaIcons.ProfileBorder,
     )
     val selectedIcons = listOf(
         EstatiaIcons.Home,
+        EstatiaIcons.Market,
         EstatiaIcons.AddCircle,
+        EstatiaIcons.Chat,
         EstatiaIcons.Profile,
     )
 
