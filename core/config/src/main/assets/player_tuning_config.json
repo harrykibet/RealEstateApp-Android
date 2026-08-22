@@ -1,0 +1,29 @@
+{
+  "player_tuning": {
+    "watchdog_timeout_ms": 3500,
+    "dwell_time_debounce_ms": 100,
+    "jank_aware_debounce_ms": 400,
+    "fling_debounce_ms": 250,
+    "fast_scroll_threshold_ms": 300,
+    "fling_count_threshold": 3,
+    "max_warmed_media": 8,
+    "low_buffer_threshold_s": 2.0,
+    "precautionary_buffer_threshold_s": 5.0,
+    "low_buffer_penalty": 0.5,
+    "precautionary_buffer_penalty": 0.8,
+    "low_ram_memory_threshold_mb": 150,
+    "default_cache_bytes": 536870912,
+    "min_cache_bytes": 134217728,
+    "storage_budget_percent": 0.1,
+    "min_buffer_live_ms": 800,
+    "max_buffer_live_ms": 2500,
+    "buffer_for_playback_live_ms": 400,
+    "buffer_for_playback_after_rebuffer_live_ms": 800,
+    "min_buffer_vod_ms": 800,
+    "max_buffer_vod_ms": 3000,
+    "buffer_for_playback_vod_ms": 250,
+    "buffer_for_playback_after_rebuffer_vod_ms": 800,
+    "live_buffer_multiplier": 0.6,
+    "vod_buffer_multiplier": 0.7
+  }
+}

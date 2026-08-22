@@ -7,20 +7,32 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RemoteConfigModel(
+    val network: NetworkConfigModel,
+    val security: SecurityConfigModel,
+    val player: PlayerTuningConfig = PlayerTuningConfig(),
+    val chaos: ChaosConfig = ChaosConfig()
+)
+
+@Serializable
+data class NetworkConfigModel(
+    @SerialName("base_url")
+    val baseUrl: String,
+    @SerialName("api_endpoints")
+    val apiEndpoints: List<ApiEndpoint> = emptyList(),
+    @SerialName("cdn_endpoints")
+    val cdnEndpoints: List<CdnEndpoint> = emptyList()
+)
+
+@Serializable
+data class SecurityConfigModel(
     @SerialName("key_patterns")
     val keyPatterns: KeyPatterns,
     @SerialName("encryption_keys")
     val encryptionKeys: EncryptionKeys,
-    @SerialName("cdn_endpoints")
-    val cdnEndpoints: List<CdnEndpoint>,
-    @SerialName("api_endpoints")
-    val apiEndpoints: List<ApiEndpoint> = emptyList(),
-    @SerialName("base_config")
-    val baseConfig: BaseConfig,
-    @SerialName("chaos_config")
-    val chaosConfig: ChaosConfig = ChaosConfig(),
-    @SerialName("player_tuning")
-    val playerTuning: PlayerTuningConfig = PlayerTuningConfig()
+    @SerialName("enable_logging")
+    val enableLogging: Boolean,
+    @SerialName("enable_telemetry")
+    val enableTelemetry: Boolean = false
 )
 
 @Serializable
@@ -42,16 +54,6 @@ data class EncryptionKeys(
     val asymmetricKeyId: String,
     @SerialName("asymmetric_signing_key_id")
     val asymmetricSigningKeyId: String
-)
-
-@Serializable
-data class BaseConfig(
-    @SerialName("base_url")
-    val baseUrl: String,
-    @SerialName("enable_logging")
-    val enableLogging: Boolean,
-    @SerialName("enable_telemetry")
-    val enableTelemetry: Boolean = false
 )
 
 @Serializable
@@ -119,3 +121,4 @@ data class PlayerTuningConfig(
     @SerialName("vod_buffer_multiplier")
     val vodBufferMultiplier: Double = 0.7
 )
+

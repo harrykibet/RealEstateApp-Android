@@ -1,0 +1,16 @@
+{
+  "key_patterns": {
+    "google": "^AIza[0-9A-Za-z-_]{35}$",
+    "generic": "^[A-Za-z0-9-_]{32,64}$",
+    "payments": "^(pk|sk)_(test|live)_[0-9a-zA-Z]{24}$"
+  },
+  "encryption_keys": {
+    "location_id": "africa-south1",
+    "key_ring_id": "CRYPTO_KEYS",
+    "symmetric_key_id": "GOOGLE_SYMMETRIC_CRYPTO",
+    "asymmetric_key_id": "RSA_CRYPTO",
+    "asymmetric_signing_key_id": "RSA_SIGNING_CRYPTO"
+  },
+  "enable_logging": true,
+  "enable_telemetry": false
+}

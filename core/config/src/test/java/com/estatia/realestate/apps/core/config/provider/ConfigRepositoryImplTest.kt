@@ -27,12 +27,9 @@ class ConfigRepositoryImplTest {
     private lateinit var repository: ConfigProvider
 
     private val mockConfig = mockk<RemoteConfigModel>(relaxed = true) {
-        every { keyPatterns.google } returns "google-regex"
-        every { keyPatterns.generic } returns "generic-regex"
-        every { keyPatterns.payments } returns "payments-regex"
-        every { baseConfig.baseUrl } returns "https://api.estatia.com"
-        every { baseConfig.enableLogging } returns true
-        every { cdnEndpoints } returns emptyList()
+        every { network.baseUrl } returns "https://api.estatia.com"
+        every { security.enableLogging } returns true
+        every { network.cdnEndpoints } returns emptyList()
     }
 
     @Before
@@ -46,17 +43,25 @@ class ConfigRepositoryImplTest {
     }
 
     @Test
-    fun `initialize loads from asset and refreshes from remote`() = runTest {
-        val assetJson = "{asset}"
-        val remoteJson = "{remote}"
-        coEvery { assetSource.loadDefaultConfig() } returns assetJson
-        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(remoteJson)
+    fun `initialize loads from assets and refreshes from remote`() = runTest {
+        val json = "{}"
+        coEvery { assetSource.loadNetworkConfig() } returns json
+        coEvery { assetSource.loadSecurityConfig() } returns json
+        coEvery { assetSource.loadPlayerConfig() } returns json
+        coEvery { assetSource.loadChaosConfig() } returns json
+        
+        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(json)
+        
+        every { parser.parseNetwork(any()) } returns mockk(relaxed = true)
+        every { parser.parseSecurity(any()) } returns mockk(relaxed = true)
+        every { parser.parsePlayer(any()) } returns mockk(relaxed = true)
+        every { parser.parseChaos(any()) } returns mockk(relaxed = true)
         every { parser.parse(any()) } returns mockConfig
 
         repository.initialize()
 
         assertTrue(repository.isInitialized)
-        verify { parser.parse(assetJson) }
+        verify { assetSource.loadNetworkConfig() }
         verify { stateHolder.update(mockConfig) }
         assertEquals("https://api.estatia.com", repository.baseUrl)
     }

@@ -73,11 +73,20 @@ internal class ConfigProvider @Inject constructor(
         withContext(Dispatchers.IO) {
             val startTime = System.currentTimeMillis()
 
-            val defaultJson = assetSource.loadDefaultConfig()
+            // Load from individual fragments in assets
+            val networkJson = assetSource.loadNetworkConfig()
+            val securityJson = assetSource.loadSecurityConfig()
+            val playerJson = assetSource.loadPlayerConfig()
+            val chaosJson = assetSource.loadChaosConfig()
 
-            val parsed = parser.parse(defaultJson)
+            val combined = RemoteConfigModel(
+                network = parser.parseNetwork(networkJson),
+                security = parser.parseSecurity(securityJson),
+                player = parser.parsePlayer(playerJson),
+                chaos = parser.parseChaos(chaosJson)
+            )
 
-            applyConfig(parsed)
+            applyConfig(combined)
 
             val duration = System.currentTimeMillis() - startTime
             metricsTracker.trackDuration("config.initialize.duration", duration.milliseconds)
@@ -100,6 +109,9 @@ internal class ConfigProvider @Inject constructor(
             val remoteJson = result.data as? String ?: return
 
             val parsedResult = runCatching {
+                // For remote refresh, we still assume a single unified RemoteConfigModel
+                // but we might need to handle the new structure if the backend changes.
+                // For now, this parse() will expect the new RemoteConfigModel structure.
                 parser.parse(remoteJson)
             }
             val parsed = parsedResult.getOrNull() ?: return
@@ -111,10 +123,10 @@ internal class ConfigProvider @Inject constructor(
     private fun applyConfig(config: RemoteConfigModel) {
 
         cachedConfig = config
-        googleRegex = Regex(config.keyPatterns.google)
-        genericRegex = Regex(config.keyPatterns.generic)
-        paymentsRegex = Regex(config.keyPatterns.payments)
-        cachedCdnEndpoints = config.cdnEndpoints
+        googleRegex = Regex(config.security.keyPatterns.google)
+        genericRegex = Regex(config.security.keyPatterns.generic)
+        paymentsRegex = Regex(config.security.keyPatterns.payments)
+        cachedCdnEndpoints = config.network.cdnEndpoints
         stateHolder.update(config)
 
     }
@@ -124,16 +136,16 @@ internal class ConfigProvider @Inject constructor(
     // -------------------------
 
     override val baseUrl: String
-        get() = requireConfig().baseConfig.baseUrl
+        get() = requireConfig().network.baseUrl
 
     override val apiEndpoints: List<ApiEndpoint>
-        get() = requireConfig().apiEndpoints
+        get() = requireConfig().network.apiEndpoints
 
     override val isLoggingEnabled: Boolean
-        get() = requireConfig().baseConfig.enableLogging
+        get() = requireConfig().security.enableLogging
 
     override val isTelemetryEnabled: Boolean
-        get() = requireConfig().baseConfig.enableTelemetry
+        get() = requireConfig().security.enableTelemetry
 
     override val googleKeyPattern: Regex
         get() = googleRegex
@@ -148,23 +160,23 @@ internal class ConfigProvider @Inject constructor(
         get() = cachedCdnEndpoints
 
     override val encryptionLocationId: String
-        get() = requireConfig().encryptionKeys.locationId
+        get() = requireConfig().security.encryptionKeys.locationId
 
     override val encryptionKeyRingId: String
-        get() = requireConfig().encryptionKeys.keyRingId
+        get() = requireConfig().security.encryptionKeys.keyRingId
 
     override val symmetricKeyId: String
-        get() = requireConfig().encryptionKeys.symmetricKeyId
+        get() = requireConfig().security.encryptionKeys.symmetricKeyId
 
     override val asymmetricKeyId: String
-        get() = requireConfig().encryptionKeys.asymmetricKeyId
+        get() = requireConfig().security.encryptionKeys.asymmetricKeyId
 
     override val asymmetricSigningKeyId: String
-        get() = requireConfig().encryptionKeys.asymmetricSigningKeyId
+        get() = requireConfig().security.encryptionKeys.asymmetricSigningKeyId
 
     override val chaosConfig: ChaosConfig
-        get() = requireConfig().chaosConfig
+        get() = requireConfig().chaos
 
     override val playerTuning: PlayerTuningConfig
-        get() = requireConfig().playerTuning
+        get() = requireConfig().player
 }
