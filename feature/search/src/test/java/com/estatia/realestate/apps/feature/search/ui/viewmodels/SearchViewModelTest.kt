@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.feature.search.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
+import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
@@ -22,7 +24,9 @@ import org.junit.Test
 class SearchViewModelTest {
 
     private lateinit var searchRepository: ISearchRepository
+    private lateinit var engagementRepository: IEngagementRepository
     private lateinit var togglePropertyLikeUseCase: TogglePropertyLikeUseCase
+    private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var viewModel: SearchViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -30,12 +34,14 @@ class SearchViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         searchRepository = mockk()
+        engagementRepository = mockk(relaxed = true)
         togglePropertyLikeUseCase = mockk()
+        savedStateHandle = SavedStateHandle()
         
         // Initial init call triggers loadSearchHistory
         coEvery { searchRepository.getSearchHistory() } returns AppResult.Success(emptyList())
         
-        viewModel = SearchViewModel(searchRepository, togglePropertyLikeUseCase)
+        viewModel = SearchViewModel(searchRepository, engagementRepository, togglePropertyLikeUseCase, savedStateHandle)
     }
 
     @After

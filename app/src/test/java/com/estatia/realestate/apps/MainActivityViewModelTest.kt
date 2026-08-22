@@ -2,6 +2,7 @@ package com.estatia.realestate.apps
 
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
 import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
@@ -26,6 +27,7 @@ class MainActivityViewModelTest {
 
     private lateinit var userRepository: IUserRepository
     private lateinit var authRepository: IAuthRepository
+    private lateinit var configProvider: IConfigProvider
     private lateinit var viewModel: MainActivityViewModel
     private val testDispatcher = StandardTestDispatcher()
     private val userDataFlow = MutableStateFlow(
@@ -33,10 +35,12 @@ class MainActivityViewModelTest {
             bookmarkedProperties = emptySet(),
             viewedProperties = emptySet(),
             followedProperties = emptySet(),
+            likedProperties = emptySet(),
             themeBrand = ThemeBrand.DEFAULT,
             darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
             useDynamicColor = false,
-            shouldHideOnboarding = false
+            shouldHideOnboarding = false,
+            isMuted = false
         )
     )
 
@@ -45,11 +49,13 @@ class MainActivityViewModelTest {
         Dispatchers.setMain(testDispatcher)
         userRepository = mockk()
         authRepository = mockk()
+        configProvider = mockk()
         
         every { userRepository.userData } returns userDataFlow
         every { authRepository.isUserAuthenticated() } returns flowOf(true)
+        every { configProvider.isReady } returns MutableStateFlow(true)
         
-        viewModel = MainActivityViewModel(userRepository, authRepository)
+        viewModel = MainActivityViewModel(userRepository, authRepository, configProvider)
     }
 
     @After

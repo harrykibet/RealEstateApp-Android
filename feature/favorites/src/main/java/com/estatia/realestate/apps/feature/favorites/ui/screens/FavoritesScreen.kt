@@ -124,7 +124,7 @@ fun FavoritesScreen(
                 onClick = { onPropertyClick(it.id) }
             )
         },
-        commentsContent = commentsContent,
+        commentsContent = { id, _ -> commentsContent(id) },
         onNavigateToDetails = onPropertyClick
     )
 }

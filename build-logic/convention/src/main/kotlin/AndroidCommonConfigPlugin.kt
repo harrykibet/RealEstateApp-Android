@@ -2,6 +2,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.estatia.realestate.apps.configureAndroidCommon
+import com.estatia.realestate.apps.configurePackagingOptions
 import com.estatia.realestate.apps.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,15 +20,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             val isAppModule = plugins.hasPlugin("com.android.application")
             val isDynamicFeatureModule = plugins.hasPlugin("com.android.dynamic-feature")
 
-            // Resolve Protobuf duplicate class conflict
-            configurations.all {
-                exclude(group = "com.google.protobuf", module = "protobuf-lite")
-                exclude(group = "com.google.firebase", module = "protolite-well-known-types")
-                resolutionStrategy {
-                    force(libs.findLibrary("protobuf.javalite").get())
-                }
-            }
-
             when {
                 isAppModule -> {
                     extensions.configure<ApplicationExtension> {
@@ -44,6 +36,19 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
                     extensions.configure<LibraryExtension> {
                         configureAndroidCommon(this@with)
                     }
+                }
+            }
+
+            // Configure common packaging options
+            configurePackagingOptions(this@with)
+
+            // Resolve Protobuf duplicate class conflict
+            configurations.all {
+                exclude(group = "com.google.protobuf", module = "protobuf-lite")
+                exclude(group = "com.google.protobuf", module = "protobuf-java")
+                exclude(group = "com.google.firebase", module = "protolite-well-known-types")
+                resolutionStrategy {
+                    force(libs.findLibrary("protobuf.javalite").get())
                 }
             }
 

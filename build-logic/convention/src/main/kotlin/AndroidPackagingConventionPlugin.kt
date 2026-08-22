@@ -11,5 +11,8 @@ class AndroidPackagingConventionPlugin : Plugin<Project> {
         project.plugins.withId("com.android.library") {
             configurePackagingOptions(project)
         }
+        project.plugins.withId("com.android.test") {
+            configurePackagingOptions(project)
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import android.content.Context
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.RemoteServiceException
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataSource
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
@@ -10,20 +12,26 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import org.junit.Before
 import org.junit.Test
 
 class AnalyticsTrackerTest {
 
     private lateinit var remoteDataSource: IAnalyticsRemoteDataSource
+    private lateinit var localDataSource: IAnalyticsLocalDataSource
     private lateinit var logger: ILogger
+    private lateinit var context: Context
+    private val json = Json { ignoreUnknownKeys = true }
     private lateinit var analyticsTracker: AnalyticsTracker
 
     @Before
     fun setup() {
         remoteDataSource = mockk()
+        localDataSource = mockk()
         logger = mockk(relaxed = true)
-        analyticsTracker = AnalyticsTracker(remoteDataSource, logger)
+        context = mockk(relaxed = true)
+        analyticsTracker = AnalyticsTracker(remoteDataSource, localDataSource, logger, json, context)
     }
 
     @Test

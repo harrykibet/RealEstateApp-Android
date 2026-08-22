@@ -54,6 +54,11 @@ abstract class DemoDataSourcesModule {
     internal abstract fun bindSecretRemoteSource(
         dataSource: DemoSecretRemoteDataSource): ISecretRemoteDataSource
 
+    @Binds
+    @Singleton
+    internal abstract fun bindPaymentsRemoteSource(
+        dataSource: DemoPaymentsRemoteDataSource): IPaymentsRemoteDataSource
+
     companion object {
 
         @Provides

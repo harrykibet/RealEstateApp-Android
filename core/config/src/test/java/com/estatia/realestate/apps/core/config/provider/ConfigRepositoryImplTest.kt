@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
 import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
+import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import io.mockk.coEvery
 import io.mockk.every
@@ -22,6 +23,7 @@ class ConfigRepositoryImplTest {
     private lateinit var dataRepository: IConfigDataRepository
     private lateinit var parser: ConfigParser
     private lateinit var stateHolder: ConfigStateHolder
+    private lateinit var metricsTracker: IMetricsTracker
     private lateinit var repository: ConfigProvider
 
     private val mockConfig = mockk<RemoteConfigModel>(relaxed = true) {
@@ -39,7 +41,8 @@ class ConfigRepositoryImplTest {
         dataRepository = mockk()
         parser = mockk()
         stateHolder = mockk(relaxed = true)
-        repository = ConfigProvider(assetSource, dataRepository, parser, stateHolder)
+        metricsTracker = mockk(relaxed = true)
+        repository = ConfigProvider(assetSource, dataRepository, parser, stateHolder, metricsTracker)
     }
 
     @Test
