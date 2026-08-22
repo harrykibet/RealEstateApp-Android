@@ -89,4 +89,20 @@ class SearchViewModelTest {
         assert(state is SearchUiState.Error)
         assertEquals("Unknown database error", (state as SearchUiState.Error).message)
     }
+
+    @Test
+    fun `onResultClicked reports engagement`() = runTest {
+        val query = "Nairobi"
+        val propertyId = "prop_1"
+        val mockProperties = listOf(mockk<com.estatia.realestate.apps.core.model.property.PropertyDomainModel>())
+        coEvery { searchRepository.searchProperties(query, 20) } returns AppResult.Success(mockProperties)
+
+        viewModel.searchProperties(query)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onResultClicked(propertyId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        io.mockk.coVerify { engagementRepository.reportSearch(query, propertyId) }
+    }
 }
