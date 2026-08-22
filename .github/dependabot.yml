@@ -1,4 +1,29 @@
-# Dependabot version updates are disabled in favor of Renovate.
-# GitHub will still provide Dependabot Security Alerts via the repository settings.
+# To enable Dependabot security updates, you must configure version updates.
+# GitHub uses this file to track and automatically update dependencies.
+
 version: 2
-updates: []
+updates:
+  # Maintain dependencies for Gradle
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    timezone: "UTC"
+    open-pull-requests-limit: 10
+    # Grouping updates to reduce PR noise
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    timezone: "UTC"
+    open-pull-requests-limit: 5
