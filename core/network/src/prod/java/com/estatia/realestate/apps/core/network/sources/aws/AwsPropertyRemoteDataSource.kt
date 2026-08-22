@@ -75,9 +75,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
             val imageKeys = imageUploads.awaitAll()
 
             // 3. Create entry in Aurora via AppSync (GraphQL Mutation)
-            val mutation = """
-                mutation CreateProperty(${'$'}input: CreatePropertyInput!) {
-                    createProperty(input: ${'$'}input) { id }
+            val mutation = $$"""
+                mutation CreateProperty($input: CreatePropertyInput!) {
+                    createProperty(input: $input) { id }
                 }
             """.trimIndent()
 
@@ -114,9 +114,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation UpdateProperty(${'$'}id: ID!, ${'$'}updates: AWSJSON!) {
-                updateProperty(id: ${'$'}id, updates: ${'$'}updates) { id }
+        val mutation = $$"""
+            mutation UpdateProperty($id: ID!, $updates: AWSJSON!) {
+                updateProperty(id: $id, updates: $updates) { id }
             }
         """.trimIndent()
 
@@ -136,9 +136,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation DeleteProperty(${'$'}id: ID!) {
-                deleteProperty(id: ${'$'}id) { id }
+        val mutation = $$"""
+            mutation DeleteProperty($id: ID!) {
+                deleteProperty(id: $id) { id }
             }
         """.trimIndent()
 
@@ -158,9 +158,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> {
-        val query = """
-            query GetProperty(${'$'}id: ID!) {
-                getProperty(id: ${'$'}id) {
+        val query = $$"""
+            query GetProperty($id: ID!) {
+                getProperty(id: $id) {
                     id
                     title
                     description
@@ -205,9 +205,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = networkClient.execute {
-        val query = """
-            query ListLikedProperties(${'$'}userId: ID!) {
-                listLikedProperties(userId: ${'$'}userId) {
+        val query = $$"""
+            query ListLikedProperties($userId: ID!) {
+                listLikedProperties(userId: $userId) {
                     items { id, title, price, imageUrl }
                 }
             }
@@ -230,9 +230,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation LikeProperty(${'$'}userId: ID!, ${'$'}propertyId: ID!) {
-                likeProperty(userId: ${'$'}userId, propertyId: ${'$'}propertyId) { success }
+        val mutation = $$"""
+            mutation LikeProperty($userId: ID!, $propertyId: ID!) {
+                likeProperty(userId: $userId, propertyId: $propertyId) { success }
             }
         """.trimIndent()
 
@@ -252,9 +252,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation UnlikeProperty(${'$'}userId: ID!, ${'$'}propertyId: ID!) {
-                unlikeProperty(userId: ${'$'}userId, propertyId: ${'$'}propertyId) { success }
+        val mutation = $$"""
+            mutation UnlikeProperty($userId: ID!, $propertyId: ID!) {
+                unlikeProperty(userId: $userId, propertyId: $propertyId) { success }
             }
         """.trimIndent()
 
@@ -274,9 +274,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun recordView(propertyId: String): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation RecordView(${'$'}propertyId: ID!) {
-                recordView(propertyId: ${'$'}propertyId) { success }
+        val mutation = $$"""
+            mutation RecordView($propertyId: ID!) {
+                recordView(propertyId: $propertyId) { success }
             }
         """.trimIndent()
 
@@ -296,9 +296,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     }
 
     override suspend fun recordShare(propertyId: String): AppResult<Unit> = networkClient.execute {
-        val mutation = """
-            mutation RecordShare(${'$'}propertyId: ID!) {
-                recordShare(propertyId: ${'$'}propertyId) { success }
+        val mutation = $$"""
+            mutation RecordShare($propertyId: ID!) {
+                recordShare(propertyId: $propertyId) { success }
             }
         """.trimIndent()
 
@@ -322,9 +322,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyRemotePage> {
-        val query = """
-            query GetPersonalizedFeed(${'$'}userId: ID, ${'$'}limit: Int, ${'$'}nextToken: String) {
-                getPersonalizedFeed(userId: ${'$'}userId, limit: ${'$'}limit, nextToken: ${'$'}nextToken) {
+        val query = $$"""
+            query GetPersonalizedFeed($userId: ID, $limit: Int, $nextToken: String) {
+                getPersonalizedFeed(userId: $userId, limit: $limit, nextToken: $nextToken) {
                     items {
                         id
                         title

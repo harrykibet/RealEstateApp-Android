@@ -25,9 +25,9 @@ internal class AwsCommentsRemoteDataSource @Inject constructor(
 ) : ICommentsRemoteDataSource {
 
     override suspend fun submitComment(comment: CommentEntityModel): AppResult<Unit> {
-        val mutation = """
-            mutation CreateComment(${'$'}input: CreateCommentInput!) {
-                createComment(input: ${'$'}input) { id }
+        val mutation = $$"""
+            mutation CreateComment($input: CreateCommentInput!) {
+                createComment(input: $input) { id }
             }
         """.trimIndent()
 
@@ -50,9 +50,9 @@ internal class AwsCommentsRemoteDataSource @Inject constructor(
 
     override fun observeComments(propertyId: String): Flow<AppResult<List<CommentEntityModel>>> = callbackFlow {
         // AppSync Subscription for real-time comments
-        val subscriptionQuery = """
-            subscription OnCreateComment(${'$'}propertyId: String!) {
-                onCreateComment(propertyId: ${'$'}propertyId) {
+        val subscriptionQuery = $$"""
+            subscription OnCreateComment($propertyId: String!) {
+                onCreateComment(propertyId: $propertyId) {
                     id
                     propertyId
                     authorId
