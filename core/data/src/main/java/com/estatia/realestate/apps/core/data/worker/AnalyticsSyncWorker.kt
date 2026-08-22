@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

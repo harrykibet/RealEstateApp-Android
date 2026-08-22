@@ -2,7 +2,11 @@ package com.estatia.realestate.apps.core.data.di
 
 import com.estatia.realestate.apps.core.data.mappers.exceptions.ExceptionTranslator
 import com.estatia.realestate.apps.core.data.repositories.*
-import com.estatia.realestate.apps.core.domain.interfaces.*
+import com.estatia.realestate.apps.core.domain.analytics.*
+import com.estatia.realestate.apps.core.domain.common.*
+import com.estatia.realestate.apps.core.domain.config.*
+import com.estatia.realestate.apps.core.domain.repository.*
+import com.estatia.realestate.apps.core.domain.security.*
 import kotlinx.serialization.json.Json
 import dagger.Binds
 import dagger.Module

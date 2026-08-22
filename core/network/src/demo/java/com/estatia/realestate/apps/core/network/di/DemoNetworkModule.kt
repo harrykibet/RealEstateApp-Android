@@ -6,7 +6,7 @@ import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.exceptions.*
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig

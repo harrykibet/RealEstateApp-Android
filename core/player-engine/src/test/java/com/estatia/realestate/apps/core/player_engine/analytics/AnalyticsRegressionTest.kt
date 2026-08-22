@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.analytics
 
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import org.junit.Assert.assertNotEquals

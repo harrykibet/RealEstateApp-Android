@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.analytics
 
-import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.Counter

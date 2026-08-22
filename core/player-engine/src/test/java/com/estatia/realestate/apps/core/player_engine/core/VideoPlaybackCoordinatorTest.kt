@@ -5,7 +5,7 @@ import android.os.Looper
 import android.os.SystemClock
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -35,7 +35,7 @@ class VideoPlaybackCoordinatorTest {
     private lateinit var playerController: IPlayerManager
     private lateinit var streamingPipeline: IStreamingPipeline
     private lateinit var performanceMonitor: PerformanceMonitor
-    private lateinit var configProvider: IConfigProvider
+    private lateinit var config: IPlayerTuningConfig
     private val testScope = TestScope()
 
     private val tuning = PlayerTuningConfig(
@@ -63,7 +63,7 @@ class VideoPlaybackCoordinatorTest {
         performanceMonitor = mockk {
             every { isJanking } returns isJankingFlow
         }
-        configProvider = mockk {
+        config = mockk {
             every { playerTuning } returns tuning
         }
 
@@ -71,7 +71,7 @@ class VideoPlaybackCoordinatorTest {
             playerController,
             streamingPipeline,
             performanceMonitor,
-            configProvider
+            config
         )
     }
 

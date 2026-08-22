@@ -1,6 +1,10 @@
 package com.estatia.realestate.apps.core.network.di
 
-import com.estatia.realestate.apps.core.domain.interfaces.*
+import com.estatia.realestate.apps.core.domain.analytics.*
+import com.estatia.realestate.apps.core.domain.common.*
+import com.estatia.realestate.apps.core.domain.config.*
+import com.estatia.realestate.apps.core.domain.repository.*
+import com.estatia.realestate.apps.core.domain.security.*
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.network.sources.firebase.*

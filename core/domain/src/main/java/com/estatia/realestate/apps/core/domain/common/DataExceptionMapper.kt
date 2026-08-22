@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.domain.interfaces
+package com.estatia.realestate.apps.core.domain.common
 
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.AppException

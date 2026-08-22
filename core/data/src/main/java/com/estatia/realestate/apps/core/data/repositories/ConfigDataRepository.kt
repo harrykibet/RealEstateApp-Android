@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
+import com.estatia.realestate.apps.core.domain.config.IConfigDataRepository
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
 import javax.inject.Inject
 

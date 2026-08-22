@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState

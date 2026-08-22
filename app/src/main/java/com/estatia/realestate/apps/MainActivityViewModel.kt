@@ -2,9 +2,9 @@ package com.estatia.realestate.apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.config.IConfigLifecycle
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     userDataRepository: IUserRepository,
     authRepository: IAuthRepository,
-    config: IConfigProvider
+    config: IConfigLifecycle
 ) : ViewModel() {
     private val _isInPiPMode = MutableStateFlow(false)
     val isInPiPMode = _isInPiPMode.asStateFlow()

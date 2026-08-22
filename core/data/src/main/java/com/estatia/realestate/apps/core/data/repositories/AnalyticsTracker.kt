@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataSource
 import com.estatia.realestate.apps.core.data.worker.AnalyticsSyncWorker

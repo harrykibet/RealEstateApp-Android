@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import android.app.Activity

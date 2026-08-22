@@ -1,9 +1,10 @@
 package com.estatia.realestate.apps.core.analytics
 
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
+import com.estatia.realestate.apps.core.domain.config.INetworkConfig
+import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
@@ -21,7 +22,8 @@ class ObservabilityInitializerTest {
     private lateinit var crashReporter: ICrashReporter
     private lateinit var deviceUtils: IDeviceUtils
     private lateinit var authRepository: IAuthRepository
-    private lateinit var configProvider: IConfigProvider
+    private lateinit var networkConfig: INetworkConfig
+    private lateinit var securityConfig: ISecurityConfig
     private lateinit var initializer: ObservabilityInitializer
 
     @Before
@@ -29,13 +31,15 @@ class ObservabilityInitializerTest {
         crashReporter = mockk(relaxed = true)
         deviceUtils = mockk(relaxed = true)
         authRepository = mockk(relaxed = true)
-        configProvider = mockk(relaxed = true)
+        networkConfig = mockk(relaxed = true)
+        securityConfig = mockk(relaxed = true)
         
         initializer = ObservabilityInitializer(
             crashReporter,
             deviceUtils,
             authRepository,
-            configProvider
+            networkConfig,
+            securityConfig
         )
 
         // Clear global registry before each test
@@ -44,8 +48,8 @@ class ObservabilityInitializerTest {
 
     @Test
     fun `initialize adds multiple registries when telemetry enabled`() = runTest {
-        every { configProvider.isTelemetryEnabled } returns true
-        coEvery { configProvider.awaitReady() } returns Unit
+        every { securityConfig.isTelemetryEnabled } returns true
+        coEvery { networkConfig.awaitReady() } returns Unit
 
         initializer.initialize()
 
@@ -57,8 +61,8 @@ class ObservabilityInitializerTest {
 
     @Test
     fun `initialize does not add advanced registries when telemetry disabled`() = runTest {
-        every { configProvider.isTelemetryEnabled } returns false
-        coEvery { configProvider.awaitReady() } returns Unit
+        every { securityConfig.isTelemetryEnabled } returns false
+        coEvery { networkConfig.awaitReady() } returns Unit
 
         initializer.initialize()
 

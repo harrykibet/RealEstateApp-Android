@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.events.EventTypes
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import javax.inject.Inject
 import javax.inject.Singleton

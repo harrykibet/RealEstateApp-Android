@@ -10,7 +10,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -25,7 +25,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
     private val streamingPipeline: IStreamingPipeline,
     private val performanceMonitor: PerformanceMonitor,
-    private val configProvider: IConfigProvider
+    private val config: IPlayerTuningConfig
 ) {
     private var playJob: Job? = null
     private var preloadJob: Job? = null
@@ -33,7 +33,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     private var lastPageChangeTime: Long = 0
     private var consecutiveFastScrolls: Int = 0
 
-    private val tuning get() = configProvider.playerTuning
+    private val tuning get() = config.playerTuning
 
     private val warmedMedia = LinkedHashSet<String>()
 

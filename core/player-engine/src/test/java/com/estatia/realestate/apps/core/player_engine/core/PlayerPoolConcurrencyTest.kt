@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
@@ -71,7 +71,7 @@ class PlayerPoolConcurrencyTest {
                 )
             )
         }
-        val configProvider = mockk<IConfigProvider>(relaxed = true) {
+        val config = mockk<IPlayerTuningConfig>(relaxed = true) {
             every { playerTuning } returns PlayerTuningConfig()
         }
         val sizingPolicy = mockk<IPlayerPoolSizingPolicy> {
@@ -83,7 +83,7 @@ class PlayerPoolConcurrencyTest {
             configurationFactory,
             analyticsListenerProvider,
             environmentCoordinator,
-            configProvider,
+            config,
             engineScope,
             sizingPolicy
         )

@@ -3,8 +3,8 @@ package com.estatia.realestate.apps
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
+import com.estatia.realestate.apps.core.domain.config.IConfigProvider
+import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp

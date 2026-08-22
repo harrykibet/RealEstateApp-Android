@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data.repositories
 import android.util.Base64
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
-import com.estatia.realestate.apps.core.domain.interfaces.ISecurityRepository
+import com.estatia.realestate.apps.core.domain.security.ISecurityRepository
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.IHashManager
 import com.estatia.realestate.apps.core.security.interfaces.IRsaCryptoEngine

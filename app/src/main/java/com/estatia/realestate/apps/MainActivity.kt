@@ -25,7 +25,7 @@ import com.estatia.realestate.apps.ui.EstatiaApp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.localization.api.*
 import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState

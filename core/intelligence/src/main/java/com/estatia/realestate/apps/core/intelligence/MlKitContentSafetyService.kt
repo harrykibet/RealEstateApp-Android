@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.intelligence
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.model.engagement.SensitiveEntity
 import com.google.mlkit.vision.common.InputImage

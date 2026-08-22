@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.analytics
 
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent

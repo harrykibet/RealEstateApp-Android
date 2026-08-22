@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps
 
 import app.cash.turbine.test
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.config.IConfigProvider
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand

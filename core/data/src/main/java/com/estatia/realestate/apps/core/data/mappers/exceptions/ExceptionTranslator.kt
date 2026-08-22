@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
-import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import javax.inject.Inject
 
 

@@ -14,7 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import androidx.tracing.trace
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.localization.api.TimeZoneMonitor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.NetworkState

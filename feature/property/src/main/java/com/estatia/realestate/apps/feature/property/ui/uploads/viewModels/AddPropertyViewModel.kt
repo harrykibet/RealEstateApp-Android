@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyUiState

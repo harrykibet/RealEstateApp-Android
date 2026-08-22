@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.feature.home
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel

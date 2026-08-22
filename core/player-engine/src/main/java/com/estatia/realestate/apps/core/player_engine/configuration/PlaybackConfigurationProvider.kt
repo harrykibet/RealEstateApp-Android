@@ -8,7 +8,7 @@ import androidx.media3.exoplayer.LivePlaybackSpeedControl
 import androidx.media3.exoplayer.LoadControl
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @UnstableApi
 class PlaybackConfigurationProvider @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val configProvider: IConfigProvider
+    private val config: IPlayerTuningConfig
 ) : IPlaybackConfigurationProvider {
 
     override fun createLoadControl(mediaType: MediaType, environment: EnvironmentState): LoadControl {
@@ -57,7 +57,7 @@ class PlaybackConfigurationProvider @Inject constructor(
     }
 
     private fun createLiveLoadControl(env: EnvironmentState): LoadControl {
-        val tuning = configProvider.playerTuning
+        val tuning = config.playerTuning
         // ⏱️ Adaptive Buffer: Shrink targets on metered/poor connections to save user data
         val multiplier = if (env.isMetered || env.isSustainedLowBandwidth) tuning.liveBufferMultiplier else 1.0
         
@@ -72,7 +72,7 @@ class PlaybackConfigurationProvider @Inject constructor(
     }
 
     private fun createVodLoadControl(env: EnvironmentState): LoadControl {
-        val tuning = configProvider.playerTuning
+        val tuning = config.playerTuning
         // ⏱️ Adaptive Buffer: Shrink targets on metered/poor connections
         val multiplier = if (env.isMetered || env.isSustainedLowBandwidth) tuning.vodBufferMultiplier else 1.0
 

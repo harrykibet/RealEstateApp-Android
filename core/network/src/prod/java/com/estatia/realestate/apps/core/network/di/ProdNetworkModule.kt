@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
@@ -145,7 +145,7 @@ object ProdNetworkModule {
     @Singleton
     fun provideRetrofit(
         @AuthClient okHttpClient: OkHttpClient,
-        config: IConfigProvider
+        config: INetworkConfig
     ): Retrofit {
 
         val baseUrl = config.baseUrl

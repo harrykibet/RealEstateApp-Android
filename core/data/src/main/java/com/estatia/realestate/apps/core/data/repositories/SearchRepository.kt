@@ -3,9 +3,9 @@ package com.estatia.realestate.apps.core.data.repositories
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
-import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities

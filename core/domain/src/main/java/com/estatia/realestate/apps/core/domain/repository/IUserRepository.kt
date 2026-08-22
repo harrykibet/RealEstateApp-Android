@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.domain.interfaces
+package com.estatia.realestate.apps.core.domain.repository
 
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData

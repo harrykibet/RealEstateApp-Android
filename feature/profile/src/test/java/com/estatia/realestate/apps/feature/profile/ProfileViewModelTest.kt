@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.feature.profile.ui.viewmodels
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.core.model.user.VerificationLevel

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.feature.auth.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import com.estatia.realestate.apps.feature.auth.state.AuthState.Authenticated

@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.domain.interfaces
+package com.estatia.realestate.apps.core.domain.common
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult

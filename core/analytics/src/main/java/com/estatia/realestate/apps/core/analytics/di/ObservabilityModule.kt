@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.analytics.di
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.analytics.ObservabilityInitializer
 import com.estatia.realestate.apps.core.analytics.MetricsTracker
-import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

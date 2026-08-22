@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.intelligence
 
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

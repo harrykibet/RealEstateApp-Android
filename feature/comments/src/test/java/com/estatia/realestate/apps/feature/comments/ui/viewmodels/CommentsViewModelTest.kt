@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.feature.comments.ui.viewmodels
 
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
+import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent

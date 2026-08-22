@@ -2,9 +2,9 @@ package com.estatia.realestate.apps.core.domain.usecase
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import io.mockk.coEvery
 import io.mockk.coVerify

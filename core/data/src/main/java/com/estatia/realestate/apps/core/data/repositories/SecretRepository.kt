@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
-import com.estatia.realestate.apps.core.domain.interfaces.ISecretRepository
+import com.estatia.realestate.apps.core.domain.security.ISecretRepository
 import com.estatia.realestate.apps.core.model.security.SecretId
 import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
 import com.estatia.realestate.apps.core.security.interfaces.SecureKeyProvider

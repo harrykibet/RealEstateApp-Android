@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,7 +39,7 @@ class PlayerPool @Inject constructor(
     private val configurationFactory: IPlayerConfigurationFactory,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
     private val environmentCoordinator: EnvironmentCoordinator,
-    private val configProvider: IConfigProvider,
+    private val config: IPlayerTuningConfig,
     @param:EngineScope private val scope: CoroutineScope,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
@@ -232,13 +232,13 @@ class PlayerPool @Inject constructor(
         title: String?,
         artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+        val playerConfig = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val listener = analyticsListenerProvider.get()
         
         player.addAnalyticsListener(listener)
-        player.trackSelectionParameters = config.trackSelectionParameters
+        player.trackSelectionParameters = playerConfig.trackSelectionParameters
         player.clearMediaItems()
-        player.setMediaItem(config.mediaItem)
+        player.setMediaItem(playerConfig.mediaItem)
         player.playWhenReady = false
         player.prepare()
         
@@ -247,7 +247,7 @@ class PlayerPool @Inject constructor(
             mediaType = mediaType,
             player = player,
             analyticsListener = listener,
-            reducer = PlaybackStateReducer(scope, configProvider.playerTuning.watchdogTimeoutMs)
+            reducer = PlaybackStateReducer(scope, config.playerTuning.watchdogTimeoutMs)
         )
     }
 
@@ -260,15 +260,15 @@ class PlayerPool @Inject constructor(
         title: String?,
         artist: String?
     ): ManagedPlayer {
-        val config = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
-        val created = playerFactory.create(config)
+        val playerConfig = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+        val created = playerFactory.create(playerConfig)
 
         val managed = ManagedPlayer(
             mediaId = mediaId,
             mediaType = mediaType,
             player = created.player,
             analyticsListener = created.analyticsListener,
-            reducer = PlaybackStateReducer(scope, configProvider.playerTuning.watchdogTimeoutMs)
+            reducer = PlaybackStateReducer(scope, config.playerTuning.watchdogTimeoutMs)
         )
 
         managed.player.playWhenReady = false

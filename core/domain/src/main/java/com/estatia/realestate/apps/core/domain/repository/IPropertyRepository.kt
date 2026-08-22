@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.domain.interfaces
+package com.estatia.realestate.apps.core.domain.repository
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel

@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.feature.search.ui.viewmodels
 import androidx.lifecycle.SavedStateHandle
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
-import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import io.mockk.coEvery

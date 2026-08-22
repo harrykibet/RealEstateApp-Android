@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.utils
 
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.BuildConfig
@@ -17,12 +17,12 @@ import javax.inject.Singleton
  * and provides sanitization for logging purposes to prevent exposing sensitive information.
  *
  * @property logger An instance of [ILogger] for logging validation results and errors.
- * @property config An instance of [IConfigProvider] for retrieving API key patterns from remote config.
+ * @property config An instance of [ISecurityConfig] for retrieving API key patterns from remote config.
  */
 @Singleton
 internal class ApiKeyValidator @Inject constructor(
     private val logger: ILogger,
-    private val config: IConfigProvider,
+    private val config: ISecurityConfig,
 ) : IApiKeyValidator {
 
     private val googleKeyPattern: Regex

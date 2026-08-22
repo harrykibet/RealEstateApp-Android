@@ -3,13 +3,13 @@ package com.estatia.realestate.apps.core.player_engine.utils
 import android.os.PowerManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class DynamicBitratePolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
-    private val configProvider: IConfigProvider
+    private val config: IPlayerTuningConfig
 ) {
 
     /**
@@ -20,7 +20,7 @@ class DynamicBitratePolicy @Inject constructor(
         environment: EnvironmentState,
         bufferSeconds: Double = 5.0
     ): Int {
-        val tuning = configProvider.playerTuning
+        val tuning = config.playerTuning
         val deviceCap = deviceUtils.getMaxSupportedBitrate().coerceAtLeast(1_000_000)
         val networkCap = environment.estimatedThroughputBps.coerceAtLeast(1_000_000L)
 

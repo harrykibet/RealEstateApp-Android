@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Loading
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Success
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow

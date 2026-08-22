@@ -9,7 +9,7 @@ import androidx.media3.datasource.HttpDataSource
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.interfaces.IAnalyticsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import com.estatia.realestate.apps.core.player_engine.di.PlaybackCache

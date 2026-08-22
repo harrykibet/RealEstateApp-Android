@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.feature.settings
 
 import app.cash.turbine.test
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow

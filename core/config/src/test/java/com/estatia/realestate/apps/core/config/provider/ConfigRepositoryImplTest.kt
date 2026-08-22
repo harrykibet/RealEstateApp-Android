@@ -4,8 +4,8 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigDataRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.config.IConfigDataRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import io.mockk.coEvery
 import io.mockk.every

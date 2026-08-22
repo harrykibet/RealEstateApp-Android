@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.intelligence.di
 
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.core.intelligence.IVerificationService
-import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.intelligence.MlKitMediaIntelligenceService
 import com.estatia.realestate.apps.core.intelligence.MlKitVerificationService
 import com.estatia.realestate.apps.core.intelligence.MlKitContentSafetyService

@@ -23,7 +23,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.ChaosDataSourceF
 import com.estatia.realestate.apps.core.player_engine.streaming.ICacheSizingPolicy
 import com.estatia.realestate.apps.core.player_engine.streaming.AdaptiveCacheSizingPolicy
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IChaosConfig
 import com.estatia.realestate.apps.core.network.di.PlaybackClient
 import dagger.Module
 import dagger.Provides
@@ -83,7 +83,7 @@ object StreamingModule {
         @ApplicationContext context: Context,
         @PlaybackClient okHttpClient: OkHttpClient,
         deviceUtils: IDeviceUtils,
-        configProvider: IConfigProvider,
+        chaosConfig: IChaosConfig,
         cdnSelector: CdnSelector,
         healthMonitor: CdnHealthMonitor,
         logger: ILogger
@@ -108,7 +108,7 @@ object StreamingModule {
         // 🏎️ Chaos Injection: Wrap the factory in a Chaos decorator in debug builds
         // to enable real-world failure simulation.
         return if (com.estatia.realestate.apps.core.player_engine.BuildConfig.DEBUG) {
-            ChaosDataSourceFactory(failoverFactory, configProvider)
+            ChaosDataSourceFactory(failoverFactory, chaosConfig)
         } else {
             failoverFactory
         }

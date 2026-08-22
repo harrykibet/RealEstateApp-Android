@@ -2,9 +2,10 @@ package com.estatia.realestate.apps.core.analytics
 
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
-import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
+import com.estatia.realestate.apps.core.domain.config.INetworkConfig
+import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
 import io.micrometer.core.instrument.Clock
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry
@@ -21,12 +22,13 @@ internal class ObservabilityInitializer @Inject constructor(
     private val crashReporter: ICrashReporter,
     private val deviceUtils: IDeviceUtils,
     private val authRepository: IAuthRepository,
-    private val configProvider: IConfigProvider
+    private val networkConfig: INetworkConfig,
+    private val securityConfig: ISecurityConfig
 ) : IBackendInitializer {
 
     override suspend fun initialize() {
         // Ensure config is ready before accessing it
-        configProvider.awaitReady()
+        networkConfig.awaitReady()
 
         // Set baseline crashlytics keys
         val deviceInfo = deviceUtils.getDeviceInfo()
@@ -41,7 +43,7 @@ internal class ObservabilityInitializer @Inject constructor(
         }
 
         // 📊 Enable Metrics Egress for validation in debug builds OR if telemetry flag is enabled
-        if (BuildConfig.DEBUG || configProvider.isTelemetryEnabled) {
+        if (BuildConfig.DEBUG || securityConfig.isTelemetryEnabled) {
             Metrics.addRegistry(LoggingMeterRegistry())
             
             // 📈 Real-world sinks for data-driven tuning
@@ -56,7 +58,7 @@ internal class ObservabilityInitializer @Inject constructor(
         // 2. OTLP Registry (Push to OpenTelemetry Collector)
         val otlpConfig = object : OtlpConfig {
             override fun url(): String {
-                val base = configProvider.baseUrl
+                val base = networkConfig.baseUrl
                 return if (base.endsWith("/")) "${base}v1/metrics" else "$base/v1/metrics"
             }
             override fun get(key: String): String? = null

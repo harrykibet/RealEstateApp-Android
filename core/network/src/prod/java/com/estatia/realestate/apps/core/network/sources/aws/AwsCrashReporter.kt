@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources.aws
 
 import com.amplifyframework.core.Amplify
-import com.estatia.realestate.apps.core.domain.interfaces.ICrashReporter
+import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import javax.inject.Inject
 
 /**

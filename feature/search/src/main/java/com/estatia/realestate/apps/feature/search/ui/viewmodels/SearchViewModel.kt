@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.ISearchRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel

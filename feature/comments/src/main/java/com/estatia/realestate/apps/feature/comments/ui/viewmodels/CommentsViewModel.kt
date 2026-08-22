@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
-import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
+import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState

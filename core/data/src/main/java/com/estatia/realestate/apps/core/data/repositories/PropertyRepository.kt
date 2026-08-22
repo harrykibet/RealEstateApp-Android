@@ -3,10 +3,10 @@ package com.estatia.realestate.apps.core.data.repositories
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
-import com.estatia.realestate.apps.core.domain.interfaces.IPropertyRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IMetricsTracker
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import com.estatia.realestate.apps.core.data.mappers.firestore.FirestorePropertyMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
@@ -14,8 +14,8 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.data.util.translatePropertyFailures

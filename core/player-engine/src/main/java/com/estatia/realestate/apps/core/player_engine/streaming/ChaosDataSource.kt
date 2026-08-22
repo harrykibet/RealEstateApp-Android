@@ -5,7 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
-import com.estatia.realestate.apps.core.domain.interfaces.IConfigProvider
+import com.estatia.realestate.apps.core.domain.config.IChaosConfig
 import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import java.io.IOException
 import kotlin.random.Random
@@ -17,11 +17,11 @@ import kotlin.random.Random
 @UnstableApi
 class ChaosDataSource(
     private val delegate: DataSource,
-    private val configProvider: IConfigProvider
+    private val config: IChaosConfig
 ) : DataSource {
 
     private val chaos: ChaosConfig
-        get() = configProvider.chaosConfig
+        get() = config.chaosConfig
 
     override fun addTransferListener(transferListener: TransferListener) {
         delegate.addTransferListener(transferListener)
@@ -76,9 +76,9 @@ class ChaosDataSource(
 @UnstableApi
 class ChaosDataSourceFactory(
     private val delegateFactory: DataSource.Factory,
-    private val configProvider: IConfigProvider
+    private val config: IChaosConfig
 ) : DataSource.Factory {
     override fun createDataSource(): DataSource {
-        return ChaosDataSource(delegateFactory.createDataSource(), configProvider)
+        return ChaosDataSource(delegateFactory.createDataSource(), config)
     }
 }

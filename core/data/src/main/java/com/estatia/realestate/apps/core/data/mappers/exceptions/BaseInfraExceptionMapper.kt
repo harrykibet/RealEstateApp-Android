@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
-import com.estatia.realestate.apps.core.domain.interfaces.DataExceptionMapper
+import com.estatia.realestate.apps.core.domain.common.DataExceptionMapper
 
 /**
  * Base class for mapping infrastructure exceptions (Database and Storage) to domain-specific exceptions.

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.domain.interfaces.ICommentsRepository
+import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -11,11 +11,11 @@ import com.estatia.realestate.apps.core.data.mappers.room.RoomCommentMapper
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import com.estatia.realestate.apps.core.common.exceptions.CommentException
-import com.estatia.realestate.apps.core.domain.interfaces.IAuthRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IExceptionTranslator
-import com.estatia.realestate.apps.core.domain.interfaces.IUserRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IEngagementRepository
-import com.estatia.realestate.apps.core.domain.interfaces.IContentSafetyService
+import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
+import com.estatia.realestate.apps.core.domain.repository.IUserRepository
+import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.data.util.translateCommentFailures
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
