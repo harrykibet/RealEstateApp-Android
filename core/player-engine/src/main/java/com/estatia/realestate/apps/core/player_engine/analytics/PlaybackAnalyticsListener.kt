@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.analytics
 
+import android.os.Looper
 import android.os.SystemClock
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -58,7 +59,14 @@ class PlaybackAnalyticsListener @Inject constructor(
     @Volatile
     private var loopCount: Int = 0
 
+    private fun checkConfinement() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("PlaybackAnalyticsListener must only be accessed from the Main thread.")
+        }
+    }
+
     fun markPlaybackStart(mediaId: String) {
+        checkConfinement()
         currentMediaId = mediaId
         startupStartTime = SystemClock.elapsedRealtime()
         bufferingStartedAt = null
@@ -68,11 +76,13 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     fun release() {
+        checkConfinement()
         // 🏎️ Close the Loop: Ship final engagement data before the listener is recycled/discarded
         reportFinalEngagement()
     }
 
     private fun reportFinalEngagement() {
+        checkConfinement()
         val mediaId = currentMediaId ?: return
         recordWatchTime()
 
@@ -91,6 +101,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     fun onAppBackgrounded() {
+        checkConfinement()
         if (bufferingStartedAt != null) {
             wasBackgroundedDuringBuffer = true
         }
@@ -98,6 +109,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     private fun recordWatchTime() {
+        checkConfinement()
         val start = lastPlayStartTime ?: return
         val sessionWatchTime = SystemClock.elapsedRealtime() - start
         if (sessionWatchTime > 0) {
@@ -108,6 +120,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
+        checkConfinement()
         if (isPlaying) {
             lastPlayStartTime = SystemClock.elapsedRealtime()
         } else {
@@ -122,6 +135,7 @@ class PlaybackAnalyticsListener @Inject constructor(
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
+        checkConfinement()
         if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION && oldPosition.mediaItemIndex == newPosition.mediaItemIndex) {
             // 🔄 Loop detected: Standard behavior for short-form feed items
             loopCount++
@@ -140,6 +154,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+        checkConfinement()
         scope.launch {
             when (state) {
                 Player.STATE_READY -> {
@@ -191,6 +206,7 @@ class PlaybackAnalyticsListener @Inject constructor(
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
+        checkConfinement()
         scope.launch {
             analyticsClient.logEvent(
                 message = "PlaybackAnalyticsListener",
