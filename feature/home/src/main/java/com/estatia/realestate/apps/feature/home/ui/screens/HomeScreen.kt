@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.feature.home.ui.screens
 
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +37,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
@@ -109,7 +109,7 @@ internal fun HomeRoute(
             onPageVisible = { id, uri, match, prev, next, title, artist ->
                 playbackViewModel.onPageVisible(id, uri, match, prev, next, title, artist)
             },
-            getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
+            getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, MediaReference(uri.toString()), type, score) },
             pausePlayback = playbackViewModel::pause,
             isMediaActive = playbackViewModel::isMediaActive,
             onLikeClick = { listing -> viewModel.toggleLike(listing.id, false) /* Fix: handle actual like state */ },
@@ -131,8 +131,8 @@ internal fun HomeScreen(
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
-    onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
-    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
+    onPageVisible: (String, MediaReference, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
+    getPlayer: suspend (String, android.net.Uri, MediaType, Float) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -184,8 +184,8 @@ internal fun HomeFeedContent(
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
-    onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
-    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
+    onPageVisible: (String, MediaReference, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit,
+    getPlayer: suspend (String, android.net.Uri, MediaType, Float) -> Player,
     pausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     onLikeClick: (ListingUiModel) -> Unit,
@@ -235,14 +235,15 @@ internal fun HomeFeedContent(
                         onShareClick = onShareClick,
                         onRetry = onPlaybackRetry,
                         videoPlayerContent = {
-                            val videoUri = (listing.hlsUrl ?: listing.directVideoUrl)?.toUri()
-                            if (videoUri != null) {
+                            val videoUriStr = (listing.hlsUrl ?: listing.directVideoUrl)
+                            if (videoUriStr != null) {
+                                val videoUri = videoUriStr.toUri()
                                 EngineVideoPlayer(
                                     mediaId = listing.id,
                                     uri = videoUri,
                                     mediaType = MediaType.VOD,
                                     matchScore = listing.matchScore,
-                                    getPlayer = getPlayer,
+                                    getPlayer = { id, uri, type, score -> getPlayer(id, uri, type, score) },
                                     onPause = pausePlayback,
                                     isActive = isMediaActive(listing.id),
                                     isMuted = isMuted,

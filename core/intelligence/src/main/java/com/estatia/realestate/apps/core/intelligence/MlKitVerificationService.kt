@@ -1,7 +1,8 @@
 package com.estatia.realestate.apps.core.intelligence
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.user.FaceMatchResult
 import com.estatia.realestate.apps.core.model.user.IdDocumentResult
 import com.google.mlkit.vision.common.InputImage
@@ -31,8 +32,8 @@ class MlKitVerificationService @Inject constructor(
             .build()
     )
 
-    override suspend fun scanIdDocument(imageUri: Uri): IdDocumentResult {
-        val image = InputImage.fromFilePath(context, imageUri)
+    override suspend fun scanIdDocument(imageUri: MediaReference): IdDocumentResult {
+        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val result = textRecognizer.process(image).await()
         
         // Advanced OCR Logic: Extract name and ID using patterns
@@ -50,11 +51,11 @@ class MlKitVerificationService @Inject constructor(
         )
     }
 
-    override suspend fun verifyFaceMatch(idPhotoUri: Uri, selfieUri: Uri): FaceMatchResult {
+    override suspend fun verifyFaceMatch(idPhotoUri: MediaReference, selfieUri: MediaReference): FaceMatchResult {
         // ML Kit doesn't have a direct "Face Comparison" API (it's in FaceMesh or custom TFLite).
         // For now, we detect faces in both and return a heuristic match.
-        val idImage = InputImage.fromFilePath(context, idPhotoUri)
-        val selfieImage = InputImage.fromFilePath(context, selfieUri)
+        val idImage = InputImage.fromFilePath(context, idPhotoUri.value.toUri())
+        val selfieImage = InputImage.fromFilePath(context, selfieUri.value.toUri())
         
         val idFaces = faceDetector.process(idImage).await()
         val selfieFaces = faceDetector.process(selfieImage).await()
@@ -66,14 +67,14 @@ class MlKitVerificationService @Inject constructor(
         )
     }
 
-    override suspend fun verifyLiveness(videoUri: Uri): Boolean {
+    override suspend fun verifyLiveness(videoUri: MediaReference): Boolean {
         // Liveness check would involve processing multiple frames from the video
         // and checking for classification like isLeftEyeOpen, isSmiling, etc.
         return true // Simplified for MVP
     }
 
     override suspend fun verifyPhysicalPresence(
-        mediaUri: Uri,
+        mediaUri: MediaReference,
         expectedLat: Double,
         expectedLng: Double
     ): Boolean {

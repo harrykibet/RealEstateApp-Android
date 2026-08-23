@@ -1,7 +1,8 @@
 package com.estatia.realestate.apps.core.intelligence
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.label.ImageLabeling
@@ -22,8 +23,8 @@ class MlKitMediaIntelligenceService @Inject constructor(
     private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
     private val faceDetector = FaceDetection.getClient()
 
-    override suspend fun extractAmenities(imageUri: Uri): List<String> {
-        val image = InputImage.fromFilePath(context, imageUri)
+    override suspend fun extractAmenities(imageUri: MediaReference): List<String> {
+        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val labels = labeler.process(image).await()
         
         // Filter and map labels to Estatia amenities
@@ -33,15 +34,15 @@ class MlKitMediaIntelligenceService @Inject constructor(
             .filter { isRelevantAmenity(it) }
     }
 
-    override suspend fun detectFaces(imageUri: Uri): Int {
-        val image = InputImage.fromFilePath(context, imageUri)
+    override suspend fun detectFaces(imageUri: MediaReference): Int {
+        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val faces = faceDetector.process(image).await()
         return faces.size
     }
 
-    override suspend fun getMediaQualityScore(imageUri: Uri): Float {
+    override suspend fun getMediaQualityScore(imageUri: MediaReference): Float {
         // Simple heuristic: higher confidence labels often mean clearer images
-        val image = InputImage.fromFilePath(context, imageUri)
+        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val labels = labeler.process(image).await()
         return labels.firstOrNull()?.confidence ?: 0.5f
     }

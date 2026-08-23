@@ -1,11 +1,11 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
@@ -45,12 +45,13 @@ class PlaybackOrchestrator @Inject constructor(
 
     suspend fun play(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         title: String?,
         artist: String?
     ) = withContext(playerDispatcher) {
+        checkConfinement()
         val forceLegacy = decoderPolicy.shouldForceLegacy(mediaId)
         val managed = pool.getOrCreate(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val environment = environmentCoordinator.environment.value
@@ -75,7 +76,7 @@ class PlaybackOrchestrator @Inject constructor(
 
     suspend fun preload(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         title: String?,

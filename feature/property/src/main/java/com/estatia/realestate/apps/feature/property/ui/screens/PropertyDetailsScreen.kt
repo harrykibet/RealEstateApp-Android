@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,6 +65,7 @@ import com.estatia.realestate.apps.core.player_ui.screens.PlaybackErrorView
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.player_ui.screens.EngineVideoPlayer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import androidx.media3.common.Player
 
@@ -91,7 +91,7 @@ fun PropertyDetailsRoute(
         isMuted = isMuted,
         onMuteToggle = playbackViewModel::toggleMute,
         onPlaybackRetry = playbackViewModel::retry,
-        getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
+        getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, MediaReference(uri.toString()), type, score) },
         onPausePlayback = playbackViewModel::pause,
         isMediaActive = playbackViewModel::isMediaActive
     )
@@ -105,7 +105,7 @@ fun PropertyDetailsScreen(
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
-    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
+    getPlayer: suspend (String, android.net.Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
     modifier: Modifier = Modifier,
@@ -154,7 +154,7 @@ private fun PropertyDetailsContent(
     isMuted: Boolean,
     onMuteToggle: () -> Unit,
     onPlaybackRetry: () -> Unit,
-    getPlayer: suspend (String, Uri, MediaType, Float) -> Player,
+    getPlayer: suspend (String, android.net.Uri, MediaType, Float) -> Player,
     onPausePlayback: () -> Unit,
     isMediaActive: (String) -> Boolean,
 ) {

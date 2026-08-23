@@ -2,9 +2,11 @@ package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
 import android.os.Looper
+import androidx.core.net.toUri
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
@@ -85,7 +87,7 @@ class PlayerPool @Inject constructor(
 
     suspend fun getOrCreate(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float = 0.5f,
         forceLegacy: Boolean = false,
@@ -106,7 +108,7 @@ class PlayerPool @Inject constructor(
 
     suspend fun prewarm(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float = 0.5f,
         forceLegacy: Boolean = false,
@@ -225,7 +227,7 @@ class PlayerPool @Inject constructor(
     private suspend fun bindIdlePlayer(
         player: ExoPlayer,
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         forceLegacy: Boolean,
@@ -253,7 +255,7 @@ class PlayerPool @Inject constructor(
 
     private suspend fun createManagedPlayer(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         forceLegacy: Boolean,

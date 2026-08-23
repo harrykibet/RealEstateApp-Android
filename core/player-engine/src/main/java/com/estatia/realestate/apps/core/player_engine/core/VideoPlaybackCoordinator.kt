@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import android.os.SystemClock
 import androidx.media3.common.Player
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
@@ -43,7 +43,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     fun onPageVisible(
         scope: CoroutineScope,
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         matchScore: Float,
         previous: List<FeedNeighbor>,
         next: List<FeedNeighbor>,
@@ -132,31 +132,31 @@ class VideoPlaybackCoordinator @Inject constructor(
         }
     }
 
-    private fun warmVisible(mediaId: String, uri: Uri) {
+    private fun warmVisible(mediaId: String, uri: MediaReference) {
         if (markWarmed(mediaId)) {
             streamingPipeline.warm(mediaId, uri, WarmPriority.VISIBLE)
         }
     }
 
-    private fun warmNext(mediaId: String, uri: Uri) {
+    private fun warmNext(mediaId: String, uri: MediaReference) {
         if (markWarmed(mediaId)) {
             streamingPipeline.warm(mediaId, uri, WarmPriority.NEXT)
         }
     }
 
-    private fun warmPrevious(mediaId: String, uri: Uri) {
+    private fun warmPrevious(mediaId: String, uri: MediaReference) {
         if (markWarmed(mediaId)) {
             streamingPipeline.warm(mediaId, uri, WarmPriority.PREVIOUS)
         }
     }
 
-    private fun warmLow(mediaId: String, uri: Uri) {
+    private fun warmLow(mediaId: String, uri: MediaReference) {
         if (markWarmed(mediaId)) {
             streamingPipeline.warm(mediaId, uri, WarmPriority.LOW)
         }
     }
 
-    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float = 0.5f): Player {
+    suspend fun getPlayer(mediaId: String, uri: MediaReference, mediaType: MediaType, matchScore: Float = 0.5f): Player {
         return playerController.getPlayer(mediaId, uri, mediaType, matchScore)
     }
 
@@ -168,7 +168,7 @@ class VideoPlaybackCoordinator @Inject constructor(
 
     fun isMediaActive(mediaId: String): Boolean = playerController.isMediaActive(mediaId)
 
-    fun retry(scope: CoroutineScope, mediaId: String, uri: Uri) {
+    fun retry(scope: CoroutineScope, mediaId: String, uri: MediaReference) {
         checkConfinement()
         playJob?.cancel()
         playJob = scope.launch {

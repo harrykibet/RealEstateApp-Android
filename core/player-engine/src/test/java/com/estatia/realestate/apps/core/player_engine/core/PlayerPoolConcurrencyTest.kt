@@ -1,11 +1,11 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
@@ -28,7 +28,6 @@ import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.Executors
 import javax.inject.Provider
-import androidx.core.net.toUri
 
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,9 +44,6 @@ class PlayerPoolConcurrencyTest {
     @Before
     fun setup() {
         Dispatchers.setMain(mainDispatcher)
-        mockkStatic(Uri::class)
-        every { any<String>().toUri() } returns mockk(relaxed = true)
-        mockkStatic("androidx.core.net.UriKt")
 
         mockkStatic(Looper::class)
         val mainLooper = mockk<Looper>(relaxed = true)
@@ -108,7 +104,7 @@ class PlayerPoolConcurrencyTest {
             jobs.add(async(Dispatchers.Default) {
                 // Must switch to Main to call pool methods as they checkConfinement
                 withContext(Dispatchers.Main) {
-                    pool.prewarm("id_$i", "".toUri(), MediaType.VOD)
+                    pool.prewarm("id_$i", MediaReference("http://test.com"), MediaType.VOD)
                 }
             })
         }
@@ -134,7 +130,7 @@ class PlayerPoolConcurrencyTest {
 
         // Start initiator
         val initiatorJob = launch(Dispatchers.Main) {
-            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+            pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
         }
         
         // Yield to let initiator start
@@ -142,7 +138,7 @@ class PlayerPoolConcurrencyTest {
         
         // Start coalesced request
         val coalescedDeferred = async(Dispatchers.Main) {
-            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+            pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
         }
         
         // Yield to let coalesced start
@@ -171,7 +167,7 @@ class PlayerPoolConcurrencyTest {
         }
 
         val deferred = async(Dispatchers.Main) {
-            pool.prewarm(mediaId, "".toUri(), MediaType.VOD)
+            pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
         }
         
         runCurrent()
@@ -200,7 +196,7 @@ class PlayerPoolConcurrencyTest {
         repeat(5) { i ->
             launch(Dispatchers.Main) {
                 // This will trigger ensureIdlePlayers()
-                pool.prewarm("id_batch_$i", "".toUri(), MediaType.VOD)
+                pool.prewarm("id_batch_$i", MediaReference("http://test.com"), MediaType.VOD)
             }
         }
 

@@ -2,8 +2,9 @@ package com.estatia.realestate.apps.core.intelligence
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
+import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.model.engagement.SensitiveEntity
 import com.google.mlkit.vision.common.InputImage
@@ -57,15 +58,15 @@ class MlKitContentSafetyService @Inject constructor(
         return entities
     }
 
-    override suspend fun validateImage(imageUri: Uri): SafetyResult {
-        val image = InputImage.fromFilePath(context, imageUri)
+    override suspend fun validateImage(imageUri: MediaReference): SafetyResult {
+        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         return runLabelAnalysis(image)
     }
 
-    override suspend fun validateVideo(videoUri: Uri): SafetyResult = withContext(Dispatchers.IO) {
+    override suspend fun validateVideo(videoUri: MediaReference): SafetyResult = withContext(Dispatchers.IO) {
         val retriever = MediaMetadataRetriever()
         try {
-            retriever.setDataSource(context, videoUri)
+            retriever.setDataSource(context, videoUri.value.toUri())
             val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
             val durationMs = durationStr?.toLong() ?: 0L
 

@@ -1,10 +1,11 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.MediaSource
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,13 +29,14 @@ internal class StreamingPipeline @Inject constructor(
 
     override fun createMediaItem(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         title: String?,
         artist: String?,
         qualityHint: String?
     ): MediaItem {
-        val stableKey = cacheKeyFactory.resolveStableKey(uri, mediaId, qualityHint)
+        val platformUri = uri.value.toUri()
+        val stableKey = cacheKeyFactory.resolveStableKey(platformUri, mediaId, qualityHint)
 
         val metadata = MediaMetadata.Builder()
             .setTitle(title)
@@ -42,7 +44,7 @@ internal class StreamingPipeline @Inject constructor(
             .build()
 
         return MediaItem.Builder()
-            .setUri(uri)
+            .setUri(platformUri)
             .setMediaId(stableKey)
             .setCustomCacheKey(stableKey) // Stable key for caching unified with offline
             .setMediaMetadata(metadata)
@@ -60,8 +62,8 @@ internal class StreamingPipeline @Inject constructor(
             .build()
     }
 
-    override fun warm(mediaId: String, uri: Uri, priority: WarmPriority, qualityHint: String?) {
-        val resolvedUri = uriResolver.resolve(uri)
+    override fun warm(mediaId: String, uri: MediaReference, priority: WarmPriority, qualityHint: String?) {
+        val resolvedUri = uriResolver.resolve(uri.value.toUri())
         val resolvedHint = qualityHint ?: deviceUtils.getVideoQualityHint()
         cacheWarmer.prefetch(mediaId, resolvedUri, priority, resolvedHint)
     }
@@ -72,8 +74,8 @@ internal class StreamingPipeline @Inject constructor(
     override fun onBufferingEnded() =
         cacheWarmer.onBufferingEnded()
 
-    fun downloadOffline(mediaId: String, uri: Uri) =
-        offlineDownloadController.download(mediaId, uri)
+    fun downloadOffline(mediaId: String, uri: MediaReference) =
+        offlineDownloadController.download(mediaId, uri.value.toUri())
 
     fun removeOffline(mediaId: String) =
         offlineDownloadController.remove(mediaId)

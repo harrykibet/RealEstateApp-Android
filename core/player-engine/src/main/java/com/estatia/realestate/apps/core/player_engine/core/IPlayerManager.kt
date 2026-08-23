@@ -1,9 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
@@ -27,7 +26,7 @@ interface IPlayerManager {
      */
     suspend fun play(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float = 0.5f,
         title: String? = null,
@@ -51,7 +50,7 @@ interface IPlayerManager {
      */
     suspend fun getPlayer(
         mediaId: String, 
-        uri: Uri, 
+        uri: MediaReference, 
         mediaType: MediaType,
         matchScore: Float = 0.5f
     ): Player
@@ -69,7 +68,7 @@ interface IPlayerManager {
     @OptIn(UnstableApi::class)
     suspend fun preload(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float = 0.5f,
         title: String? = null,

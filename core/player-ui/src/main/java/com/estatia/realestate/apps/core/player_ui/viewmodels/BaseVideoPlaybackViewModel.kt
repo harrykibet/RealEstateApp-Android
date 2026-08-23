@@ -1,9 +1,10 @@
 package com.estatia.realestate.apps.core.player_ui.viewmodels
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
@@ -46,7 +47,7 @@ abstract class BaseVideoPlaybackViewModel(
 ) : ViewModel() {
 
     private val activeMediaId = MutableStateFlow<String?>(null)
-    private val activeUri = MutableStateFlow<Uri?>(null)
+    private val activeUri = MutableStateFlow<MediaReference?>(null)
     private var lastMediaContext: FeedMediaContext? = null
     private val decoderFailures = mutableSetOf<String>()
     private val isScreenVisible = MutableStateFlow(true)
@@ -143,7 +144,7 @@ abstract class BaseVideoPlaybackViewModel(
 
     fun onPageVisible(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         matchScore: Float,
         previous: List<FeedNeighbor>,
         next: List<FeedNeighbor>,
@@ -172,7 +173,7 @@ abstract class BaseVideoPlaybackViewModel(
         coordinator.retry(viewModelScope, context.mediaId, context.uri)
     }
 
-    suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float): Player =
+    suspend fun getPlayer(mediaId: String, uri: MediaReference, mediaType: MediaType, matchScore: Float): Player =
         coordinator.getPlayer(mediaId, uri, mediaType, matchScore)
 
     fun pause() = coordinator.pause(viewModelScope)
@@ -232,14 +233,15 @@ abstract class BaseVideoPlaybackViewModel(
         coordinator.clear()
     }
 
-    private fun isValidMediaUri(uri: Uri): Boolean {
-        val scheme = uri.scheme ?: return false
+    private fun isValidMediaUri(uri: MediaReference): Boolean {
+        val platformUri = uri.value.toUri()
+        val scheme = platformUri.scheme ?: return false
         val validSchemes = listOf("http", "https", "file", "content")
         if (scheme !in validSchemes) return false
 
         // For network URIs, host must be present
         if (scheme == "http" || scheme == "https") {
-            if (uri.host.isNullOrBlank()) return false
+            if (platformUri.host.isNullOrBlank()) return false
         }
 
         return true

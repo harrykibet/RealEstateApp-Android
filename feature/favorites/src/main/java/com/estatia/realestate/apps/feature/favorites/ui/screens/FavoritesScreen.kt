@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
@@ -103,24 +104,25 @@ fun FavoritesScreen(
                 onCommentClick = { onCommentClick(it.id) },
                 onShareClick = { onShareClick(it.id) },
                 onRetry = { playbackViewModel.retry() },
-                videoPlayerContent = {
-                    val videoUri = (listing.hlsUrl ?: listing.directVideoUrl)?.toUri()
-                    if (videoUri != null) {
-                        EngineVideoPlayer(
-                            mediaId = listing.id,
-                            uri = videoUri,
-                            mediaType = MediaType.VOD,
-                            matchScore = listing.matchScore,
-                            getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
-                            onPause = { playbackViewModel.pause() },
-                            isActive = playbackViewModel.isMediaActive(listing.id),
-                            isMuted = isMuted,
-                            onMuteToggle = onMuteToggle,
-                            onLike = { onLikeClick(listing.id) },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                },
+                        videoPlayerContent = {
+                            val videoUriStr = (listing.hlsUrl ?: listing.directVideoUrl)
+                            if (videoUriStr != null) {
+                                val videoUri = videoUriStr.toUri()
+                                EngineVideoPlayer(
+                                    mediaId = listing.id,
+                                    uri = videoUri,
+                                    mediaType = MediaType.VOD,
+                                    matchScore = listing.matchScore,
+                                    getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, MediaReference(uri.toString()), type, score) },
+                                    onPause = { playbackViewModel.pause() },
+                                    isActive = playbackViewModel.isMediaActive(listing.id),
+                                    isMuted = isMuted,
+                                    onMuteToggle = onMuteToggle,
+                                    onLike = { onLikeClick(listing.id) },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        },
                 onClick = { onPropertyClick(it.id) }
             )
         },

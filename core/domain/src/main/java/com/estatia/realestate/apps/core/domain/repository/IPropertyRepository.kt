@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.domain.repository
 
-import android.net.Uri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
@@ -42,8 +42,8 @@ interface IPropertyRepository {
      */
     suspend fun uploadProperty(
         property: PropertyDomainModel,
-        imageUris: List<Uri>,
-        videoUris: List<Uri>
+        imageUris: List<MediaReference>,
+        videoUris: List<MediaReference>
     ): AppResult<String>
 
     /**

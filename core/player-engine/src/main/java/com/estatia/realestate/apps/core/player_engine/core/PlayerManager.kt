@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
@@ -67,7 +67,7 @@ class PlayerManager @Inject constructor(
 
     override suspend fun play(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         title: String?,
@@ -81,7 +81,7 @@ class PlayerManager @Inject constructor(
 
     override suspend fun preload(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float,
         title: String?,
@@ -99,7 +99,7 @@ class PlayerManager @Inject constructor(
         }
     }
 
-    override suspend fun getPlayer(mediaId: String, uri: Uri, mediaType: MediaType, matchScore: Float): Player =
+    override suspend fun getPlayer(mediaId: String, uri: MediaReference, mediaType: MediaType, matchScore: Float): Player =
         withContext(playerDispatcher) {
             checkConfinement()
             pool.getOrCreate(mediaId, uri, mediaType, matchScore).player

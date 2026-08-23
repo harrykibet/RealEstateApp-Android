@@ -49,6 +49,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.property.toListingUiModel
@@ -228,14 +229,15 @@ fun SearchScreen(
                                     onShareClick = {},
                                     onRetry = { playbackViewModel.retry() },
                                     videoPlayerContent = {
-                                        val videoUri = (listing.hlsUrl ?: listing.directVideoUrl)?.toUri()
-                                        if (videoUri != null) {
+                                        val videoUriStr = (listing.hlsUrl ?: listing.directVideoUrl)
+                                        if (videoUriStr != null) {
+                                            val videoUri = videoUriStr.toUri()
                                             EngineVideoPlayer(
                                                 mediaId = listing.id,
                                                 uri = videoUri,
                                                 mediaType = MediaType.VOD,
                                                 matchScore = listing.matchScore,
-                                                getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, uri, type, score) },
+                                                getPlayer = { id, uri, type, score -> playbackViewModel.getPlayer(id, MediaReference(uri.toString()), type, score) },
                                                 onPause = { playbackViewModel.pause() },
                                                 isActive = playbackViewModel.isMediaActive(listing.id),
                                                 isMuted = isMuted,

@@ -1,10 +1,10 @@
 package com.estatia.realestate.apps.feature.favorites.ui.viewmodels.playback
 
-import android.net.Uri
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -58,10 +58,7 @@ class FavoritesVideoPlaybackViewModelTest {
 
     @Test
     fun `onPageVisible updates coordinator`() = runTest {
-        val uri = mockk<Uri> {
-            every { scheme } returns "https"
-            every { host } returns "estatia.com"
-        }
+        val uri = MediaReference("https://estatia.com/test.mp4")
         viewModel.onPageVisible("id", uri, 0.5f, emptyList(), emptyList(), "Title", "Artist")
         
         testDispatcher.scheduler.advanceUntilIdle()

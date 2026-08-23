@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.property.utils
 
-import android.net.Uri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 
 data class AddPropertyDraft(
     val title: String = "",
@@ -31,6 +31,6 @@ data class AddPropertyDraft(
     val contactEmail: String? = null,
     val contactPhone: String? = null,
 
-    val images: List<Uri> = emptyList(),
-    val videos: List<Uri> = emptyList()
+    val images: List<MediaReference> = emptyList(),
+    val videos: List<MediaReference> = emptyList()
 )

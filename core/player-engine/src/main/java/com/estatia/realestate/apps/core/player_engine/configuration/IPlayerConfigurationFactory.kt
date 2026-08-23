@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.configuration
 
-import android.net.Uri
 import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 
 /**
@@ -20,7 +20,7 @@ interface IPlayerConfigurationFactory {
      */
     suspend fun create(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         matchScore: Float = 0.5f,
         forceLegacyCodec: Boolean = false,

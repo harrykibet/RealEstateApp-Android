@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
-import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.MediaSource
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 
 /**
@@ -38,7 +38,7 @@ interface IStreamingPipeline {
      */
     fun createMediaItem(
         mediaId: String,
-        uri: Uri,
+        uri: MediaReference,
         mediaType: MediaType,
         title: String? = null,
         artist: String? = null,
@@ -54,7 +54,7 @@ interface IStreamingPipeline {
      * @param priority The priority of the prefetch request.
      * @param qualityHint Optional hint about the media quality/bitrate.
      */
-    fun warm(mediaId: String, uri: Uri, priority: WarmPriority, qualityHint: String? = null)
+    fun warm(mediaId: String, uri: MediaReference, priority: WarmPriority, qualityHint: String? = null)
 
     /**
      * Notifies the pipeline that buffering has started, allowing it to adjust prefetch logic.

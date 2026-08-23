@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
@@ -29,7 +29,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import javax.inject.Provider
-import androidx.core.net.toUri
 import kotlin.time.Duration.Companion.milliseconds
 
 @UnstableApi
@@ -50,9 +49,6 @@ class PlayerPoolDeadlockTest {
     @Suppress("UseKtx")
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        mockkStatic(Uri::class)
-        every { Uri.parse(any()) } returns mockk(relaxed = true)
-        mockkStatic("androidx.core.net.UriKt")
 
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
@@ -96,7 +92,7 @@ class PlayerPoolDeadlockTest {
     @Test
     fun `urgent request promotes in-flight non-urgent request and prevents hang`() = runTest {
         val mediaId = "race_id"
-        val uri = "".toUri()
+        val uri = MediaReference("http://test.com")
         
         // 1. Simulate a slow non-urgent prewarm
         coEvery { configurationFactory.create(mediaId, any(), any(), any(), any(), any()) } coAnswers {

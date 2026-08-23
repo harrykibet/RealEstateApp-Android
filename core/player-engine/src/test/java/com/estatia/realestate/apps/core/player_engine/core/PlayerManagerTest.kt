@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
@@ -81,7 +82,7 @@ class PlayerManagerTest {
     fun `play calls orchestrator play and requests focus`() = testScope.runTest {
         // Given
         val mediaId = "media_1"
-        val uri = mockk<Uri>()
+        val uri = MediaReference("")
         val mediaType = MediaType.VOD
 
         // When

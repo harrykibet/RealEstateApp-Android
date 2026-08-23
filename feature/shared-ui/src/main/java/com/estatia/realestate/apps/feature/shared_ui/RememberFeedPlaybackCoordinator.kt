@@ -1,10 +1,9 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
-import android.net.Uri
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 
@@ -12,23 +11,24 @@ import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 fun RememberFeedPlaybackCoordinator(
     pagerState: PagerState,
     items: List<ListingUiModel>,
-    onPageVisible: (String, Uri, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit
+    onPageVisible: (String, MediaReference, Float, List<FeedNeighbor>, List<FeedNeighbor>, String?, String?) -> Unit
 ) {
     LaunchedEffect(pagerState.currentPage) {
 
         val page = pagerState.currentPage
         val current = items.getOrNull(page) ?: return@LaunchedEffect
 
-        val currentUri = (current.hlsUrl ?: current.directVideoUrl)?.toUri() ?: return@LaunchedEffect
+        val currentUriStr = (current.hlsUrl ?: current.directVideoUrl) ?: return@LaunchedEffect
+        val currentUri = MediaReference(currentUriStr)
 
         // Collect Previous Neighbors (N=1)
         val previous = mutableListOf<FeedNeighbor>()
         items.getOrNull(page - 1)?.let {
-            val uri = (it.hlsUrl ?: it.directVideoUrl)?.toUri()
-            if (uri != null) {
+            val uriStr = (it.hlsUrl ?: it.directVideoUrl)
+            if (uriStr != null) {
                 previous.add(FeedNeighbor(
                     mediaId = it.id,
-                    uri = uri,
+                    uri = MediaReference(uriStr),
                     matchScore = it.matchScore,
                     title = it.title,
                     artist = it.ownerName
@@ -40,11 +40,11 @@ fun RememberFeedPlaybackCoordinator(
         val next = mutableListOf<FeedNeighbor>()
         for (i in 1..2) {
             items.getOrNull(page + i)?.let {
-                val uri = (it.hlsUrl ?: it.directVideoUrl)?.toUri()
-                if (uri != null) {
+                val uriStr = (it.hlsUrl ?: it.directVideoUrl)
+                if (uriStr != null) {
                     next.add(FeedNeighbor(
                         mediaId = it.id,
-                        uri = uri,
+                        uri = MediaReference(uriStr),
                         matchScore = it.matchScore,
                         title = it.title,
                         artist = it.ownerName

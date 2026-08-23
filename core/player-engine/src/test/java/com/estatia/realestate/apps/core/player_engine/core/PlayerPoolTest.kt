@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
@@ -26,7 +26,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import javax.inject.Provider
-import androidx.core.net.toUri
 
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,9 +45,6 @@ class PlayerPoolTest {
     @Suppress("UseKtx")
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        mockkStatic(Uri::class)
-        every { Uri.parse(any()) } returns mockk(relaxed = true)
-        mockkStatic("androidx.core.net.UriKt")
 
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
@@ -97,7 +93,7 @@ class PlayerPoolTest {
     @Test
     fun `getOrCreate adding new player increases count`() = runTest {
         val mediaId = "id1"
-        val uri = "".toUri()
+        val uri = MediaReference("http://test.com")
         
         pool.getOrCreate(mediaId, uri, MediaType.VOD)
         
@@ -106,7 +102,7 @@ class PlayerPoolTest {
 
     @Test
     fun `pool respects maxPoolSize via eviction`() = runTest {
-        val uri = "".toUri()
+        val uri = MediaReference("http://test.com")
         
         pool.getOrCreate("id1", uri, MediaType.VOD)
         pool.getOrCreate("id2", uri, MediaType.VOD)

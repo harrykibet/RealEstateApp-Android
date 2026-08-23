@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import android.net.Uri
+import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
@@ -79,8 +80,8 @@ internal class PropertyRepository @Inject constructor(
 
     override suspend fun uploadProperty(
         property: PropertyDomainModel,
-        imageUris: List<Uri>,
-        videoUris: List<Uri>
+        imageUris: List<MediaReference>,
+        videoUris: List<MediaReference>
     ): AppResult<String> {
 
         // 🛡️ Proactive On-Device Moderation: Text
@@ -115,8 +116,8 @@ internal class PropertyRepository @Inject constructor(
                     phone = property.contact.phone,
                     email = property.contact.email
                 ),
-                imageUris,
-                videoUris
+                imageUris.map { it.value.toUri() },
+                videoUris.map { it.value.toUri() }
             )
         
         val duration = System.currentTimeMillis() - startTime

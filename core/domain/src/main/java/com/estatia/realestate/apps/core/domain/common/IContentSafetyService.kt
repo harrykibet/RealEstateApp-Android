@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.domain.common
 
-import android.net.Uri
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.model.engagement.SensitiveEntity
 
@@ -22,10 +22,10 @@ interface IContentSafetyService {
     /**
      * Scans an image for explicit or prohibited content.
      */
-    suspend fun validateImage(imageUri: Uri): SafetyResult
+    suspend fun validateImage(imageUri: MediaReference): SafetyResult
 
     /**
      * Scans a video for explicit or prohibited content by analyzing keyframes.
      */
-    suspend fun validateVideo(videoUri: Uri): SafetyResult
+    suspend fun validateVideo(videoUri: MediaReference): SafetyResult
 }

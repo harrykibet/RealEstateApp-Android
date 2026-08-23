@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.feature.property.ui.uploads.viewModels
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
+import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
@@ -47,7 +49,7 @@ class AddPropertyViewModel @Inject constructor(
         _draft.asStateFlow()
 
     val allMedia: StateFlow<List<Uri>> = _draft.map {
-        it.images + it.videos
+        (it.images + it.videos).map { ref -> ref.value.toUri() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
 
@@ -243,7 +245,7 @@ class AddPropertyViewModel @Inject constructor(
 
         updateDraft {
             copy(
-                images = images
+                images = images.map { MediaReference(it.toString()) }
             )
         }
     }
@@ -256,19 +258,20 @@ class AddPropertyViewModel @Inject constructor(
 
         updateDraft {
             copy(
-                videos = videos
+                videos = videos.map { MediaReference(it.toString()) }
             )
         }
     }
 
     fun addImage(uri: Uri) {
+        val ref = MediaReference(uri.toString())
         updateDraft {
-            copy(images = images + uri)
+            copy(images = images + ref)
         }
-        analyzeImage(uri)
+        analyzeImage(ref)
     }
 
-    private fun analyzeImage(uri: Uri) {
+    private fun analyzeImage(uri: MediaReference) {
         viewModelScope.launch {
             try {
                 val detectedAmenities = intelligenceService.extractAmenities(uri)
@@ -283,15 +286,16 @@ class AddPropertyViewModel @Inject constructor(
 
     fun addVideo(uri: Uri) {
         updateDraft {
-            copy(videos = videos + uri)
+            copy(videos = videos + MediaReference(uri.toString()))
         }
     }
 
     fun removeMedia(uri: Uri) {
+        val refValue = uri.toString()
         updateDraft {
             copy(
-                images = images - uri,
-                videos = videos - uri
+                images = images.filter { it.value != refValue },
+                videos = videos.filter { it.value != refValue }
             )
         }
     }
