@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
@@ -113,9 +114,9 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         )
     }
 
-    override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): AppResult<Unit> = networkClient.execute {
+    override suspend fun updateProperty(propertyId: String, updates: PropertyUpdateFields): AppResult<Unit> = networkClient.execute {
         val mutation = $$"""
-            mutation UpdateProperty($id: ID!, $updates: AWSJSON!) {
+            mutation UpdateProperty($id: ID!, $updates: PropertyUpdateInput!) {
                 updateProperty(id: $id, updates: $updates) { id }
             }
         """.trimIndent()

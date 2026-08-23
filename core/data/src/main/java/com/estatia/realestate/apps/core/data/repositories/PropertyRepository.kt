@@ -26,6 +26,7 @@ import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toC
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyPage
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
@@ -136,7 +137,7 @@ internal class PropertyRepository @Inject constructor(
 
     override suspend fun updateProperty(
         propertyId: String,
-        updates: Map<String, Any>
+        updates: PropertyUpdateFields
     ): AppResult<Unit> {
 
         return remoteDataSource

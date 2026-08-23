@@ -20,6 +20,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDataso
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
@@ -114,14 +115,33 @@ internal class FirestoreProperties @Inject constructor(
 
     override suspend fun updateProperty(
         propertyId: String,
-        updates: Map<String, Any>
+        updates: PropertyUpdateFields
     ): AppResult<Unit> {
 
         return networkClient.execute {
 
             database.collection(PROPERTIES)
                 .document(propertyId)
-                .update(updates)
+                .update(
+                    mapOf(
+                        FirestoreFields.TITLE to updates.title,
+                        FirestoreFields.DESCRIPTION to updates.description,
+                        FirestoreFields.PRICE to updates.price,
+                        FirestoreFields.DEPOSIT_AMOUNT to updates.depositAmount,
+                        FirestoreFields.COUNTY to updates.county,
+                        FirestoreFields.PROPERTY_TYPE to updates.propertyType,
+                        FirestoreFields.BEDROOMS to updates.bedrooms,
+                        FirestoreFields.BATHROOMS to updates.bathrooms,
+                        FirestoreFields.AREA_SIZE to updates.areaSize,
+                        FirestoreFields.AMENITIES to updates.amenities,
+                        FirestoreFields.FEATURES to updates.features,
+                        FirestoreFields.ADDRESS to updates.address,
+                        FirestoreFields.AVAILABLE_FROM to updates.availableFrom,
+                        FirestoreFields.LEASE_TERMS to updates.leaseTerms,
+                        FirestoreFields.AVAILABLE to updates.available,
+                        FirestoreFields.ACTIVE to updates.active
+                    ).filterValues { it != null }
+                )
                 .await()
 
         }

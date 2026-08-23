@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.db_entities.*
 import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.model.feature.PaymentMethod
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
@@ -60,7 +61,7 @@ class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
 @Singleton
 class DemoPropertyRemoteDataSource @Inject constructor() : IPropertyRemoteDatasource {
     override suspend fun uploadProperty(property: PropertyEntityModel, contactInfo: PropertyContactEntity, imageUris: List<Uri>, videoUris: List<Uri>): AppResult<String> = AppResult.Success("prop_1")
-    override suspend fun updateProperty(propertyId: String, updates: Map<String, Any>): AppResult<Unit> = AppResult.Success(Unit)
+    override suspend fun updateProperty(propertyId: String, updates: PropertyUpdateFields): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = AppResult.Success(Unit)
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> = 
         AppResult.Success(DemoData.sampleProperties.find { it.id == propertyId } ?: DemoData.sampleProperties.first())

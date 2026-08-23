@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyPage
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 
 /**
  * Domain-level repository for property management.
@@ -51,7 +52,7 @@ interface IPropertyRepository {
      */
     suspend fun updateProperty(
         propertyId: String,
-        updates: Map<String, Any>
+        updates: PropertyUpdateFields
     ): AppResult<Unit>
 
     /**

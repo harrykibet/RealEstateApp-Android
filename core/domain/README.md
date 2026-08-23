@@ -19,6 +19,7 @@ The `domain` module contains the purest form of business logic in the applicatio
 2.  **Stability**: Changes in API versions or database schemas should not leak into this module.
 3.  **Testability**: Logic is easily unit-testable without mocks for Android components.
 4.  **Interface Segregation**: Clients depend only on the specific configuration or repository roles they require.
+5.  **Secure Updates**: General resource updates are restricted to allowlisted fields (e.g., `PropertyUpdateFields`) to prevent unintentional state corruption or metadata tampering.
 
 
 ## Dependency Graph

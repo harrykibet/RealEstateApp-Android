@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import android.net.Uri
+import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -23,11 +24,11 @@ interface IPropertyRemoteDatasource {
     ): AppResult<String>
 
     /**
-     * Updates an existing property listing.
+     * Updates an existing property listing using allowlisted fields.
      */
     suspend fun updateProperty(
         propertyId: String,
-        updates: Map<String, Any>
+        updates: PropertyUpdateFields
     ): AppResult<Unit>
 
     /**
