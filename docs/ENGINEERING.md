@@ -8,6 +8,12 @@
 * Clear separation between UI, domain, and data logic.
 * Defensive programming on critical paths (e.g., media playback and auth).
 
+## Production-Grade Class Standard
+
+All significant classes must follow the [Production-Grade Class Standard](./PRODUCTION_CLASS_STANDARD.md).
+
+The standard defines requirements for state ownership, concurrency, lifecycle safety, failure handling, resilience, security, observability, performance, deterministic testing, and chaos testing.
+
 ## Testing Strategy
 
 * **Domain Layer**: Unit tests for all UseCases using MockK, covering successful data flow and error scenarios (e.g., `AuthException.UserNotAuthenticated`).
