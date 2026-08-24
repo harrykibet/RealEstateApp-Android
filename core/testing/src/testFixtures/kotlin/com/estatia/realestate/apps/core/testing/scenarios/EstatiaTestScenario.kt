@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing.scenarios
 
+import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 
@@ -9,6 +10,7 @@ import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosContro
 class EstatiaTestScenario private constructor() {
     
     val networkChaos = NetworkChaosController()
+    var authBehavior: AuthBehavior = AuthBehavior.Authenticated
 
     companion object {
         /**
@@ -26,6 +28,25 @@ class EstatiaTestScenario private constructor() {
         fun networkTimeoutRetry(): EstatiaTestScenario {
             return EstatiaTestScenario().apply {
                 networkChaos.script(NetworkBehavior.Timeout, NetworkBehavior.Success)
+            }
+        }
+
+        /**
+         * Builds a scenario where the authentication token has expired.
+         */
+        fun authExpired(): EstatiaTestScenario {
+            return EstatiaTestScenario().apply {
+                authBehavior = AuthBehavior.TokenExpired
+            }
+        }
+
+        /**
+         * Builds a scenario for testing concurrent token refresh.
+         */
+        fun concurrentTokenRefresh(): EstatiaTestScenario {
+            return EstatiaTestScenario().apply {
+                authBehavior = AuthBehavior.TokenExpired
+                // Additional setup for concurrency testing would go here
             }
         }
     }
