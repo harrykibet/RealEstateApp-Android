@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
+import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -49,7 +50,6 @@ class PlayerPoolTest {
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
         every { mockLooper.thread } returns Thread.currentThread()
-        every { mockLooper.thread } returns Thread.currentThread()
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
 
@@ -88,6 +88,22 @@ class PlayerPoolTest {
     @Test
     fun `pool size is initially empty`() {
         assertEquals(0, pool.debugPlayerCount)
+    }
+
+    @Test
+    fun `pool handles memory exhaustion chaos gracefully`() = runTest {
+        // 🧪 Chaos Scenario: Memory Exhausted
+        println("Testing behavior: ${TestFailure.MemoryExhausted}")
+        
+        val uri = MediaReference("http://test.com")
+        // Policy would normally return 1 in this case
+        every { sizingPolicy.calculateMaxPoolSize(any()) } returns 1
+        
+        pool.getOrCreate("id1", uri, MediaType.VOD)
+        pool.getOrCreate("id2", uri, MediaType.VOD)
+        
+        // Pool should have evicted immediately to stay at size 1
+        assertEquals(1, pool.debugPlayerCount)
     }
 
     @Test

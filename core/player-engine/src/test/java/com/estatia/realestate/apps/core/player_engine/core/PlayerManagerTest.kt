@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleBehavior
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -80,25 +81,34 @@ class PlayerManagerTest {
 
     @Test
     fun `play calls orchestrator play and requests focus`() = testScope.runTest {
-        // Given
         val mediaId = "media_1"
         val uri = MediaReference("")
         val mediaType = MediaType.VOD
 
-        // When
         playerManager.play(mediaId, uri, mediaType)
 
-        // Then
         coVerify { orchestrator.play(mediaId, uri, mediaType, any(), any(), any()) }
         verify { audioFocusManager.request() }
     }
 
     @Test
+    fun `player management handles rapid navigation away chaos`() = testScope.runTest {
+        // 🧪 Chaos Scenario: Navigation Away during playback initialization
+        println("Testing behavior: ${LifecycleBehavior.NavigationAway}")
+        
+        val mediaId = "media_race"
+        playerManager.play(mediaId, MediaReference(""), MediaType.VOD)
+        
+        // Rapidly call pause (simulating navigation or screen hidden)
+        playerManager.pause()
+        
+        coVerify { orchestrator.pauseCurrentPlayer() }
+    }
+
+    @Test
     fun `pause calls orchestrator pause and abandons focus`() = testScope.runTest {
-        // When
         playerManager.pause()
 
-        // Then
         verify { orchestrator.pauseCurrentPlayer() }
         verify { audioFocusManager.abandon() }
     }

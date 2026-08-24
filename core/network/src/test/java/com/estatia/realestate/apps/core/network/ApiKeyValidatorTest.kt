@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ServiceNames
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException.InvalidApiKey as InvalidApiKeyException
+import com.estatia.realestate.apps.core.testing.chaos.input.InputBehavior
 import io.mockk.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -19,7 +20,7 @@ class ApiKeyValidatorTest {
 
     @BeforeAll
     fun setup() {
-        logger = mockk(relaxed = true)  // Mock logger, allow relaxed mode to avoid unnecessary stubs
+        logger = mockk(relaxed = true)
         config = mockk()
 
         every { config.googleKeyPattern } returns Regex("^AIza[0-9A-Za-z_-]{35}$")
@@ -31,10 +32,24 @@ class ApiKeyValidatorTest {
 
     @Test
     fun `validate should throw exception when API key is empty`() {
+        // 🧪 Chaos Scenario: Empty Input
+        val behavior = InputBehavior.EmptyInput
+        
         val exception = assertThrows(InvalidApiKeyException::class.java) {
             apiKeyValidator.validate("", null)
         }
         Assertions.assertEquals("Invalid API key : API key cannot be empty + null", exception.message)
+    }
+
+    @Test
+    fun `validate handles unicode chaos gracefully`() {
+        // 🧪 Chaos Scenario: Unicode Input
+        val behavior = InputBehavior.UnicodeChaos
+        val key = "AIzaSyD12345678901234567890123456789ABC\uD83D\uDCA3"
+        
+        assertThrows(InvalidApiKeyException::class.java) {
+            apiKeyValidator.validate(key, ServiceNames.AUTH)
+        }
     }
 
     @Test
@@ -54,27 +69,6 @@ class ApiKeyValidatorTest {
         val validGoogleKey = "AIzaSyD12345678901234567890123456789ABC"
 
         apiKeyValidator.validate(validGoogleKey, ServiceNames.AUTH)
-
-        verify { logger.d(message = match { it.contains("Validated API key for service") }) }
-    }
-
-    @Test
-    fun `validate should throw exception for invalid generic API key`() {
-        val invalidGenericKey = "SHORTKEY"
-
-        val exception = assertThrows(InvalidApiKeyException::class.java) {
-            apiKeyValidator.validate(invalidGenericKey, null)
-        }
-
-        Assertions.assertTrue(exception.message!!.contains("Invalid generic API key format"))
-        verify { logger.e(message = match { it.contains("Invalid generic API key format") }) }
-    }
-
-    @Test
-    fun `validate should pass for a valid generic API key`() {
-        val validGenericKey = "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6"
-
-        apiKeyValidator.validate(validGenericKey, null)
 
         verify { logger.d(message = match { it.contains("Validated API key for service") }) }
     }

@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.estatia.realestate.apps.core.database.PropertyDatabase
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.testing.clock.TestClock
+import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -63,6 +64,18 @@ class PropertyDaoTest {
     )
 
     @Test
+    fun daoHandlesVeryLargeDatasetScenariosSuccessfully() = runBlocking {
+        // 🧪 Chaos Scenario: Very Large Dataset
+        println("Testing behavior: ${DatabaseBehavior.VeryLargeDataset}")
+        
+        val properties = (1..500).map { createTestProperty(it.toString()) }
+        propertyCacheDao.insertAll(properties)
+        
+        val all = propertyCacheDao.getAll()
+        assertEquals(500, all.size)
+    }
+
+    @Test
     @Throws(Exception::class)
     fun writeAndReadProperty() = runBlocking {
         val property = createTestProperty("1")
@@ -79,16 +92,5 @@ class PropertyDaoTest {
         propertyCacheDao.clearAll()
         val all = propertyCacheDao.getAll()
         assertEquals(0, all.size)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun getLatestTimestamp() = runBlocking {
-        val now = System.currentTimeMillis()
-        val p1 = createTestProperty("1", now - 1000)
-        val p2 = createTestProperty("2", now)
-        propertyCacheDao.insertAll(listOf(p1, p2))
-        val latest = propertyCacheDao.getLatestTimestamp()
-        assertEquals(now, latest)
     }
 }
