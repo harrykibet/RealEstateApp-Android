@@ -3,6 +3,14 @@ package com.estatia.realestate.apps.core.data.mappers.room
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * Internal utility for serializing/deserializing Room entity fields.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map complex objects to/from JSON strings for SQLite persistence.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces an empty list as a fallback for malformed JSON.
+ */
 internal object JsonConverter {
     private val json = Json { ignoreUnknownKeys = true }
 

@@ -4,7 +4,11 @@ import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import javax.inject.Inject
 
 /**
- * Maps infrastructure exceptions to [PropertyException].
+ * Specialized mapper for translating property-related infrastructure failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map platform errors (Firestore/Room) to [PropertyException] domain failures.
+ * - Concurrency: Stateless and thread-safe.
  */
 internal class PropertyExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<PropertyException>(
     notFound = { PropertyException.PropertyNotFound },

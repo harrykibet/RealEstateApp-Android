@@ -13,6 +13,14 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * ViewModel for managing the user settings experience.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the display and mutation of local user preferences.
+ * - Concurrency: Thread-safe reactive state mapping via [userDataRepository].
+ * - Lifecycle: Automatically stops reactive flows after 5 seconds of inactivity.
+ */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userDataRepository: IUserRepository,

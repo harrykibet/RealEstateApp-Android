@@ -10,16 +10,28 @@ import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * High-integrity local storage for authentication tokens.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the secure persistence of identity tokens using hardware-backed encryption.
+ * - Security: Every token is encrypted with AES-GCM before being saved to Disk (DataStore).
+ * - Concurrency: Thread-safe via [withContext] Dispatchers.IO.
+ * - Resilience: Implements a one-way migration path from legacy plain-text storage to encrypted storage.
+ * - Observability: Tracks token encryption and decryption failure rates.
+ */
 @Singleton
 class TokenLocalDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val cryptoEngine: IAesGcmCryptoEngine
+    private val cryptoEngine: IAesGcmCryptoEngine,
+    private val metricsTracker: IMetricsTracker
 ) : ITokenLocalDataSource {
 
     private companion object {
@@ -38,8 +50,10 @@ class TokenLocalDataSource @Inject constructor(
                 // Ensure the migrated plain token is removed if it exists
                 preferences.remove(KEY_MIGRATED_TOKEN)
             }
+            metricsTracker.incrementCounter("security.token.save_success")
             AppResult.Success(Unit)
         } catch (e: Exception) {
+            metricsTracker.incrementCounter("security.token.save_failure")
             AppResult.Error(com.estatia.realestate.apps.core.common.exceptions.SecurityException.EncryptionFailed(e))
         }
     }
@@ -50,7 +64,9 @@ class TokenLocalDataSource @Inject constructor(
             
             val secureToken = preferences[KEY_SECURE_AUTH_TOKEN]
             if (secureToken != null) {
-                return@withContext AppResult.Success(decryptToken(secureToken))
+                val token = decryptToken(secureToken)
+                metricsTracker.incrementCounter("security.token.get_success")
+                return@withContext AppResult.Success(token)
             }
 
             // Fallback to migrated plain token
@@ -58,11 +74,13 @@ class TokenLocalDataSource @Inject constructor(
             if (migratedToken != null) {
                 // Secure it now for future uses
                 saveToken(migratedToken)
+                metricsTracker.incrementCounter("security.token.migration_success")
                 return@withContext AppResult.Success(migratedToken)
             }
 
             AppResult.Success(null)
         } catch (e: Exception) {
+            metricsTracker.incrementCounter("security.token.get_failure")
             AppResult.Error(com.estatia.realestate.apps.core.common.exceptions.SecurityException.DecryptionFailed(e))
         }
     }

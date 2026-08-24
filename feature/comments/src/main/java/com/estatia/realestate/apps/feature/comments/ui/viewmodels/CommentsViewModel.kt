@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -20,9 +21,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing the real-time comment stream of a property.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the retrieval, display, and submission of property comments.
+ * - Concurrency: Thread-safe via [viewModelScope] and serialized [update] calls.
+ * - Resilience: Surfaces cached comments on start while remote stream initializes.
+ * - Lifecycle: Automatically cancels observation jobs [observeJob] on property switch.
+ * - Observability: Tracks comment submission and observation health.
+ */
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
     private val commentsRepository: ICommentsRepository,
+    private val metricsTracker: IMetricsTracker,
     @param:Dispatcher(EstatiaDispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -94,15 +106,19 @@ class CommentsViewModel @Inject constructor(
         val message = state.value.input.trim()
         if (message.isBlank()) return
 
+        if (state.value.isSending) return // 🛡️ Idempotency
+
         viewModelScope.launch(ioDispatcher) {
             update { copy(isSending = true) }
             when (val result = commentsRepository.submitComment(propertyId, message)) {
                 is AppResult.Success -> {
+                    metricsTracker.incrementCounter("comments.post.success")
                     update { copy(input = "", isSending = false) }
                     _events.emit(CommentsEvent.ShowMessage("Comment posted"))
                 }
 
                 is AppResult.Error -> {
+                    metricsTracker.incrementCounter("comments.post.failure")
                     update { copy(isSending = false) }
                     _events.emit(
                         CommentsEvent.ShowMessage(

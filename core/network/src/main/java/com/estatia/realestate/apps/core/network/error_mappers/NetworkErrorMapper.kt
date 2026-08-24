@@ -7,6 +7,14 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
+/**
+ * Standard implementation of [INetworkErrorMapper] for translating platform-level network failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Standardize the translation of [HttpException], [IOException], and [SocketTimeoutException] into domain [NetworkException]s.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Provides 100% coverage for known network-layer failure modes.
+ */
 internal class NetworkErrorMapper @Inject constructor()
     : INetworkErrorMapper {
 

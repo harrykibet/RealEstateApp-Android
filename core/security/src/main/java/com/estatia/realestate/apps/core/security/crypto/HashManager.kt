@@ -14,6 +14,15 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Engine for performing cryptographic hashing and HMAC operations.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Generate secure one-way hashes and keyed-hash message authentication codes (HMAC).
+ * - Security: Uses SHA-256 for basic hashing and HMAC-SHA256 for authentication.
+ * - Concurrency: Thread-safe via [cryptoExecutor] and [Dispatchers.Default].
+ * - Resilience: Surfaces domain-specific failures via [cryptoExecutor].
+ */
 @Singleton
 class HashManager @Inject constructor(
     private val cryptoExecutor: ICryptoExecutor

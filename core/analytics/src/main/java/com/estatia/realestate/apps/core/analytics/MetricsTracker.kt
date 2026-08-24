@@ -13,6 +13,12 @@ import kotlin.time.toJavaDuration
 
 /**
  * Micrometer-based implementation of [IMetricsTracker].
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Record and aggregate application performance and business counters.
+ * - Concurrency: Thread-safe; Micrometer handle synchronization internally.
+ * - Resilience: Non-blocking; metric collection should not impact user-facing latency.
+ * - Observability: Directly enables Service Level Indicators (SLIs) for the application.
  */
 @Singleton
 class MetricsTracker @Inject constructor() : IMetricsTracker {

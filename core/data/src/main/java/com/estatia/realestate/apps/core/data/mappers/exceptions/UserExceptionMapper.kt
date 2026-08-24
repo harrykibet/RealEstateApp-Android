@@ -4,7 +4,11 @@ import com.estatia.realestate.apps.core.common.exceptions.UserException
 import javax.inject.Inject
 
 /**
- * Maps infrastructure exceptions to [UserException].
+ * Specialized mapper for translating user-related infrastructure failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map platform errors to [UserException] domain failures.
+ * - Concurrency: Stateless and thread-safe.
  */
 internal class UserExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<UserException>(
     notFound = { UserException.UserNotFound },

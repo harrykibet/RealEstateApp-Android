@@ -36,7 +36,8 @@ class FirestorePropertiesTest {
         database = mockk()
         storage = mockk()
         networkClient = mockk()
-        firestoreProperties = FirestoreProperties(database, storage, networkClient)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        firestoreProperties = FirestoreProperties(database, storage, networkClient, metricsTracker)
 
         coEvery {
             networkClient.execute<Any?>(any(), any())

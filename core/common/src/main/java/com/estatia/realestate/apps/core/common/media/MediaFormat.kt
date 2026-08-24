@@ -1,7 +1,12 @@
 package com.estatia.realestate.apps.core.common.media
 
 /**
- * Enum defining supported media formats with their MIME types.
+ * Enumeration of hardware-supported media containers and codecs.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Act as the canonical registry for MIME-to-Extension mapping.
+ * - Immutability: Pure value class hierarchy.
+ * - Concurrency: Thread-safe (stateless).
  */
 enum class MediaFormat(val extension: String, val mimeType: String) {
 

@@ -5,13 +5,26 @@ import androidx.datastore.core.DataStore
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Data source for application preferences using Jetpack DataStore.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Source of truth for local user settings and UI configuration.
+ * - Concurrency: Thread-safe; DataStore handles atomic disk writes and multi-process safety.
+ * - Resilience: Surfaces [UserData] flow; handles [IOException] during updates.
+ * - Observability: Tracks preference update failures.
+ */
 class EstatiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
+    private val metricsTracker: IMetricsTracker,
+    private val logger: ILogger
 ) {
     val userData = userPreferences.data
         .map {
@@ -55,7 +68,8 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update followed properties", ioException)
         }
     }
 
@@ -72,37 +86,53 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update followed state", ioException)
         }
     }
 
     suspend fun setThemeBrand(themeBrand: ThemeBrand) {
-        userPreferences.updateData {
-            it.copy {
-                this.themeBrand = when (themeBrand) {
-                    ThemeBrand.DEFAULT -> ThemeBrandProto.THEME_BRAND_DEFAULT
-                    ThemeBrand.ANDROID -> ThemeBrandProto.THEME_BRAND_ANDROID
+        try {
+            userPreferences.updateData {
+                it.copy {
+                    this.themeBrand = when (themeBrand) {
+                        ThemeBrand.DEFAULT -> ThemeBrandProto.THEME_BRAND_DEFAULT
+                        ThemeBrand.ANDROID -> ThemeBrandProto.THEME_BRAND_ANDROID
+                    }
                 }
             }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update theme brand", ioException)
         }
     }
 
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.useDynamicColor = useDynamicColor }
+        try {
+            userPreferences.updateData {
+                it.copy { this.useDynamicColor = useDynamicColor }
+            }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update dynamic color preference", ioException)
         }
     }
 
     suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
-        userPreferences.updateData {
-            it.copy {
-                this.darkThemeConfig = when (darkThemeConfig) {
-                    DarkThemeConfig.FOLLOW_SYSTEM ->
-                        DarkThemeConfigProto.DARK_THEME_CONFIG_FOLLOW_SYSTEM
-                    DarkThemeConfig.LIGHT -> DarkThemeConfigProto.DARK_THEME_CONFIG_LIGHT
-                    DarkThemeConfig.DARK -> DarkThemeConfigProto.DARK_THEME_CONFIG_DARK
+        try {
+            userPreferences.updateData {
+                it.copy {
+                    this.darkThemeConfig = when (darkThemeConfig) {
+                        DarkThemeConfig.FOLLOW_SYSTEM ->
+                            DarkThemeConfigProto.DARK_THEME_CONFIG_FOLLOW_SYSTEM
+                        DarkThemeConfig.LIGHT -> DarkThemeConfigProto.DARK_THEME_CONFIG_LIGHT
+                        DarkThemeConfig.DARK -> DarkThemeConfigProto.DARK_THEME_CONFIG_DARK
+                    }
                 }
             }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update dark theme config", ioException)
         }
     }
 
@@ -118,7 +148,8 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update bookmarked state", ioException)
         }
     }
 
@@ -134,7 +165,8 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update liked state", ioException)
         }
     }
 
@@ -143,16 +175,21 @@ class EstatiaPreferencesDataSource @Inject constructor(
     }
 
     suspend fun setPropertiesViewed(propertyIds: List<String>, viewed: Boolean) {
-        userPreferences.updateData { prefs ->
-            prefs.copy {
-                propertyIds.forEach { id ->
-                    if (viewed) {
-                        viewedPropertyIds.put(id, true)
-                    } else {
-                        viewedPropertyIds.remove(id)
+        try {
+            userPreferences.updateData { prefs ->
+                prefs.copy {
+                    propertyIds.forEach { id ->
+                        if (viewed) {
+                            viewedPropertyIds.put(id, true)
+                        } else {
+                            viewedPropertyIds.remove(id)
+                        }
                     }
                 }
             }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update viewed properties", ioException)
         }
     }
 
@@ -189,14 +226,24 @@ class EstatiaPreferencesDataSource @Inject constructor(
     }
 
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
+        try {
+            userPreferences.updateData {
+                it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
+            }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update onboarding state", ioException)
         }
     }
 
     suspend fun setIsMuted(isMuted: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.isMuted = isMuted }
+        try {
+            userPreferences.updateData {
+                it.copy { this.isMuted = isMuted }
+            }
+        } catch (ioException: IOException) {
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update mute state", ioException)
         }
     }
 }

@@ -4,7 +4,11 @@ import com.estatia.realestate.apps.core.common.exceptions.CommentException
 import javax.inject.Inject
 
 /**
- * Maps infrastructure exceptions to [CommentException].
+ * Specialized mapper for translating comment-related infrastructure failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map platform errors to [CommentException] domain failures.
+ * - Concurrency: Stateless and thread-safe.
  */
 internal class CommentExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<CommentException>(
     notFound = { CommentException.CommentNotFound },

@@ -19,6 +19,7 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
@@ -41,11 +43,13 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; leverages [networkClient] for execution context.
  * - Resilience: Chunked queries [chunked] for 'whereIn' limits and batched writes [runBatch] for atomicity.
  * - Performance: Offloads HLS generation to server-side; performs only direct VOD/Image uploads.
+ * - Observability: Tracks upload and fetch latency for property management.
  */
 internal class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,
-    private val networkClient: INetworkClient
+    private val networkClient: INetworkClient,
+    private val metricsTracker: IMetricsTracker
 ) : IPropertyRemoteDatasource {
 
     override suspend fun uploadProperty(
@@ -66,6 +70,8 @@ internal class FirestoreProperties @Inject constructor(
         val videoPaths = videoUris.map {
             "$PROPERTIES/$propertyId/${MediaFormat.MEDIA_TYPE_VIDEOS}/${UUID.randomUUID()}"
         }
+
+        val startTime = System.currentTimeMillis()
 
         return networkClient.execute {
 
@@ -98,6 +104,10 @@ internal class FirestoreProperties @Inject constructor(
                 batch.set(propertyRef, finalProperty)
                 batch.set(contactRef, contactInfo)
             }.await()
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.properties.upload_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.properties.upload_success")
 
             propertyId
         }

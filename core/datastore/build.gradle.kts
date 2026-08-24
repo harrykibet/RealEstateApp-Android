@@ -12,10 +12,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.test)
 
     implementation(projects.core.model)
+    implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.network)
     implementation(projects.core.datastoreProto)
 
     testImplementation(testFixtures(projects.core.testing))
     androidTestImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(libs.mockkAndroid)
 }

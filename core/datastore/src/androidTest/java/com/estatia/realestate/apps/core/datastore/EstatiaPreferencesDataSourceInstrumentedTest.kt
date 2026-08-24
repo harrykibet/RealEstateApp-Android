@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.estatia.realestate.apps.core.testing.assertions.assertEmits
 import com.estatia.realestate.apps.core.testing.assertions.assertFirst
+import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,7 +39,9 @@ class EstatiaPreferencesDataSourceInstrumentedTest {
             scope = testScope
         ) { testFile }
         
-        dataSource = EstatiaPreferencesDataSource(dataStore)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        val logger = mockk<com.estatia.realestate.apps.core.common.interfaces.ILogger>(relaxed = true)
+        dataSource = EstatiaPreferencesDataSource(dataStore, metricsTracker, logger)
     }
 
     @After

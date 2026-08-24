@@ -15,6 +15,14 @@ import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import javax.inject.Inject
 
+/**
+ * Android implementation of [IDeviceUtils] for hardware capability detection.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Audit device hardware (CPU, RAM, Codecs) for performance scaling.
+ * - Concurrency: Thread-safe; memoizes heavy codec scans using lazy delegates.
+ * - Performance: Minimizes Main-thread stalls by caching codec capabilities.
+ */
 class DeviceUtils @Inject constructor(
     private val context: Context,
     private val displayManager: DisplayManager

@@ -14,8 +14,10 @@ import kotlin.coroutines.resume
 /**
  * AWS implementation of [IUserRemoteDataSource].
  * 
- * TRULY AWS READY: This implementation uses the Amplify API (GraphQL) pattern
- * to retrieve user profile data from Aurora Serverless via AppSync.
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Retrieve user profile data from Aurora Serverless via AppSync GraphQL.
+ * - Concurrency: Thread-safe via [suspendCancellableCoroutine].
+ * - Resilience: Surfaces [DatabaseException.NotFound] on missing data.
  */
 internal class AwsUserRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient

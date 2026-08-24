@@ -6,18 +6,24 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 /**
- * AWS implementation of [ISearchRemoteDataSource].
+ * AWS implementation of [ISearchRemoteDataSource] using OpenSearch via AppSync.
  * 
- * TRULY AWS READY: This implementation uses the Amplify API (GraphQL) pattern
- * to interact with AWS OpenSearch via an AppSync bridge.
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Perform full-text and geospatial searches via AWS infrastructure.
+ * - Concurrency: Thread-safe.
+ * - Resilience: Delegates execution and retries to [networkClient].
+ * - Observability: Tracks search latency and result count.
  */
 internal class AwsSearchRemoteDataSource @Inject constructor(
-    private val networkClient: INetworkClient
+    private val networkClient: INetworkClient,
+    private val metricsTracker: IMetricsTracker
 ) : ISearchRemoteDataSource {
 
     override suspend fun searchProperties(query: String, limit: Int): AppResult<List<PropertyEntityModel>> {
@@ -46,13 +52,21 @@ internal class AwsSearchRemoteDataSource @Inject constructor(
             null
         )
 
+        val startTime = System.currentTimeMillis()
+
         return networkClient.execute {
-            suspendCancellableCoroutine { continuation ->
+            val result = suspendCancellableCoroutine { continuation ->
                 Amplify.API.query(request,
                     { response -> continuation.resume(response.data ?: emptyList()) },
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+            
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.aws.search_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.aws.search_success")
+            
+            result
         }
     }
 
@@ -79,13 +93,21 @@ internal class AwsSearchRemoteDataSource @Inject constructor(
             null
         )
         
+        val startTime = System.currentTimeMillis()
+
         return networkClient.execute {
-            suspendCancellableCoroutine { continuation ->
+            val result = suspendCancellableCoroutine { continuation ->
                 Amplify.API.query(request,
                     { response -> continuation.resume(response.data ?: emptyList()) },
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.aws.nearby_search_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.aws.nearby_search_success")
+
+            result
         }
     }
 }

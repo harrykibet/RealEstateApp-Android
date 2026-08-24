@@ -27,15 +27,6 @@ import javax.inject.Inject
  * - Resilience: Transparent fallback to local search cache when remote is unavailable.
  * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
  */
-/**
- * Repository for handling property search and discovery.
- * 
- * 🏗️ OPERATIONAL CONTRACT:
- * - Ownership: Search history and caching handled by [ISearchLocalDataSource].
- * - Concurrency: Thread-safe repository calls.
- * - Resilience: Transparent fallback to local search cache when remote is unavailable.
- * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
- */
 internal class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,
@@ -103,6 +94,7 @@ internal class SearchRepository @Inject constructor(
         radiusKm: Double
     ): AppResult<List<PropertyDomainModel>> {
 
+        val startTime = System.currentTimeMillis()
         return remoteDataSource.getNearbyProperties(
             latitude = latitude,
             longitude = longitude,
@@ -112,5 +104,14 @@ internal class SearchRepository @Inject constructor(
                 entities.map(RemotePropertyMapper::toDomain)
             }
             .translateSearchFailures(exceptionTranslator)
+            .also { result ->
+                val duration = System.currentTimeMillis() - startTime
+                metricsTracker.trackDuration("search.nearby.latency", duration.milliseconds)
+                if (result is AppResult.Success) {
+                    metricsTracker.incrementCounter("search.nearby.success")
+                } else {
+                    metricsTracker.incrementCounter("search.nearby.failure")
+                }
+            }
     }
 }

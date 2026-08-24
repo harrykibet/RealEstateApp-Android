@@ -16,7 +16,13 @@ import io.micrometer.registry.otlp.OtlpMeterRegistry
 import javax.inject.Inject
 
 /**
- * Initializes observability context (Crashlytics keys, metrics, etc.)
+ * Initializes the global observability context (Crashlytics, Metrics, Tracing).
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Setup monitoring infrastructure and set baseline device context.
+ * - Concurrency: Thread-safe; idempotent initialization.
+ * - Resilience: Blocks until [networkConfig] is ready to ensure correct OTLP URLs.
+ * - Performance: Avoids blocking the main thread during heavy registry setup.
  */
 internal class ObservabilityInitializer @Inject constructor(
     private val crashReporter: ICrashReporter,

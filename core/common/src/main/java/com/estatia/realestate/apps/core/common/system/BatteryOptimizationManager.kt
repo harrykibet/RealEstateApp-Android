@@ -15,6 +15,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -40,11 +41,20 @@ sealed class BatteryState {
     ) : BatteryState()
 }
 
-
+/**
+ * Manager for battery-aware performance scaling and resource discipline.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Monitor battery levels and thermal pressure to adjust app behavior.
+ * - Concurrency: Thread-safe; state updates are confined to the Main thread.
+ * - Lifecycle: Automatically unregisters system receivers on [cleanup].
+ * - Resilience: Surfaces a default [BatteryState.Normal] if system sensors fail.
+ */
 @Singleton
 class BatteryOptimizationManager @Inject constructor(
     private val context: Context,
-    private val powerManager: PowerManager
+    private val powerManager: PowerManager,
+    private val logger: ILogger
 ) : IBatteryManager {
     companion object {
         private const val LOW_BATTERY_THRESHOLD = 20
@@ -120,7 +130,7 @@ class BatteryOptimizationManager @Inject constructor(
 
     override fun observeBatteryState(): Flow<BatteryState> = callbackFlow {
 
-        val batteryReceiver = object : BroadcastReceiver() {
+        val streamReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 updateBatteryStatus(intent)
                 trySend(getCurrentBatteryState())
@@ -133,9 +143,8 @@ class BatteryOptimizationManager @Inject constructor(
                 trySend(getCurrentBatteryState())
             }
 
-        // Register listeners
         context.registerReceiver(
-            batteryReceiver,
+            streamReceiver,
             IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         )
 
@@ -146,11 +155,10 @@ class BatteryOptimizationManager @Inject constructor(
             )
         }
 
-        // Emit initial state
         trySend(getCurrentBatteryState())
 
         awaitClose {
-            context.unregisterReceiver(batteryReceiver)
+            context.unregisterReceiver(streamReceiver)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 powerManager.removeThermalStatusListener(thermalListener)
             }
@@ -177,7 +185,11 @@ class BatteryOptimizationManager @Inject constructor(
     }
 
     override fun cleanup() {
-        context.unregisterReceiver(batteryStatusReceiver)
+        try {
+            context.unregisterReceiver(batteryStatusReceiver)
+        } catch (e: Exception) {
+            // Already unregistered
+        }
     }
 
     class BatteryAwareWorker(
@@ -185,7 +197,6 @@ class BatteryOptimizationManager @Inject constructor(
         workerParams: WorkerParameters
     ) : Worker(context, workerParams) {
         override fun doWork(): Result {
-            // Implement battery-optimized background tasks
             return Result.success()
         }
     }

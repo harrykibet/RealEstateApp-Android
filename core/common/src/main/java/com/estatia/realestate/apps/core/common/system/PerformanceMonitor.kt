@@ -7,8 +7,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Tracks real-time UI performance (jank) and exposes it as a reactive signal
- * for performance-sensitive components like the media engine.
+ * Tracks real-time UI performance (jank) and exposes it as a reactive signal.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Monitor frame-level performance to enable load-shedding in heavy components.
+ * - Concurrency: Thread-safe (Main-thread expected for frame data reporting).
+ * - Performance: O(1) processing per frame; uses a sliding window (30 frames) to minimize noise.
+ * - Observability: Provides the [isJanking] signal for real-time responsiveness tuning.
  */
 @Singleton
 class PerformanceMonitor @Inject constructor() {

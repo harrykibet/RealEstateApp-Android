@@ -11,6 +11,14 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import javax.inject.Inject
 
 
+/**
+ * Firebase implementation of [IAuthExceptionMapper] for translating Firebase Auth failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map platform-specific Firebase Auth exceptions to domain [AuthException]s.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces [AuthException.Unknown] for unhandled Firebase error codes.
+ */
 class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
 

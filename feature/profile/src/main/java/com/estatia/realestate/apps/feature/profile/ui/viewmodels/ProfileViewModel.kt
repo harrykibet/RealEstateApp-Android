@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,10 +16,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing the user profile screen.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the display and editing of user identity and statistics.
+ * - Concurrency: Thread-safe via [viewModelScope].
+ * - Resilience: Surfaces authenticated state errors via [ProfileUiState.error].
+ * - Observability: Tracks profile load success and failure rates.
+ */
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: IAuthRepository,
-    private val userRepository: IUserRepository
+    private val userRepository: IUserRepository,
+    private val metricsTracker: IMetricsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
@@ -40,6 +51,7 @@ class ProfileViewModel @Inject constructor(
             
             when (val result = userRepository.getUserById(userId)) {
                 is AppResult.Success -> {
+                    metricsTracker.incrementCounter("profile.load.success")
                     val user = result.data
                     _uiState.update { 
                         it.copy(
@@ -59,6 +71,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
                 is AppResult.Error -> {
+                    metricsTracker.incrementCounter("profile.load.failure")
                     _uiState.update { 
                         it.copy(
                             isLoading = false, 

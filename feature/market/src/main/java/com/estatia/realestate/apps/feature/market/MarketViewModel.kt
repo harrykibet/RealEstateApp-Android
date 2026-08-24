@@ -10,6 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Marketplace experience.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the discovery of professional services, products, and real estate experts.
+ * - Concurrency: Thread-safe; uses immutable [MarketUiState].
+ * - Resilience: Surfaces OOM pressure signals via [MarketUiState.Loading].
+ */
 @HiltViewModel
 class MarketViewModel @Inject constructor() : ViewModel() {
 

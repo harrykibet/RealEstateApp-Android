@@ -14,9 +14,20 @@ import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.user.UserLocation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * Android implementation of [ILocationUtils] for retrieving user location data.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage system-level location retrieval and reverse geocoding.
+ * - Concurrency: Thread-safe via [suspendCancellableCoroutine] and background geocoding listeners.
+ * - Resilience: Surfaces an [unknownLocation] fallback for disabled services or denied permissions.
+ * - Security: Strictly respects [Manifest.permission.ACCESS_FINE_LOCATION] and [Manifest.permission.ACCESS_COARSE_LOCATION].
+ * - Performance: Avoids blocking the Main thread during heavy reverse geocoding operations.
+ */
 class LocationUtils @Inject constructor(
     private val context: Context,
     private val logger: ILogger
@@ -54,7 +65,7 @@ class LocationUtils @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun reverseGeocode(location: Location): UserLocation =
-        kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+        suspendCancellableCoroutine { cont ->
             val geocoder = Geocoder(context, Locale.getDefault())
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

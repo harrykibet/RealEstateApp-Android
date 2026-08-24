@@ -22,6 +22,15 @@ import java.security.MessageDigest
  * A utility class for handling media files, providing methods for determining file types,
  * extracting metadata, and working with URIs.
  */
+/**
+ * Specialized utility for media file handling and URI resolution.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the mapping between Android [Uri]s and physical [File] handles.
+ * - Concurrency: Stateless and thread-safe.
+ * - Performance: Avoid O(N) operations on the Main thread.
+ * - Security: Does NOT validate file content beyond basic header checks.
+ */
 object MediaFileUtils {
 
     private const val TAG = "MediaFileUtils"
@@ -98,18 +107,13 @@ object MediaFileUtils {
         }
     }
 
-    /**
-     * Resolves the file path for downloads on Android 9 (API 28) and below.
-     */
     private fun getLegacyDownloadFilePath(context: Context, docId: String): Uri? {
         return try {
-            val contentUri = ContentUris.withAppendedId(
+            ContentUris.withAppendedId(
                 "content://downloads/public_downloads".toUri(),
                 docId.toLong()
             )
-            contentUri
         } catch (e: NumberFormatException) {
-            Log.e("FileUtils", "Error parsing download document ID: $docId")
             null
         }
     }

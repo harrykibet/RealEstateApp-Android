@@ -48,7 +48,8 @@ class ProfileViewModelTest {
         every { authRepository.getCurrentUserId() } returns userId
         coEvery { userRepository.getUserById(userId) } returns AppResult.Success(mockUser)
 
-        viewModel = ProfileViewModel(authRepository, userRepository)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty(false) { isLoading }
@@ -63,7 +64,8 @@ class ProfileViewModelTest {
         // 🧪 Chaos: 1. Timeout -> 2. Success (Simulated by manual retry in UI or internal logic)
         coEvery { userRepository.getUserById(userId) } returns AppResult.Error(NetworkException.Timeout)
 
-        viewModel = ProfileViewModel(authRepository, userRepository)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty("Connection timed out") { error }
@@ -73,7 +75,8 @@ class ProfileViewModelTest {
     fun `loadUserProfile when not authenticated updates state with error`() = runTest {
         every { authRepository.getCurrentUserId() } returns null
 
-        viewModel = ProfileViewModel(authRepository, userRepository)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty("User not authenticated") { error }

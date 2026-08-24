@@ -5,8 +5,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * High-level processor for aggregating and prioritizing user engagement signals
- * before they are shipped to the server-side recommendation engine.
+ * High-level processor for aggregating and prioritizing user engagement signals.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Normalize and buffer engagement signals before persistence.
+ * - Concurrency: Thread-safe (stateless; delegates to [engagementRepository]).
+ * - Performance: Minimal overhead; avoids heavy logic on the UI thread.
  */
 @Singleton
 class EngagementSignalProcessor @Inject constructor(

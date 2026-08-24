@@ -8,6 +8,15 @@ import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * Background worker for synchronizing the analytics outbox with the remote server.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Atomically upload pending events from local storage to the backend.
+ * - Concurrency: Thread-safe via WorkManager's worker execution context.
+ * - Resilience: Implements exponential backoff via [Result.retry] for transient network failures.
+ * - Lifecycle: Enforces a maximum of 3 retries before marking the batch as terminal failure.
+ */
 @HiltWorker
 class AnalyticsSyncWorker @AssistedInject constructor(
     @Assisted context: Context,

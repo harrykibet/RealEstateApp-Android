@@ -82,16 +82,22 @@ class LoginViewModel @Inject constructor(
      * 🔑 Called AFTER Google ID Token is obtained via Credential Manager
      */
     fun loginWithGoogleIdToken(idToken: String) {
+        if (_authState.value is AuthState.Loading) return // 🛡️ Idempotency
+
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             when (val result = authRepository.signInWithGoogle(idToken)) {
-                is AppResult.Success ->
+                is AppResult.Success -> {
+                    metricsTracker.incrementCounter("auth.login.google.success")
                     _authState.value = determineAuthState(result.data)
+                }
 
-                is AppResult.Error ->
+                is AppResult.Error -> {
+                    metricsTracker.incrementCounter("auth.login.google.failure")
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Google sign-in failed"
                     )
+                }
             }
         }
     }

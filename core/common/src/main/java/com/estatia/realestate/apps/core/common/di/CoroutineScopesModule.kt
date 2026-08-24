@@ -16,6 +16,14 @@ import javax.inject.Singleton
 @Qualifier
 annotation class ApplicationScope
 
+/**
+ * Module providing high-level application [CoroutineScope]s.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the lifecycle of long-running asynchronous tasks.
+ * - Resilience: Uses [SupervisorJob] to prevent failure propagation across sibling jobs.
+ * - Concurrency: Bound to the global application lifecycle via [Singleton].
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 internal object CoroutineScopesModule {

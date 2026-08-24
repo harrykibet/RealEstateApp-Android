@@ -35,7 +35,13 @@ const val DEEP_LINK_PROPERTIES_ID_KEY = "linkedPropertyId"
 const val DEEP_LINK_URI_PATTERN = "$DEEP_LINK_BASE_PATH/{$DEEP_LINK_PROPERTIES_ID_KEY}"
 
 /**
- * Implementation of [Notifier] that displays notifications in the system tray.
+ * Android implementation of [Notifier] for system tray notifications.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the creation and display of system notifications.
+ * - Concurrency: Thread-safe (stateless; delegates to system service).
+ * - Resilience: Surfaces no hard errors if permissions are denied or channels cannot be created.
+ * - Security: Uses [PendingIntent.FLAG_IMMUTABLE] for all intents.
  */
 @Singleton
 internal class SystemTrayNotifier @Inject constructor(

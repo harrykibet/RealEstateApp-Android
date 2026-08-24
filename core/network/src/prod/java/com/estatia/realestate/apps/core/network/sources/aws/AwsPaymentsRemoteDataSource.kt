@@ -8,16 +8,25 @@ import com.estatia.realestate.apps.core.model.feature.PaymentStatus
 import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.network.interfaces.IPaymentsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 /**
- * AWS implementation of [IPaymentsRemoteDataSource].
- * Triggers a Lambda function via AWS AppSync (GraphQL).
+ * AWS implementation of [IPaymentsRemoteDataSource] using AWS Lambda (via AppSync).
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: High-integrity financial transaction triggers.
+ * - Idempotency: Delegates idempotency logic to the backend Lambda; client should provide a unique Reference ID if supported by API.
+ * - Concurrency: Thread-safe.
+ * - Resilience: Transparently uses [networkClient] for retries.
+ * - Observability: Tracks payment processing latency and terminal status.
  */
 internal class AwsPaymentsRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient,
+    private val metricsTracker: IMetricsTracker
 ) : IPaymentsRemoteDataSource {
 
     override suspend fun processPayment(
@@ -42,8 +51,10 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
             null
         )
 
+        val startTime = System.currentTimeMillis()
+
         return networkClient.execute {
-            suspendCancellableCoroutine { continuation ->
+            val result = suspendCancellableCoroutine { continuation ->
                 Amplify.API.mutate(
                     request,
                     { response -> 
@@ -61,6 +72,12 @@ internal class AwsPaymentsRemoteDataSource @Inject constructor(
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.aws.payment_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.aws.payment.${result.name.lowercase()}")
+
+            result
         }
     }
 }

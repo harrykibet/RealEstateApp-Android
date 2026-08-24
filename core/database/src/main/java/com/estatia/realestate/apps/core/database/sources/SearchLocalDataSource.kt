@@ -7,14 +7,26 @@ import com.estatia.realestate.apps.core.database.entities.SearchCacheEntity
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
 
 private const val MAX_SEARCH_RESULTS = 50
 private const val TARGET_SEARCH_RESULTS = 40
 
+/**
+ * Local data source for managing search history and cached results.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Source of truth for local search history and transient query results.
+ * - Concurrency: Thread-safe; delegates to [databaseExecutor].
+ * - Resilience: Implements bounded history (10 items) and LRU cache trimming.
+ * - Performance: Offloads all I/O to background threads.
+ * - Observability: Tracks cache trim events.
+ */
 internal class SearchLocalDataSource @Inject constructor(
     private val historyDao: SearchHistoryDao,
     private val cacheDao: SearchCacheDao,
+    private val metricsTracker: IMetricsTracker,
     private val databaseExecutor: ILocalDatabaseExecutor
 ) : ISearchLocalDataSource {
 
@@ -64,6 +76,7 @@ internal class SearchLocalDataSource @Inject constructor(
                 )
             )
             if (cacheDao.count() > MAX_SEARCH_RESULTS) {
+                metricsTracker.incrementCounter("database.cache.search_trim")
                 cacheDao.trim(TARGET_SEARCH_RESULTS)
             }
         }

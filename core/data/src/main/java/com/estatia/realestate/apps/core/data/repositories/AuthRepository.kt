@@ -59,7 +59,9 @@ internal class AuthRepository @Inject constructor(
     }
 
     override suspend fun signOut(): AppResult<Unit> {
-        return remoteDataSource.signOut()
+        return remoteDataSource.signOut().also {
+            metricsTracker.incrementCounter("auth.signout")
+        }
     }
 
     override fun getCurrentUser(): AuthUserDomainModel? {
@@ -76,6 +78,7 @@ internal class AuthRepository @Inject constructor(
         return remoteDataSource
             .signInWithGoogle(idToken)
             .map { networkUser ->
+                metricsTracker.incrementCounter("auth.signin.google.success")
                 NetworkUserMapper.fromEntity(networkUser)
             }
     }

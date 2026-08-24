@@ -6,16 +6,22 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.common.media.MediaFileUtils.getMediaFilePathFromContentUri
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
+/**
+ * Utility for performing local filesystem operations.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the mapping between Android [Uri]s and physical [File] handles.
+ * - Resilience: Surfaces null/false instead of throwing for missing or inaccessible files.
+ * - Performance: I/O intensive operations (like [getFileFromUri]) should be called from background dispatchers.
+ * - Security: Does NOT grant or request permissions; assumes the caller has appropriate Storage access.
+ */
 object FileUtils {
-
-    private const val TAG = "FileUtils"
 
     /**
      * Retrieves the file path from a given [Uri].
@@ -83,7 +89,6 @@ object FileUtils {
     fun getFileFromUri(context: Context, uri: Uri): File? {
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
         if (inputStream == null) {
-            Log.e(TAG, "Failed to open input stream for URI: $uri")
             return null
         }
 
@@ -93,8 +98,7 @@ object FileUtils {
                 inputStream.copyTo(output)
             }
             outputFile
-        } catch (e: Exception) {
-            Log.e(TAG, "Error saving file from URI: ${e.message}")
+        } catch (_: Exception) {
             null
         }
     }

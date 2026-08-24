@@ -9,7 +9,11 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 
 /**
  * Maps remote property entities to domain models and vice versa.
- * Used for both Firebase and AWS backends.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Pure data transformation between network and domain layers.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces "Untitled" for blank titles to avoid UI empty states.
  */
 internal object RemotePropertyMapper {
 

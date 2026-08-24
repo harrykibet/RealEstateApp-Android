@@ -12,6 +12,14 @@ import kotlinx.datetime.Instant
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
+/**
+ * ViewModel for managing the user's active chats and contacts.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the retrieval and display of private messages and active connections.
+ * - Concurrency: Thread-safe (stateless mock for now; targets reactive repository in future).
+ * - Resilience: Surfaces [ChatUiState.Loading] while data is being prepared.
+ */
 @HiltViewModel
 class ChatViewModel @Inject constructor() : ViewModel() {
 

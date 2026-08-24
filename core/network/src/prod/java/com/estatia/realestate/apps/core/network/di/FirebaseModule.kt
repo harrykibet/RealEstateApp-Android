@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.network.di
 
 import android.content.Context
-import android.util.Log
 import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseAuthErrorMapper
 import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseFallbackErrorMapper
 import com.estatia.realestate.apps.core.network.error_mappers.firebase.FirebaseFirestoreErrorMapper
@@ -30,19 +29,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
-    private const val TAG = "FirebaseModule"
-
     private fun initializeFirebaseIfNeeded(context: Context) {
         if (FirebaseApp.getApps(context).isEmpty()) {
             try {
                 FirebaseApp.initializeApp(context)
-                Log.d(TAG, "Firebase initialized successfully.")
             } catch (e: Exception) {
-                Log.e(TAG, "Firebase initialization failed.", e)
                 throw e
             }
-        } else {
-            Log.d(TAG, "Firebase already initialized.")
         }
     }
 

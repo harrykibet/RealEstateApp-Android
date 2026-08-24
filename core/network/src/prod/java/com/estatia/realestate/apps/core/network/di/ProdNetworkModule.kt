@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.AndroidNetworkStateProvider
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
@@ -176,7 +177,7 @@ object ProdNetworkModule {
     fun provideNetworkClient(
         retryPolicy: IRetryPolicy,
         exceptionMapper: IExceptionMapper,
-        metricsTracker: com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker,
+        metricsTracker: IMetricsTracker,
         logger: ILogger
     ): INetworkClient {
         return ProductionNetworkClient(retryPolicy, exceptionMapper, metricsTracker, logger)

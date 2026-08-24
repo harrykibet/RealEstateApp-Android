@@ -6,6 +6,14 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * AWS implementation of [IAuthExceptionMapper] for translating Cognito failures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Parse AWS Cognito [AuthException] messages into domain [AuthException]s.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces [AuthException.Unknown] for unhandled AWS error codes.
+ */
 @Singleton
 internal class AwsAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 

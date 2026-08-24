@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
 
 private const val MAX_PROPERTIES = 200
@@ -17,10 +18,21 @@ private const val TARGET_PROPERTIES = 160
 private const val MAX_COMMENTS = 500
 private const val TARGET_COMMENTS = 400
 
+/**
+ * Local data source for property-related data using Room.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Source of truth for local drafts and first-page cache.
+ * - Concurrency: Thread-safe; delegates to [databaseExecutor].
+ * - Resilience: Implements size-bounded LRU-style trimming for property and comment caches.
+ * - Performance: Offloads all I/O to background threads.
+ * - Observability: Tracks cache trim operations.
+ */
 internal class PropertyLocalDataSource @Inject constructor(
     private val draftDao: PropertyDraftDao,
     private val cacheDao: PropertyCacheDao,
     private val commentDao: CommentCacheDao,
+    private val metricsTracker: IMetricsTracker,
     private val databaseExecutor: ILocalDatabaseExecutor
 ) : IPropertyLocalDataSource {
 
@@ -71,6 +83,7 @@ internal class PropertyLocalDataSource @Inject constructor(
         databaseExecutor.execute {
             cacheDao.insertAll(properties)
             if (cacheDao.count() > MAX_PROPERTIES) {
+                metricsTracker.incrementCounter("database.cache.property_trim")
                 cacheDao.trim(TARGET_PROPERTIES)
             }
         }
@@ -124,6 +137,7 @@ internal class PropertyLocalDataSource @Inject constructor(
         databaseExecutor.execute {
             commentDao.insertAll(comments)
             if (commentDao.count() > MAX_COMMENTS) {
+                metricsTracker.incrementCounter("database.cache.comment_trim")
                 commentDao.trim(TARGET_COMMENTS)
             }
         }

@@ -16,11 +16,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Monitors system resources like memory pressure and application lifecycle visibility.
+ * Diagnostics utility for monitoring hardware pressure and application visibility.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Monitor system-level signals (Memory, Screen, App Visibility) for performance scaling.
+ * - Concurrency: Thread-safe via [MutableStateFlow.update] and Main-thread lifecycle events.
+ * - Lifecycle: Automatically cleans up via [ProcessLifecycleOwner] and [ComponentCallbacks2].
+ * - Resilience: Surfaces OOM pressure signals via [memoryTrimLevel] to allow caches to shed load.
  */
 @Singleton
 class SystemResourcesMonitor @Inject constructor(
@@ -41,8 +48,8 @@ class SystemResourcesMonitor @Inject constructor(
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                Intent.ACTION_SCREEN_ON -> _isInteractive.value = true
-                Intent.ACTION_SCREEN_OFF -> _isInteractive.value = false
+                Intent.ACTION_SCREEN_ON -> _isInteractive.update { true }
+                Intent.ACTION_SCREEN_OFF -> _isInteractive.update { false }
             }
         }
     }
@@ -60,14 +67,13 @@ class SystemResourcesMonitor @Inject constructor(
             context.registerReceiver(screenReceiver, filter)
         }
 
-        // ProcessLifecycleOwner tracks the whole app's lifecycle
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     // --- ComponentCallbacks2 ---
 
     override fun onTrimMemory(level: Int) {
-        _memoryTrimLevel.value = level
+        _memoryTrimLevel.update { level }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -75,16 +81,16 @@ class SystemResourcesMonitor @Inject constructor(
     }
 
     override fun onLowMemory() {
-        _memoryTrimLevel.value = ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+        _memoryTrimLevel.update { ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL }
     }
 
     // --- DefaultLifecycleObserver ---
 
     override fun onStart(owner: LifecycleOwner) {
-        _isAppVisible.value = true
+        _isAppVisible.update { true }
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        _isAppVisible.value = false
+        _isAppVisible.update { false }
     }
 }

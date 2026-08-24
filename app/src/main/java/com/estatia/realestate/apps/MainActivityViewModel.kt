@@ -16,6 +16,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
+/**
+ * High-level ViewModel for the primary application Activity.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage global application state, including authentication and configuration readiness.
+ * - Concurrency: Thread-safe reactive state combination via [combine].
+ * - Resilience: Surfaces a loading state while core infrastructure (Remote Config) initializes.
+ * - Lifecycle: Automatically stops reactive flows after 5 seconds of inactivity.
+ */
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     userDataRepository: IUserRepository,

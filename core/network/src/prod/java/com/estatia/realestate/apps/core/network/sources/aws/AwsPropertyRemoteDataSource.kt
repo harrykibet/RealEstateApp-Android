@@ -15,25 +15,33 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntit
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.time.Duration.Companion.milliseconds
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
 /**
- * AWS implementation of [IPropertyRemoteDatasource].
- * Uses Amplify API (GraphQL) to interact with Aurora Serverless via AppSync,
- * and Amplify Storage for S3 uploads.
+ * AWS implementation of [IPropertyRemoteDatasource] using AppSync (GraphQL) and S3.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage property lifecycle (upload, update, delete, fetch) in AWS.
+ * - Concurrency: Thread-safe; uses structured concurrency for parallel media uploads.
+ * - Resilience: Delegates execution and retries to [networkClient].
+ * - Performance: Performs parallel media compression and upload via [async]/[awaitAll].
+ * - Observability: Tracks upload and fetch latency for property management.
  */
 internal class AwsPropertyRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
     private val networkClient: INetworkClient,
     private val mediaCompressor: IMediaCompressor,
+    private val metricsTracker: IMetricsTracker
 ) : IPropertyRemoteDatasource {
 
     override suspend fun uploadProperty(
@@ -44,6 +52,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
     ): AppResult<String> = networkClient.execute {
         val propertyId = property.id.ifBlank { UUID.randomUUID().toString() }
         val outputDir = File(context.cacheDir, "uploads/$propertyId").apply { mkdirs() }
+        val startTime = System.currentTimeMillis()
         
         coroutineScope {
             // 1. Compress and Upload Videos
@@ -95,13 +104,19 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
                 null
             )
 
-            suspendCancellableCoroutine { continuation ->
+            val result = suspendCancellableCoroutine { continuation ->
                 Amplify.API.mutate(
                     request,
                     { _ -> continuation.resume(propertyId) },
                     { error -> continuation.resumeWith(Result.failure(error)) }
                 )
             }
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.aws.upload_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.aws.upload_success")
+
+            result
         }
     }
 

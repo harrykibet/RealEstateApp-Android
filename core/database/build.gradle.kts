@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.core.model)
+    implementation(projects.core.domain)
     implementation(projects.core.common)
 
     testImplementation(testFixtures(projects.core.testing))

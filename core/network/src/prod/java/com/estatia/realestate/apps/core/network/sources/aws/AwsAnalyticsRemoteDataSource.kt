@@ -5,13 +5,21 @@ import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as DomainEvent
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
 
 /**
  * AWS implementation of [IAnalyticsRemoteDataSource].
  * Uses Amazon Pinpoint via Amplify.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Direct ingestion of events into AWS Pinpoint.
+ * - Concurrency: Thread-safe (SDK internal).
+ * - Observability: Tracks recording events success/failure.
  */
-internal class AwsAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRemoteDataSource {
+internal class AwsAnalyticsRemoteDataSource @Inject constructor(
+    private val metricsTracker: IMetricsTracker
+) : IAnalyticsRemoteDataSource {
 
     override suspend fun logEvent(event: DomainEvent): AppResult<Unit> {
         val amplifyEvent = AnalyticsEvent.builder()
@@ -30,6 +38,7 @@ internal class AwsAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRe
             .build()
 
         Amplify.Analytics.recordEvent(amplifyEvent)
+        metricsTracker.incrementCounter("network.analytics.record")
         return AppResult.Success(Unit)
     }
 
@@ -45,6 +54,7 @@ internal class AwsAnalyticsRemoteDataSource @Inject constructor() : IAnalyticsRe
             .build()
         
         Amplify.Analytics.recordEvent(event)
+        metricsTracker.incrementCounter("network.analytics.record")
         return AppResult.Success(Unit)
     }
 

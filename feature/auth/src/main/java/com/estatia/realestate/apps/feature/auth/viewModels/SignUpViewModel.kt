@@ -134,11 +134,13 @@ class SignUpViewModel @Inject constructor(
             )
         ) {
             is AppResult.Success -> {
+                metricsTracker.incrementCounter("auth.signup.profile_success")
                 emitNextAuthStep(current)
                 update { copy(isLoading = false) }
             }
 
             is AppResult.Error -> {
+                metricsTracker.incrementCounter("auth.signup.profile_failure")
                 update {
                     copy(
                         isLoading = false,
