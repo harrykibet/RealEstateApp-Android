@@ -30,6 +30,8 @@ dependencies {
     testFixturesApi(projects.core.network)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.junit.junit)
+    testFixturesApi(libs.hilt.android.testing)
+    testFixturesApi(libs.hilt.android)
     testFixturesApi(platform(libs.androidx.compose.bom))
     testFixturesApi(libs.androidx.compose.runtime)
 }
