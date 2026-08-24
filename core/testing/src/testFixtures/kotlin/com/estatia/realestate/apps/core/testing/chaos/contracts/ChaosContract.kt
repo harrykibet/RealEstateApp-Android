@@ -15,5 +15,5 @@ abstract class ChaosContract<T, B> {
      * Verifies that the subject propagates cancellation correctly.
      */
     @Test
-    abstract fun `cancellation propagates`()
+    abstract fun cancellationPropagates()
 }
