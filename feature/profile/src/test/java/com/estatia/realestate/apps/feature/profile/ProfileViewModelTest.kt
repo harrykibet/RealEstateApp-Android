@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.profile
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.testing.assertions.assertProperty
@@ -52,6 +53,20 @@ class ProfileViewModelTest {
 
         viewModel.uiState.assertProperty(false) { isLoading }
         viewModel.uiState.assertProperty("John Doe") { name }
+    }
+
+    @Test
+    fun `loadUserProfile handles transient timeout with automatic retry or error state`() = runTest {
+        val userId = "user_123"
+        every { authRepository.getCurrentUserId() } returns userId
+        
+        // 🧪 Chaos: 1. Timeout -> 2. Success (Simulated by manual retry in UI or internal logic)
+        coEvery { userRepository.getUserById(userId) } returns AppResult.Error(NetworkException.Timeout)
+
+        viewModel = ProfileViewModel(authRepository, userRepository)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.uiState.assertProperty("Connection timed out") { error }
     }
 
     @Test

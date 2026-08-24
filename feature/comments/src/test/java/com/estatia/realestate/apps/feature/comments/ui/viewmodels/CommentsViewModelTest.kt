@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.feature.comments.ui.viewmodels
 
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.core.testing.assertions.assertProperty
 import com.estatia.realestate.apps.core.testing.assertions.assertState
@@ -48,7 +49,7 @@ class CommentsViewModelTest {
     }
 
     @Test
-    fun `Load action starts observing comments`() = runTest {
+    fun `Load action starts observing comments successfully`() = runTest {
         val propertyId = "prop_1"
         every { commentsRepository.observeComments(propertyId) } returns flowOf(AppResult.Success(emptyList()))
 
@@ -57,6 +58,20 @@ class CommentsViewModelTest {
 
         viewModel.state.assertState { 
             comments.isEmpty() && !isLoading
+        }
+    }
+
+    @Test
+    fun `Load action handles remote failure gracefully`() = runTest {
+        val propertyId = "prop_fail"
+        // 🧪 Scenario: Network goes down during comment observation
+        every { commentsRepository.observeComments(propertyId) } returns flowOf(AppResult.Error(NetworkException.NoInternet))
+
+        viewModel.onAction(CommentsAction.Load(propertyId))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.assertState { 
+            error == "No internet connection" && !isLoading
         }
     }
 

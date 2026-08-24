@@ -18,12 +18,13 @@ fun <T> AppResult<T>.assertSuccess(): T {
 }
 
 /**
- * Asserts that the [AppResult] is an Error.
+ * Asserts that the [AppResult] is an Error and returns the exception.
  */
 @OptIn(ExperimentalContracts::class)
-fun <T> AppResult<T>.assertError() {
+fun <T> AppResult<T>.assertError(): com.estatia.realestate.apps.core.common.exceptions.AppException {
     contract {
         returns() implies (this@assertError is AppResult.Error)
     }
     assertTrue("Expected Error, but got $this", this is AppResult.Error)
+    return (this as AppResult.Error).exception
 }

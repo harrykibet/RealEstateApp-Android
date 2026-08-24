@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.security.crypto
 
-import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.security.core.CryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.ISecurityExceptionTranslator
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
@@ -26,14 +26,13 @@ class HashManagerTest {
     }
 
     @Test
-    fun `hash produces consistent output`() = runTest {
+    fun `hash produces consistent output using platform assertions`() = runTest {
         val data = "test_data".toByteArray()
-        val result1 = hashManager.hash(data)
-        val result2 = hashManager.hash(data)
+        
+        val result1 = hashManager.hash(data).assertSuccess()
+        val result2 = hashManager.hash(data).assertSuccess()
 
-        assertTrue(result1 is AppResult.Success)
-        assertTrue(result2 is AppResult.Success)
-        assertArrayEquals((result1 as AppResult.Success).data, (result2 as AppResult.Success).data)
+        assertArrayEquals(result1, result2)
     }
 
     @Test
@@ -42,36 +41,23 @@ class HashManagerTest {
         val salt1 = hashManager.generateSalt(16)
         val salt2 = hashManager.generateSalt(16)
 
-        val result1 = hashManager.hashWithSalt(data, salt1)
-        val result2 = hashManager.hashWithSalt(data, salt2)
+        val hash1 = hashManager.hashWithSalt(data, salt1).assertSuccess()
+        val hash2 = hashManager.hashWithSalt(data, salt2).assertSuccess()
 
-        assertTrue(result1 is AppResult.Success)
-        assertTrue(result2 is AppResult.Success)
-        
-        val hash1 = (result1 as AppResult.Success).data
-        val hash2 = (result2 as AppResult.Success).data
-        
-        var equal = true
-        if (hash1.size == hash2.size) {
-            for (i in hash1.indices) {
-                if (hash1[i] != hash2[i]) {
-                    equal = false
-                    break
-                }
-            }
-        } else {
-            equal = false
-        }
-        assertTrue("Hashes with different salts should be different", !equal)
+        assertTrue("Hashes with different salts should be different", !hash1.contentEquals(hash2))
     }
 
     @Test
-    fun `hmacSha256 produces valid hmac`() = runTest {
+    fun `hmacSha256 produces valid 32-byte hmac`() = runTest {
         val data = "message".toByteArray()
         val key = "secret_key".toByteArray()
-        val result = hashManager.hmacSha256(data, key)
+        val hmac = hashManager.hmacSha256(data, key).assertSuccess()
 
-        assertTrue(result is AppResult.Success)
-        assertEquals(32, (result as AppResult.Success).data.size)
+        assertEquals(32, hmac.size)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `generateSalt throws on invalid length`() {
+        hashManager.generateSalt(-1)
     }
 }

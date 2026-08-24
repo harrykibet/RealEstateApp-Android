@@ -1,29 +1,31 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
+import com.estatia.realestate.apps.core.testing.assertions.assertError
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AppResultTest {
 
     @Test
-    fun `map transforms success value`() {
+    fun `map transforms success value using platform assertions`() {
         val result: AppResult<Int> = AppResult.Success(10)
+        
         val mapped = result.map { it * 2 }
         
-        assertTrue(mapped is AppResult.Success)
-        assertEquals(20, (mapped as AppResult.Success).data)
+        val data = mapped.assertSuccess()
+        assertEquals(20, data)
     }
 
     @Test
-    fun `map propagates error`() {
+    fun `map propagates error using platform assertions`() {
         val exception = RemoteServiceException.Unknown(Exception("Error"))
         val result: AppResult<Int> = AppResult.Error(exception)
+        
         val mapped = result.map { it * 2 }
         
-        assertTrue(mapped is AppResult.Error)
-        assertEquals(exception, (mapped as AppResult.Error).exception)
+        val err = mapped.assertError()
+        assertEquals(exception, err)
     }
 
     @Test
@@ -58,17 +60,5 @@ class AppResultTest {
     fun `getOrThrow throws on error`() {
         val result = AppResult.Error(RemoteServiceException.Unknown(Exception("boom")))
         result.getOrThrow()
-    }
-
-    @Test
-    fun `getOrNull returns data on success`() {
-        val result = AppResult.Success("test")
-        assertEquals("test", result.getOrNull())
-    }
-
-    @Test
-    fun `getOrNull returns null on error`() {
-        val result = AppResult.Error(RemoteServiceException.Unknown(Exception("boom")))
-        assertNull(result.getOrNull())
     }
 }

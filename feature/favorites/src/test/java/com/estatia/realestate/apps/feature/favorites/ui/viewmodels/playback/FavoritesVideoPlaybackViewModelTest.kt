@@ -1,10 +1,13 @@
 package com.estatia.realestate.apps.feature.favorites.ui.viewmodels.playback
 
+import androidx.media3.common.PlaybackException
+import app.cash.turbine.test
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.model.common.MediaReference
+import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.every
 import io.mockk.mockk
@@ -54,6 +57,28 @@ class FavoritesVideoPlaybackViewModelTest {
     @Test
     fun `uiState initially Idle`() = runTest {
         viewModel.uiState.assertState { this == PlayerUiState.Idle }
+    }
+
+    @Test
+    fun `Watchdog error triggers autoAdvance event for feed continuity`() = runTest {
+        val mediaId = "id_1"
+        val engineState = MutableStateFlow<PlaybackStateReducer.State>(PlaybackStateReducer.State.Idle)
+        every { coordinator.observeState(mediaId) } returns engineState
+
+        viewModel.onPageVisible(mediaId, MediaReference("http://test.mp4"), 1.0f, emptyList(), emptyList(), null, null)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.autoAdvanceEvent.test {
+            // 🧪 Chaos Injection: Engine reports a Watchdog timeout
+            val watchdogException = PlaybackException("Watchdog", null, PlaybackException.ERROR_CODE_UNSPECIFIED)
+            engineState.value = PlaybackStateReducer.State.Error(watchdogException)
+            
+            // Verify event emitted
+            awaitItem()
+            
+            // UI state should NOT show error because it's suppressed by auto-advance
+            viewModel.uiState.assertState { this !is PlayerUiState.Error }
+        }
     }
 
     @Test

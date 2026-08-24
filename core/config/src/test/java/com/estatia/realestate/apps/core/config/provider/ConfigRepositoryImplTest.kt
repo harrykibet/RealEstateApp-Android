@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.config.provider
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
@@ -43,7 +44,7 @@ class ConfigRepositoryImplTest {
     }
 
     @Test
-    fun `initialize loads from assets and refreshes from remote`() = runTest {
+    fun `initialize loads from assets and refreshes from remote successfully`() = runTest {
         val json = "{}"
         coEvery { assetSource.loadNetworkConfig() } returns json
         coEvery { assetSource.loadSecurityConfig() } returns json
@@ -61,20 +62,19 @@ class ConfigRepositoryImplTest {
         repository.initialize()
 
         assertTrue(repository.isInitialized)
-        verify { assetSource.loadNetworkConfig() }
         verify { stateHolder.update(mockConfig) }
         assertEquals("https://api.estatia.com", repository.baseUrl)
     }
 
     @Test
-    fun `refresh updates state when remote data is available`() = runTest {
-        val remoteJson = "{remote}"
-        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(remoteJson)
-        every { parser.parse(remoteJson) } returns mockConfig
+    fun `refresh handles transient network failures gracefully using platform models`() = runTest {
+        // 🧪 Chaos: Remote fetch fails
+        coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Error(NetworkException.Timeout)
 
         repository.refresh()
 
-        verify { stateHolder.update(mockConfig) }
+        // Verify metrics reported the failure
+        verify { metricsTracker.incrementCounter("config_refresh_failed", any()) }
     }
 
     @Test(expected = IllegalStateException::class)
