@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfigurationFactory
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import io.mockk.every
 import io.mockk.coEvery

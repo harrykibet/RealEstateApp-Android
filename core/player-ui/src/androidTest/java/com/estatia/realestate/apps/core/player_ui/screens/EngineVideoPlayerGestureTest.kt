@@ -15,7 +15,7 @@ import androidx.compose.ui.test.doubleClick
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
 import io.mockk.every

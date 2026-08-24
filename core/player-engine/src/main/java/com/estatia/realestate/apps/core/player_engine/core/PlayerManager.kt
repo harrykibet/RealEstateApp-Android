@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

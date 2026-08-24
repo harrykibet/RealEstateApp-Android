@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.player_engine.utils
+package com.estatia.realestate.apps.core.model.player
 
 data class EnvironmentState(
     val isMetered: Boolean,

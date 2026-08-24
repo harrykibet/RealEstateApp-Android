@@ -14,7 +14,7 @@ import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
 import com.estatia.realestate.apps.core.player_engine.di.PlaybackCache
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

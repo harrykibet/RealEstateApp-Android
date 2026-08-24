@@ -7,7 +7,7 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LivePlaybackSpeedControl
 import androidx.media3.exoplayer.LoadControl
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import kotlin.random.Random
 

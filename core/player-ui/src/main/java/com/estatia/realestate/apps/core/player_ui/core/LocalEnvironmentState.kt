@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.core
 
 import androidx.compose.runtime.compositionLocalOf
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 
 /**
  * CompositionLocal for providing the current [EnvironmentState] to the UI tree.

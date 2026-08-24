@@ -6,7 +6,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentState
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
