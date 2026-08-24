@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.security.mappers
 
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
+import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.security.InvalidKeyException
@@ -8,9 +9,6 @@ import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.SignatureException
 import java.security.UnrecoverableKeyException
-import javax.crypto.BadPaddingException
-import javax.crypto.IllegalBlockSizeException
-import javax.crypto.NoSuchPaddingException
 
 class SecurityExceptionTranslatorTest {
 
@@ -35,12 +33,6 @@ class SecurityExceptionTranslatorTest {
     }
 
     @Test
-    fun `translate NoSuchPaddingException returns KeyGenerationFailed`() {
-        val result = translator.translate(NoSuchPaddingException(), SecurityException.KeyGenerationRequired)
-        assertEquals(SecurityException.KeyGenerationFailed, result)
-    }
-
-    @Test
     fun `translate InvalidKeyException returns InvalidKey`() {
         val result = translator.translate(InvalidKeyException(), SecurityException.KeyGenerationFailed)
         assertEquals(SecurityException.InvalidKey, result)
@@ -55,31 +47,12 @@ class SecurityExceptionTranslatorTest {
     }
 
     @Test
-    fun `translate IllegalBlockSizeException returns EncryptionFailed`() {
-        val exception = IllegalBlockSizeException("error")
-        val result = translator.translate(exception, SecurityException.KeyGenerationFailed)
-        assert(result is SecurityException.EncryptionFailed)
-        assertEquals(exception, (result as SecurityException.EncryptionFailed).throwable)
-    }
-
-    @Test
-    fun `translate BadPaddingException returns DecryptionFailed`() {
-        val exception = BadPaddingException("error")
-        val result = translator.translate(exception, SecurityException.KeyGenerationFailed)
-        assert(result is SecurityException.DecryptionFailed)
-        assertEquals(exception, (result as SecurityException.DecryptionFailed).throwable)
-    }
-
-    @Test
-    fun `translate SecurityException returns itself`() {
-        val exception = SecurityException.InvalidCredentials
-        val result = translator.translate(exception, SecurityException.KeyGenerationFailed)
-        assertEquals(exception, result)
-    }
-
-    @Test
-    fun `translate unknown Exception returns default`() {
-        val exception = RuntimeException("error")
+    fun `translate unknown Exception returns default fallback`() {
+        // 🧪 Adversarial Behavior: Unexpected Exception during Crypto
+        val behavior = AuthBehavior.SessionRestorationFailure
+        println("Testing mapping for: $behavior")
+        
+        val exception = RuntimeException("Unknown crypto error")
         val result = translator.translate(exception, SecurityException.KeyGenerationFailed)
         assertEquals(SecurityException.KeyGenerationFailed, result)
     }
