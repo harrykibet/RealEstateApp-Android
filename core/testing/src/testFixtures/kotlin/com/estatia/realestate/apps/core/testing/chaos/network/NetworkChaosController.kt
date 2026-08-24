@@ -40,13 +40,23 @@ class NetworkChaosController {
             NetworkBehavior.Offline -> throw IOException("No network connectivity (Chaos)")
             NetworkBehavior.Timeout -> throw SocketTimeoutException("Connection timed out (Chaos)")
             NetworkBehavior.ConnectionReset -> throw IOException("Connection reset by peer (Chaos)")
+            NetworkBehavior.ConnectionRefused -> throw IOException("Connection refused (Chaos)")
+            NetworkBehavior.DnsFailure -> throw IOException("DNS resolution failed (Chaos)")
             is NetworkBehavior.Delay -> delay(behavior.duration)
-            is NetworkBehavior.HttpError -> {
-                // This would usually be handled by the response mapping layer
-                // but we can throw a generic exception here that our mappers recognize
-                throw IOException("HTTP ${behavior.statusCode} (Chaos)")
+            is NetworkBehavior.HttpError -> throw IOException("HTTP ${behavior.statusCode} (Chaos)")
+            NetworkBehavior.MalformedResponse -> throw IOException("Malformed response data (Chaos)")
+            NetworkBehavior.EmptyResponse -> throw IOException("Empty response body (Chaos)")
+            NetworkBehavior.PartialResponse -> throw IOException("Unexpected end of stream (Chaos)")
+            NetworkBehavior.UnexpectedSchema -> throw IOException("Unexpected response schema (Chaos)")
+            NetworkBehavior.OversizedResponse -> throw IOException("Response exceeds buffer size (Chaos)")
+            NetworkBehavior.DuplicateResponse -> throw IOException("Duplicate network response (Chaos)")
+            NetworkBehavior.OutOfOrderResponse -> throw IOException("Network response arrived out of order (Chaos)")
+            NetworkBehavior.ServerSuccessClientTimeout -> {
+                // 🧪 Specific case: Server processed the request but the client didn't wait long enough
+                // to receive the 'success' acknowledgement.
+                throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
             }
-            is NetworkBehavior.InvalidBody -> Unit // Handled by actual response injection
+            is NetworkBehavior.InvalidBody -> Unit
         }
     }
 }

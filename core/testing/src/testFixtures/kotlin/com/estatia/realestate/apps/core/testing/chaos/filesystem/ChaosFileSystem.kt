@@ -29,10 +29,19 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delega
     }
 
     private fun checkFailure() {
-        when (val failure = nextFailure) {
+        when (nextFailure) {
             FileSystemFailure.DiskFull -> throw IOException("No space left on device (Chaos)")
             FileSystemFailure.PermissionDenied -> throw IOException("Permission denied (Chaos)")
             FileSystemFailure.MissingFile -> throw IOException("File not found (Chaos)")
+            FileSystemFailure.FileDisappearsDuringOp -> throw IOException("File disappeared (Chaos)")
+            FileSystemFailure.CorruptFile -> throw IOException("Corrupt file data (Chaos)")
+            FileSystemFailure.ZeroByteFile -> throw IOException("Zero-byte file (Chaos)")
+            FileSystemFailure.UnsupportedFormat -> throw IOException("Unsupported media format (Chaos)")
+            FileSystemFailure.WrongMimeType -> throw IOException("Wrong MIME type (Chaos)")
+            FileSystemFailure.PartialFile -> throw IOException("Partial file data (Chaos)")
+            FileSystemFailure.FileChangesWhileReading -> throw IOException("File content changed while reading (Chaos)")
+            FileSystemFailure.VeryLargeFile -> throw IOException("File size exceeds buffer limits (Chaos)")
+            FileSystemFailure.IoFailure -> throw IOException("General I/O failure (Chaos)")
             null -> Unit
         }
         nextFailure = null
@@ -42,5 +51,14 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delega
         data object DiskFull : FileSystemFailure
         data object PermissionDenied : FileSystemFailure
         data object MissingFile : FileSystemFailure
+        data object FileDisappearsDuringOp : FileSystemFailure
+        data object CorruptFile : FileSystemFailure
+        data object ZeroByteFile : FileSystemFailure
+        data object UnsupportedFormat : FileSystemFailure
+        data object WrongMimeType : FileSystemFailure
+        data object PartialFile : FileSystemFailure
+        data object FileChangesWhileReading : FileSystemFailure
+        data object VeryLargeFile : FileSystemFailure
+        data object IoFailure : FileSystemFailure
     }
 }
