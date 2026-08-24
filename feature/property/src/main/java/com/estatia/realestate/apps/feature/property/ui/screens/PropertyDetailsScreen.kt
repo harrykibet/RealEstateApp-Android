@@ -53,7 +53,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.estatia.realestate.apps.core.testing.data.MockProperties
+import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.core.localization.api.LocalCurrencyFormatter
 import com.estatia.realestate.apps.core.localization.api.LocalMeasurementFormatter
@@ -374,7 +374,7 @@ fun PropertyDetailsScreenSuccessPreview() {
     EstatiaTheme {
         EstatiaBackground {
             PropertyDetailsScreen(
-                uiState = PropertyDetailsUiState.Success(MockProperties.single()),
+                uiState = PropertyDetailsUiState.Success(PropertyFixtures.single()),
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,
@@ -394,7 +394,7 @@ fun PropertyDetailsScreenSwahiliPreview() {
     EstatiaTheme {
         EstatiaBackground {
             PropertyDetailsScreen(
-                uiState = PropertyDetailsUiState.Success(MockProperties.single()),
+                uiState = PropertyDetailsUiState.Success(PropertyFixtures.single()),
                 onBackClick = {},
                 playbackUiState = PlayerUiState.Idle,
                 isMuted = false,

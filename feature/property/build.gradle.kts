@@ -16,7 +16,7 @@ dependencies {
 
     implementation(libs.navigation.fragment.ktx)
 
-    implementation(projects.core.testing)
+    debugImplementation(testFixtures(projects.core.testing))
 
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)

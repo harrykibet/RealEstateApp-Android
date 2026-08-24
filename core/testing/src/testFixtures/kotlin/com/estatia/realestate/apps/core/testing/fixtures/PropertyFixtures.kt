@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.testing.data
+package com.estatia.realestate.apps.core.testing.fixtures
 
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
 
-object MockProperties {
+object PropertyFixtures {
 
     fun single(): PropertyDomainModel {
         return PropertyDomainModel(

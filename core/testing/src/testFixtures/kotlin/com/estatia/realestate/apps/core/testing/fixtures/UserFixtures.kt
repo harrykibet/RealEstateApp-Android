@@ -1,10 +1,11 @@
-package com.estatia.realestate.apps.core.testing.data
+package com.estatia.realestate.apps.core.testing.fixtures
 
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserType
 import com.estatia.realestate.apps.core.model.user.VerificationLevel
 
-val mockUsers = listOf(
+object UserFixtures {
+    val list = listOf(
     UserDomainModel(
         userId = "user_001",
         name = "Alice Wanjiku",
@@ -36,3 +37,4 @@ val mockUsers = listOf(
         likedProperties = emptyList()
     )
 )
+}

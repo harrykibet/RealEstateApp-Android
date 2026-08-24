@@ -1,19 +1,38 @@
 ﻿# core:testing
 
-## Overview
-The `testing` module provides a shared suite of tools, fake data, and utility classes to facilitate high-quality unit and instrumentation testing across the Estatia project.
+This module provides a unified **test platform** for the Estatia application. It centralizes reusable test infrastructure, fakes, chaos injection, and deterministic synchronization utilities.
 
 ## Key Features
-- **Mock Data Sets**: Pre-configured mock users, properties, and chat messages for consistent test results.
-- **Rule Extensions**: Custom JUnit rules and Compose test helpers.
-- **Dependency Fakes**: Mock implementations of repositories and data sources for isolated unit tests.
 
-## Key Components
-- `MockProperties`: A collection of standardized property listings for UI testing.
-- `MockUsers`: Diverse user profiles for testing authentication and profile flows.
+- **Test Fixtures**: Standardized domain entities for consistent testing (e.g., `PropertyFixtures`, `UserFixtures`).
+- **Chaos Injection**: Adversarial implementations of core boundaries to test resilience:
+    - `ChaosNetworkClient`: Scripted network failure sequences.
+    - `NetworkChaosController`: Fine-grained control over network behaviors (Timeout, 503, Delay, etc.).
+- **Deterministic Scheduling**:
+    - `TestScheduler`: Named synchronization points for testing race conditions and concurrency.
+    - `TestClock`: Manual control over virtual time for timeout and retry logic verification.
+- **Scenario Builders**: Expressive DSL for composing complex test environments (e.g., `EstatiaTestScenario.networkOffline()`).
 
-## Usage
-Include this module as a `testImplementation` or `androidTestImplementation` dependency in your feature or core module.
+## Architectural Principle
+
+> **Production modules expose replaceable boundaries; `core:testing` provides adversarial implementations of those boundaries.**
+
+### Usage
+
+1.  **For Unit/Integration Tests**: Use `testImplementation(testFixtures(projects.core.testing))` to access the test platform.
+2.  **For Previews**: Use `debugImplementation(testFixtures(projects.core.testing))` if you need standardized fixture data in your UI previews.
+
+## Folder Structure
+
+```text
+src/testFixtures/kotlin/
+├── chaos/         # Failure domains (network, database, etc.)
+├── fake/          # Deterministic fakes
+├── clock/         # Time control
+├── coroutine/     # Concurrency and scheduling
+├── fixtures/      # Reusable data models
+└── scenarios/     # Reusable test environments
+```
 
 ## Dependency Graph
 ![Module Graph](module_graph.png)
