@@ -15,13 +15,13 @@ import kotlin.time.Duration.Companion.seconds
 class CdnHealthMonitor @Inject constructor(
     private val latencyMeasurer: ILatencyMeasurer,
     @param:EngineScope private val scope: CoroutineScope,
-    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher
+    @param:IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val clock: () -> Long = { System.currentTimeMillis() }
 ) {
     private val ttl: Duration = 30.seconds
     private val timeout: Duration = 3.seconds
     private val failureThreshold: Int = 3
     private val circuitOpenDuration: Duration = 60.seconds
-    private val clock: () -> Long = { System.currentTimeMillis() }
 
     private val endpointMutexes = java.util.concurrent.ConcurrentHashMap<String, Mutex>()
     private val healthMap = java.util.concurrent.ConcurrentHashMap<String, CdnHealth>()

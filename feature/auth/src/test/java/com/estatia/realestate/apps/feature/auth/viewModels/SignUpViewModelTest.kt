@@ -3,7 +3,8 @@ package com.estatia.realestate.apps.feature.auth.viewModels
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
-import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
+import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.fixtures.AuthFixtures
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
@@ -47,13 +48,13 @@ class SignUpViewModelTest {
     @Test
     fun `UserNameChanged action updates state`() = runTest {
         viewModel.onAction(SignUpAction.UserNameChanged("Harry"))
-        assertEquals("Harry", viewModel.state.value.userName)
+        viewModel.state.assertProperty("Harry") { userName }
     }
 
     @Test
     fun `Submit with missing fields shows error`() = runTest {
         viewModel.onAction(SignUpAction.Submit)
-        assertEquals("Please fill all required fields", viewModel.state.value.error)
+        viewModel.state.assertProperty("Please fill all required fields") { error }
     }
 
     @Test
@@ -67,14 +68,7 @@ class SignUpViewModelTest {
         viewModel.onAction(SignUpAction.PasswordChanged(password))
         viewModel.onAction(SignUpAction.UserTypeChanged(userType))
 
-        val authUser = AuthUserDomainModel(
-            userId = "uid_1",
-            email = email,
-            displayName = null,
-            isEmailVerified = false,
-            phoneNumber = null,
-            photoUrl = null
-        )
+        val authUser = AuthFixtures.authenticatedUser(email = email, isEmailVerified = false)
 
         coEvery { authRepository.signUpWithEmail(email, password) } returns AppResult.Success(authUser)
         coEvery { authRepository.createOrUpdateUserProfile(any(), any()) } returns AppResult.Success(Unit)
@@ -104,14 +98,7 @@ class SignUpViewModelTest {
         viewModel.onAction(SignUpAction.UserTypeChanged(userType))
         viewModel.onAction(SignUpAction.PhoneChanged(phone))
 
-        val authUser = AuthUserDomainModel(
-            userId = "uid_1",
-            email = email,
-            displayName = null,
-            isEmailVerified = false,
-            phoneNumber = phone,
-            photoUrl = null
-        )
+        val authUser = AuthFixtures.authenticatedUser(email = email, isEmailVerified = false).copy(phoneNumber = phone)
 
         coEvery { authRepository.signUpWithEmail(email, password) } returns AppResult.Success(authUser)
         coEvery { authRepository.createOrUpdateUserProfile(any(), any()) } returns AppResult.Success(Unit)

@@ -4,6 +4,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ class CdnPolicyTest {
     private lateinit var environmentCoordinator: EnvironmentCoordinator
     private lateinit var random: Random
     private lateinit var policy: CdnPolicy
+    private val testClock = TestClock(1000L)
 
     private val environmentFlow = MutableStateFlow(
         EnvironmentState(isMetered = false, shouldThrottlePerformance = false, estimatedThroughputBps = 1000)
@@ -71,7 +73,7 @@ class CdnPolicyTest {
     fun `select with open circuit skips that endpoint`() = runTest {
         // Given
         val snapshot = mapOf(
-            endpoints[0].baseUrl to CdnHealth(latencyMs = 10, 0, 0, System.currentTimeMillis() + 10000),
+            endpoints[0].baseUrl to CdnHealth(latencyMs = 10, 0, 0, testClock.currentTimeMillis() + 10000),
             endpoints[1].baseUrl to CdnHealth(latencyMs = 50, 0, 0, null)
         )
 
@@ -80,5 +82,20 @@ class CdnPolicyTest {
 
         // Then
         assertEquals(endpoints[1], selected)
+    }
+
+    @Test
+    fun `select when all endpoints have open circuits falls back to random`() = runTest {
+        // Given
+        val snapshot = mapOf(
+            endpoints[0].baseUrl to CdnHealth(null, 0, 0, testClock.currentTimeMillis() + 10000),
+            endpoints[1].baseUrl to CdnHealth(null, 0, 0, testClock.currentTimeMillis() + 10000)
+        )
+
+        // When
+        val selected = policy.select(endpoints, snapshot)
+
+        // Then
+        assertEquals(endpoints[0], selected)
     }
 }

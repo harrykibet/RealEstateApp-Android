@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.feature.settings
 
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +30,10 @@ class SettingsViewModelTest {
         viewModel.settingsUiState.test {
             // Initial state
             assertTrue(awaitItem() is SettingsUiState.Loading)
-            // Success state
-            assertTrue(awaitItem() is SettingsUiState.Success)
+            
+            // Using platform assertion for the next state
+            viewModel.settingsUiState.assertState { this is SettingsUiState.Success }
+            awaitItem() // Consume
         }
     }
 }

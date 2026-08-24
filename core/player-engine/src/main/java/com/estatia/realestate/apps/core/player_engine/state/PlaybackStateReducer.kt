@@ -22,7 +22,8 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class PlaybackStateReducer(
     private val scope: CoroutineScope,
-    private val watchdogTimeoutMs: Long = 7_000L
+    private val watchdogTimeoutMs: Long = 7_000L,
+    private val clock: () -> Long = { System.currentTimeMillis() }
 ) {
 
     /**

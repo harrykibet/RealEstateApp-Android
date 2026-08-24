@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.estatia.realestate.apps.core.database.SearchDatabase
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -19,6 +20,7 @@ class SearchHistoryDaoTest {
 
     private lateinit var searchHistoryDao: SearchHistoryDao
     private lateinit var db: SearchDatabase
+    private val testClock = TestClock(System.currentTimeMillis())
 
     @Before
     fun createDb() {
@@ -37,7 +39,7 @@ class SearchHistoryDaoTest {
 
     @Test
     fun writeAndReadSearchQuery() = runBlocking {
-        val query = SearchHistoryEntity(id = 1, query = "Nairobi", timestamp = System.currentTimeMillis())
+        val query = SearchHistoryEntity(id = 1, query = "Nairobi", timestamp = testClock.currentTimeMillis())
         searchHistoryDao.insertSearchQuery(query)
         val history = searchHistoryDao.getSearchHistory()
         assertEquals(1, history.size)
@@ -47,8 +49,9 @@ class SearchHistoryDaoTest {
     @Test
     fun maintainSearchHistoryLimit() = runBlocking {
         for (i in 1..15) {
+            testClock.advanceBy(1000L)
             searchHistoryDao.insertSearchQuery(
-                SearchHistoryEntity(id = i, query = "Query $i", timestamp = i.toLong())
+                SearchHistoryEntity(id = i, query = "Query $i", timestamp = testClock.currentTimeMillis())
             )
         }
         searchHistoryDao.maintainSearchHistoryLimit()

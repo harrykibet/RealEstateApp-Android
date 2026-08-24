@@ -12,7 +12,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 
 internal class ExponentialRetryPolicy @Inject constructor(
-    private val exceptionMapper: IExceptionMapper
+    private val exceptionMapper: IExceptionMapper,
+    private val clock: () -> Long = { System.currentTimeMillis() }
 ) : IRetryPolicy {
 
 
@@ -29,7 +30,7 @@ internal class ExponentialRetryPolicy @Inject constructor(
         var attempt = 0
         var delayMs = retryConfig.initialDelayMs
         var lastException: AppException? = null
-        val startTime = System.currentTimeMillis()
+        val startTime = clock()
 
 
         while(
@@ -37,7 +38,7 @@ internal class ExponentialRetryPolicy @Inject constructor(
         ) {
             
             retryConfig.maxTotalDurationMs?.let { maxDuration ->
-                if (System.currentTimeMillis() - startTime > maxDuration) {
+                if (clock() - startTime > maxDuration) {
                     throw lastException ?: IllegalStateException("Retry total duration exceeded")
                 }
             }

@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.estatia.realestate.apps.core.database.PropertyDatabase
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -19,6 +20,7 @@ class PropertyDaoTest {
 
     private lateinit var propertyCacheDao: PropertyCacheDao
     private lateinit var db: PropertyDatabase
+    private lateinit var testClock: TestClock
 
     @Before
     fun createDb() {
@@ -27,6 +29,7 @@ class PropertyDaoTest {
             context, PropertyDatabase::class.java
         ).build()
         propertyCacheDao = db.propertyCacheDao()
+        testClock = TestClock(System.currentTimeMillis())
     }
 
     @After
@@ -35,7 +38,7 @@ class PropertyDaoTest {
         db.close()
     }
 
-    private fun createTestProperty(id: String, timestamp: Long = System.currentTimeMillis()) = PropertyCacheEntity(
+    private fun createTestProperty(id: String, timestamp: Long = testClock.currentTimeMillis()) = PropertyCacheEntity(
         id = id,
         title = "Modern Apartment",
         description = "A beautiful apartment in the city center",

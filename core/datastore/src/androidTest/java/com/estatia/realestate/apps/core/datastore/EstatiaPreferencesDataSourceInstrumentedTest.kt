@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.estatia.realestate.apps.core.testing.assertions.assertEmits
+import com.estatia.realestate.apps.core.testing.assertions.assertFirst
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,18 +50,15 @@ class EstatiaPreferencesDataSourceInstrumentedTest {
     @Test
     fun setPropertyLiked_updatesUserData() = runBlocking {
         dataSource.setPropertyLiked("prop_1", true)
-        val userData = dataSource.userData.first()
-        assertEquals(setOf("prop_1"), userData.likedProperties)
+        dataSource.userData.assertEmits { it.likedProperties.contains("prop_1") }
         
         dataSource.setPropertyLiked("prop_1", false)
-        val updatedData = dataSource.userData.first()
-        assertEquals(emptySet<String>(), updatedData.likedProperties)
+        dataSource.userData.assertEmits { it.likedProperties.isEmpty() }
     }
 
     @Test
     fun setIsMuted_updatesUserData() = runBlocking {
         dataSource.setIsMuted(true)
-        val userData = dataSource.userData.first()
-        assertEquals(true, userData.isMuted)
+        dataSource.userData.assertEmits { it.isMuted }
     }
 }

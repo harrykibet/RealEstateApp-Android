@@ -1,8 +1,7 @@
 package com.estatia.realestate.apps.feature.chats
 
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -17,10 +16,9 @@ class ChatViewModelTest {
 
     @Test
     fun `initial state should eventually be Success with mock data`() = runTest {
-        val state = viewModel.uiState.value
-        assertTrue(state is ChatUiState.Success)
-        val successState = state as ChatUiState.Success
-        assertEquals(5, successState.activeUsers.size)
-        assertEquals(3, successState.chats.size)
+        viewModel.uiState.assertState {
+            val current = this
+            current is ChatUiState.Success && current.activeUsers.size == 5 && current.chats.size == 3
+        }
     }
 }

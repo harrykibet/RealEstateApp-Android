@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -64,26 +65,24 @@ class MainActivityViewModelTest {
     }
 
     @Test
-    fun uiStateReflectsUserData() = runTest {
+    fun `uiState reflects user data changes`() = runTest {
         viewModel.uiState.test {
             // Initial state from stateIn initialValue
             assertEquals(MainActivityViewModel.MainActivityUiState.Loading, awaitItem())
 
             // Then it should collect from the flow
-            val successState = awaitItem()
-            assert(successState is MainActivityViewModel.MainActivityUiState.Success)
-            assertEquals(
-                false,
-                (successState as MainActivityViewModel.MainActivityUiState.Success).userData.useDynamicColor
-            )
+            viewModel.uiState.assertState { 
+                this is MainActivityViewModel.MainActivityUiState.Success && !userData.useDynamicColor 
+            }
+            awaitItem() // Consume Success from test { }
 
             // Update user data
             userDataFlow.value = userDataFlow.value.copy(useDynamicColor = true)
-            val updatedState = awaitItem()
-            assertEquals(
-                true,
-                (updatedState as MainActivityViewModel.MainActivityUiState.Success).userData.useDynamicColor
-            )
+            
+            viewModel.uiState.assertState { 
+                this is MainActivityViewModel.MainActivityUiState.Success && userData.useDynamicColor 
+            }
+            awaitItem() // Consume Success
         }
     }
 }

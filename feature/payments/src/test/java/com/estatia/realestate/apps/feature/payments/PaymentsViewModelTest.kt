@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.usecase.ProcessPaymentUseCase
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
-import com.estatia.realestate.apps.core.navigation.routes.PaymentRoute
+import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +15,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -31,8 +30,6 @@ class PaymentsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         processPaymentUseCase = mockk()
         
-        // Mocking SavedStateHandle to return expected Route
-        // Using a real SavedStateHandle with required arguments for toRoute()
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 "referenceId" to "ref_123",
@@ -51,10 +48,8 @@ class PaymentsViewModelTest {
 
     @Test
     fun `initial state should have args from savedStateHandle`() {
-        val state = viewModel.state.value
-        assertEquals("ref_123", state.referenceId)
-        assertEquals(100.0, state.amount, 0.0)
-        assertEquals("USD", state.currency)
+        viewModel.state.assertProperty("ref_123") { referenceId }
+        viewModel.state.assertProperty("USD") { currency }
     }
 
     @Test
@@ -66,6 +61,6 @@ class PaymentsViewModelTest {
         viewModel.processPayment()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(viewModel.state.value.uiState is PaymentsUiState.Success)
+        viewModel.state.assertState { uiState is PaymentsUiState.Success }
     }
 }

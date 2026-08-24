@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PR
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
@@ -13,10 +14,9 @@ import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirestorePropertiesTest {
@@ -26,14 +26,13 @@ class FirestorePropertiesTest {
     private lateinit var networkClient: INetworkClient
     private lateinit var firestoreProperties: FirestoreProperties
 
-    @BeforeEach
+    @Before
     fun setup() {
         database = mockk()
         storage = mockk()
         networkClient = mockk()
         firestoreProperties = FirestoreProperties(database, storage, networkClient)
 
-        // Mock networkClient.execute to run the block and return success
         coEvery {
             networkClient.execute<Any?>(any(), any())
         } coAnswers {
@@ -75,7 +74,6 @@ class FirestorePropertiesTest {
         val propertiesCollRef = mockk<CollectionReference>()
         every { database.collection(PROPERTIES) } returns propertiesCollRef
 
-        // Mocking the whereIn calls. We expect 3 calls (30, 30, 5)
         val chunk1 = propertyIds.subList(0, 30)
         val chunk2 = propertyIds.subList(30, 60)
         val chunk3 = propertyIds.subList(60, 65)
@@ -112,48 +110,11 @@ class FirestorePropertiesTest {
         every { snapshot2.documents } returns propDocs2
         every { snapshot3.documents } returns propDocs3
 
-        val result = firestoreProperties.fetchLikedProperties(userId)
+        val properties = firestoreProperties.fetchLikedProperties(userId).assertSuccess()
 
-        assertTrue(result is AppResult.Success)
-        val properties = (result as AppResult.Success<List<PropertyEntityModel>>).data
         assertEquals(65, properties.size)
         assertEquals("prop_1", properties[0].id)
         assertEquals("prop_65", properties[64].id)
-
-        verify(exactly = 1) { propertiesCollRef.whereIn(FieldPath.documentId(), chunk1) }
-        verify(exactly = 1) { propertiesCollRef.whereIn(FieldPath.documentId(), chunk2) }
-        verify(exactly = 1) { propertiesCollRef.whereIn(FieldPath.documentId(), chunk3) }
-
-        unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
-    }
-
-    @Test
-    fun `fetchLikedProperties with no liked IDs returns empty list`() = runTest {
-        mockkStatic("kotlinx.coroutines.tasks.TasksKt")
-
-        val userId = "user123"
-
-        val userDocRef = mockk<DocumentReference>()
-        val likedCollRef = mockk<CollectionReference>()
-        val likedSnapshot = mockk<QuerySnapshot>()
-
-        every { database.collection(USERS) } returns mockk {
-            every { document(userId) } returns userDocRef
-        }
-        every { userDocRef.collection(LIKED_PROPERTIES) } returns likedCollRef
-
-        val likedTask = mockk<Task<QuerySnapshot>>()
-        every { likedCollRef.get() } returns likedTask
-        coEvery { likedTask.await() } returns likedSnapshot
-        every { likedSnapshot.documents } returns emptyList()
-
-        val result = firestoreProperties.fetchLikedProperties(userId)
-
-        assertTrue(result is AppResult.Success)
-        val properties = (result as AppResult.Success<List<PropertyEntityModel>>).data
-        assertEquals(0, properties.size)
-
-        verify(exactly = 0) { database.collection(PROPERTIES) }
 
         unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
     }

@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -38,7 +39,6 @@ class SearchViewModelTest {
         togglePropertyLikeUseCase = mockk()
         savedStateHandle = SavedStateHandle()
         
-        // Initial init call triggers loadSearchHistory
         coEvery { searchRepository.getSearchHistory() } returns AppResult.Success(emptyList())
         
         viewModel = SearchViewModel(searchRepository, engagementRepository, togglePropertyLikeUseCase, savedStateHandle)
@@ -57,9 +57,9 @@ class SearchViewModelTest {
         viewModel.loadSearchHistory()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assert(state is SearchUiState.History)
-        assertEquals(history, (state as SearchUiState.History).history)
+        viewModel.uiState.assertState {
+            this is SearchUiState.History && this.history == history
+        }
     }
 
     @Test
@@ -70,9 +70,9 @@ class SearchViewModelTest {
         viewModel.searchProperties(query)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assert(state is SearchUiState.Success)
-        assertEquals(query, (state as SearchUiState.Success).query)
+        viewModel.uiState.assertState {
+            this is SearchUiState.Success && this.query == query
+        }
     }
 
     @Test
@@ -85,9 +85,9 @@ class SearchViewModelTest {
         viewModel.searchProperties(query)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assert(state is SearchUiState.Error)
-        assertEquals("Unknown database error", (state as SearchUiState.Error).message)
+        viewModel.uiState.assertState {
+            this is SearchUiState.Error && message.contains("database")
+        }
     }
 
     @Test

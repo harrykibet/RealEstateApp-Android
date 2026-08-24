@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.security.interfaces.ISignatureManager
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
 import com.estatia.realestate.apps.core.security.models.HybridEncryptedPayload
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import io.mockk.coEvery
@@ -65,10 +66,8 @@ class SecurityRepositoryTest {
         val payload = EncryptedPayload(1, byteArrayOf(1), byteArrayOf(2))
         coEvery { aesGcmCryptoEngine.encrypt(any()) } returns AppResult.Success(payload)
 
-        val result = repository.symmetricEncrypt(data)
-
-        assert(result is AppResult.Success)
-        assertEquals(json.encodeToString(payload), (result as AppResult.Success).data)
+        val result = repository.symmetricEncrypt(data).assertSuccess()
+        assertEquals(json.encodeToString(payload), result)
     }
 
     @Test
@@ -78,10 +77,8 @@ class SecurityRepositoryTest {
         val decryptedData = "test"
         coEvery { aesGcmCryptoEngine.decrypt(any()) } returns AppResult.Success(decryptedData.toByteArray())
 
-        val result = repository.symmetricDecrypt(encryptedData)
-
-        assert(result is AppResult.Success)
-        assertEquals(decryptedData, (result as AppResult.Success).data)
+        val result = repository.symmetricDecrypt(encryptedData).assertSuccess()
+        assertEquals(decryptedData, result)
     }
 
     @Test
@@ -90,10 +87,8 @@ class SecurityRepositoryTest {
         val payload = HybridEncryptedPayload(1, byteArrayOf(1), byteArrayOf(2), byteArrayOf(3))
         coEvery { rsaCryptoEngine.encrypt(any()) } returns AppResult.Success(payload)
 
-        val result = repository.asymmetricEncrypt(data)
-
-        assert(result is AppResult.Success)
-        assertEquals(json.encodeToString(payload), (result as AppResult.Success).data)
+        val result = repository.asymmetricEncrypt(data).assertSuccess()
+        assertEquals(json.encodeToString(payload), result)
     }
 
     @Test
@@ -103,10 +98,8 @@ class SecurityRepositoryTest {
         val decryptedData = "test"
         coEvery { rsaCryptoEngine.decrypt(any()) } returns AppResult.Success(decryptedData.toByteArray())
 
-        val result = repository.asymmetricDecrypt(encryptedData)
-
-        assert(result is AppResult.Success)
-        assertEquals(decryptedData, (result as AppResult.Success).data)
+        val result = repository.asymmetricDecrypt(encryptedData).assertSuccess()
+        assertEquals(decryptedData, result)
     }
 
     @Test
@@ -115,9 +108,7 @@ class SecurityRepositoryTest {
         val signature = byteArrayOf(1, 2, 3)
         coEvery { signatureManager.sign(any(), any()) } returns AppResult.Success(signature)
 
-        val result = repository.signData(data)
-
-        assert(result is AppResult.Success)
-        assertEquals("encoded", (result as AppResult.Success).data)
+        val result = repository.signData(data).assertSuccess()
+        assertEquals("encoded", result)
     }
 }

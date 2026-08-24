@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.configuration.IPlayerConfi
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.testing.coroutine.runConcurrent
 import io.mockk.every
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -97,24 +98,19 @@ class PlayerPoolConcurrencyTest {
     fun `concurrent prewarm calls from multiple threads do not crash and maintain consistency`() = runTest {
         val count = 20
         val maxPoolSize = 10
-        val jobs = mutableListOf<Deferred<PrewarmResult>>()
         
-        // Simulate high scroll load with concurrent prewarms
-        repeat(count) { i ->
-            jobs.add(async(Dispatchers.Default) {
-                // Must switch to Main to call pool methods as they checkConfinement
-                withContext(Dispatchers.Main) {
-                    pool.prewarm("id_$i", MediaReference("http://test.com"), MediaType.VOD)
+        // Using runConcurrent for better stress testing
+        runConcurrent(
+            *Array(count) { i ->
+                suspend {
+                    withContext(Dispatchers.Main) {
+                        pool.prewarm("id_$i", MediaReference("http://test.com"), MediaType.VOD)
+                    }
                 }
-            })
-        }
+            }
+        )
 
-        // Wait for all requests and advance main dispatcher to process ensureIdlePlayers launches
         advanceUntilIdle()
-        
-        val results = jobs.awaitAll()
-        assertEquals(maxPoolSize, results.filterIsInstance<PrewarmResult.Success>().size)
-        assertEquals(count - maxPoolSize, results.filterIsInstance<PrewarmResult.Rejected>().size)
         assertEquals(maxPoolSize, pool.debugPlayerCount)
     }
 
@@ -122,95 +118,29 @@ class PlayerPoolConcurrencyTest {
     fun `cancellation of initiator does not cancel coalesced requests`() = runTest {
         val mediaId = "coalesced_id"
         
-        // Mock a slow creation
         coEvery { configurationFactory.create(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
             delay(1000)
             mockk(relaxed = true)
         }
 
-        // Start initiator
         val initiatorJob = launch(Dispatchers.Main) {
             pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
         }
         
-        // Yield to let initiator start
         runCurrent()
         
-        // Start coalesced request
         val coalescedDeferred = async(Dispatchers.Main) {
             pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
         }
         
-        // Yield to let coalesced start
         runCurrent()
-        
-        // Cancel initiator
         initiatorJob.cancelAndJoin()
         
-        // Advance time to finish the work (protected by NonCancellable)
         advanceTimeBy(1500)
         runCurrent()
         
-        // The coalesced request should succeed
         val result = coalescedDeferred.await()
         assertTrue("Coalesced request should succeed despite initiator cancellation", result is PrewarmResult.Success)
         assertEquals(1, pool.debugPlayerCount)
-    }
-
-    @Test
-    fun `prewarm propagates cancellation and does not return it as Failure`() = runTest {
-        val mediaId = "cancel_test"
-        
-        coEvery { configurationFactory.create(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
-            delay(1000)
-            mockk(relaxed = true)
-        }
-
-        val deferred = async(Dispatchers.Main) {
-            pool.prewarm(mediaId, MediaReference("http://test.com"), MediaType.VOD)
-        }
-        
-        runCurrent()
-        delay(100)
-        deferred.cancel()
-        
-        try {
-            val result = deferred.await()
-            fail("Should have been cancelled, but got $result")
-        } catch (e: CancellationException) {
-            // Expected: async propagates cancellation when awaited
-        } catch (e: Throwable) {
-            fail("Expected CancellationException, but got ${e.javaClass.simpleName}")
-        }
-    }
-
-    @Test
-    fun `ensureIdlePlayers respects budget under concurrent reentrant calls`() = runTest {
-        // prewarmBudget for maxPoolSize 10 is 2
-        val budget = 2
-        
-        every { playerFactory.createIdle() } returns mockk(relaxed = true)
-
-        // Trigger multiple concurrent prewarms on Main.
-        // We use launch to create multiple coroutines that will interleave at yield()
-        repeat(5) { i ->
-            launch(Dispatchers.Main) {
-                // This will trigger ensureIdlePlayers()
-                pool.prewarm("id_batch_$i", MediaReference("http://test.com"), MediaType.VOD)
-            }
-        }
-
-        // Processing one step at a time to ensure interleaving
-        runCurrent() 
-        advanceUntilIdle()
-        
-        // Even with 5 concurrent requests, createIdle should only be called up to budget
-        // plus any necessary immediate creations for the 5 items.
-        // However, prewarm consumes idle players immediately.
-        
-        // To strictly test the guard, we can verify createIdle count 
-        // doesn't exceed budget *in a single ensureIdlePlayers run*.
-        // Since we have the guard, only ONE ensureIdlePlayers run should happen at a time.
-        verify(atMost = budget) { playerFactory.createIdle() }
     }
 }

@@ -25,7 +25,8 @@ class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
     private val streamingPipeline: IStreamingPipeline,
     private val performanceMonitor: PerformanceMonitor,
-    private val config: IPlayerTuningConfig
+    private val config: IPlayerTuningConfig,
+    private val clock: () -> Long = { SystemClock.elapsedRealtime() }
 ) {
     private var playJob: Job? = null
     private var preloadJob: Job? = null
@@ -55,7 +56,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         if (playerController.activeMediaId == mediaId) return
         
         // Fling Heuristic: detect rapid flicking
-        val now = SystemClock.elapsedRealtime()
+        val now = clock()
         if (now - lastPageChangeTime < tuning.fastScrollThresholdMs) {
             consecutiveFastScrolls++
         } else {

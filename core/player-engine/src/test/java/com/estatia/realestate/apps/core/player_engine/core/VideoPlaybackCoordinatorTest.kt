@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.os.Looper
-import android.os.SystemClock
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
@@ -11,6 +10,7 @@ import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -36,6 +36,7 @@ class VideoPlaybackCoordinatorTest {
     private lateinit var streamingPipeline: IStreamingPipeline
     private lateinit var performanceMonitor: PerformanceMonitor
     private lateinit var config: IPlayerTuningConfig
+    private val testClock = TestClock(0L)
     private val testScope = TestScope()
 
     private val tuning = PlayerTuningConfig(
@@ -50,9 +51,6 @@ class VideoPlaybackCoordinatorTest {
 
     @Before
     fun setup() {
-        mockkStatic(SystemClock::class)
-        every { SystemClock.elapsedRealtime() } returns 0L
-
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
         every { Looper.getMainLooper() } returns mockLooper
@@ -71,13 +69,14 @@ class VideoPlaybackCoordinatorTest {
             playerController,
             streamingPipeline,
             performanceMonitor,
-            config
+            config,
+            clock = { testClock.currentTimeMillis() }
         )
     }
 
     @After
     fun tearDown() {
-        unmockkStatic(SystemClock::class, Looper::class)
+        unmockkStatic(Looper::class)
     }
 
     @Test
@@ -102,12 +101,12 @@ class VideoPlaybackCoordinatorTest {
         
         // Simulate 3 fast scrolls (fling)
         repeat(tuning.flingCountThreshold) { i ->
-            every { SystemClock.elapsedRealtime() } returns (i * 100L) // 100ms apart
+            testClock.set(i * 100L) // 100ms apart
             coordinator.onPageVisible(this, "video_$i", uri, 1.0f, emptyList(), emptyList())
         }
 
         val targetId = "video_final"
-        every { SystemClock.elapsedRealtime() } returns (tuning.flingCountThreshold * 100L)
+        testClock.set(tuning.flingCountThreshold * 100L)
         coordinator.onPageVisible(this, targetId, uri, 1.0f, emptyList(), emptyList())
 
         // Standard debounce (100ms) should NOT fire

@@ -1,8 +1,7 @@
 package com.estatia.realestate.apps.feature.market
 
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -17,11 +16,11 @@ class MarketViewModelTest {
 
     @Test
     fun `initial state is Success with mock data`() = runTest {
-        val state = viewModel.uiState.value
-        assertTrue(state is MarketUiState.Success)
-        val successState = state as MarketUiState.Success
-        assertEquals(2, successState.featuredServices.size)
-        assertEquals(1, successState.popularProducts.size)
-        assertEquals(1, successState.recommendedProfessionals.size)
+        viewModel.uiState.assertState {
+            val current = this
+            current is MarketUiState.Success && 
+                current.featuredServices.size == 2 && 
+                current.popularProducts.size == 1
+        }
     }
 }

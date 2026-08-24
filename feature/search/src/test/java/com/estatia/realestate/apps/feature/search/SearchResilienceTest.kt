@@ -58,7 +58,8 @@ class SearchResilienceTest {
 
         // Then: Error state is shown
         viewModel.uiState.assertState { 
-            this is SearchUiState.Error && message.contains("internet") 
+            val current = this
+            current is SearchUiState.Error && current.message.contains("No internet") 
         }
 
         // Given: Network is restored
@@ -71,7 +72,8 @@ class SearchResilienceTest {
 
         // Then: Success state is shown
         viewModel.uiState.assertState { 
-            this is SearchUiState.Success && results.size == 2 
+            val current = this
+            current is SearchUiState.Success && current.results.size == 2 
         }
     }
 }

@@ -8,4 +8,7 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.datetime)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

@@ -145,6 +145,9 @@ abstract class PlayerManagerModule {
         fun provideRandom(): kotlin.random.Random = kotlin.random.Random.Default
 
         @Provides
+        fun provideClock(): () -> Long = { System.currentTimeMillis() }
+
+        @Provides
         @Singleton
         fun provideEnvironmentCoordinator(
             networkStateProvider: INetworkStateProvider,

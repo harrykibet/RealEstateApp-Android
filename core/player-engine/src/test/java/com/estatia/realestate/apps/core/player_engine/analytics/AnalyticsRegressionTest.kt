@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.analytics
 
-import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import com.estatia.realestate.apps.core.testing.fake.analytics.RecordingAnalyticsTracker
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import org.junit.Assert.assertNotEquals
@@ -14,7 +14,7 @@ class AnalyticsRegressionTest {
 
     @Test
     fun `PlaybackAnalyticsListener generates unique session IDs on every construction`() {
-        val client: IAnalyticsTracker = mockk()
+        val client = RecordingAnalyticsTracker()
         val engagement: IEngagementRepository = mockk()
         val metrics: IMetricsTracker = mockk()
         val scope = TestScope()

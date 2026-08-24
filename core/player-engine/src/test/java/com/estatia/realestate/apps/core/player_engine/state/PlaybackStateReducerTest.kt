@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
 import android.os.Looper
-import android.os.SystemClock
 import app.cash.turbine.test
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -27,6 +27,7 @@ class PlaybackStateReducerTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
     private lateinit var reducer: PlaybackStateReducer
+    private val testClock = TestClock(0L)
 
     @Before
     fun setup() {
@@ -36,9 +37,7 @@ class PlaybackStateReducerTest {
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
 
-        mockkStatic(SystemClock::class)
-        every { SystemClock.elapsedRealtime() } returns 0L
-        reducer = PlaybackStateReducer(testScope)
+        reducer = PlaybackStateReducer(testScope, clock = { testClock.currentTimeMillis() })
     }
 
     @After
@@ -93,6 +92,19 @@ class PlaybackStateReducerTest {
             // Advance past the original timeout
             advanceTimeBy(3000.milliseconds)
             expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `rapid toggle Buffering and Ready maintains stability`() = testScope.runTest {
+        reducer.state.test {
+            awaitItem() // Idle
+            repeat(10) {
+                reducer.dispatch(PlaybackStateReducer.Event.BufferingStarted)
+                assertEquals(PlaybackStateReducer.State.Buffering, awaitItem())
+                reducer.dispatch(PlaybackStateReducer.Event.BufferingCompleted)
+                assertEquals(PlaybackStateReducer.State.Ready, awaitItem())
+            }
         }
     }
 

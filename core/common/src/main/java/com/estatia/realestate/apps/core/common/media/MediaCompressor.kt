@@ -15,23 +15,25 @@ import androidx.media3.transformer.ExportResult
 import androidx.media3.transformer.Transformer
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.common.interfaces.IFileSystem
 import com.estatia.realestate.apps.core.common.system.FileUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 class MediaCompressor @Inject constructor(
-    private val logger: ILogger
+    private val logger: ILogger,
+    private val fileSystem: IFileSystem
 ) : IMediaCompressor {
 
     /**
      * Compresses an image while preserving quality.
      * Supports multiple formats including JPEG, PNG, WebP
      */
-    override fun compressImage(context: Context, imageUri: Uri, outputDir: File): File? {
+    override suspend fun compressImage(context: Context, imageUri: Uri, outputDir: File): File? {
         return try {
             val file = FileUtils.getFileFromUri(context, imageUri) ?: return null
 
@@ -60,9 +62,12 @@ class MediaCompressor @Inject constructor(
                 .get()
 
             val compressedFile = File(outputDir, "compressed_image_${System.currentTimeMillis()}.${mediaFormat.extension}")
-            FileOutputStream(compressedFile).use { fos ->
-                bitmap.compress(format, 80, fos)
-            }
+            
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(format, 80, stream)
+            val bytes = stream.toByteArray()
+            
+            fileSystem.writeBytes(compressedFile, bytes)
 
             logger.d(message = "Image compression successful: ${compressedFile.absolutePath}")
             compressedFile

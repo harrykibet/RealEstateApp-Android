@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,12 +21,13 @@ class CdnHealthMonitorTest {
     private val testScope = TestScope(testDispatcher)
     private lateinit var measurer: ILatencyMeasurer
     private lateinit var monitor: CdnHealthMonitor
+    private val testClock = TestClock(1000L)
     private val endpoint = CdnEndpoint("Test", "127.0.0.1")
 
     @Before
     fun setup() {
         measurer = mockk()
-        monitor = CdnHealthMonitor(measurer, testScope, testDispatcher)
+        monitor = CdnHealthMonitor(measurer, testScope, testDispatcher, clock = { testClock.currentTimeMillis() })
     }
 
     @Test
@@ -46,7 +48,6 @@ class CdnHealthMonitorTest {
     fun `reportExternalFailure increments failure count and trips circuit breaker`() = runTest(testDispatcher) {
         val baseUrl = endpoint.baseUrl
         
-        // Report 3 failures (default threshold)
         repeat(3) {
             monitor.reportExternalFailure(baseUrl)
         }
@@ -55,5 +56,11 @@ class CdnHealthMonitorTest {
         assertNotNull(health)
         assertEquals(3, health?.failureCount)
         assertEquals(true, health?.isCircuitOpen)
+        
+        // Advance time beyond circuit open duration (60s)
+        testClock.advanceBy(61_000L)
+        
+        val healthAfter = monitor.getHealthSnapshot()[baseUrl]
+        assertEquals(false, healthAfter?.isCircuitOpen)
     }
 }

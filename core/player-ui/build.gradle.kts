@@ -16,6 +16,9 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.designSystem)
 
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
+    
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     androidTestImplementation(libs.mockkAndroid)
