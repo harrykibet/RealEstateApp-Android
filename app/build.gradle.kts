@@ -77,6 +77,9 @@ dependencies {
     implementation(projects.core.config)
     implementation(projects.core.network)
     implementation(projects.core.testing)
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
+    
     implementation(projects.core.playerUi)
     implementation(projects.core.security)
     implementation(projects.core.database)

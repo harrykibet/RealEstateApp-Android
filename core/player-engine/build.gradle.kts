@@ -15,4 +15,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.model)
     implementation(projects.core.network)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

@@ -19,4 +19,7 @@ dependencies {
     implementation(projects.feature.sharedUi)
 
     implementation(libs.media3.common)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

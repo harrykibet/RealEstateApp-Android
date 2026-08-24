@@ -10,4 +10,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

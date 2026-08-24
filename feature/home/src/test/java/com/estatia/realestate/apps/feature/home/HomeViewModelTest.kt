@@ -3,10 +3,14 @@ package com.estatia.realestate.apps.feature.home
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.RemoteServiceException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyPage
+import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.every
@@ -48,32 +52,36 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun fetchPropertiesSuccessShouldUpdateUiState() = runTest {
+    fun `fetchProperties successfully updates uiState with fixtures`() = runTest {
         // Given
-        val properties = emptyList<com.estatia.realestate.apps.core.model.property.PropertyDomainModel>()
+        val properties = PropertyFixtures.list(3)
         val page = PropertyPage(properties, null)
         coEvery { propertyRepository.fetchPropertiesPaginated("user_123", null, 20) } returns AppResult.Success(page)
 
         viewModel.uiState.test {
             // Initial state
-            val initialState = awaitItem()
-            assertEquals(false, initialState.isLoading)
+            assertEquals(false, awaitItem().isLoading)
 
             // When
             viewModel.fetchProperties(isFirstLoad = true, pageSize = 20)
 
             // Then
             assertEquals(true, awaitItem().isLoading)
+            
             val finalState = awaitItem()
             assertEquals(false, finalState.isLoading)
             assertEquals(properties, finalState.properties)
+            
+            // Using new platform assertions
+            viewModel.uiState.assertProperty(false) { isLoading }
+            viewModel.uiState.assertState { properties.size == 3 }
         }
     }
 
     @Test
-    fun fetchPropertiesFailureShouldUpdateErrorState() = runTest {
+    fun `fetchProperties failure updates error state`() = runTest {
         // Given
-        val exception = com.estatia.realestate.apps.core.common.exceptions.RemoteServiceException.Unknown(Exception("API Error"))
+        val exception = RemoteServiceException.Unknown(Exception("API Error"))
         coEvery { propertyRepository.fetchPropertiesPaginated("user_123", null, 20) } returns AppResult.Error(exception)
 
         viewModel.uiState.test {

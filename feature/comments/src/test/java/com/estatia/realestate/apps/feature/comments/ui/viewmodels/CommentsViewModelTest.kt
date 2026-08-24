@@ -3,7 +3,8 @@ package com.estatia.realestate.apps.feature.comments.ui.viewmodels
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
-import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
+import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import io.mockk.coEvery
@@ -43,20 +44,20 @@ class CommentsViewModelTest {
     @Test
     fun `InputChanged updates input state`() = runTest {
         viewModel.onAction(CommentsAction.InputChanged("Nice place!"))
-        assertEquals("Nice place!", viewModel.state.value.input)
+        viewModel.state.assertProperty("Nice place!") { input }
     }
 
     @Test
     fun `Load action starts observing comments`() = runTest {
         val propertyId = "prop_1"
-        val mockComments = emptyList<CommentDomainModel>()
-        every { commentsRepository.observeComments(propertyId) } returns flowOf(AppResult.Success(mockComments))
+        every { commentsRepository.observeComments(propertyId) } returns flowOf(AppResult.Success(emptyList()))
 
         viewModel.onAction(CommentsAction.Load(propertyId))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(mockComments, viewModel.state.value.comments)
-        assertEquals(false, viewModel.state.value.isLoading)
+        viewModel.state.assertState { 
+            comments.isEmpty() && !isLoading
+        }
     }
 
     @Test
@@ -64,7 +65,6 @@ class CommentsViewModelTest {
         val propertyId = "prop_1"
         val message = "Great property"
         
-        // Prepare state
         every { commentsRepository.observeComments(propertyId) } returns flowOf(AppResult.Success(emptyList()))
         viewModel.onAction(CommentsAction.Load(propertyId))
         viewModel.onAction(CommentsAction.InputChanged(message))
@@ -72,15 +72,12 @@ class CommentsViewModelTest {
         coEvery { commentsRepository.submitComment(propertyId, message) } returns AppResult.Success(Unit)
 
         viewModel.events.test {
-            // When
             viewModel.onAction(CommentsAction.SendComment)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // Then
             val event = awaitItem()
             assert(event is CommentsEvent.ShowMessage)
-            assertEquals("Comment posted", (event as CommentsEvent.ShowMessage).message)
-            assertEquals("", viewModel.state.value.input)
+            viewModel.state.assertProperty("") { input }
         }
     }
 }

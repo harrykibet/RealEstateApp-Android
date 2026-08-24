@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordina
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.model.common.MediaReference
+import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,7 +19,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -53,7 +53,7 @@ class FavoritesVideoPlaybackViewModelTest {
 
     @Test
     fun `uiState initially Idle`() = runTest {
-        assertEquals(PlayerUiState.Idle, viewModel.uiState.value)
+        viewModel.uiState.assertState { this == PlayerUiState.Idle }
     }
 
     @Test

@@ -4,6 +4,7 @@ import android.content.ComponentCallbacks2
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import javax.inject.Singleton
 

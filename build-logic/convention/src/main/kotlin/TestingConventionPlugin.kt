@@ -1,6 +1,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.project
 import com.estatia.realestate.apps.libs
 
 class TestingConventionPlugin : Plugin<Project> {
@@ -9,6 +10,12 @@ class TestingConventionPlugin : Plugin<Project> {
 
             dependencies {
                 "implementation"(libs.findLibrary("androidx.tracing").get())
+                
+                // Add our centralized test platform via testFixtures
+                // We use the string notation or the project notation directly
+                add("testImplementation", testFixtures(project(":core:testing")))
+                add("androidTestImplementation", testFixtures(project(":core:testing")))
+
                 // Common unit test dependencies
                 listOf(
                     libs.findLibrary("junit.junit").get(),

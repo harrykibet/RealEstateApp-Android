@@ -17,4 +17,7 @@ dependencies {
     implementation(libs.media3.common)
 
     implementation(libs.bundles.lifecycle)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

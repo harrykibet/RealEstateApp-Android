@@ -1,11 +1,11 @@
-package com.estatia.realestate.apps.feature.profile.ui.viewmodels
+package com.estatia.realestate.apps.feature.profile
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
-import com.estatia.realestate.apps.core.model.user.UserDomainModel
-import com.estatia.realestate.apps.core.model.user.UserType
-import com.estatia.realestate.apps.core.model.user.VerificationLevel
+import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.generators.UserGenerator
+import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -41,22 +40,9 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `loadUserProfile success updates state`() = runTest {
+    fun `loadUserProfile success updates state with generated user`() = runTest {
         val userId = "user_123"
-        val mockUser = UserDomainModel(
-            userId = userId,
-            name = "John Doe",
-            email = "john@example.com",
-            bio = "Real estate enthusiast",
-            profilePictureUrl = null,
-            phoneNumber = "123456789",
-            userType = UserType.AGENT,
-            verificationLevel = VerificationLevel.NONE,
-            likedProperties = emptyList(),
-            propertyCount = 5,
-            followerCount = 10,
-            followingCount = 20
-        )
+        val mockUser = UserGenerator.generateUser(id = userId, name = "John Doe")
         
         every { authRepository.getCurrentUserId() } returns userId
         coEvery { userRepository.getUserById(userId) } returns AppResult.Success(mockUser)
@@ -64,10 +50,8 @@ class ProfileViewModelTest {
         viewModel = ProfileViewModel(authRepository, userRepository)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertEquals(false, state.isLoading)
-        assertEquals("John Doe", state.name)
-        assertEquals(5, state.stats.propertyCount)
+        viewModel.uiState.assertProperty(false) { isLoading }
+        viewModel.uiState.assertProperty("John Doe") { name }
     }
 
     @Test
@@ -77,8 +61,6 @@ class ProfileViewModelTest {
         viewModel = ProfileViewModel(authRepository, userRepository)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertEquals(false, state.isLoading)
-        assertEquals("User not authenticated", state.error)
+        viewModel.uiState.assertProperty("User not authenticated") { error }
     }
 }

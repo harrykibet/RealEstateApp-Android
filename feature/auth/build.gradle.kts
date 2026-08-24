@@ -12,4 +12,7 @@ dependencies {
     implementation(libs.google.id)
 
     implementation(libs.bundles.navigation)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

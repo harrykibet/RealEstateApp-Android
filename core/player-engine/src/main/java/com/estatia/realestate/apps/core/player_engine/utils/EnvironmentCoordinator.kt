@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.system.BatteryState
 import com.estatia.realestate.apps.core.common.system.SystemResourcesMonitor
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import kotlinx.coroutines.CoroutineScope

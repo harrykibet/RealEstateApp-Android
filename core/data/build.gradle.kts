@@ -28,4 +28,7 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.security)
     implementation(projects.core.network)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

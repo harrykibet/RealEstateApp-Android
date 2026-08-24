@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.utils
 
 import android.os.PowerManager
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
+import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject

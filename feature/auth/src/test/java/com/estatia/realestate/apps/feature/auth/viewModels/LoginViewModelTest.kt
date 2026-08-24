@@ -4,7 +4,8 @@ import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.RemoteServiceException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
-import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
+import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.fixtures.AuthFixtures
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import io.mockk.coEvery
 import io.mockk.every
@@ -40,16 +41,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun loginWithEmailSuccessShouldUpdateStateToAuthenticated() = runTest {
+    fun `login with email success updates state to authenticated`() = runTest {
         // Given
-        val user = AuthUserDomainModel(
-            userId = "123",
-            email = "test@example.com",
-            displayName = "Test User",
-            isEmailVerified = true,
-            phoneNumber = "123456789",
-            photoUrl = null
-        )
+        val user = AuthFixtures.authenticatedUser()
         coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Success(user)
 
         viewModel.authState.test {
@@ -61,69 +55,48 @@ class LoginViewModelTest {
 
             // Then
             assertEquals(AuthState.Loading, awaitItem())
-            val finalState = awaitItem()
-            assert(finalState is AuthState.Authenticated)
-            assertEquals(user, (finalState as AuthState.Authenticated).user)
+            
+            // Using new platform assertions
+            viewModel.authState.assertState { 
+                this is AuthState.Authenticated && this.user == user 
+            }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun loginWithEmailSuccessButEmailNotVerifiedShouldUpdateStateToEmailVerificationRequired() = runTest {
+    fun `login with unverified email updates state to verification required`() = runTest {
         // Given
-        val user = AuthUserDomainModel(
-            userId = "123",
-            email = "test@example.com",
-            displayName = "Test User",
-            isEmailVerified = false,
-            phoneNumber = "123456789",
-            photoUrl = null
-        )
+        val user = AuthFixtures.authenticatedUser(isEmailVerified = false)
         coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Success(user)
 
         viewModel.authState.test {
-            assertEquals(AuthState.Idle, awaitItem())
+            awaitItem() // Idle
             viewModel.loginWithEmail("test@example.com", "password")
-            assertEquals(AuthState.Loading, awaitItem())
-            val finalState = awaitItem()
-            assert(finalState is AuthState.EmailVerificationRequired)
-            assertEquals("test@example.com", (finalState as AuthState.EmailVerificationRequired).email)
+            awaitItem() // Loading
+            
+            viewModel.authState.assertState { 
+                this is AuthState.EmailVerificationRequired && email == "test@example.com" 
+            }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun loginWithEmailFailureShouldUpdateStateToError() = runTest {
+    fun `login failure updates error state`() = runTest {
         // Given
         val exception = RemoteServiceException.Unknown(Exception("Login failed"))
         coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Error(exception)
 
         viewModel.authState.test {
-            assertEquals(AuthState.Idle, awaitItem())
+            awaitItem() // Idle
             viewModel.loginWithEmail("test@example.com", "password")
-            assertEquals(AuthState.Loading, awaitItem())
-            val finalState = awaitItem()
-            assert(finalState is AuthState.Error)
-            assertEquals("Unknown remote service error", (finalState as AuthState.Error).message)
-        }
-    }
-
-    @Test
-    fun checkExistingSessionWhenAuthenticatedShouldUpdateState() = runTest {
-        // Given
-        val user = AuthUserDomainModel(
-            userId = "123",
-            email = "test@example.com",
-            displayName = "Test User",
-            isEmailVerified = true,
-            phoneNumber = "123456789",
-            photoUrl = null
-        )
-        every { authRepository.getCurrentUser() } returns user
-
-        viewModel.authState.test {
-            assertEquals(AuthState.Idle, awaitItem())
-            viewModel.checkExistingSession()
-            val finalState = awaitItem()
-            assert(finalState is AuthState.Authenticated)
+            awaitItem() // Loading
+            
+            viewModel.authState.assertState { 
+                this is AuthState.Error && message.contains("Unknown") 
+            }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

@@ -17,4 +17,7 @@ dependencies {
     implementation(libs.bundles.lifecycle)
 
     implementation(libs.eventbus)
+
+    testImplementation(testFixtures(projects.core.testing))
+    androidTestImplementation(testFixtures(projects.core.testing))
 }

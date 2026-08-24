@@ -17,15 +17,15 @@ class RecordingAnalyticsTracker : IAnalyticsTracker {
         data class Raw(val message: String, val type: String, val metadata: Map<String, String>?) : LoggedEvent
     }
 
-    override suspend fun logEvent(event: AnalyticsEvent): AppResult<Unit> {
+    override suspend fun logEvent(event: AnalyticsEvent) {
         witness.record(LoggedEvent.Domain(event))
-        return AppResult.Success(Unit)
     }
 
-    override suspend fun logEvent(message: String, eventType: String, customMetadata: Map<String, String>?): AppResult<Unit> {
+    override suspend fun logEvent(message: String, eventType: String, customMetadata: Map<String, String>?) {
         witness.record(LoggedEvent.Raw(message, eventType, customMetadata))
-        return AppResult.Success(Unit)
     }
 
     override fun generateEventId(): String = java.util.UUID.randomUUID().toString()
+
+    override suspend fun syncEvents(): AppResult<Unit> = AppResult.Success(Unit)
 }
