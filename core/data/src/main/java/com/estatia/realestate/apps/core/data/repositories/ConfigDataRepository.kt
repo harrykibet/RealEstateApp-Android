@@ -5,6 +5,13 @@ import com.estatia.realestate.apps.core.domain.config.IConfigDataRepository
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
 import javax.inject.Inject
 
+/**
+ * Repository for managing raw remote configuration data.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Act as a thin bridge between the Domain Config layer and the Network layer.
+ * - Concurrency: Stateless and thread-safe.
+ */
 internal class ConfigDataRepository @Inject constructor(
     private val remoteDataSource: IConfigRemoteDataSource
 ) : IConfigDataRepository {

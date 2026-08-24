@@ -15,6 +15,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing the property search experience.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage search queries, history, and result state.
+ * - Concurrency: Thread-safe via [viewModelScope] and state [update] calls.
+ * - Resilience: Handles remote search failures via [SearchUiState.Error].
+ * - State Restoration: Persists current query [KEY_QUERY] and scroll page [KEY_SCROLL_PAGE].
+ * - Performance: Avoids duplicate searches for the same query.
+ */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,
@@ -25,16 +35,23 @@ class SearchViewModel @Inject constructor(
 
     companion object {
         private const val KEY_SCROLL_PAGE = "search_scroll_page"
+        private const val KEY_QUERY = "search_query"
     }
 
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     init {
-        loadSearchHistory()
+        val restoredQuery = savedStateHandle.get<String>(KEY_QUERY)
+        if (!restoredQuery.isNullOrBlank()) {
+            searchProperties(restoredQuery)
+        } else {
+            loadSearchHistory()
+        }
     }
 
     fun onQueryChanged(query: String) {
+        savedStateHandle[KEY_QUERY] = query
         if (query.isBlank()) {
             loadSearchHistory()
             return
@@ -45,6 +62,10 @@ class SearchViewModel @Inject constructor(
     fun searchProperties(query: String) {
         if (query.isBlank()) return
         
+        // 🛡️ Avoid redundant searches for the same active query
+        val current = _uiState.value
+        if (current is SearchUiState.Success && current.query == query) return
+
         viewModelScope.launch {
             _uiState.value = SearchUiState.Loading
             when (val result = searchRepository.searchProperties(query, 20)) {

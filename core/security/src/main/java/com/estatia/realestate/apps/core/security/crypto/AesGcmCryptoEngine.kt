@@ -23,6 +23,18 @@ private const val GCM_TAG_LENGTH =
     128
 
 
+/**
+ * Engine for performing symmetric encryption using AES-GCM.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: High-integrity symmetric encryption/decryption using the Android KeyStore.
+ * - Security: Uses AES/GCM/NoPadding with a 128-bit tag and unique IVs for every operation.
+ * - Concurrency: Thread-safe via [cryptoExecutor].
+ * - Resilience: Delegates error handling and mapping to [cryptoExecutor].
+ * - Invariants:
+ *   1. IV must be precisely 12 bytes for GCM.
+ *   2. The underlying [AES_KEY_ALIAS] must exist in the hardware KeyStore.
+ */
 @Singleton
 class AesGcmCryptoEngine @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,

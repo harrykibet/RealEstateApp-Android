@@ -32,6 +32,16 @@ import java.util.UUID
 import javax.inject.Inject
 
 
+/**
+ * Firebase implementation of [IPropertyRemoteDatasource].
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Low-level Firestore and Storage operations for property entities.
+ * - Idempotency: Enforces client-side ID generation [propertyId] to ensure retries don't create duplicate documents.
+ * - Concurrency: Thread-safe; leverages [networkClient] for execution context.
+ * - Resilience: Chunked queries [chunked] for 'whereIn' limits and batched writes [runBatch] for atomicity.
+ * - Performance: Offloads HLS generation to server-side; performs only direct VOD/Image uploads.
+ */
 internal class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,

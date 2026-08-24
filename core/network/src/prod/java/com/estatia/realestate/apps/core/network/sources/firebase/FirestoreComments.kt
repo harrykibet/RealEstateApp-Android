@@ -10,26 +10,40 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
 import com.estatia.realestate.apps.core.network.di.FirebaseMapper
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * Firebase implementation of [ICommentsRemoteDataSource].
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage comment streams and submissions.
+ * - Concurrency: Thread-safe reactive observation via [callbackFlow].
+ * - Resilience: Uses [RetryConfigs.COMMENTS] for submissions; correctly cleans up listeners on [awaitClose].
+ * - Safety: Enforces atomic comment count increments via [runBatch].
+ * - Observability: Tracks comment observation stream health and submission latency.
+ */
 internal class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,
+    private val metricsTracker: IMetricsTracker,
     @FirebaseMapper private val errorMapper: IDatabaseErrorMapper
 ) : ICommentsRemoteDataSource {
 
 
     override suspend fun submitComment(
         comment: CommentEntityModel
-    ): AppResult<Unit> =
-        networkClient.execute(RetryConfigs.COMMENTS) {
+    ): AppResult<Unit> {
+        val startTime = System.currentTimeMillis()
+        return networkClient.execute(RetryConfigs.COMMENTS) {
 
             val propertyRef = database.collection(FirestoreCollections.PROPERTIES)
                 .document(comment.propertyId)
@@ -42,7 +56,12 @@ internal class FirestoreComments @Inject constructor(
                 batch.set(commentRef, comment)
                 batch.update(propertyRef, COMMENTS_COUNT, FieldValue.increment(1))
             }.await()
+
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.comments.submit_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.comments.submit_success")
         }
+    }
 
 
     override fun observeComments(

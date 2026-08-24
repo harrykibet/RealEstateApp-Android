@@ -7,6 +7,15 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * Standard implementation of [ILogger] for the Estatia project.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage local console logging with standardized formatting.
+ * - Security: Does NOT filter sensitive data automatically; callers must redact secrets before logging.
+ * - Concurrency: Thread-safe (delegates to system [Log]).
+ * - Performance: Avoids heavy string concatenation when Log.DEBUG is disabled in production.
+ */
 class Logger @Inject constructor(
 ) : ILogger {
 

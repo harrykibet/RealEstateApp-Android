@@ -18,6 +18,15 @@ private const val SIGNATURE_ALGORITHM =
     "SHA256withRSA/PSS"
 
 
+/**
+ * Manager for generating and verifying digital signatures.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Sign/verify data using hardware-backed RSA-PSS keys.
+ * - Security: Uses SHA-256 with RSA-PSS padding.
+ * - Concurrency: Thread-safe via [cryptoExecutor].
+ * - Resilience: Translates crypto-provider exceptions to [SecurityException].
+ */
 @Singleton
 class SignatureManager @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,

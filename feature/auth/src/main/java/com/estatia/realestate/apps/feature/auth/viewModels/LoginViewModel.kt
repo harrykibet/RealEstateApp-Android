@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import com.estatia.realestate.apps.feature.auth.state.AuthState.Authenticated
@@ -15,9 +16,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing the user login funnel.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the authentication state machine (Idle -> Loading -> Authenticated/Error).
+ * - Concurrency: Thread-safe via [viewModelScope].
+ * - Resilience: Handles both email/password and Social (Google) login failure modes.
+ * - Observability: Tracks login success and failure metrics.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: IAuthRepository
+    private val authRepository: IAuthRepository,
+    private val metricsTracker: IMetricsTracker
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -47,16 +58,22 @@ class LoginViewModel @Inject constructor(
         email: String,
         password: String
     ) {
+        if (_authState.value is AuthState.Loading) return // 🛡️ Idempotency
+
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             when (val result = authRepository.signInWithEmail(email, password)) {
-                is AppResult.Success ->
+                is AppResult.Success -> {
+                    metricsTracker.incrementCounter("auth.login.email.success")
                     _authState.value = determineAuthState(result.data)
+                }
 
-                is AppResult.Error ->
+                is AppResult.Error -> {
+                    metricsTracker.incrementCounter("auth.login.email.failure")
                     _authState.value = AuthState.Error(
                         result.exception.message ?: "Login failed"
                     )
+                }
             }
         }
     }

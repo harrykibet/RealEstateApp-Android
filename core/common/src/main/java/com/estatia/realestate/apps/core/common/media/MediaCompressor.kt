@@ -24,6 +24,15 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
+/**
+ * High-performance media compression engine.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Downsample and transcode high-resolution images and videos for upload.
+ * - Concurrency: Thread-safe; uses Glide's background threads and Media3's internal worker threads.
+ * - Resilience: Surfaces null on failure; handles hardware codec availability via Media3 Transformer.
+ * - Performance: Caps resolution at 1080p to optimize bandwidth/storage.
+ */
 class MediaCompressor @Inject constructor(
     private val logger: ILogger,
     private val fileSystem: IFileSystem

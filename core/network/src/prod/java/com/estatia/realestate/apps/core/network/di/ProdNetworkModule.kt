@@ -176,9 +176,10 @@ object ProdNetworkModule {
     fun provideNetworkClient(
         retryPolicy: IRetryPolicy,
         exceptionMapper: IExceptionMapper,
+        metricsTracker: com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker,
         logger: ILogger
     ): INetworkClient {
-        return ProductionNetworkClient(retryPolicy, exceptionMapper, logger)
+        return ProductionNetworkClient(retryPolicy, exceptionMapper, metricsTracker, logger)
     }
 
     @Provides

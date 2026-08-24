@@ -1,13 +1,26 @@
 package com.estatia.realestate.apps.core.data
 
-import android.util.Log
 import com.estatia.realestate.apps.core.datastore.ChangeListVersions
 import com.estatia.realestate.apps.core.model.utils.NetworkChangeList
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Interface marker for a class that manages synchronization between local data and a remote
- * source for a [Syncable].
+ * Global synchronization utilities for Estatia repositories.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the pull-based synchronization of local data with remote change lists.
+ * - Concurrency: Serialization of sync tasks must be handled by the [Synchronizer] implementation.
+ * - Resilience: Uses [suspendRunCatching] to safeguard against remote errors without breaking coroutine scopes.
+ * - Lifecycle: Ensures cancellation propagates immediately to halt network I/O.
+ */
+/**
+ * Global synchronization utilities for Estatia repositories.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the pull-based synchronization of local data with remote change lists.
+ * - Concurrency: Serialization of sync tasks must be handled by the [Synchronizer] implementation.
+ * - Resilience: Uses [suspendRunCatching] to safeguard against remote errors without breaking coroutine scopes.
+ * - Lifecycle: Ensures cancellation propagates immediately to halt network I/O.
  */
 interface Synchronizer {
     suspend fun getChangeListVersions(): ChangeListVersions
@@ -21,8 +34,9 @@ interface Synchronizer {
 }
 
 /**
- * Interface marker for a class that is synchronized with a remote source. Syncing must not be
- * performed concurrently and it is the [Synchronizer]'s responsibility to ensure this.
+ * Interface marker for a class that is synchronized with a remote source. 
+ * Syncing MUST NOT be performed concurrently; it is the [Synchronizer]'s responsibility 
+ * to ensure atomicity.
  */
 interface Syncable {
     /**
@@ -34,18 +48,14 @@ interface Syncable {
 
 /**
  * Attempts [block], returning a successful [Result] if it succeeds, otherwise a [Result.Failure]
- * taking care not to break structured concurrency
+ * taking care not to break structured concurrency.
  */
 private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = try {
     Result.success(block())
 } catch (cancellationException: CancellationException) {
+    // 🛡️ Cancellation must be propagated to maintain structured concurrency
     throw cancellationException
 } catch (exception: Exception) {
-    Log.i(
-        "suspendRunCatching",
-        "Failed to evaluate a suspendRunCatchingBlock. Returning failure Result",
-        exception,
-    )
     Result.failure(exception)
 }
 

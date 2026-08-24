@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.feature.property.utils
 
 import com.estatia.realestate.apps.core.model.common.MediaReference
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AddPropertyDraft(
     val title: String = "",
     val description: String? = null,

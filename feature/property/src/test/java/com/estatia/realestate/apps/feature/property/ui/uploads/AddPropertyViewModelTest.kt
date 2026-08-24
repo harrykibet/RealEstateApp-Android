@@ -42,7 +42,9 @@ class AddPropertyViewModelTest {
         repository = mockk()
         authRepository = mockk()
         intelligenceService = mockk(relaxed = true)
-        viewModel = AddPropertyViewModel(repository, authRepository, intelligenceService, propertyData)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        val savedStateHandle = androidx.lifecycle.SavedStateHandle()
+        viewModel = AddPropertyViewModel(repository, authRepository, intelligenceService, metricsTracker, savedStateHandle, propertyData)
     }
 
     @After

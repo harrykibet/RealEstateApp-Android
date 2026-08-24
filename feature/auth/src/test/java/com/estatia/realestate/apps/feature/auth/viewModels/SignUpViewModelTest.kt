@@ -32,7 +32,9 @@ class SignUpViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         authRepository = mockk()
-        viewModel = SignUpViewModel(authRepository, testDispatcher)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        val savedStateHandle = androidx.lifecycle.SavedStateHandle()
+        viewModel = SignUpViewModel(authRepository, metricsTracker, savedStateHandle, testDispatcher)
     }
 
     @After

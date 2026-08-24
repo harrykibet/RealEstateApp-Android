@@ -32,7 +32,8 @@ class LoginViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         authRepository = mockk()
-        viewModel = LoginViewModel(authRepository)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = LoginViewModel(authRepository, metricsTracker)
     }
 
     @After

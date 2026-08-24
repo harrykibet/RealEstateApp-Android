@@ -5,22 +5,31 @@ import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.user.FaceMatchResult
 import com.estatia.realestate.apps.core.model.user.IdDocumentResult
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Implementation of [IVerificationService] using Google ML Kit.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Perform on-device identity verification (OCR, Face Detection).
+ * - Concurrency: Thread-safe; delegates to ML Kit's internal worker threads.
+ * - Resilience: Surfaces heuristic results for partial matches.
+ * - Observability: Tracks verification latency and scan success rates.
  */
 @Singleton
 class MlKitVerificationService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val metricsTracker: IMetricsTracker
 ) : IVerificationService {
 
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -33,6 +42,7 @@ class MlKitVerificationService @Inject constructor(
     )
 
     override suspend fun scanIdDocument(imageUri: MediaReference): IdDocumentResult {
+        val startTime = System.currentTimeMillis()
         val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val result = textRecognizer.process(image).await()
         
@@ -40,6 +50,10 @@ class MlKitVerificationService @Inject constructor(
         val rawText = result.text
         val name = extractName(rawText)
         val idNumber = extractIdNumber(rawText)
+
+        val duration = System.currentTimeMillis() - startTime
+        metricsTracker.trackDuration("intelligence.verification.scan_latency", duration.milliseconds)
+        metricsTracker.incrementCounter("intelligence.verification.scan_success")
 
         return IdDocumentResult(
             name = name,

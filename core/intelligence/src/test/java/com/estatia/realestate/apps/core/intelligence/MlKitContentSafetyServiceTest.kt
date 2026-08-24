@@ -16,7 +16,8 @@ class MlKitContentSafetyServiceTest {
 
     @Before
     fun setup() {
-        service = MlKitContentSafetyService(context)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        service = MlKitContentSafetyService(context, metricsTracker)
     }
 
     @Test

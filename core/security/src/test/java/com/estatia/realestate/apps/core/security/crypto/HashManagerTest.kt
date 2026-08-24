@@ -20,8 +20,9 @@ class HashManagerTest {
     @Before
     fun setup() {
         val translator = mockk<ISecurityExceptionTranslator>()
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         val logger = mockk<ILogger>(relaxed = true)
-        cryptoExecutor = CryptoExecutor(translator, logger)
+        cryptoExecutor = CryptoExecutor(translator, metricsTracker, logger)
         hashManager = HashManager(cryptoExecutor)
     }
 

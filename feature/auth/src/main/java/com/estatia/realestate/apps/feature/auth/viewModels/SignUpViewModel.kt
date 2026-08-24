@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.feature.auth.viewModels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
 import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
@@ -15,25 +17,34 @@ import com.estatia.realestate.apps.core.model.user.VerificationLevel
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val STATE_SIGNUP_FORM = "signup_form"
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authRepository: IAuthRepository,
+    private val metricsTracker: IMetricsTracker,
+    private val savedStateHandle: SavedStateHandle,
     @param:Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SignUpFormState())
+    private val _state = MutableStateFlow(
+        savedStateHandle.get<SignUpFormState>(STATE_SIGNUP_FORM) ?: SignUpFormState()
+    )
     val state: StateFlow<SignUpFormState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<SignUpEvent>()
     val events = _events.asSharedFlow()
+
+    init {
+        // 🛡️ State Restoration: Persist form changes (excluding sensitive fields if needed)
+        _state.onEach { form ->
+            savedStateHandle[STATE_SIGNUP_FORM] = form
+        }.launchIn(viewModelScope)
+    }
 
     fun onAction(action: SignUpAction) {
         when (action) {
@@ -59,6 +70,9 @@ class SignUpViewModel @Inject constructor(
 
     private fun signUp() {
         val current = state.value
+
+        // 🛡️ Idempotency: Prevent duplicate submissions
+        if (current.isLoading) return
 
         if (
             current.email.isBlank() ||
@@ -86,6 +100,7 @@ class SignUpViewModel @Inject constructor(
                 }
 
                 is AppResult.Error -> {
+                    metricsTracker.incrementCounter("auth.signup.failure")
                     update {
                         copy(
                             isLoading = false,

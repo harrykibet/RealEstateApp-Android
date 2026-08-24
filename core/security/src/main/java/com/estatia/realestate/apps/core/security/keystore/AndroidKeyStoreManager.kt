@@ -18,214 +18,117 @@ import javax.crypto.SecretKey
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-private const val ANDROID_KEYSTORE =
-    "AndroidKeyStore"
-
-
-private const val AES_KEY_SIZE =
-    256
-
-
-private const val RSA_KEY_SIZE =
-    2048
-
-
+/**
+ * Manager for the Android hardware KeyStore.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the lifecycle of hardware-backed cryptographic keys.
+ * - Security: Uses [ANDROID_KEYSTORE] provider to ensure keys never leave the Secure Element (SE).
+ * - Concurrency: Thread-safe; uses [cryptoExecutor] for asynchronous generation.
+ * - Resilience: Surfaces domain-specific [SecurityException] on hardware failure.
+ */
 @Singleton
 class AndroidKeyStoreManager @Inject constructor(
     private val cryptoExecutor: ICryptoExecutor
 ) : IKeyStoreManager {
 
+    companion object {
+        private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+        private const val AES_KEY_SIZE = 256
+        private const val RSA_KEY_SIZE = 2048
+    }
 
-    private val keyStore =
-        KeyStore.getInstance(
-            ANDROID_KEYSTORE
-        ).apply {
-            load(null)
-        }
+    private val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
+        load(null)
+    }
 
-
-    override suspend fun initialize():
-            AppResult<Unit> =
+    override suspend fun initialize(): AppResult<Unit> =
         cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
             withContext(Dispatchers.IO) {
                 // Initializing keystore is done in init block
             }
         }
 
-
-    override suspend fun generateAesKey(
-        alias: String
-    ): AppResult<Unit> =
+    override suspend fun generateAesKey(alias: String): AppResult<Unit> =
         cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
             withContext(Dispatchers.IO) {
-                KeyGenerator
-                    .getInstance(
-                        KeyProperties.KEY_ALGORITHM_AES,
-                        ANDROID_KEYSTORE
-                    )
-                    .apply {
-
-                        init(
-                            KeyGenParameterSpec.Builder(
-                                alias,
-                                KeyProperties.PURPOSE_ENCRYPT or
-                                        KeyProperties.PURPOSE_DECRYPT
-                            )
-                                .setBlockModes(
-                                    KeyProperties.BLOCK_MODE_GCM
-                                )
-                                .setEncryptionPaddings(
-                                    KeyProperties.ENCRYPTION_PADDING_NONE
-                                )
-                                .setKeySize(
-                                    AES_KEY_SIZE
-                                )
-                                .setRandomizedEncryptionRequired(true)
-                                .build()
+                KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE).apply {
+                    init(
+                        KeyGenParameterSpec.Builder(
+                            alias,
+                            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
                         )
-                    }
-                    .generateKey()
+                            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                            .setKeySize(AES_KEY_SIZE)
+                            .setRandomizedEncryptionRequired(true)
+                            .build()
+                    )
+                }.generateKey()
             }
         }
 
-
-    override suspend fun generateRsaEncryptionKey(
-        alias: String
-    ): AppResult<Unit> =
+    override suspend fun generateRsaEncryptionKey(alias: String): AppResult<Unit> =
         generateRsaKey(
             alias,
-            KeyProperties.PURPOSE_ENCRYPT or
-                    KeyProperties.PURPOSE_DECRYPT
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         )
 
-
-    override suspend fun generateRsaSigningKey(
-        alias: String
-    ): AppResult<Unit> =
+    override suspend fun generateRsaSigningKey(alias: String): AppResult<Unit> =
         generateRsaKey(
             alias,
-            KeyProperties.PURPOSE_SIGN or
-                    KeyProperties.PURPOSE_VERIFY
+            KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
         )
 
-
-    private suspend fun generateRsaKey(
-        alias: String,
-        purposes: Int
-    ): AppResult<Unit> =
+    private suspend fun generateRsaKey(alias: String, purposes: Int): AppResult<Unit> =
         cryptoExecutor.execute(SecurityException.KeyGenerationFailed) {
             withContext(Dispatchers.IO) {
-                KeyPairGenerator
-                    .getInstance(
-                        KeyProperties.KEY_ALGORITHM_RSA,
-                        ANDROID_KEYSTORE
+                KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, ANDROID_KEYSTORE).apply {
+                    initialize(
+                        KeyGenParameterSpec.Builder(alias, purposes)
+                            .setKeySize(RSA_KEY_SIZE)
+                            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+                            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PSS)
+                            .build()
                     )
-                    .apply {
-
-                        initialize(
-                            KeyGenParameterSpec.Builder(
-                                alias,
-                                purposes
-                            )
-                                .setKeySize(
-                                    RSA_KEY_SIZE
-                                )
-                                .setEncryptionPaddings(
-                                    KeyProperties.ENCRYPTION_PADDING_RSA_OAEP
-                                )
-                                .setSignaturePaddings(
-                                    KeyProperties.SIGNATURE_PADDING_RSA_PSS
-                                )
-                                .build()
-                        )
-                    }
-                    .generateKeyPair()
+                }.generateKeyPair()
             }
         }
 
-
-    override fun getKeyPair(
-        alias: String
-    ): AppResult<KeyPair> {
+    override fun getKeyPair(alias: String): AppResult<KeyPair> {
         return try {
-            val entry =
-                keyStore.getEntry(
-                    alias,
-                    null
-                ) as KeyStore.PrivateKeyEntry
-
-
-            AppResult.Success(
-                KeyPair(
-                    entry.certificate.publicKey,
-                    entry.privateKey
-                )
-            )
+            val entry = keyStore.getEntry(alias, null) as KeyStore.PrivateKeyEntry
+            AppResult.Success(KeyPair(entry.certificate.publicKey, entry.privateKey))
         } catch (e: Exception) {
             AppResult.Error(SecurityException.KeyRetrievalFailed)
         }
     }
 
-
-    override fun getSecretKey(
-        alias: String
-    ): SecretKey? {
-
+    override fun getSecretKey(alias: String): SecretKey? {
         return try {
-            (
-                    keyStore.getEntry(
-                        alias,
-                        null
-                    ) as? KeyStore.SecretKeyEntry
-                    )?.secretKey
+            (keyStore.getEntry(alias, null) as? KeyStore.SecretKeyEntry)?.secretKey
         } catch (_: Exception) {
             null
         }
-
     }
 
-
-    override fun getPrivateKey(
-        alias: String
-    ): PrivateKey? {
-
+    override fun getPrivateKey(alias: String): PrivateKey? {
         return try {
-            (
-                    keyStore.getEntry(
-                        alias,
-                        null
-                    ) as? KeyStore.PrivateKeyEntry
-                    )?.privateKey
+            (keyStore.getEntry(alias, null) as? KeyStore.PrivateKeyEntry)?.privateKey
         } catch (_: Exception) {
             null
         }
-
     }
 
-
-    override fun getPublicKey(
-        alias: String
-    ): PublicKey? {
-
+    override fun getPublicKey(alias: String): PublicKey? {
         return try {
-            (
-                    keyStore.getEntry(
-                        alias,
-                        null
-                    ) as? KeyStore.PrivateKeyEntry
-                    )
-                ?.certificate
-                ?.publicKey
+            (keyStore.getEntry(alias, null) as? KeyStore.PrivateKeyEntry)?.certificate?.publicKey
         } catch (_: Exception) {
             null
         }
-
     }
 
-    override fun deleteKey(
-        alias: String
-    ): AppResult<Unit> {
+    override fun deleteKey(alias: String): AppResult<Unit> {
         return try {
             keyStore.deleteEntry(alias)
             AppResult.Success(Unit)
@@ -234,9 +137,5 @@ class AndroidKeyStoreManager @Inject constructor(
         }
     }
 
-
-    override fun containsKey(
-        alias: String
-    ): Boolean =
-        keyStore.containsAlias(alias)
+    override fun containsKey(alias: String): Boolean = keyStore.containsAlias(alias)
 }

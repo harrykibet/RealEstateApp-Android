@@ -71,6 +71,7 @@ class PlayerPoolConcurrencyTest {
         val config = mockk<IPlayerTuningConfig>(relaxed = true) {
             every { playerTuning } returns PlayerTuningConfig()
         }
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         val sizingPolicy = mockk<IPlayerPoolSizingPolicy> {
             every { calculateMaxPoolSize(any()) } returns 10
         }
@@ -81,6 +82,7 @@ class PlayerPoolConcurrencyTest {
             analyticsListenerProvider,
             environmentCoordinator,
             config,
+            metricsTracker,
             engineScope,
             sizingPolicy
         )

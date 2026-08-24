@@ -23,12 +23,21 @@ import kotlin.coroutines.resume
 
 /**
  * AWS implementation of [IAuthRemoteDataSource] using AWS Amplify.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: User state is managed via an atomic [cachedUser] reference.
+ * - Concurrency: Thread-safe for multi-coroutine access via atomic updates.
+ * - Resilience: Delegates retry and mapping logic to [INetworkClient].
+ * - Security: Does not cache tokens in plain text; delegates to Amplify secure storage.
  */
 internal class AwsAuthService @Inject constructor(
     private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {
 
-    private var cachedUser: AuthUser? = null
+    private val cachedUserAtomic = java.util.concurrent.atomic.AtomicReference<AuthUser?>(null)
+    private var cachedUser: AuthUser?
+        get() = cachedUserAtomic.get()
+        set(value) = cachedUserAtomic.set(value)
 
     override suspend fun signInInteractive(activity: Activity): AppResult<NetworkUserEntity> = 
         networkClient.execute {

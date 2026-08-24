@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.core.common)
+    implementation(projects.core.domain)
     implementation(projects.core.model)
 
     implementation(libs.bundles.bouncy)

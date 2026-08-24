@@ -19,13 +19,24 @@ import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.data.util.translateCommentFailures
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-
+/**
+ * Repository for managing property comments.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Source of truth is [ICommentsRemoteDataSource]; [IPropertyLocalDataSource] provides caching.
+ * - Concurrency: Thread-safe reactive observation of comments.
+ * - Resilience: Surfaces cached comments on start while remote stream initializes.
+ * - Safety: Enforces on-device moderation for all submitted comments.
+ * - Observability: Tracks comment submission funnel and observation latency.
+ */
 internal class CommentsRepository @Inject constructor(
     private val remoteDataSource: ICommentsRemoteDataSource,
     private val localDataSource: IPropertyLocalDataSource,
@@ -33,6 +44,7 @@ internal class CommentsRepository @Inject constructor(
     private val authRepository: IAuthRepository,
     private val engagementRepository: IEngagementRepository,
     private val contentSafetyService: IContentSafetyService,
+    private val metricsTracker: IMetricsTracker,
     private val exceptionTranslator: IExceptionTranslator
 ) : ICommentsRepository {
 
@@ -40,6 +52,7 @@ internal class CommentsRepository @Inject constructor(
     override fun observeComments(
         propertyId: String
     ): Flow<AppResult<List<CommentDomainModel>>> {
+        val startTime = System.currentTimeMillis()
         return remoteDataSource
             .observeComments(propertyId)
             .map { result ->
@@ -58,6 +71,8 @@ internal class CommentsRepository @Inject constructor(
             }
             .onEach { result ->
                 if (result is AppResult.Success) {
+                    val duration = System.currentTimeMillis() - startTime
+                    metricsTracker.trackDuration("comments.observe.latency", duration.milliseconds)
                     localDataSource.cacheComments(result.data.map(RoomCommentMapper::toEntity))
                 }
             }
@@ -69,9 +84,12 @@ internal class CommentsRepository @Inject constructor(
         message: String
     ): AppResult<Unit> {
 
+        val startTime = System.currentTimeMillis()
+
         // 🛡️ Proactive On-Device Moderation
         val safetyResult = contentSafetyService.validateText(message)
         if (safetyResult is SafetyResult.Flagged) {
+            metricsTracker.incrementCounter("comments.safety.flagged")
             return AppResult.Error(CommentException.InvalidComment(safetyResult.reason))
         }
 
@@ -115,6 +133,15 @@ internal class CommentsRepository @Inject constructor(
                     .translateCommentFailures(
                         exceptionTranslator
                     )
+                    .also { result ->
+                        val duration = System.currentTimeMillis() - startTime
+                        metricsTracker.trackDuration("comments.submit.latency", duration.milliseconds)
+                        if (result is AppResult.Success) {
+                            metricsTracker.incrementCounter("comments.submit.success")
+                        } else {
+                            metricsTracker.incrementCounter("comments.submit.failure")
+                        }
+                    }
             }
         }
     }

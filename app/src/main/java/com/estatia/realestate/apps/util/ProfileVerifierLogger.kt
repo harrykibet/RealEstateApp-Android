@@ -32,6 +32,14 @@ import javax.inject.Inject
  *
  * @see androidx.profileinstaller.ProfileVerifier.CompilationStatus.ResultCode
  */
+/**
+ * Diagnostics utility for verifying Baseline Profile compilation status.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Audit the installation-time profile optimizations.
+ * - Concurrency: Thread-safe; uses [ApplicationScope] to avoid blocking startup.
+ * - Resilience: Non-critical; failures to retrieve status are ignored.
+ */
 class ProfileVerifierLogger @Inject constructor(
     @ApplicationScope private val scope: CoroutineScope,
 ) {

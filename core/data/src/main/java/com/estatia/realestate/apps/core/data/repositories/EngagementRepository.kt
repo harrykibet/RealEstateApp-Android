@@ -7,6 +7,14 @@ import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Repository for orchestrating high-level engagement signals.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Map domain actions (view, like, search) into structured [IAnalyticsTracker] events.
+ * - Concurrency: Thread-safe; delegates to the [analyticsTracker] outbox.
+ * - Performance: Minimal overhead; avoids heavy serialization on the calling thread.
+ */
 @Singleton
 internal class EngagementRepository @Inject constructor(
     private val analyticsTracker: IAnalyticsTracker

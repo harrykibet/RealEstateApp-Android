@@ -7,10 +7,12 @@ import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.model.engagement.SensitiveEntity
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -19,25 +21,42 @@ import javax.inject.Singleton
 
 /**
  * Implementation of [IContentSafetyService] using ML Kit and heuristic patterns.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Perform on-device content moderation (text, image, video).
+ * - Concurrency: Thread-safe; offloads heavy image/video processing to [Dispatchers.IO].
+ * - Resilience: Surfaces [SafetyResult.Safe] as a fallback on processing errors to avoid UX blocking.
+ * - Performance: Analyzes a bounded number of video keyframes (5) to maintain processing speed.
+ * - Observability: Tracks moderation flags and processing latency.
  */
 @Singleton
 class MlKitContentSafetyService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val metricsTracker: IMetricsTracker
 ) : IContentSafetyService {
 
     private val labeler by lazy { ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS) }
 
     override suspend fun validateText(text: String): SafetyResult {
+        val startTime = System.currentTimeMillis()
         // ML Kit doesn't have a direct on-device "toxicity" model.
         // We use a high-performance heuristic pattern match for common abusive terms.
         val toxicTerms = setOf("abusive_term1", "abusive_term2") // Placeholder
         val lowerText = text.lowercase()
         
-        if (toxicTerms.any { lowerText.contains(it) }) {
-            return SafetyResult.Flagged("Content contains abusive language", 0.95f)
+        val result = if (toxicTerms.any { lowerText.contains(it) }) {
+            SafetyResult.Flagged("Content contains abusive language", 0.95f)
+        } else {
+            SafetyResult.Safe
         }
-        
-        return SafetyResult.Safe
+
+        val duration = System.currentTimeMillis() - startTime
+        metricsTracker.trackDuration("intelligence.safety.text_latency", duration.milliseconds)
+        if (result is SafetyResult.Flagged) {
+            metricsTracker.incrementCounter("intelligence.safety.flagged_text")
+        }
+
+        return result
     }
 
     override suspend fun detectSensitiveData(text: String): List<SensitiveEntity> {

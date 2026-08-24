@@ -43,7 +43,8 @@ class HomeViewModelTest {
             every { getCurrentUserId() } returns "user_123"
         }
         togglePropertyLikeUseCase = mockk()
-        viewModel = HomeViewModel(propertyRepository, authRepository, togglePropertyLikeUseCase, SavedStateHandle())
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = HomeViewModel(propertyRepository, authRepository, togglePropertyLikeUseCase, metricsTracker, SavedStateHandle())
     }
 
     @After

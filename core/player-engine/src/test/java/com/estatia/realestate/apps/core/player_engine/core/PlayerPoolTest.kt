@@ -61,6 +61,7 @@ class PlayerPoolTest {
         environmentCoordinator = mockk(relaxed = true) {
             every { environment.value } returns mockk(relaxed = true)
         }
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         config = mockk(relaxed = true) {
             every { playerTuning } returns PlayerTuningConfig()
         }
@@ -74,6 +75,7 @@ class PlayerPoolTest {
             analyticsListenerProvider,
             environmentCoordinator,
             config,
+            metricsTracker,
             testScope,
             sizingPolicy
         )

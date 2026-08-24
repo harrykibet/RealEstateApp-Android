@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.feature.auth.state
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class SignUpFormState(
     val userName: String = "",
     val email: String = "",

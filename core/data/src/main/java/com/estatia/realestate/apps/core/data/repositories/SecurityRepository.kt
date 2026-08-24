@@ -23,6 +23,15 @@ private const val DEFAULT_SIGNING_ALIAS = "estatia_default_signing_key"
  * It bridges high-level feature requests (using Strings) with low-level cryptographic
  * engines (using ByteArrays and structured payloads).
  */
+/**
+ * High-level repository for cryptographic operations and secure token management.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Orchestrate complex crypto-workflows (Hybrid Encryption, Signing).
+ * - Security: Delegates to hardware-backed engines ([IAesGcmCryptoEngine], [IRsaCryptoEngine]).
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces domain-specific failures via contract-aware [AppResult]s.
+ */
 internal class SecurityRepository @Inject constructor(
     private val aesGcmCryptoEngine: IAesGcmCryptoEngine,
     private val rsaCryptoEngine: IRsaCryptoEngine,

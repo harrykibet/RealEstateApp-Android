@@ -9,15 +9,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [ApiKeyValidator] is responsible for validating API keys against predefined patterns
- * retrieved from a remote configuration. It supports validation for specific services
- * as well as a generic validation for non-service-specific keys.
- *
- * This class utilizes regular expressions to match the expected format of API keys
- * and provides sanitization for logging purposes to prevent exposing sensitive information.
- *
- * @property logger An instance of [ILogger] for logging validation results and errors.
- * @property config An instance of [ISecurityConfig] for retrieving API key patterns from remote config.
+ * Validator for managing the integrity of application API keys.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Validate remote service keys against cryptographic patterns from [ISecurityConfig].
+ * - Security: Explicitly REDACTS keys in logs via [sanitizeForLogging].
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Surfaces [SecurityException.InvalidApiKey] for malformed or missing keys.
  */
 @Singleton
 internal class ApiKeyValidator @Inject constructor(

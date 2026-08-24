@@ -37,6 +37,15 @@ private const val GCM_TAG_LENGTH =
     128
 
 
+/**
+ * Engine for performing hybrid encryption using RSA-OAEP and AES-GCM.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: High-integrity hybrid encryption for large payloads.
+ * - Security: Uses RSA-OAEP with SHA-256 for key wrapping and AES-GCM for data encryption.
+ * - Concurrency: Thread-safe via [cryptoExecutor].
+ * - Resilience: Surfaces domain-specific [SecurityException] via [cryptoExecutor].
+ */
 @Singleton
 class RsaCryptoEngine @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,

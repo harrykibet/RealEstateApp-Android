@@ -23,8 +23,9 @@ class CryptoExecutorTest {
     @Before
     fun setup() {
         translator = mockk()
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         logger = mockk(relaxed = true)
-        executor = CryptoExecutor(translator, logger)
+        executor = CryptoExecutor(translator, metricsTracker, logger)
     }
 
     @Test

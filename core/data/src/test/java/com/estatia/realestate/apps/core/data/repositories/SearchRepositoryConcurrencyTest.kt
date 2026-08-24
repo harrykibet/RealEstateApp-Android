@@ -31,6 +31,7 @@ class SearchRepositoryConcurrencyTest {
         searchLocalDataSource = mockk(relaxed = true)
         propertyLocalDataSource = mockk(relaxed = true)
         engagementRepository = mockk(relaxed = true)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         exceptionTranslator = mockk(relaxed = true)
         
         repository = SearchRepository(
@@ -38,6 +39,7 @@ class SearchRepositoryConcurrencyTest {
             searchLocalDataSource,
             propertyLocalDataSource,
             engagementRepository,
+            metricsTracker,
             exceptionTranslator
         )
     }

@@ -10,7 +10,13 @@ import javax.inject.Singleton
 
 /**
  * Interceptor that injects a distributed trace ID into outgoing network requests.
- * Uses OpenTelemetry for context propagation.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Enable distributed tracing for all network calls via OpenTelemetry.
+ * - Security: Injects 'X-Trace-Id' header for backend correlation.
+ * - Concurrency: Thread-safe (stateless).
+ * - Resilience: Does not block the request chain even if telemetry initialization fails.
+ * - Observability: Records HTTP status codes and exceptions into the trace span.
  */
 @Singleton
 class TracingInterceptor @Inject constructor() : Interceptor {

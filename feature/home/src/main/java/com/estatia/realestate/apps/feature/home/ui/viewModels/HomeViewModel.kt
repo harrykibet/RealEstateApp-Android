@@ -7,8 +7,10 @@ import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.feature.home.ui.HomeUiState
+import kotlin.time.Duration.Companion.milliseconds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +19,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Home Feed.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the infinite scrolling property feed.
+ * - Concurrency: Thread-safe via [viewModelScope] and state [update] calls.
+ * - Resilience: Implements pagination and manual retry on network failure.
+ * - Observability: Tracks feed latency and pagination funnel.
+ * - State Restoration: Persists current scroll position [KEY_SCROLL_PAGE].
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,
     private val authRepository: IAuthRepository,
     private val togglePropertyLikeUseCase: TogglePropertyLikeUseCase,
+    private val metricsTracker: IMetricsTracker,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -52,6 +65,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             try {
                 val userId = authRepository.getCurrentUserId()
                 val result = api.fetchPropertiesPaginated(userId, cursor, pageSize)
@@ -68,10 +82,15 @@ class HomeViewModel @Inject constructor(
                 }
 
                 canLoadMore = newProperties.size == pageSize
+                
+                metricsTracker.incrementCounter("home.feed.page_load.success")
             } catch (_: Exception) {
+                metricsTracker.incrementCounter("home.feed.page_load.failure")
                 _uiState.update {
                     it.copy(isLoading = false, error = "Failed to fetch properties. Please try again.")
                 }
+            } finally {
+                metricsTracker.trackDuration("home.feed.latency", (System.currentTimeMillis() - startTime).milliseconds)
             }
         }
     }

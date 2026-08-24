@@ -11,16 +11,37 @@ import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper
 import com.estatia.realestate.apps.core.data.mappers.room.RoomPropertyMapper.toCacheEntities
 import com.estatia.realestate.apps.core.data.util.translateSearchFailures
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import kotlin.time.Duration.Companion.milliseconds
 import javax.inject.Inject
 
+/**
+ * Repository for handling property search and discovery.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Search history and caching handled by [ISearchLocalDataSource].
+ * - Concurrency: Thread-safe repository calls.
+ * - Resilience: Transparent fallback to local search cache when remote is unavailable.
+ * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
+ */
+/**
+ * Repository for handling property search and discovery.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: Search history and caching handled by [ISearchLocalDataSource].
+ * - Concurrency: Thread-safe repository calls.
+ * - Resilience: Transparent fallback to local search cache when remote is unavailable.
+ * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
+ */
 internal class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,
     private val propertyLocalDataSource: IPropertyLocalDataSource,
     private val engagementRepository: IEngagementRepository,
+    private val metricsTracker: IMetricsTracker,
     private val exceptionTranslator: IExceptionTranslator
 ) : ISearchRepository {
 
@@ -28,6 +49,7 @@ internal class SearchRepository @Inject constructor(
         query: String,
         limit: Int
     ): AppResult<List<PropertyDomainModel>> {
+        val startTime = System.currentTimeMillis()
         searchLocalDataSource.saveSearchQuery(query) 
         // 🏎️ Report engagement signal for personalization
         engagementRepository.reportSearch(query)
@@ -37,9 +59,12 @@ internal class SearchRepository @Inject constructor(
         if (!cachedIds.isNullOrEmpty()) {
             val cachedProperties = propertyLocalDataSource.getCachedPropertiesByIds(cachedIds).getOrNull()
             if (!cachedProperties.isNullOrEmpty()) {
+                metricsTracker.incrementCounter("search.cache.hit")
                 return AppResult.Success(cachedProperties.map(RoomPropertyMapper::toDomain))
             }
         }
+
+        metricsTracker.incrementCounter("search.cache.miss")
 
         // 2. Remote search
         return remoteDataSource.searchProperties(query, limit)
@@ -53,6 +78,13 @@ internal class SearchRepository @Inject constructor(
                 domainModels
             }
             .translateSearchFailures(exceptionTranslator)
+            .also { result ->
+                val duration = System.currentTimeMillis() - startTime
+                metricsTracker.trackDuration("search.latency", duration.milliseconds)
+                if (result is AppResult.Error) {
+                    metricsTracker.incrementCounter("search.failure")
+                }
+            }
     }
 
     override suspend fun getSearchHistory(): AppResult<List<String>> {

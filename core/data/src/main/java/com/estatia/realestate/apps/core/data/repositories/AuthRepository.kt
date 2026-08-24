@@ -10,11 +10,22 @@ import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Domain-facing repository for all authentication and user identity operations.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Orchestrate identity flows between high-level application and remote identity providers (AWS/Firebase).
+ * - Security: Does not store passwords or raw tokens; delegates to secure remote providers.
+ * - Observability: Tracks success/failure for sign-in and sign-up funnels.
+ * - Concurrency: Stateless; thread-safe for concurrent calls.
+ */
 internal class AuthRepository @Inject constructor(
     private val remoteDataSource: IAuthRemoteDataSource,
+    private val metricsTracker: IMetricsTracker
 ) : IAuthRepository {
 
     override suspend fun createOrUpdateUserProfile(
@@ -31,8 +42,9 @@ internal class AuthRepository @Inject constructor(
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signUpWithEmail(email, password)
             .map { networkUser ->
-            NetworkUserMapper.fromEntity(networkUser)
-        }
+                metricsTracker.incrementCounter("auth.signup.success")
+                NetworkUserMapper.fromEntity(networkUser)
+            }
     }
 
     override suspend fun signInWithEmail(
@@ -41,8 +53,9 @@ internal class AuthRepository @Inject constructor(
     ): AppResult<AuthUserDomainModel> {
         return remoteDataSource.signInWithEmail(email, password)
             .map { networkUser ->
-            NetworkUserMapper.fromEntity(networkUser)
-        }
+                metricsTracker.incrementCounter("auth.signin.success")
+                NetworkUserMapper.fromEntity(networkUser)
+            }
     }
 
     override suspend fun signOut(): AppResult<Unit> {

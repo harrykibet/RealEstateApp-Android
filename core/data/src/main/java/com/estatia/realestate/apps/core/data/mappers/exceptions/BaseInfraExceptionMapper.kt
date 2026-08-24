@@ -9,11 +9,10 @@ import com.estatia.realestate.apps.core.domain.common.DataExceptionMapper
 /**
  * Base class for mapping infrastructure exceptions (Database and Storage) to domain-specific exceptions.
  * 
- * @param notFound Lambda returning the domain exception for a "Not Found" error.
- * @param permissionDenied Lambda returning the domain exception for a "Permission Denied" error.
- * @param creationFailed Lambda returning the domain exception for a "Creation Failed" error.
- * @param alreadyExists Optional lambda for an "Already Exists" error.
- * @param unknown Lambda taking the original throwable and returning a generic domain exception.
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Standardize the translation of platform errors (SQL, Storage) into domain business failures.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Provides comprehensive mapping for all [InfrastructureException] subtypes.
  */
 abstract class BaseInfraExceptionMapper<T : AppException>(
     private val notFound: () -> T,

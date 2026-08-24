@@ -33,6 +33,18 @@ import javax.inject.Inject
 
 private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
 
+/**
+ * Primary repository for managing real estate properties.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: 
+ *   - Local State: Room [localDataSource] is the source of truth for first-page feeds and drafts.
+ *   - Remote State: AWS AppSync [remoteDataSource] is the primary source of truth for global listings.
+ * - Concurrency: Thread-safe; leverages structured concurrency via coroutines.
+ * - Caching: Implements a 5-minute TTL lookup on first-page unauthenticated feeds.
+ * - Resilience: Implements multi-stage offline fallbacks for liked properties.
+ * - Safety: Enforces on-device content moderation for all media uploads.
+ */
 internal class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,

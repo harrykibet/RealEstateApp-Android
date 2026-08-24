@@ -6,8 +6,10 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.math.atan2
@@ -16,9 +18,22 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 
+/**
+ * Firebase implementation of [ISearchRemoteDataSource].
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Perform remote searches and geospatial queries via Firestore.
+ * - Performance: 
+ *   - Basic Search: O(log N) via Firestore ordered indexes.
+ *   - Nearby Search: Currently O(N) due to client-side filtering; target geospatial indexing for future.
+ * - Concurrency: Thread-safe.
+ * - Resilience: Delegates execution and error mapping to [networkClient].
+ * - Observability: Tracks search latency and result count for SLIs.
+ */
 internal class FirestoreSearch @Inject constructor(
     private val database: FirebaseFirestore,
-    private val networkClient: INetworkClient
+    private val networkClient: INetworkClient,
+    private val metricsTracker: IMetricsTracker
 ) : ISearchRemoteDataSource {
 
 
@@ -27,11 +42,12 @@ internal class FirestoreSearch @Inject constructor(
         limit:Int
     ): AppResult<List<PropertyEntityModel>> {
 
+        val startTime = System.currentTimeMillis()
 
         return networkClient.execute {
 
 
-            database.collection(
+            val results = database.collection(
                 FirestoreCollections.PROPERTIES
             )
                 .orderBy(
@@ -49,6 +65,12 @@ internal class FirestoreSearch @Inject constructor(
                         PropertyEntityModel::class.java
                     )
                 }
+            
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.search.latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.search.success")
+
+            results
         }
     }
 

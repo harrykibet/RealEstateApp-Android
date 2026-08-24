@@ -6,6 +6,14 @@ import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import javax.inject.Inject
 
 
+/**
+ * Global registry for translating low-level infrastructure failures into domain-specific business exceptions.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Orchestrate specialized mappers for different domain entities (Property, User, etc.).
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Enforces 100% coverage of infrastructure-to-domain error mapping.
+ */
 internal class ExceptionTranslator @Inject constructor(
     private val propertyMapper: PropertyExceptionMapper,
     private val userMapper: UserExceptionMapper,

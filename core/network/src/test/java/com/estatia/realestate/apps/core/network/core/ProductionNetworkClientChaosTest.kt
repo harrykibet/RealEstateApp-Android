@@ -23,8 +23,9 @@ class ProductionNetworkClientChaosTest {
     fun setup() {
         retryPolicy = mockk()
         exceptionMapper = mockk()
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         logger = mockk(relaxed = true)
-        client = ProductionNetworkClient(retryPolicy, exceptionMapper, logger)
+        client = ProductionNetworkClient(retryPolicy, exceptionMapper, metricsTracker, logger)
     }
 
     @Test

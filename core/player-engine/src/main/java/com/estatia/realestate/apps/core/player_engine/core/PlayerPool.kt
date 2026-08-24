@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
@@ -33,7 +34,20 @@ import java.util.IdentityHashMap
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Hardware resource pool for [ExoPlayer] instances.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Ownership: All mutations and resource management are strictly confined to the Main thread.
+ * - Concurrency: Thread-safe via Main-thread confinement check [checkConfinement].
+ * - Lifecycle: Automatically trims and releases resources based on [IPlayerPoolSizingPolicy].
+ * - Invariants:
+ *   1. Active player count never exceeds [maxPoolSize].
+ *   2. Pinned media IDs [pinnedMediaIds] are never evicted.
+ *   3. Released players are neutralized (stopped/cleared) before being returned to the idle pool.
+ */
 @UnstableApi
 @Singleton
 class PlayerPool @Inject constructor(
@@ -42,6 +56,7 @@ class PlayerPool @Inject constructor(
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
     private val environmentCoordinator: EnvironmentCoordinator,
     private val config: IPlayerTuningConfig,
+    private val metricsTracker: IMetricsTracker,
     @param:EngineScope private val scope: CoroutineScope,
     poolSizingPolicy: IPlayerPoolSizingPolicy
 ) {
@@ -161,8 +176,14 @@ class PlayerPool @Inject constructor(
                     }
 
                     val m = idlePlayers.removeFirstOrNull()?.let { player ->
+                        metricsTracker.incrementCounter("player.pool.reuse")
                         bindIdlePlayer(player, mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
-                    } ?: createManagedPlayer(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+                    } ?: run {
+                        val start = System.currentTimeMillis()
+                        val created = createManagedPlayer(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
+                        metricsTracker.trackDuration("player.pool.creation_latency", (System.currentTimeMillis() - start).milliseconds)
+                        created
+                    }
 
                     // 🏎️ Late-bound Capacity Check:
                     // Check the LATEST urgency state (may have been promoted while suspended).
@@ -371,6 +392,7 @@ class PlayerPool @Inject constructor(
 
         toRemove.forEach { mediaId ->
             players.remove(mediaId)?.let { managed ->
+                metricsTracker.incrementCounter("player.pool.evict")
                 managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)
                 managed.player.removeAnalyticsListener(managed.analyticsListener)
                 managed.analyticsListener.release()

@@ -11,6 +11,16 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
 
+/**
+ * Standard implementation of [IRetryPolicy] using exponential backoff and jitter.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage the lifecycle of retrying transient failures for remote operations.
+ * - Idempotency: Retries are ONLY performed for [RetryableException] subtypes.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Implements jitter to prevent "thundering herd" scenarios and respects [maxTotalDurationMs].
+ * - Lifecycle: Propagation of [CancellationException] is strictly enforced to maintain structured concurrency.
+ */
 internal class ExponentialRetryPolicy @Inject constructor(
     private val exceptionMapper: IExceptionMapper,
     private val clock: () -> Long = { System.currentTimeMillis() }

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.feature.property.ui.uploads.viewModels
 
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -9,6 +10,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyUiState
@@ -19,12 +21,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val STATE_DRAFT = "property_draft"
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
     private val repository: IPropertyRepository,
     private val authRepository: IAuthRepository,
     private val intelligenceService: IMediaIntelligenceService,
+    private val metricsTracker: IMetricsTracker,
+    private val savedStateHandle: SavedStateHandle,
     propertyData: PropertyData
 ) : ViewModel() {
 
@@ -42,11 +47,18 @@ class AddPropertyViewModel @Inject constructor(
 
 
     private val _draft = MutableStateFlow(
-        AddPropertyDraft()
+        savedStateHandle.get<AddPropertyDraft>(STATE_DRAFT) ?: AddPropertyDraft()
     )
 
     val draft: StateFlow<AddPropertyDraft> =
         _draft.asStateFlow()
+
+    init {
+        // 🛡️ State Restoration: Persist draft changes
+        _draft.onEach { draft ->
+            savedStateHandle[STATE_DRAFT] = draft
+        }.launchIn(viewModelScope)
+    }
 
     val allMedia: StateFlow<List<Uri>> = _draft.map {
         (it.images + it.videos).map { ref -> ref.value.toUri() }
@@ -327,11 +339,15 @@ class AddPropertyViewModel @Inject constructor(
         onFailure: (Exception) -> Unit,
         onSuccess: (String) -> Unit
     ) {
+        if (_uiState.value.isUploading) return // 🛡️ Idempotency: Prevent duplicate uploads
+
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
             onFailure(AuthException.UserNotAuthenticated)
             return
         }
+
+        _uiState.update { it.copy(isUploading = true) }
 
         viewModelScope.launch {
             try {
@@ -342,13 +358,25 @@ class AddPropertyViewModel @Inject constructor(
                     imageUris = _draft.value.images,
                     videoUris = _draft.value.videos
                 )) {
-                    is AppResult.Success -> onSuccess(result.data)
-                    is AppResult.Error -> onFailure(result.exception)
+                    is AppResult.Success -> {
+                        metricsTracker.incrementCounter("property.draft.completed")
+                        _uiState.update { it.copy(isUploading = false) }
+                        onSuccess(result.data)
+                    }
+                    is AppResult.Error -> {
+                        _uiState.update { it.copy(isUploading = false) }
+                        onFailure(result.exception)
+                    }
                 }
             } catch (exception: Exception) {
+                _uiState.update { it.copy(isUploading = false) }
                 onFailure(exception)
             }
         }
+    }
+
+    fun markDraftAbandoned() {
+        metricsTracker.incrementCounter("property.draft.abandoned")
     }
 
 

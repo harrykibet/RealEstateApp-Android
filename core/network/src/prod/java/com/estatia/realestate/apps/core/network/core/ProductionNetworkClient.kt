@@ -5,13 +5,24 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AppException
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
-
+/**
+ * Standard implementation of [INetworkClient] for production environments.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: High-level network orchestration, including retry logic and domain error mapping.
+ * - Concurrency: Stateless and thread-safe for concurrent invocations.
+ * - Failure Modes: Automatically maps lower-level protocol exceptions to [AppException] via [exceptionMapper].
+ * - Resilience: Enforces the provided [RetryConfig] via an injectable [IRetryPolicy].
+ */
 class ProductionNetworkClient @Inject constructor(
     private val retryPolicy: IRetryPolicy,
     private val exceptionMapper: IExceptionMapper,
+    private val metricsTracker: IMetricsTracker,
     private val logger: ILogger
 ) : INetworkClient {
 
@@ -21,19 +32,26 @@ class ProductionNetworkClient @Inject constructor(
         apiCall: suspend () -> T
     ): AppResult<T> {
 
+        val startTime = System.currentTimeMillis()
 
         return try {
 
-            AppResult.Success(
-                retryPolicy.execute(
-                    config,
-                    apiCall
-                )
+            val data = retryPolicy.execute(
+                config,
+                apiCall
             )
+
+            metricsTracker.trackDuration("network.client.latency", (System.currentTimeMillis() - startTime).milliseconds)
+            metricsTracker.incrementCounter("network.client.success")
+
+            AppResult.Success(data)
 
         } catch (
             throwable: Throwable
         ) {
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("network.client.latency", duration.milliseconds)
+            metricsTracker.incrementCounter("network.client.failure")
 
 
             val exception =

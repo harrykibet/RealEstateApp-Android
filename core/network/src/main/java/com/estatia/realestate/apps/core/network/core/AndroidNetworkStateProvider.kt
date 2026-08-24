@@ -11,6 +11,16 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 
+/**
+ * Android implementation of [INetworkStateProvider] using [ConnectivityManager].
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Monitor and report global network connectivity state.
+ * - Concurrency: Thread-safe reactive observation via [callbackFlow].
+ * - Lifecycle: Automatically cleans up system-level callbacks via [awaitClose].
+ * - Resilience: Performs validation checks (NET_CAPABILITY_VALIDATED) to distinguish between 
+ *   connected-but-offline (e.g., captive portal) and true internet connectivity.
+ */
 internal class AndroidNetworkStateProvider @Inject constructor(
     private val connectivityManager: ConnectivityManager
 ) : INetworkStateProvider {

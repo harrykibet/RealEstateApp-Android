@@ -9,8 +9,13 @@ import com.estatia.realestate.apps.core.security.interfaces.SecureKeyProvider
 import javax.inject.Inject
 
 /**
- * Mediator repository for secrets.
- * Tries to fetch from remote first, falls back to local provider.
+ * Mediator repository for managing application secrets and API keys.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Resolving secrets via a hierarchical lookup (Remote -> Local).
+ * - Security: Ensures secrets are never persisted in plain text on the local filesystem.
+ * - Concurrency: Stateless and thread-safe.
+ * - Resilience: Transparent fallback to [localProvider] (keystore/buildConfig) when network is unavailable.
  */
 internal class SecretRepository @Inject constructor(
     private val remoteDataSource: ISecretRemoteDataSource,
