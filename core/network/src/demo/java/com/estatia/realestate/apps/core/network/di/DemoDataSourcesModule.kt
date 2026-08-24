@@ -1,8 +1,24 @@
 package com.estatia.realestate.apps.core.network.di
 
-import com.estatia.realestate.apps.core.network.interfaces.*
+import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IPaymentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
-import com.estatia.realestate.apps.core.network.sources.*
+import com.estatia.realestate.apps.core.network.sources.DemoAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoAuthRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoCommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoConfigRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoPaymentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoPropertyRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoSearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoSecretRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.DemoUserRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

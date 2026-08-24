@@ -1,7 +1,23 @@
 package com.estatia.realestate.apps.core.localization.di
 
-import com.estatia.realestate.apps.core.localization.api.*
-import com.estatia.realestate.apps.core.localization.implementation.*
+import com.estatia.realestate.apps.core.localization.api.CurrencyFormatter
+import com.estatia.realestate.apps.core.localization.api.DateFormatter
+import com.estatia.realestate.apps.core.localization.api.LocaleProvider
+import com.estatia.realestate.apps.core.localization.api.LocaleRepository
+import com.estatia.realestate.apps.core.localization.api.MeasurementFormatter
+import com.estatia.realestate.apps.core.localization.api.NumberFormatter
+import com.estatia.realestate.apps.core.localization.api.PluralProvider
+import com.estatia.realestate.apps.core.localization.api.StringProvider
+import com.estatia.realestate.apps.core.localization.api.TimeZoneMonitor
+import com.estatia.realestate.apps.core.localization.implementation.AndroidCurrencyFormatter
+import com.estatia.realestate.apps.core.localization.implementation.AndroidDateFormatter
+import com.estatia.realestate.apps.core.localization.implementation.AndroidLocaleProvider
+import com.estatia.realestate.apps.core.localization.implementation.AndroidMeasurementFormatter
+import com.estatia.realestate.apps.core.localization.implementation.AndroidNumberFormatter
+import com.estatia.realestate.apps.core.localization.implementation.AndroidPluralProvider
+import com.estatia.realestate.apps.core.localization.implementation.AndroidStringProvider
+import com.estatia.realestate.apps.core.localization.implementation.AndroidTimeZoneMonitor
+import com.estatia.realestate.apps.core.localization.implementation.LocaleRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

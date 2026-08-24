@@ -1,9 +1,26 @@
 package com.estatia.realestate.apps.core.network.di
 
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
-import com.estatia.realestate.apps.core.network.interfaces.*
-import com.estatia.realestate.apps.core.network.sources.firebase.*
-import com.estatia.realestate.apps.core.network.sources.aws.*
+import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IPaymentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
+import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.firebase.FirebaseBackendInitializer
+import com.estatia.realestate.apps.core.network.sources.aws.AwsAnalyticsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsAuthService
+import com.estatia.realestate.apps.core.network.sources.aws.AwsBackendInitializer
+import com.estatia.realestate.apps.core.network.sources.aws.AwsCommentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsConfigRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsCrashReporter
+import com.estatia.realestate.apps.core.network.sources.aws.AwsPaymentsRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsPropertyRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsSearchRemoteDataSource
+import com.estatia.realestate.apps.core.network.sources.aws.AwsUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.SecretRemoteDataSource
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import dagger.Binds
@@ -74,39 +91,4 @@ internal abstract class ProdDataSourcesModule {
     @Binds
     @Singleton
     abstract fun bindSecretRemoteSource(dataSource: SecretRemoteDataSource): ISecretRemoteDataSource
-
-    // --- Firebase Bindings (Disabled) ---
-    /*
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseSearchRemoteSource(dataSource: FirestoreSearch): ISearchRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebasePropertyRemoteSource(dataSource: FirestoreProperties): IPropertyRemoteDatasource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseCommentsRemoteSource(dataSource: FirestoreComments): ICommentsRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseAnalyticsRemoteSource(dataSource: FirestoreAnalytics): IAnalyticsRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseUserRemoteDataSource(dataSource: FirestoreUsers): IUserRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseConfigRemoteDataSource(dataSource: FirebaseConfig): IConfigRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebaseCrashReporter(reporter: FirebaseCrashReporter): ICrashReporter
-
-    @Binds
-    @Singleton
-    abstract fun bindFirebasePaymentsRemoteSource(dataSource: FirebasePaymentsRemoteDataSource): IPaymentsRemoteDataSource
-    */
 }

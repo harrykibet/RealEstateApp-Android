@@ -1,6 +1,10 @@
 package com.estatia.realestate.apps.core.testing.generators
 
-import com.estatia.realestate.apps.core.model.property.*
+import com.estatia.realestate.apps.core.model.property.ContactInfo
+import com.estatia.realestate.apps.core.model.property.Coordinates
+import com.estatia.realestate.apps.core.model.property.Money
+import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.model.property.PropertyId
 import java.util.UUID
 
 /**

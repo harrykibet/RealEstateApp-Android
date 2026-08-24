@@ -7,7 +7,12 @@ import com.amplifyframework.storage.StorageException as AmplifyStorageException
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.network.di.AwsMapper
 import com.estatia.realestate.apps.core.network.di.FirebaseMapper
-import com.estatia.realestate.apps.core.network.interfaces.*
+import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
+import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
+import com.estatia.realestate.apps.core.network.interfaces.IInfrastructureErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException

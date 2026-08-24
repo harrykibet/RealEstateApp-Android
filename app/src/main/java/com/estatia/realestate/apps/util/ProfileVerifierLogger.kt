@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.util
 
-import android.util.Log
 import androidx.profileinstaller.ProfileVerifier
 import com.estatia.realestate.apps.core.common.di.ApplicationScope
+import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
@@ -41,6 +41,7 @@ import javax.inject.Inject
  * - Resilience: Non-critical; failures to retrieve status are ignored.
  */
 class ProfileVerifierLogger @Inject constructor(
+    private val logger: ILogger,
     @ApplicationScope private val scope: CoroutineScope,
 ) {
     companion object {
@@ -49,8 +50,8 @@ class ProfileVerifierLogger @Inject constructor(
 
     operator fun invoke() = scope.launch {
         val status = ProfileVerifier.getCompilationStatusAsync().await()
-        Log.d(TAG, "Status code: ${status.profileInstallResultCode}")
-        Log.d(
+        logger.d(TAG, "Status code: ${status.profileInstallResultCode}")
+        logger.d(
             TAG,
             when {
                 status.isCompiledWithProfile -> "App compiled with profile"
@@ -60,4 +61,3 @@ class ProfileVerifierLogger @Inject constructor(
         )
     }
 }
-

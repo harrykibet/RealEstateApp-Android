@@ -16,6 +16,15 @@ import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
 import com.estatia.realestate.apps.core.player_engine.core.IMediaSessionProvider
 import com.estatia.realestate.apps.core.player_engine.core.MediaSessionProvider
+import com.estatia.realestate.apps.core.player_engine.streaming.CdnPolicy
+import com.estatia.realestate.apps.core.player_engine.streaming.DefaultCacheKeyFactory
+import com.estatia.realestate.apps.core.player_engine.streaming.ICacheKeyFactory
+import com.estatia.realestate.apps.core.player_engine.streaming.ICdnPolicy
+import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.streaming.StreamingPipeline
+import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
+import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
+import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,10 +39,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.player_engine.streaming.*
-import com.estatia.realestate.apps.core.player_engine.utils.AdaptivePlayerPoolSizingPolicy
-import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
-import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)

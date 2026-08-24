@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.common.media
 
 import android.content.Context
-import android.graphics.Bitmap.CompressFormat.*
+import android.graphics.Bitmap.CompressFormat.JPEG
+import android.graphics.Bitmap.CompressFormat.PNG
+import android.graphics.Bitmap.CompressFormat.WEBP
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes

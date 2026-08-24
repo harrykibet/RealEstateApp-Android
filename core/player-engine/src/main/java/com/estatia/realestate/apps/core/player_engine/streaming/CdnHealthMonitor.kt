@@ -3,7 +3,10 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.IODispatcher
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -11,6 +14,15 @@ import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Monitors the health and latency of CDN endpoints to enable high-integrity failover.
+ * 
+ * 🏗️ OPERATIONAL CONTRACT:
+ * - Responsibility: Manage circuit-breaking and latency snapshots for the distribution layer.
+ * - Concurrency: Thread-safe via [Mutex] per-endpoint and [ConcurrentHashMap].
+ * - Resilience: Implements a circuit breaker pattern (3 failures -> 60s open).
+ * - Observability: Directly enables the 'CdnSelector' to make data-driven routing decisions.
+ */
 @Singleton
 class CdnHealthMonitor @Inject constructor(
     private val latencyMeasurer: ILatencyMeasurer,

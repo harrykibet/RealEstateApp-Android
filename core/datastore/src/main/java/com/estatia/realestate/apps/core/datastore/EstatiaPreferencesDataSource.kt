@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.datastore
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
@@ -221,7 +220,8 @@ class EstatiaPreferencesDataSource @Inject constructor(
                 }
             }
         } catch (ioException: IOException) {
-            Log.e("EstatiaPreferences", "Failed to update user preferences", ioException)
+            metricsTracker.incrementCounter("datastore.update.failure")
+            logger.e("EstatiaPreferences", "Failed to update user preferences", ioException)
         }
     }
 

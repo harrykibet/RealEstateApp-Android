@@ -1,24 +1,28 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
 import android.content.Context
-import androidx.compose.runtime.*
+import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
-import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
-import android.widget.Toast
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.estatia.realestate.apps.feature.auth.R
 import com.estatia.realestate.apps.feature.auth.state.AuthState
+import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
+import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.estatia.realestate.apps.feature.auth.R
 import kotlinx.coroutines.launch
 
 
@@ -142,4 +146,3 @@ suspend fun signInWithGoogleCredentialManager(
         onError(e)
     }
 }
-
