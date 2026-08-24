@@ -81,4 +81,22 @@ class ExponentialRetryPolicyChaosTest {
             throw IOException("Timeout")
         }
     }
+
+    @Test
+    fun `retry policy handles server success but client timeout chaos`() = runTest {
+        // 🧪 Adversarial Behavior: Server processed but client timed out
+        val behavior = NetworkBehavior.ServerSuccessClientTimeout
+        
+        val config = RetryConfig(name = "test", maxAttempts = 2, initialDelayMs = 10, maxDelayMs = 100, multiplier = 2.0)
+        every { exceptionMapper.map(any()) } returns NetworkException.Timeout
+        
+        var attempts = 0
+        val result = retryPolicy.execute(config) {
+            attempts++
+            if (attempts == 1) throw IOException("SocketTimeout after side-effect")
+            "Recovered"
+        }
+        
+        assertEquals("Recovered", result)
+    }
 }

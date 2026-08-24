@@ -1,8 +1,8 @@
-﻿# Estatia Media Engine â€” Technical Specification
+﻿# Estatia Media Engine  Technical Specification
 
 The `player-engine` module is a high-performance, resilient, and resource-aware orchestration layer built on top of **Media3 ExoPlayer**. It is engineered to deliver a fluid, "TikTok-class" video experience while maintaining strict device stability and battery discipline.
 
-## ðŸ—ï¸ 1. Performance Architecture
+##  1. Performance Architecture
 
 ### Fling Heuristic & Adaptive Debounce
 To minimize CPU and network churn during rapid navigation ("surfing"), the engine implements a velocity-aware debounce mechanism.
@@ -19,7 +19,7 @@ The engine maintains a deep look-ahead window with **Priority Decay** to ensure 
 -   **Far-Ahead (N+2)**: 20% budget (Speculative bytes only).
 -   **Pinning Mechanism**: Every visible video is "pinned" in the pool. The eviction logic strictly respects these pins, ensuring that no video is released while its surface is still composed in the UI.
 
-## ðŸ›¡ï¸ 2. Fault Tolerance & Reliability
+## 2. Fault Tolerance & Reliability
 
 ### BOLA-lite (Buffer-Aware ABR)
 The ABR policy incorporates real-time buffer occupancy to proactively prevent stalls.
@@ -34,7 +34,7 @@ The engine distinguishes between transient signal loss and terminal errors.
 ### Buffering Watchdog
 A 15-second safety timer monitors every "Buffering" state. If the hardware decoder or network stream hangs without reporting an error, the watchdog triggers a synthetic recovery flow to unblock the UI.
 
-## ðŸ”‹ 3. Resource & Power Discipline
+## 3. Resource & Power Discipline
 
 ### Granular Thermal Tiers
 Playback load is dynamically shed based on the device's physical temperature (`PowerManager.thermalStatus`).
@@ -52,7 +52,7 @@ Playback load is dynamically shed based on the device's physical temperature (`P
 -   **Memory Safety**: Uses `WeakHashMap` for listener tracking, ensuring that released hardware instances are eligible for immediate garbage collection.
 -   **Adaptive Polling**: Progress-bar telemetry throttles its refresh rate based on app visibility to save CPU cycles.
 
-## ðŸ“± 4. Hardware & System Integration
+## 4. Hardware & System Integration
 
 ### Adaptive Player Pooling
 Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creation. 
@@ -78,22 +78,21 @@ Reuses `ExoPlayer` instances to eliminate the 300-700ms overhead of player creat
 
 ---
 
-## ðŸ› ï¸ 5. Diagnostics & Telemetry
--   **ChaosDataSource**: Includes a fault-injection fuzzer to simulate stalls, random IO failures, and bandwidth throttling deterministically in Debug builds.
+## 🛠️ 5. Diagnostics & Telemetry
 -   **Integrated Metrics**: Wired to Micrometer with automatic logging of startup latency, buffering duration, and **real-time watch-time/completion rates**. Telemetry is toggleable via remote config for production data-driven ranking.
 -   **Bounded Diagnostics**: Failure trackers (e.g. `decoderFailures`) are LRU-bounded to prevent memory growth during long app sessions.
 
 ---
 
-## âš™ï¸ 6. Remote Tuning & Optimization
-The engine is fully configurable via the **Remote Config** system (`IPlayerTuningConfig` and `IChaosConfig`). This allows for real-time, cohort-based A/B tuning of all core performance parameters without app releases:
+## ⚙️ 6. Remote Tuning & Optimization
+The engine is fully configurable via the **Remote Config** system (`IPlayerTuningConfig`). This allows for real-time, cohort-based A/B tuning of all core performance parameters without app releases:
 -   **Debounce Intervals**: `dwellTimeDebounceMs`, `jankAwareDebounceMs`, etc.
 -   **ABR Thresholds**: BOLA-lite buffer penalty triggers and multipliers.
 -   **Cache Policies**: Global cache ceilings and storage-budget percentages.
 -   **Watchdog Timers**: SNI and hardware timeout values.
 -   **Buffer Targets**: Adaptive `DefaultLoadControl` durations for LIVE and VOD.
 
-## ðŸ§µ 7. Threading Model
+## 7. Threading Model
 All mutations to pooled player state are strictly confined to the **Main thread**. Thread safety is enforced via `checkConfinement()` assertions in all core scheduling classes (`PlayerPool`, `VideoPlaybackCoordinator`, etc.), preventing race conditions by construction.
 
 

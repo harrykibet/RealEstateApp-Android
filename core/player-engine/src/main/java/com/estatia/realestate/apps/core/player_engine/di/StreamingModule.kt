@@ -19,11 +19,9 @@ import com.estatia.realestate.apps.core.player_engine.streaming.CdnHealthMonitor
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.player_engine.streaming.DefaultLatencyMeasurer
 import com.estatia.realestate.apps.core.player_engine.streaming.ILatencyMeasurer
-import com.estatia.realestate.apps.core.player_engine.streaming.ChaosDataSourceFactory
 import com.estatia.realestate.apps.core.player_engine.streaming.ICacheSizingPolicy
 import com.estatia.realestate.apps.core.player_engine.streaming.AdaptiveCacheSizingPolicy
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
-import com.estatia.realestate.apps.core.domain.config.IChaosConfig
 import com.estatia.realestate.apps.core.network.di.PlaybackClient
 import dagger.Module
 import dagger.Provides
@@ -83,7 +81,6 @@ object StreamingModule {
         @ApplicationContext context: Context,
         @PlaybackClient okHttpClient: OkHttpClient,
         deviceUtils: IDeviceUtils,
-        chaosConfig: IChaosConfig,
         cdnSelector: CdnSelector,
         healthMonitor: CdnHealthMonitor,
         logger: ILogger
@@ -103,15 +100,7 @@ object StreamingModule {
 
         // 🏎️ High-Integrity Failover: Wrap the network factory in a failover decorator
         // that handles segment-level CDN switching.
-        val failoverFactory = CdnFailoverDataSourceFactory(baseFactory, cdnSelector, healthMonitor, logger)
-
-        // 🏎️ Chaos Injection: Wrap the factory in a Chaos decorator in debug builds
-        // to enable real-world failure simulation.
-        return if (com.estatia.realestate.apps.core.player_engine.BuildConfig.DEBUG) {
-            ChaosDataSourceFactory(failoverFactory, chaosConfig)
-        } else {
-            failoverFactory
-        }
+        return CdnFailoverDataSourceFactory(baseFactory, cdnSelector, healthMonitor, logger)
     }
 
     @Provides

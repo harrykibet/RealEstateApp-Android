@@ -9,7 +9,6 @@ import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.api.ApiEndpoint
-import com.estatia.realestate.apps.core.model.config.ChaosConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlin.time.Duration.Companion.milliseconds
@@ -77,13 +76,11 @@ internal class ConfigProvider @Inject constructor(
             val networkJson = assetSource.loadNetworkConfig()
             val securityJson = assetSource.loadSecurityConfig()
             val playerJson = assetSource.loadPlayerConfig()
-            val chaosJson = assetSource.loadChaosConfig()
 
             val combined = RemoteConfigModel(
                 network = parser.parseNetwork(networkJson),
                 security = parser.parseSecurity(securityJson),
-                player = parser.parsePlayer(playerJson),
-                chaos = parser.parseChaos(chaosJson)
+                player = parser.parsePlayer(playerJson)
             )
 
             applyConfig(combined)
@@ -173,9 +170,6 @@ internal class ConfigProvider @Inject constructor(
 
     override val asymmetricSigningKeyId: String
         get() = requireConfig().security.encryptionKeys.asymmetricSigningKeyId
-
-    override val chaosConfig: ChaosConfig
-        get() = requireConfig().chaos
 
     override val playerTuning: PlayerTuningConfig
         get() = requireConfig().player

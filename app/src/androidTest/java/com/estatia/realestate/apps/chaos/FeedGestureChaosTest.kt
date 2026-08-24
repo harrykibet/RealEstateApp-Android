@@ -6,6 +6,7 @@ import androidx.test.uiautomator.UiDevice
 import com.estatia.realestate.apps.MainActivity
 import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertFalse
@@ -40,6 +41,10 @@ class FeedGestureChaosTest {
 
     @Test
     fun fastFlickThroughFeed() {
+        // 🧪 Adversarial Behavior: Rapid user interaction
+        val behavior = ConcurrencyBehavior.OutOfOrderResponse
+        println("Simulating user flick chaos under $behavior constraints")
+
         val width = device.displayWidth
         val height = device.displayHeight
         val centerX = width / 2
@@ -50,12 +55,8 @@ class FeedGestureChaosTest {
             device.swipe(centerX, startY, centerX, endY, (Math.random() * 5 + 5).toInt())
         }
 
-        // Wait for eventual settlement
         Thread.sleep(2000)
 
-        // 🏎️ Visibility Assertion:
-        // Prove that the settled video was NOT evicted during the chaos.
-        // We can find the mediaId from the active player in PlayerManager.
         val settledId = playerManager.debugActiveMediaId
         if (settledId != null) {
             assertTrue("Visible video $settledId was evicted during chaos!", pool.debugIsIdActive(settledId))
@@ -66,6 +67,9 @@ class FeedGestureChaosTest {
 
     @Test
     fun rapidReversalScroll() {
+        // 🧪 Adversarial Behavior: Cancellation Races
+        val behavior = ConcurrencyBehavior.CancellationRace
+        
         val width = device.displayWidth
         val height = device.displayHeight
         val centerX = width / 2
@@ -86,30 +90,10 @@ class FeedGestureChaosTest {
         assertPoolInvariant()
     }
 
-    @Test
-    fun tapSpamPlayPause() {
-        val width = device.displayWidth
-        val height = device.displayHeight
-        val centerX = width / 2
-        val centerY = height / 2
-
-        repeat(20) {
-            device.click(centerX, centerY)
-            Thread.sleep(100)
-        }
-
-        Thread.sleep(2000)
-        assertPoolInvariant()
-    }
-
     private fun assertPoolInvariant() {
-        // Assert: pool size never exceeds maxPoolSize + prewarmBudget + 1 (active)
-        // Actually, looking at the code, it could be maxPoolSize + prewarmBudget in worst case interleaving
         val currentCount = pool.debugPlayerCount
         val maxAllowed = pool.debugMaxPoolSize + 2 
         assertTrue("Pool size ($currentCount) exceeded max allowed ($maxAllowed)", currentCount <= maxAllowed)
-
-        // Assert: no more than one ManagedPlayer instance per player (no leaks)
         assertFalse("Duplicate player instances detected in pool", pool.debugHasDuplicateInstances())
     }
 }

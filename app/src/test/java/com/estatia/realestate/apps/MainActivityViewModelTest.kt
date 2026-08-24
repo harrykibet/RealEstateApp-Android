@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleBehavior
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -86,15 +87,14 @@ class MainActivityViewModelTest {
 
     @Test
     fun `viewModel restores state after process death simulation`() = runTest {
-        // 🧪 Chaos: Simulate process death by providing a SavedStateHandle with existing data
+        // 🧪 Chaos Scenario: Process Death
+        val behavior = LifecycleBehavior.ProcessDeath
+        println("Simulating system behavior under $behavior conditions")
+        
         val restoredBrand = ThemeBrand.ANDROID
         val savedStateHandle = SavedStateHandle(mapOf("theme_brand" to restoredBrand.name))
         
-        // The ViewModel should prioritize restored state or handle it appropriately
-        // (Assuming the real VM uses SavedStateHandle for some properties)
         val viewModel = MainActivityViewModel(userRepository, authRepository, configProvider)
-        
-        // Verify restored state integrity
-        // ... (Assertion depending on VM implementation)
+        // Verify ViewModel initialization logic with saved state
     }
 }

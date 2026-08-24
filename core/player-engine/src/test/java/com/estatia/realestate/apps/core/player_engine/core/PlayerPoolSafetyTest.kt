@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -50,7 +51,6 @@ class PlayerPoolSafetyTest {
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
         every { mockLooper.thread } returns Thread.currentThread()
-        every { mockLooper.thread } returns Thread.currentThread()
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
 
@@ -87,31 +87,33 @@ class PlayerPoolSafetyTest {
     }
 
     @Test
+    fun `pool handles double initialization chaos safely`() = runTest {
+        // 🧪 Chaos Scenario: Double Initialization
+        val behavior = ConcurrencyBehavior.DoubleInitialization
+        
+        val mediaId = "id_init"
+        val uri = MediaReference("http://test.com")
+        
+        // Rapidly call prewarm twice
+        pool.prewarm(mediaId, uri, MediaType.VOD)
+        pool.prewarm(mediaId, uri, MediaType.VOD)
+        
+        assertEquals(1, pool.debugPlayerCount)
+    }
+
+    @Test
     fun `trimIfNeeded respects pinnedIds and does not evict visible players`() = runTest {
         val uri = MediaReference("http://test.com")
         
-        // 1. Fill the pool to max (2)
         pool.getOrCreate("visible_1", uri, MediaType.VOD)
         pool.getOrCreate("visible_2", uri, MediaType.VOD)
         
         assertEquals(2, pool.debugPlayerCount)
         
-        // 2. Try to add a 3rd player (which would normally evict the LRU)
-        // BUT we pin "visible_1" and "visible_2"
         pool.updatePinnedIds(setOf("visible_1", "visible_2"))
         
-        // Pool size should stay at 2 because everything is pinned
-        assertEquals(2, pool.debugPlayerCount)
-        
-        // Now add a 3rd one. It will force the pool to 3 temporarily
-        // because prewarm/getOrCreate allows one slot above capacity before trim.
-        // Wait, prewarm calls trimIfNeeded AFTER insertion.
         pool.getOrCreate("new_speculative", uri, MediaType.VOD)
         
-        // It should still be at 3 because everyone is pinned (visible_1, visible_2)
-        // AND the new one is temporarily "the excludeMediaId" of the creation logic if urgent?
-        // No, I changed it to trimIfNeeded(pinnedMediaIds).
-        // Since new_speculative is NOT in pinnedMediaIds, it will be evicted.
         assertEquals(2, pool.debugPlayerCount)
         assertNotNull(pool.get("visible_1"))
         assertNotNull(pool.get("visible_2"))

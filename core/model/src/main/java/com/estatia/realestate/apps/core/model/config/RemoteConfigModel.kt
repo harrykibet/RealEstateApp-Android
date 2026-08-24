@@ -9,8 +9,7 @@ import kotlinx.serialization.Serializable
 data class RemoteConfigModel(
     val network: NetworkConfigModel,
     val security: SecurityConfigModel,
-    val player: PlayerTuningConfig = PlayerTuningConfig(),
-    val chaos: ChaosConfig = ChaosConfig()
+    val player: PlayerTuningConfig = PlayerTuningConfig()
 )
 
 @Serializable
@@ -54,18 +53,6 @@ data class EncryptionKeys(
     val asymmetricKeyId: String,
     @SerialName("asymmetric_signing_key_id")
     val asymmetricSigningKeyId: String
-)
-
-@Serializable
-data class ChaosConfig(
-    @SerialName("simulate_stall")
-    val simulateStall: Boolean = false,
-    @SerialName("stall_duration_ms")
-    val stallDurationMs: Long = 0,
-    @SerialName("failure_rate")
-    val failureRate: Float = 0f,
-    @SerialName("throttle_bps")
-    val throttleBps: Long = 0
 )
 
 @Serializable

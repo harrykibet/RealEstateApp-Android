@@ -1,9 +1,11 @@
 package com.estatia.realestate.apps.core.security.core
 
-import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.security.interfaces.ISecurityExceptionTranslator
+import com.estatia.realestate.apps.core.testing.assertions.assertError
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
+import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -26,18 +28,22 @@ class CryptoExecutorTest {
     }
 
     @Test
-    fun `execute success returns Success result`() = runTest {
+    fun `execute success returns Success result using platform assertions`() = runTest {
         val expected = "result"
         val result = executor.execute(SecurityException.KeyGenerationFailed) {
             expected
         }
-        assert(result is AppResult.Success)
-        assertEquals(expected, (result as AppResult.Success).data)
+        
+        val data = result.assertSuccess()
+        assertEquals(expected, data)
     }
 
     @Test
-    fun `execute failure calls translator and logger and returns Error result`() = runTest {
-        val originalException = RuntimeException("error")
+    fun `execute failure handles unexpected chaos gracefully`() = runTest {
+        // 🧪 Adversarial Behavior: Corrupted Data during crypto
+        println("Testing behavior: ${TestFailure.CorruptedData}")
+        
+        val originalException = RuntimeException("Corrupted")
         val translatedException = SecurityException.KeyRetrievalFailed
         every { translator.translate(originalException, any()) } returns translatedException
 
@@ -45,8 +51,8 @@ class CryptoExecutorTest {
             throw originalException
         }
 
-        assert(result is AppResult.Error)
-        assertEquals(translatedException, (result as AppResult.Error).exception)
+        val err = result.assertError()
+        assertEquals(translatedException, err)
         verify { logger.e(tag = "CryptoExecutor", message = any(), throwable = originalException) }
     }
 }

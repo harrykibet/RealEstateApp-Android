@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -45,7 +46,7 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `reportExternalFailure increments failure count and trips circuit breaker`() = runTest(testDispatcher) {
+    fun `reportExternalFailure increments failure count and trips circuit breaker using platform clock`() = runTest(testDispatcher) {
         val baseUrl = endpoint.baseUrl
         
         repeat(3) {
@@ -57,10 +58,26 @@ class CdnHealthMonitorTest {
         assertEquals(3, health?.failureCount)
         assertEquals(true, health?.isCircuitOpen)
         
+        // 🧪 Deterministic Time Advancement:
         // Advance time beyond circuit open duration (60s)
         testClock.advanceBy(61_000L)
         
         val healthAfter = monitor.getHealthSnapshot()[baseUrl]
         assertEquals(false, healthAfter?.isCircuitOpen)
+    }
+
+    @Test
+    fun `monitor handles measurement timeout chaos gracefully`() = runTest(testDispatcher) {
+        // 🧪 Chaos Scenario: Latency measurement times out
+        val behavior = NetworkBehavior.Timeout
+        coEvery { measurer.measure(any(), any()) } throws java.net.SocketTimeoutException("Timeout")
+
+        monitor.refreshIfStale(listOf(endpoint))
+        testScope.advanceUntilIdle()
+
+        val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
+        // Should have a high latency or failure marker
+        assertNotNull(health)
+        assertEquals(1, health?.failureCount)
     }
 }

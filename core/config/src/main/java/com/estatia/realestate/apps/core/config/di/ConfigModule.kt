@@ -3,7 +3,6 @@ package com.estatia.realestate.apps.core.config.di
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
 import com.estatia.realestate.apps.core.config.provider.ConfigProvider
 import com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder
-import com.estatia.realestate.apps.core.domain.config.IChaosConfig
 import com.estatia.realestate.apps.core.domain.config.IConfigLifecycle
 import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
@@ -49,12 +48,6 @@ abstract class ConfigModule {
     internal abstract fun bindPlayerTuningConfig(
         impl: ConfigProvider
     ): IPlayerTuningConfig
-
-    @Binds
-    @Singleton
-    internal abstract fun bindChaosConfig(
-        impl: ConfigProvider
-    ): IChaosConfig
 
     companion object {
 

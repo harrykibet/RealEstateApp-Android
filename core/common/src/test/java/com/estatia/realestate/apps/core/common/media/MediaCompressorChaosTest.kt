@@ -50,4 +50,21 @@ class MediaCompressorChaosTest {
         assertNull(result)
         verify { logger.e(message = match { it.contains("compression failed") }, throwable = any()) }
     }
+
+    @Test
+    fun `compressImage handles disappearing files during operation gracefully`() = runTest {
+        val uri = mockk<Uri>()
+        val file = File("test.jpg")
+        val outputDir = File("out")
+
+        every { FileUtils.getFileFromUri(any(), any()) } returns file
+        every { MediaFileUtils.getMediaFormat(any()) } returns MediaFormat.JPEG
+        every { MediaFileUtils.isImage(any()) } returns true
+
+        // 🧪 Chaos Scenario: File disappears mid-read
+        chaosFileSystem.failNext(ChaosFileSystem.FileSystemFailure.FileDisappearsDuringOp)
+
+        val result = compressor.compressImage(context, uri, outputDir)
+        assertNull(result)
+    }
 }

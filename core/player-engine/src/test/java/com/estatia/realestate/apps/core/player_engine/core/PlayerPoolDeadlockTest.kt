@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -53,7 +54,6 @@ class PlayerPoolDeadlockTest {
         mockkStatic(Looper::class)
         val mockLooper = mockk<Looper>(relaxed = true)
         every { mockLooper.thread } returns Thread.currentThread()
-        every { mockLooper.thread } returns Thread.currentThread()
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
 
@@ -69,7 +69,7 @@ class PlayerPoolDeadlockTest {
             every { playerTuning } returns PlayerTuningConfig()
         }
         sizingPolicy = mockk {
-            every { calculateMaxPoolSize(any()) } returns 1 // Constraint to 1 for easier deadlock repro
+            every { calculateMaxPoolSize(any()) } returns 1 
         }
 
         pool = PlayerPool(
@@ -90,23 +90,23 @@ class PlayerPoolDeadlockTest {
     }
 
     @Test
-    fun `urgent request promotes in-flight non-urgent request and prevents hang`() = runTest {
+    fun `urgent request promotes in-flight non-urgent request and prevents deadlock chaos`() = runTest {
+        // 🧪 Adversarial Behavior: Concurrent Request on Same Resource
+        val behavior = ConcurrencyBehavior.ConcurrentMutation
+        println("Testing resilience against $behavior")
+
         val mediaId = "race_id"
         val uri = MediaReference("http://test.com")
         
-        // 1. Simulate a slow non-urgent prewarm
         coEvery { configurationFactory.create(mediaId, any(), any(), any(), any(), any()) } coAnswers {
-            delay(1000.milliseconds) // Artificial suspension window
+            delay(1000.milliseconds) 
             mockk(relaxed = true)
         }
         
-        // Launch non-urgent prewarm
         val prewarmJob = launch {
             pool.prewarm(mediaId, uri, MediaType.VOD, urgent = false)
         }
         
-        // 2. Mid-flight, an urgent request arrives for the SAME ID
-        // It should promote the existing task and wait for it.
         val urgentResult = pool.getOrCreate(mediaId, uri, MediaType.VOD)
         
         assertNotNull("Urgent request should succeed after promotion!", urgentResult)

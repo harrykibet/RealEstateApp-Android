@@ -49,19 +49,18 @@ class ConfigRepositoryImplTest {
         coEvery { assetSource.loadNetworkConfig() } returns json
         coEvery { assetSource.loadSecurityConfig() } returns json
         coEvery { assetSource.loadPlayerConfig() } returns json
-        coEvery { assetSource.loadChaosConfig() } returns json
         
         coEvery { dataRepository.fetchRemoteConfig() } returns AppResult.Success(json)
         
         every { parser.parseNetwork(any()) } returns mockk(relaxed = true)
         every { parser.parseSecurity(any()) } returns mockk(relaxed = true)
         every { parser.parsePlayer(any()) } returns mockk(relaxed = true)
-        every { parser.parseChaos(any()) } returns mockk(relaxed = true)
         every { parser.parse(any()) } returns mockConfig
 
         repository.initialize()
 
         assertTrue(repository.isInitialized)
+        verify { assetSource.loadNetworkConfig() }
         verify { stateHolder.update(mockConfig) }
         assertEquals("https://api.estatia.com", repository.baseUrl)
     }

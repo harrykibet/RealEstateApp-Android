@@ -35,4 +35,10 @@ class Witness<Action> {
             actions.clear()
         }
     }
+
+    fun getActions(): List<Action> {
+        return synchronized(actions) {
+            actions.toList()
+        }
+    }
 }

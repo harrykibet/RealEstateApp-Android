@@ -5,12 +5,13 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.testing.assertions.assertError
+import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -28,13 +29,13 @@ class GetLikedPropertiesUseCaseTest {
     }
 
     @Test
-    fun `invoke should return Error when user not authenticated`() = runTest {
+    fun `invoke should return Error when user not authenticated using platform assertions`() = runTest {
         every { authRepository.getCurrentUserId() } returns null
         
         val result = useCase()
         
-        assertTrue(result is AppResult.Error)
-        assertEquals(AuthException.UserNotAuthenticated, (result as AppResult.Error).exception)
+        val error = result.assertError()
+        assertEquals(AuthException.UserNotAuthenticated, error)
     }
 
     @Test
@@ -46,7 +47,7 @@ class GetLikedPropertiesUseCaseTest {
         
         val result = useCase()
         
-        assertTrue(result is AppResult.Success)
-        assertEquals(mockProperties, (result as AppResult.Success).data)
+        val data = result.assertSuccess()
+        assertEquals(mockProperties, data)
     }
 }
