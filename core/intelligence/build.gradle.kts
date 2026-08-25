@@ -19,6 +19,4 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

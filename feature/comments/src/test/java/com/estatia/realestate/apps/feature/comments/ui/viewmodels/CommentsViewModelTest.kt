@@ -34,7 +34,8 @@ class CommentsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         commentsRepository = mockk()
-        viewModel = CommentsViewModel(commentsRepository, testDispatcher)
+        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        viewModel = CommentsViewModel(commentsRepository, metricsTracker, testDispatcher)
     }
 
     @After

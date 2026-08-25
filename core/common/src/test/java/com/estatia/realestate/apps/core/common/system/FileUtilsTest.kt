@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.common.system
 
 import com.estatia.realestate.apps.core.testing.chaos.filesystem.ChaosFileSystem
-import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
+import com.estatia.realestate.apps.core.testing.chaos.filesystem.FileSystemBehavior
 import com.estatia.realestate.apps.core.testing.fake.filesystem.FakeFileSystem
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
@@ -34,7 +34,7 @@ class FileUtilsTest {
     @Test
     fun `doesFileExist returns false for non-existing file`() = runTest {
         // 🧪 Chaos Scenario: Missing File
-        chaosFs.failNext(TestFailure.FileMissing)
+        chaosFs.failNext(FileSystemBehavior.FileMissing)
         
         assertFalse(FileUtils.doesFileExist("/path/to/non/existing/file"))
     }

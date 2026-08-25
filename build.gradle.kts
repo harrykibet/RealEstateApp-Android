@@ -91,8 +91,19 @@ tasks.register("generateModuleGraphs") {
                     val buildFile = File(p.projectDir, "build.gradle.kts")
                     if (buildFile.exists()) {
                         val content = buildFile.readText()
+                        // 1.1 Feature Implicit Dependencies
                         if (content.contains("estatia.android.feature")) {
-                            listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach { depPath ->
+                            listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach { depPath ->
+                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
+                                if (depProj != null) {
+                                    edges.add(p.path to depProj.path)
+                                    collectDeps(depProj)
+                                }
+                            }
+                        }
+                        // 1.2 Core & App Implicit Dependencies
+                        if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
+                            listOf(":core:testing").forEach { depPath ->
                                 val depProj = p.rootProject.allprojects.find { it.path == depPath }
                                 if (depProj != null) {
                                     edges.add(p.path to depProj.path)
@@ -167,9 +178,17 @@ tasks.register("generateModuleGraphs") {
                  * if 'AndroidFeatureConventionPlugin.kt' is updated.
                  */
                 val buildFile = File(p.projectDir, "build.gradle.kts")
-                if (buildFile.exists() && buildFile.readText().contains("estatia.android.feature")) {
-                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
-                        globalEdges.add(p.path to it)
+                if (buildFile.exists()) {
+                    val content = buildFile.readText()
+                    if (content.contains("estatia.android.feature")) {
+                        listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach {
+                            globalEdges.add(p.path to it)
+                        }
+                    }
+                    if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
+                        listOf(":core:testing").forEach {
+                            globalEdges.add(p.path to it)
+                        }
                     }
                 }
                 // Explicit

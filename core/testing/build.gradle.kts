@@ -16,21 +16,16 @@ android {
 }
 
 dependencies {
-
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
 
-    implementation(projects.core.network)
     implementation(projects.core.domain)
     implementation(libs.kotlinx.datetime)
 
     testFixturesApi(projects.core.model)
     testFixturesApi(projects.core.common)
-    testFixturesApi(projects.core.network)
     testFixturesApi(projects.core.domain)
-    testFixturesApi(projects.core.playerEngine)
-    testFixturesApi(libs.bundles.media3)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.kotlinx.datetime)
     testFixturesApi(libs.junit.junit)

@@ -12,7 +12,6 @@ class TestingConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("androidx.tracing").get())
                 
                 // Add our centralized test platform via testFixtures
-                // We use the string notation or the project notation directly
                 add("testImplementation", testFixtures(project(":core:testing")))
                 add("androidTestImplementation", testFixtures(project(":core:testing")))
 

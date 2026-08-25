@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.chaos
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.media3.common.util.UnstableApi
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.estatia.realestate.apps.MainActivity
@@ -15,6 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+@UnstableApi
 @HiltAndroidTest
 class FeedGestureChaosTest {
 

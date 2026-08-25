@@ -31,6 +31,4 @@ dependencies {
 
     implementation(libs.bundles.bouncy)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

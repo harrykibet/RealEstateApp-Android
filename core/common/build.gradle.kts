@@ -22,6 +22,4 @@ dependencies {
 
     implementation(projects.core.model)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

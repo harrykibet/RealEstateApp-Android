@@ -76,9 +76,10 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.config)
     implementation(projects.core.network)
-    implementation(projects.core.testing)
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
+    testImplementation(testFixtures(projects.core.testingNetwork))
+    testImplementation(testFixtures(projects.core.testingPlayer))
+    androidTestImplementation(testFixtures(projects.core.testingNetwork))
+    androidTestImplementation(testFixtures(projects.core.testingPlayer))
     
     implementation(projects.core.playerUi)
     implementation(projects.core.security)
@@ -90,7 +91,6 @@ dependencies {
     implementation(projects.core.playerEngine)
     implementation(projects.core.designSystem)
     implementation(projects.core.notifications)
-    implementation(projects.core.datastoreProto)
     implementation(projects.core.intelligence)
 
     implementation(projects.feature.auth)
@@ -105,8 +105,6 @@ dependencies {
     implementation(projects.feature.payments)
     implementation(projects.feature.sharedUi)
     implementation(projects.feature.favorites)
-
-    implementation(projects.lint)
 }
 
 

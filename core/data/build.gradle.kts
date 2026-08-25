@@ -29,6 +29,6 @@ dependencies {
     implementation(projects.core.security)
     implementation(projects.core.network)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
+    testImplementation(testFixtures(projects.core.testingNetwork))
+    androidTestImplementation(testFixtures(projects.core.testingNetwork))
 }

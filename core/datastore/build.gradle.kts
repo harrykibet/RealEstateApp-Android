@@ -17,7 +17,5 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.datastoreProto)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
     androidTestImplementation(libs.mockkAndroid)
 }

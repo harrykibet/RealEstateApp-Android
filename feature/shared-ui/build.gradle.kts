@@ -22,6 +22,4 @@ dependencies {
     implementation(projects.core.playerUi)
     implementation(projects.core.localization)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

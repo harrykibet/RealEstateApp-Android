@@ -16,6 +16,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.network)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
+    testImplementation(testFixtures(projects.core.testingPlayer))
+    androidTestImplementation(testFixtures(projects.core.testingPlayer))
 }

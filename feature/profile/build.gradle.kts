@@ -18,6 +18,4 @@ dependencies {
 
     implementation(libs.eventbus)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

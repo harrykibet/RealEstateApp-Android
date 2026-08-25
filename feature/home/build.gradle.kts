@@ -18,6 +18,8 @@ dependencies {
 
     implementation(libs.bundles.lifecycle)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
+    testImplementation(testFixtures(projects.core.testingNetwork))
+    testImplementation(testFixtures(projects.core.testingPlayer))
+    androidTestImplementation(testFixtures(projects.core.testingNetwork))
+    androidTestImplementation(testFixtures(projects.core.testingPlayer))
 }

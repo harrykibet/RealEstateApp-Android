@@ -55,6 +55,8 @@ include(":core:player-engine")
 include(":core:player-ui")
 include(":core:design-system")
 include(":core:testing")
+include(":core:testing-network")
+include(":core:testing-player")
 include(":core:datastore-proto")
 include(":core:intelligence")
 

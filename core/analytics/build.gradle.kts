@@ -17,6 +17,4 @@ dependencies {
     implementation(libs.bundles.firebase)
     implementation(projects.core.common)
 
-    testImplementation(testFixtures(projects.core.testing))
-    androidTestImplementation(testFixtures(projects.core.testing))
 }

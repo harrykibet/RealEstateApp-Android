@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.network.di
 
+import AwsBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
@@ -13,7 +14,6 @@ import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.firebase.FirebaseBackendInitializer
 import com.estatia.realestate.apps.core.network.sources.aws.AwsAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.aws.AwsAuthService
-import com.estatia.realestate.apps.core.network.sources.aws.AwsBackendInitializer
 import com.estatia.realestate.apps.core.network.sources.aws.AwsCommentsRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.aws.AwsConfigRemoteDataSource
 import com.estatia.realestate.apps.core.network.sources.aws.AwsCrashReporter
