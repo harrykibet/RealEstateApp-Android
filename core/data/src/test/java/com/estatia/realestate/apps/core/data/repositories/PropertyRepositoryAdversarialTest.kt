@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
 import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import com.estatia.realestate.apps.core.testing.fake.source.FakePropertyRemoteDataSource
@@ -22,6 +23,8 @@ import io.mockk.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds
@@ -120,5 +123,35 @@ class PropertyRepositoryAdversarialTest {
         
         // Verify we reached the remote call before cancellation
         coVerify { mockRemote.uploadProperty(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `fetchPropertiesPaginated honors pageSize and cursor in fake implementation`() = runTest {
+        // Given: 10 properties in the fake source
+        repeat(10) { i ->
+            val p = PropertyFixtures.build(id = "p$i").copy(createdAt = 1000L + i)
+            fakeRemoteSource.uploadProperty(
+                RemotePropertyMapper.toEntity(p),
+                mockk(relaxed = true),
+                emptyList(),
+                emptyList()
+            )
+        }
+
+        // When: Fetch first page of 3
+        val page1 = repository.fetchPropertiesPaginated(null, null, 3).assertSuccess()
+        
+        // Then: 3 items, has cursor
+        assertEquals(3, page1.properties.size)
+        assertNotNull(page1.cursor)
+
+        // When: Fetch second page using cursor from first page
+        val page2 = repository.fetchPropertiesPaginated(null, page1.cursor, 3).assertSuccess()
+        
+        // Then: 3 more items, no overlap with page 1
+        assertEquals(3, page2.properties.size)
+        val p1Ids = page1.properties.map { it.id.value }.toSet()
+        val p2Ids = page2.properties.map { it.id.value }.toSet()
+        assertTrue("Pages should not overlap", p1Ids.intersect(p2Ids).isEmpty())
     }
 }

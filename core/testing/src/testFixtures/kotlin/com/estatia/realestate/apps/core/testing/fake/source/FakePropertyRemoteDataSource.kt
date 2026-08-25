@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * In-memory fake implementation of [IPropertyRemoteDatasource] with scriptable chaos.
+ * Supports realistic pagination logic using [PropertyCursor].
  */
 class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
 
@@ -92,7 +93,28 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
         pageSize: Int
     ): AppResult<PropertyRemotePage> {
         checkChaos()
-        return AppResult.Success(PropertyRemotePage(storage.values.toList(), null))
+
+        val allProperties = storage.values
+            .sortedByDescending { it.createdAt }
+
+        val startIndex = if (cursor != null) {
+            val index = allProperties.indexOfFirst { it.id == cursor.documentId }
+            if (index == -1) return AppResult.Error(DatabaseException.NotFound)
+            index + 1
+        } else {
+            0
+        }
+
+        val pageItems = allProperties.drop(startIndex).take(pageSize)
+        val lastItem = pageItems.lastOrNull()
+
+        val nextCursor = if (pageItems.size == pageSize && startIndex + pageSize < allProperties.size) {
+            lastItem?.let { PropertyCursor(it.createdAt ?: 0L, it.id) }
+        } else {
+            null
+        }
+
+        return AppResult.Success(PropertyRemotePage(pageItems, nextCursor))
     }
 
     private fun checkChaos() {

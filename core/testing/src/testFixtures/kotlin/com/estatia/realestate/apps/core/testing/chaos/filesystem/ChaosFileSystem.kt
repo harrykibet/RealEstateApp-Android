@@ -6,8 +6,9 @@ import java.io.IOException
 
 /**
  * Adversarial implementation of [IFileSystem] that can be scripted to fail.
+ * Consistently applies chaos to all operations in the interface.
  */
-class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delegate {
+class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem {
 
     private var nextBehavior: FileSystemBehavior? = null
 
@@ -18,6 +19,11 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delega
         nextBehavior = behavior
     }
 
+    override suspend fun exists(file: File): Boolean {
+        checkFailure()
+        return delegate.exists(file)
+    }
+
     override suspend fun writeBytes(file: File, bytes: ByteArray) {
         checkFailure()
         delegate.writeBytes(file, bytes)
@@ -26,6 +32,16 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delega
     override suspend fun readBytes(file: File): ByteArray {
         checkFailure()
         return delegate.readBytes(file)
+    }
+
+    override suspend fun delete(file: File): Boolean {
+        checkFailure()
+        return delegate.delete(file)
+    }
+
+    override suspend fun listFiles(directory: File): List<File>? {
+        checkFailure()
+        return delegate.listFiles(directory)
     }
 
     private fun checkFailure() {

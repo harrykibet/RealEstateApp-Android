@@ -45,4 +45,22 @@ class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBehavio
         val fs = createSubject(FileSystemBehavior.DiskFull)
         fs.writeBytes(File("test.txt"), byteArrayOf(1))
     }
+
+    @Test(expected = java.io.IOException::class)
+    fun failNextPermissionDeniedAffectsExists() = runTest {
+        val fs = createSubject(FileSystemBehavior.PermissionDenied)
+        fs.exists(File("any.txt"))
+    }
+
+    @Test(expected = java.io.IOException::class)
+    fun failNextFileMissingAffectsDelete() = runTest {
+        val fs = createSubject(FileSystemBehavior.FileMissing)
+        fs.delete(File("any.txt"))
+    }
+
+    @Test(expected = java.io.IOException::class)
+    fun failNextIoFailureAffectsListFiles() = runTest {
+        val fs = createSubject(FileSystemBehavior.IoFailure)
+        fs.listFiles(File("any_dir"))
+    }
 }
