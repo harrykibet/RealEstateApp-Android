@@ -5,8 +5,10 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
+import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+import com.estatia.realestate.apps.core.testing.scenarios.EstatiaTestScenario
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,13 +71,17 @@ internal class AuthRepositoryChaosTest : ChaosContract<AuthRepository, AuthBehav
     fun handlesTokenExpirationChaos() = runTest {
         val repository = createSubject(AuthBehavior.TokenExpired)
         val result = repository.signInWithEmail("test@test.com", "password")
-        assert(result is AppResult.Error && result.exception is AuthException.SessionExpired)
+        val error = result.assertError()
+        assert(error is AuthException.SessionExpired)
     }
 
     @Test
-    fun handlesAccountDisabledChaos() = runTest {
-        val repository = createSubject(AuthBehavior.AccountDisabled)
+    fun handlesAccountDisabledChaosUsingScenario() = runTest {
+        val scenario = EstatiaTestScenario.authExpired() // Reusing for Demo
+        scenario.authBehavior = AuthBehavior.AccountDisabled
+        
+        val repository = createSubject(scenario.authBehavior)
         val result = repository.signInWithEmail("test@test.com", "password")
-        assert(result is AppResult.Error)
+        result.assertError()
     }
 }

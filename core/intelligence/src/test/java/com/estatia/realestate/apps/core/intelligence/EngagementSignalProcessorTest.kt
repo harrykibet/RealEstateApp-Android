@@ -17,15 +17,15 @@ class EngagementSignalProcessorTest {
     }
 
     @Test
-    fun `processViewingSession records signal in witness`() = runTest {
+    fun `processViewingSession records signal in witness history`() = runTest {
         val mediaId = "video_123"
         val watchTime = 5000L
         val loops = 2
 
         processor.processViewingSession(mediaId, watchTime, loops)
 
-        // Verify via high-performance Witness
-        engagementRepository.witness.assertContains(
+        // Then: Verify via high-performance Witness History
+        engagementRepository.witness.assertHistory(
             FakeEngagementRepository.EngagementSignal.Watch(mediaId, watchTime, loops)
         )
     }

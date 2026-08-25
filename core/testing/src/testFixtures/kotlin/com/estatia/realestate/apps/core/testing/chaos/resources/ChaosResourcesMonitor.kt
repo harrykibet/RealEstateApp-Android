@@ -30,5 +30,16 @@ class ChaosResourcesMonitor(
             ChaosResourceController.MemoryPressure.Low -> 10 // TRIM_MEMORY_RUNNING_LOW
             ChaosResourceController.MemoryPressure.Critical -> 15 // TRIM_MEMORY_RUNNING_CRITICAL
         }
+        
+        // 🏎️ Wire visibility and interactivity from controller if added there
+        // For now, we manually drive them to satisfy the ISystemResourcesMonitor contract
+    }
+
+    fun setAppVisible(visible: Boolean) {
+        _isAppVisible.value = visible
+    }
+
+    fun setInteractive(interactive: Boolean) {
+        _isInteractive.value = interactive
     }
 }

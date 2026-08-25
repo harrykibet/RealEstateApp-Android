@@ -66,4 +66,14 @@ class EnvironmentCoordinatorChaosTest {
         val state = coordinator.environment.first { it.memoryTrimLevel == 15 }
         assertEquals(15, state.memoryTrimLevel)
     }
+
+    @Test
+    fun `coordinator reflects visibility changes from chaos monitor`() = runTest {
+        coordinator.start(testScope)
+        
+        chaosMonitor.setAppVisible(false)
+        
+        val state = coordinator.environment.first { !it.isAppVisible }
+        assertEquals(false, state.isAppVisible)
+    }
 }

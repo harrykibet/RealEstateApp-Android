@@ -12,6 +12,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -47,12 +48,11 @@ class SearchRepositoryConcurrencyTest {
     }
 
     @Test
-    fun `concurrent searches maintain cache integrity using scheduler`() = runTest {
+    fun `concurrent searches maintain cache integrity using specialized concurrent runner`() = runTest {
         val query1 = "Nairobi"
         val query2 = "Mombasa"
         
         coEvery { remoteDataSource.searchProperties(query1, any()) } coAnswers {
-            scheduler.awaitPoint("query1_fetching")
             AppResult.Success(emptyList())
         }
         
@@ -60,15 +60,17 @@ class SearchRepositoryConcurrencyTest {
             AppResult.Success(emptyList())
         }
 
-        runConcurrent(
-            { repository.searchProperties(query1, 20) },
-            { 
-                delay(10.milliseconds) 
-                repository.searchProperties(query2, 20) 
-            }
-        )
+        launch {
+            delay(10.milliseconds)
+            scheduler.release("query1_start")
+        }
 
-        scheduler.release("query1_fetching")
+        runConcurrent(
+            first = { repository.searchProperties(query1, 20) },
+            second = { repository.searchProperties(query2, 20) },
+            scheduler = scheduler,
+            synchronizationPoint = "query1_start"
+        )
 
         coVerify(exactly = 1) { searchLocalDataSource.saveSearchQuery(query1) }
         coVerify(exactly = 1) { searchLocalDataSource.saveSearchQuery(query2) }
