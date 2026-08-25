@@ -39,7 +39,7 @@ class CdnHealthMonitor @Inject constructor(
     private val healthMap = java.util.concurrent.ConcurrentHashMap<String, CdnHealth>()
 
     private fun mutexFor(key: String): Mutex =
-        endpointMutexes.getOrPut(key) { Mutex() }
+        endpointMutexes.computeIfAbsent(key) { Mutex() }
 
     /**
      * Returns a snapshot of all currently known health metrics.

@@ -36,9 +36,8 @@ class TestScheduler {
         getPoint(name).complete(Unit)
     }
 
-    private fun getPoint(name: String): CompletableDeferred<Unit> {
-        return points.getOrPut(name) { CompletableDeferred() }
-    }
+    private fun getPoint(name: String): CompletableDeferred<Unit> =
+        points.computeIfAbsent(name) { CompletableDeferred() }
 
     /**
      * Clears all synchronization points.
