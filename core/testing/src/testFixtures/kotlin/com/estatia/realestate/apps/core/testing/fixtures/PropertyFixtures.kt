@@ -5,10 +5,22 @@ import com.estatia.realestate.apps.core.model.property.Coordinates
 import com.estatia.realestate.apps.core.model.property.Money
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyId
+import java.util.UUID
 
+/**
+ * Unified source of truth for property domain fixtures.
+ * 
+ * 🏗️ USAGE PATTERN:
+ * - Deterministic: Use [default] for stable, rich values in snapshot/logic tests.
+ * - Customized: Use [build] or [default].copy(...) for specific scenario testing.
+ * - Randomized: Use [build] with default arguments for property-based testing.
+ */
 object PropertyFixtures {
 
-    fun single(): PropertyDomainModel {
+    /**
+     * Returns a rich, realistic property model with deterministic values.
+     */
+    fun default(): PropertyDomainModel {
         return PropertyDomainModel(
             id = PropertyId("prop_001"),
             title = "Modern 2 Bedroom Apartment",
@@ -53,11 +65,30 @@ object PropertyFixtures {
         )
     }
 
+    /**
+     * Factory method for building customized or randomized property models.
+     */
+    fun build(
+        id: String = UUID.randomUUID().toString(),
+        title: String = "Generated Property",
+        price: Double = 50000.0,
+        ownerId: String = "owner_1"
+    ): PropertyDomainModel {
+        return default().copy(
+            id = PropertyId(id),
+            title = title,
+            price = Money(price),
+            ownerId = ownerId,
+            createdAt = System.currentTimeMillis()
+        )
+    }
+
     fun list(count: Int = 5): List<PropertyDomainModel> = List(count) {
-        single().copy(
-            id = PropertyId("prop_${it + 1}"),
+        build(
+            id = "prop_${it + 1}",
             title = "Property #${it + 1}",
-            price = Money(30000.0 + (it * 5000)),
+            price = 30000.0 + (it * 5000)
+        ).copy(
             bedrooms = 1 + (it % 3),
             bathrooms = 1 + (it % 2),
             likesCount = 10 * (it + 1),
@@ -67,4 +98,7 @@ object PropertyFixtures {
             )
         )
     }
+
+    @Deprecated("Use default()", ReplaceWith("default()"))
+    fun single(): PropertyDomainModel = default()
 }

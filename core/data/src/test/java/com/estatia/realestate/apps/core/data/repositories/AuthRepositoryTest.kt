@@ -25,7 +25,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `getCurrentUser returns mapped domain user from remote source`() {
-        val fixtureUser = AuthFixtures.authenticatedUser()
+        val fixtureUser = AuthFixtures.default()
         
         every { remoteDataSource.getCurrentUser() } returns NetworkUserEntity(
             userId = fixtureUser.userId,

@@ -1,10 +1,11 @@
 package com.estatia.realestate.apps.core.testing.chaos.filesystem
 
+import com.estatia.realestate.apps.core.common.interfaces.IFileSystem
 import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
 import com.estatia.realestate.apps.core.testing.fake.filesystem.FakeFileSystem
+import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -25,16 +26,18 @@ class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBehavio
 
     @Test
     override fun cancellationPropagates() = runTest {
-        val fs = ChaosFileSystem(FakeFileSystem())
-        val file = File("test.txt")
-        
-        val job = async {
-            delay(1.seconds)
-            fs.writeBytes(file, byteArrayOf(1))
+        val scheduler = TestScheduler()
+        val hangingFs = object : IFileSystem by FakeFileSystem() {
+            override suspend fun writeBytes(file: File, bytes: ByteArray) {
+                scheduler.release("writing")
+                delay(10.seconds)
+            }
         }
+        val fs = ChaosFileSystem(hangingFs)
         
-        job.cancelAndJoin()
-        assert(job.isCancelled)
+        launchAndDestroy(scheduler, "writing") {
+            fs.writeBytes(File("test.txt"), byteArrayOf(1))
+        }
     }
 
     @Test(expected = java.io.IOException::class)

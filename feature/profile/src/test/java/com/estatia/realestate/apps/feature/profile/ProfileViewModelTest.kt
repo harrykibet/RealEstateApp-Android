@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.testing.assertions.assertProperty
-import com.estatia.realestate.apps.core.testing.generators.UserGenerator
+import com.estatia.realestate.apps.core.testing.fixtures.UserFixtures
 import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel
 import io.mockk.coEvery
 import io.mockk.every
@@ -43,7 +43,7 @@ class ProfileViewModelTest {
     @Test
     fun `loadUserProfile success updates state with generated user`() = runTest {
         val userId = "user_123"
-        val mockUser = UserGenerator.generateUser(id = userId, name = "John Doe")
+        val mockUser = UserFixtures.build(id = userId, name = "John Doe")
         
         every { authRepository.getCurrentUserId() } returns userId
         coEvery { userRepository.getUserById(userId) } returns AppResult.Success(mockUser)

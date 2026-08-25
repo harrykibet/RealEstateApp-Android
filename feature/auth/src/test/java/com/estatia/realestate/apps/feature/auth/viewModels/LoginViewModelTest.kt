@@ -44,7 +44,7 @@ class LoginViewModelTest {
     @Test
     fun `login with email success updates state to authenticated`() = runTest {
         // Given
-        val user = AuthFixtures.authenticatedUser()
+        val user = AuthFixtures.default()
         coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Success(user)
 
         viewModel.authState.test {
@@ -68,7 +68,7 @@ class LoginViewModelTest {
     @Test
     fun `login with unverified email updates state to verification required`() = runTest {
         // Given
-        val user = AuthFixtures.authenticatedUser(isEmailVerified = false)
+        val user = AuthFixtures.build(isEmailVerified = false)
         coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Success(user)
 
         viewModel.authState.test {

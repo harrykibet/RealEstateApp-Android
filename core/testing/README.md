@@ -6,8 +6,8 @@ This module provides a unified, **adversarial test platform** for the Estatia ap
 
 ### 1. Adversarial Chaos Injection
 Instead of testing "happy paths," this platform provides tools to inject production-grade failures at logical boundaries.
-- **`NetworkChaosController`**: Script complex connectivity sequences (e.g., `TestFailure.Timeout` -> `TestFailure.Http(503)` -> `TestFailure.Success`) to verify backoff and retry logic.
-- **`ChaosFileSystem`**: Simulate `TestFailure.DiskFull`, `TestFailure.FileMissing`, or `TestFailure.PermissionDenied` errors to test persistence resilience.
+- **`NetworkChaosController`**: Script complex connectivity sequences (e.g., `NetworkBehavior.Timeout` -> `NetworkBehavior.HttpError(503)` -> `NetworkBehavior.Success`) to verify backoff and retry logic.
+- **`ChaosFileSystem`**: Simulate `FileSystemBehavior.DiskFull`, `FileSystemBehavior.FileMissing`, or `FileSystemBehavior.PermissionDenied` errors to test persistence resilience.
 - **`ChaosStreamingPipeline`**: Inject segment-level failures in the media engine to test buffer stalls and watchdog recovery.
 - **`ChaosEnvironmentController`**: Force extreme hardware states like **High Thermal Throttling** or **Low Battery** to verify adaptive UI scaling.
 
@@ -30,11 +30,12 @@ Standard MockK verification is slow and heavy. Our platform uses the **Witness P
 - **`FakeEngagementRepository`**: Records analytics signals without the overhead of `coVerify`.
 - **`RecordingAnalyticsTracker`**: Standardized fake for verifying complex event telemetry sequences.
 
-### 5. Standardized Fixtures
-Reusable domain generators to ensure consistency across feature modules.
-- **`PropertyFixtures`**: High-fidelity property models (Single, List, Paginated).
-- **`UserGenerator`**: Deterministic user profile generation.
-- **`AuthFixtures`**: Pre-configured authenticated user states.
+### 5. Unified Fixture Pattern
+Deterministic domain models with built-in factory methods for customization.
+- **`PropertyFixtures`**: Rich property models. Use `.default()` for golden values, `.build()` for randomized/custom ones.
+- **`UserFixtures`**: Pre-configured tenant, owner, and agent profiles.
+- **`AuthFixtures`**: Verified and unverified authenticated user states.
+- **`ChatFixtures`**: Standardized chat and contact entities.
 
 ---
 
@@ -56,7 +57,7 @@ dependencies {
 @Test
 fun `handles transient network failure`() = runTest {
     // 1. Script the failure
-    chaosController.script(TestFailure.Timeout, TestFailure.Success)
+    chaosController.script(NetworkBehavior.Timeout, NetworkBehavior.Success)
     
     // 2. Perform operation
     viewModel.refresh()
@@ -75,10 +76,10 @@ fun `handles transient network failure`() = runTest {
 ```text
 src/testFixtures/kotlin/
 ├── assertions/    # assertState, assertSuccess, assertProperty
-├── chaos/         # Network, FileSystem, and Streaming failure domains
+├── chaos/         # Specialized failure behaviors and controllers
 ├── clock/         # TestClock and TestTicker (Virtual Time)
 ├── coroutine/     # TestScheduler and runConcurrent (Synchronization)
 ├── fake/          # Witness-based fakes (Engagement, Analytics)
-├── fixtures/      # Domain-specific data models
-└── generators/    # Deterministic model factories
+├── fixtures/      # Standardized domain fixtures
+└── witness/       # High-performance interaction tracking
 ```

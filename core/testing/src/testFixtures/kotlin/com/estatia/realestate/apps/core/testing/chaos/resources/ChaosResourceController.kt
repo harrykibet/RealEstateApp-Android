@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.testing.chaos.resources
 
 /**
- * Controller for simulating application-level resource pressure signals.
+ * Controller for simulating application-level resource pressure signals and visibility states.
  */
 class ChaosResourceController {
     
@@ -12,6 +12,9 @@ class ChaosResourceController {
     var queuePressure: QueuePressure = QueuePressure.Normal
     var diskPressure: DiskPressure = DiskPressure.Normal
     var workerPressure: WorkerPressure = WorkerPressure.Normal
+    
+    var isAppVisible: Boolean = true
+    var isInteractive: Boolean = true
     
     sealed interface MemoryPressure {
         data object Normal : MemoryPressure

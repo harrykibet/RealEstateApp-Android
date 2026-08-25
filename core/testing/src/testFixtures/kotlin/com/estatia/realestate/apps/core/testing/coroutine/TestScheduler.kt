@@ -9,13 +9,13 @@ import java.util.concurrent.ConcurrentHashMap
  * Example:
  * ```kotlin
  * // In Production/Fake
- * scheduler.awaitPoint("before_save")
- * save()
+ * scheduler.release("reached_api_call")
+ * api.call()
  * 
  * // In Test
- * launch { subject.doWork() }
- * // ... verify state before save ...
- * scheduler.release("before_save")
+ * launchAndDestroy(scheduler, "reached_api_call") {
+ *     subject.doWork()
+ * }
  * ```
  */
 class TestScheduler {
@@ -29,10 +29,11 @@ class TestScheduler {
     }
 
     /**
-     * Releases any coroutines waiting at the specified point.
+     * Releases any coroutines waiting at the specified point, or ensures that any 
+     * future call to [awaitPoint] with this name resumes immediately.
      */
     fun release(name: String) {
-        points.remove(name)?.complete(Unit)
+        getPoint(name).complete(Unit)
     }
 
     private fun getPoint(name: String): CompletableDeferred<Unit> {

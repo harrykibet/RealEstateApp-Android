@@ -40,7 +40,7 @@ class ChatViewModelTest {
 
     @Test
     fun `viewModel correctly processes fixtures`() = runTest {
-        val mockChat = ChatFixtures.chat("test_id", "test message")
+        val mockChat = ChatFixtures.buildChat("test_id", "test message")
         // This test would normally verify how the VM handles new chats from a repository
         assert(mockChat.id == "test_id")
     }

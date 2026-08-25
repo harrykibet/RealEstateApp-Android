@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.interfaces.IPaymentsRemoteDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
-import com.estatia.realestate.apps.core.testing.generators.PaymentGenerator
+import com.estatia.realestate.apps.core.testing.fixtures.PaymentFixtures
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.verify
@@ -28,8 +28,8 @@ class PaymentsRepositoryTest {
 
     @Test
     fun `processPayment successful records metrics`() = runTest {
-        val amount = PaymentGenerator.generateAmount()
-        val method = PaymentGenerator.generateMethod()
+        val amount = PaymentFixtures.buildAmount()
+        val method = PaymentFixtures.buildMethod()
         
         coEvery { remoteDataSource.processPayment(any(), any(), any()) } returns 
             AppResult.Success(PaymentStatus.SUCCESS)

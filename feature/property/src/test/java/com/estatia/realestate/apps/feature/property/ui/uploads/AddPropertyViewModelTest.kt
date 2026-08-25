@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.core.testing.assertions.assertProperty
 import com.estatia.realestate.apps.core.testing.clock.TestClock
-import com.estatia.realestate.apps.core.testing.generators.MediaGenerator
+import com.estatia.realestate.apps.core.testing.fixtures.MediaFixtures
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel
 import com.estatia.realestate.apps.feature.property.utils.PropertyData
 import io.mockk.*
@@ -95,8 +95,8 @@ class AddPropertyViewModelTest {
 
     @Test
     fun `viewModel handles batch media generation correctly`() = runTest {
-        val image = MediaGenerator.generateImage().value.toUri()
-        val video = MediaGenerator.generateVideo().value.toUri()
+        val image = MediaFixtures.buildImage().value.toUri()
+        val video = MediaFixtures.buildVideo().value.toUri()
         
         viewModel.addImage(image)
         viewModel.addVideo(video)

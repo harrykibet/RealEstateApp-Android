@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
-import com.estatia.realestate.apps.core.testing.generators.SearchQueryGenerator
+import com.estatia.realestate.apps.core.testing.fixtures.SearchFixtures
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.coVerify
@@ -46,7 +46,7 @@ class SearchRepositoryTest {
 
     @Test
     fun `searchProperties saves query in history`() = runTest {
-        val query = SearchQueryGenerator.generate()
+        val query = SearchFixtures.buildQuery()
         coEvery { remoteDataSource.searchProperties(any(), any()) } returns AppResult.Success(emptyList())
 
         repository.searchProperties(query, 20)

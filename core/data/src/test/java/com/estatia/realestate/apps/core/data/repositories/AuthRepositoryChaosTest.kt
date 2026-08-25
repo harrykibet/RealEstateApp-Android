@@ -8,12 +8,12 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
+import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import com.estatia.realestate.apps.core.testing.scenarios.EstatiaTestScenario
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -51,20 +51,17 @@ internal class AuthRepositoryChaosTest : ChaosContract<AuthRepository, AuthBehav
     @Test
     override fun cancellationPropagates() = runTest {
         val repository = createSubject(AuthBehavior.Authenticated)
+        val scheduler = TestScheduler()
         
         coEvery { remoteDataSource.signInWithEmail(any(), any()) } coAnswers {
+            scheduler.release("reached_remote")
             delay(5.seconds)
             AppResult.Success(NetworkUserEntity("id", "name", null, null, null, true))
         }
 
-        val job = async {
+        launchAndDestroy(scheduler, "reached_remote") {
             repository.signInWithEmail("test@test.com", "password")
         }
-        
-        delay(1.seconds)
-        job.cancelAndJoin()
-        
-        assert(job.isCancelled)
     }
 
     @Test

@@ -68,10 +68,12 @@ class EnvironmentCoordinatorChaosTest {
     }
 
     @Test
-    fun `coordinator reflects visibility changes from chaos monitor`() = runTest {
+    fun `coordinator reflects visibility changes from chaos controller`() = runTest {
         coordinator.start(testScope)
         
-        chaosMonitor.setAppVisible(false)
+        // 🧪 Chaos Scenario: App backgrounded via controller
+        resourceController.isAppVisible = false
+        chaosMonitor.sync()
         
         val state = coordinator.environment.first { !it.isAppVisible }
         assertEquals(false, state.isAppVisible)

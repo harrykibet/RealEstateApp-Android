@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.domain.usecase
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
-import com.estatia.realestate.apps.core.testing.generators.PropertyGenerator
+import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -23,9 +23,9 @@ class GetPropertyUseCaseTest {
     }
 
     @Test
-    fun `invoke should return property from repository with generator`() = runTest {
+    fun `invoke should return property from repository with unified fixtures`() = runTest {
         val propertyId = "prop_1"
-        val mockProperty = PropertyGenerator.generateProperty(id = propertyId)
+        val mockProperty = PropertyFixtures.build(id = propertyId)
         coEvery { propertyRepository.getPropertyById(propertyId) } returns AppResult.Success(mockProperty)
         
         val result = useCase(propertyId).assertSuccess()

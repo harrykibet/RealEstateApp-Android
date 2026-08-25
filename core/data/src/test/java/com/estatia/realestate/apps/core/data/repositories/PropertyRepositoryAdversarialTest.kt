@@ -16,11 +16,15 @@ import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import com.estatia.realestate.apps.core.testing.fake.source.FakePropertyRemoteDataSource
 import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
+import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
+import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class PropertyRepositoryAdversarialTest {
 
@@ -90,5 +94,31 @@ class PropertyRepositoryAdversarialTest {
         // Then: Success via robust offline fallback
         val properties = result.assertSuccess()
         assertEquals(1, properties.size)
+    }
+
+    @Test
+    fun `uploadProperty propagates cancellation mid-flight using test scheduler`() = runTest {
+        val property = PropertyFixtures.single()
+        val scheduler = TestScheduler()
+        
+        // Use a mock for this test to control suspension
+        val mockRemote = mockk<IPropertyRemoteDatasource>()
+        val adversarialRepo = PropertyRepository(
+            localDataSource, mockRemote, userRepository, metricsTracker, 
+            engagementRepository, contentSafetyService, exceptionTranslator
+        )
+
+        coEvery { mockRemote.uploadProperty(any(), any(), any(), any()) } coAnswers {
+            scheduler.release("reached_remote")
+            delay(10.seconds) // Hang
+            AppResult.Success("prop_id")
+        }
+
+        launchAndDestroy(scheduler, "reached_remote") {
+            adversarialRepo.uploadProperty(property, emptyList(), emptyList())
+        }
+        
+        // Verify we reached the remote call before cancellation
+        coVerify { mockRemote.uploadProperty(any(), any(), any(), any()) }
     }
 }
