@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.testing.scenarios
+package com.estatia.realestate.apps.core.testing_network.scenarios
 
 import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior

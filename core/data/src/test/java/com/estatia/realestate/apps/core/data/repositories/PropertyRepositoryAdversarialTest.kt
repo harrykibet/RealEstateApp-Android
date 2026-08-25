@@ -14,7 +14,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDataso
 import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
 import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
-import com.estatia.realestate.apps.core.testing.fake.source.FakePropertyRemoteDataSource
+import com.estatia.realestate.apps.core.testing_network.fake.source.FakePropertyRemoteDataSource
 import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler

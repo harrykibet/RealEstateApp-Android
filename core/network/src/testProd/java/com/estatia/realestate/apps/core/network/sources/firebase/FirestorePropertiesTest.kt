@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.Su
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
-import com.estatia.realestate.apps.core.testing.scenarios.EstatiaTestScenario
+import com.estatia.realestate.apps.core.testing_network.scenarios.EstatiaTestScenario
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage

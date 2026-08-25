@@ -1,10 +1,6 @@
-package com.estatia.realestate.apps.core.testing.chaos.streaming
-
-import androidx.media3.common.MediaItem
+package com.estatia.realestate.apps.core.testing_player.chaos.streaming
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.model.common.MediaReference
-import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 

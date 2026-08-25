@@ -1,9 +1,10 @@
-package com.estatia.realestate.apps.core.testing.chaos.network
+package com.estatia.realestate.apps.core.testing_network.chaos
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
+import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 
 /**
  * An adversarial implementation of [INetworkClient] that injects chaos based on a [NetworkChaosController].

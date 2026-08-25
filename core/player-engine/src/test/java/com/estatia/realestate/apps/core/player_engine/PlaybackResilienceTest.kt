@@ -4,7 +4,7 @@ import androidx.media3.common.util.UnstableApi
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeline
-import com.estatia.realestate.apps.core.testing.chaos.streaming.ChaosStreamingPipeline
+import com.estatia.realestate.apps.core.testing_player.chaos.streaming.ChaosStreamingPipeline
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope

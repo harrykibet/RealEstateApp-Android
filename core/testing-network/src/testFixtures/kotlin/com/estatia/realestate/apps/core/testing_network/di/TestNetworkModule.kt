@@ -1,8 +1,8 @@
-package com.estatia.realestate.apps.core.testing.di
+package com.estatia.realestate.apps.core.testing_network.di
 
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.testing.chaos.network.ChaosNetworkClient
+import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 import dagger.Module
 import dagger.Provides

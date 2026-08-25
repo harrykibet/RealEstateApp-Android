@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.testing.fake.source
+package com.estatia.realestate.apps.core.testing_network.fake.source
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.AppResult

@@ -10,7 +10,7 @@ import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
 import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
 import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
-import com.estatia.realestate.apps.core.testing.scenarios.EstatiaTestScenario
+import com.estatia.realestate.apps.core.testing_network.scenarios.EstatiaTestScenario
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
