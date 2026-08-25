@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.testing.chaos.network
 
+import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
 import kotlinx.coroutines.delay
 import java.io.IOException
 import java.net.SocketTimeoutException
-import kotlin.time.Duration
 
 /**
  * Controller for injecting network chaos into a [INetworkClient] or [IRemoteDataSource].
@@ -11,6 +11,7 @@ import kotlin.time.Duration
 class NetworkChaosController {
 
     private var script: List<NetworkBehavior> = emptyList()
+    private var serverScenario: ServerScenario = ServerScenario.ValidResponse
     private var currentIndex = 0
 
     /**
@@ -22,9 +23,20 @@ class NetworkChaosController {
     }
 
     /**
+     * Sets the server-side scenario for subsequent requests.
+     */
+    fun setServerScenario(scenario: ServerScenario) {
+        serverScenario = scenario
+    }
+
+    /**
      * Executes the next behavior in the script, or Success if no script is active.
      */
     suspend fun executeNext() {
+        if (serverScenario != ServerScenario.ValidResponse) {
+            applyServerScenario(serverScenario)
+        }
+
         val behavior = if (currentIndex < script.size) {
             script[currentIndex++]
         } else {
@@ -32,6 +44,18 @@ class NetworkChaosController {
         }
 
         applyBehavior(behavior)
+    }
+
+    private fun applyServerScenario(scenario: ServerScenario) {
+        when (scenario) {
+            ServerScenario.EmptyResponse -> throw IOException("Empty response (Chaos)")
+            ServerScenario.MalformedJson -> throw IOException("Malformed JSON (Chaos)")
+            ServerScenario.SchemaMismatch -> throw IOException("Schema mismatch (Chaos)")
+            ServerScenario.PartialSuccess -> Unit // Handled by caller if needed
+            ServerScenario.StaleVersion -> throw IOException("Stale version (Chaos)")
+            ServerScenario.ValidationFailure -> throw IOException("Validation failure (Chaos)")
+            ServerScenario.ValidResponse -> Unit
+        }
     }
 
     private suspend fun applyBehavior(behavior: NetworkBehavior) {

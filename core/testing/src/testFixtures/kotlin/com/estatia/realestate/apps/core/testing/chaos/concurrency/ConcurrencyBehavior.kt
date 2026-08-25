@@ -4,6 +4,7 @@ package com.estatia.realestate.apps.core.testing.chaos.concurrency
  * Represents chaotic concurrency scenarios for adversarial testing.
  */
 sealed interface ConcurrencyBehavior {
+    data object Success : ConcurrencyBehavior
     data object ConcurrentMutation : ConcurrencyBehavior
     data object OutOfOrderResponse : ConcurrencyBehavior
     data object StaleResult : ConcurrencyBehavior

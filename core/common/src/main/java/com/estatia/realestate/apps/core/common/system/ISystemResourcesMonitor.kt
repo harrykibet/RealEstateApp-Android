@@ -1,0 +1,12 @@
+package com.estatia.realestate.apps.core.common.system
+
+import kotlinx.coroutines.flow.StateFlow
+
+/**
+ * Interface for monitoring system resource signals.
+ */
+interface ISystemResourcesMonitor {
+    val memoryTrimLevel: StateFlow<Int>
+    val isAppVisible: StateFlow<Boolean>
+    val isInteractive: StateFlow<Boolean>
+}

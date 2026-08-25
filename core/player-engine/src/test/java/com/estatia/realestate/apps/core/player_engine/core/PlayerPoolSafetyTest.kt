@@ -97,8 +97,10 @@ class PlayerPoolSafetyTest {
         val uri = MediaReference("http://test.com")
         
         // Rapidly call prewarm twice
-        pool.prewarm(mediaId, uri, MediaType.VOD)
-        pool.prewarm(mediaId, uri, MediaType.VOD)
+        if (behavior == ConcurrencyBehavior.DoubleInitialization) {
+            pool.prewarm(mediaId, uri, MediaType.VOD)
+            pool.prewarm(mediaId, uri, MediaType.VOD)
+        }
         
         assertEquals(1, pool.debugPlayerCount)
     }

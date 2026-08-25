@@ -4,6 +4,7 @@ package com.estatia.realestate.apps.core.testing.chaos.time
  * Represents chaotic time scenarios for adversarial testing.
  */
 sealed interface TimeBehavior {
+    data object Success : TimeBehavior
     data object ClockSkipForward : TimeBehavior
     data object ClockSkipBackward : TimeBehavior
     data object FrozenClock : TimeBehavior

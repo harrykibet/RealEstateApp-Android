@@ -10,7 +10,6 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPolicy
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
-import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -93,18 +92,15 @@ class PlayerPoolTest {
     }
 
     @Test
-    fun `pool handles memory exhaustion chaos gracefully`() = runTest {
-        // 🧪 Chaos Scenario: Memory Exhausted
-        println("Testing behavior: ${TestFailure.MemoryExhausted}")
-        
+    fun `pool handles memory exhaustion gracefully`() = runTest {
         val uri = MediaReference("http://test.com")
-        // Policy would normally return 1 in this case
+        // Given: Memory is tight, pool size limited to 1
         every { sizingPolicy.calculateMaxPoolSize(any()) } returns 1
         
         pool.getOrCreate("id1", uri, MediaType.VOD)
         pool.getOrCreate("id2", uri, MediaType.VOD)
         
-        // Pool should have evicted immediately to stay at size 1
+        // Then: Pool should have evicted id1 to stay at size 1
         assertEquals(1, pool.debugPlayerCount)
     }
 

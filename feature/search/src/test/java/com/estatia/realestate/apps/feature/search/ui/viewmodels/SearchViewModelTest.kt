@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.generators.SearchQueryGenerator
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -104,5 +105,16 @@ class SearchViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         io.mockk.coVerify { engagementRepository.reportSearch(query, propertyId) }
+    }
+
+    @Test
+    fun `viewModel handles random generated queries safely`() = runTest {
+        val query = SearchQueryGenerator.generate()
+        coEvery { searchRepository.searchProperties(query, 20) } returns AppResult.Success(emptyList())
+        
+        viewModel.searchProperties(query)
+        testDispatcher.scheduler.advanceUntilIdle()
+        
+        viewModel.uiState.assertState { this is SearchUiState.Success && this.query == query }
     }
 }

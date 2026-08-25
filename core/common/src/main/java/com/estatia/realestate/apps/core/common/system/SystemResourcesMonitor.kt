@@ -32,18 +32,18 @@ import javax.inject.Singleton
 @Singleton
 class SystemResourcesMonitor @Inject constructor(
     @ApplicationContext private val context: Context
-) : ComponentCallbacks2, DefaultLifecycleObserver {
+) : ISystemResourcesMonitor, ComponentCallbacks2, DefaultLifecycleObserver {
 
     private val powerManager = context.getSystemService<PowerManager>()
 
     private val _memoryTrimLevel = MutableStateFlow(0)
-    val memoryTrimLevel: StateFlow<Int> = _memoryTrimLevel.asStateFlow()
+    override val memoryTrimLevel: StateFlow<Int> = _memoryTrimLevel.asStateFlow()
 
     private val _isAppVisible = MutableStateFlow(true)
-    val isAppVisible: StateFlow<Boolean> = _isAppVisible.asStateFlow()
+    override val isAppVisible: StateFlow<Boolean> = _isAppVisible.asStateFlow()
 
     private val _isInteractive = MutableStateFlow(powerManager?.isInteractive ?: true)
-    val isInteractive: StateFlow<Boolean> = _isInteractive.asStateFlow()
+    override val isInteractive: StateFlow<Boolean> = _isInteractive.asStateFlow()
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

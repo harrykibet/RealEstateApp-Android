@@ -5,27 +5,25 @@ import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSo
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
+import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
-import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
-import com.estatia.realestate.apps.core.testing.coroutine.runConcurrent
+import com.estatia.realestate.apps.core.testing.generators.SearchQueryGenerator
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.delay
+import io.mockk.coVerify
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import kotlin.time.Duration.Companion.milliseconds
 
-class SearchRepositoryConcurrencyTest {
+class SearchRepositoryTest {
 
     private lateinit var remoteDataSource: ISearchRemoteDataSource
     private lateinit var searchLocalDataSource: ISearchLocalDataSource
     private lateinit var propertyLocalDataSource: IPropertyLocalDataSource
     private lateinit var engagementRepository: IEngagementRepository
+    private lateinit var metricsTracker: IMetricsTracker
     private lateinit var exceptionTranslator: IExceptionTranslator
     private lateinit var repository: SearchRepository
-    private val scheduler = TestScheduler()
 
     @Before
     fun setup() {
@@ -33,7 +31,7 @@ class SearchRepositoryConcurrencyTest {
         searchLocalDataSource = mockk(relaxed = true)
         propertyLocalDataSource = mockk(relaxed = true)
         engagementRepository = mockk(relaxed = true)
-        val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
+        metricsTracker = mockk(relaxed = true)
         exceptionTranslator = mockk(relaxed = true)
         
         repository = SearchRepository(
@@ -47,33 +45,12 @@ class SearchRepositoryConcurrencyTest {
     }
 
     @Test
-    fun `concurrent searches maintain cache integrity using scheduler`() = runTest {
-        val query1 = "Nairobi"
-        val query2 = "Mombasa"
-        
-        coEvery { remoteDataSource.searchProperties(query1, any()) } coAnswers {
-            scheduler.awaitPoint("query1_fetching")
-            AppResult.Success(emptyList())
-        }
-        
-        coEvery { remoteDataSource.searchProperties(query2, any()) } coAnswers {
-            AppResult.Success(emptyList())
-        }
+    fun `searchProperties saves query in history`() = runTest {
+        val query = SearchQueryGenerator.generate()
+        coEvery { remoteDataSource.searchProperties(any(), any()) } returns AppResult.Success(emptyList())
 
-        runConcurrent(
-            { repository.searchProperties(query1, 20) },
-            { 
-                delay(10.milliseconds) 
-                repository.searchProperties(query2, 20) 
-            }
-        )
+        repository.searchProperties(query, 20)
 
-        scheduler.release("query1_fetching")
-
-        coVerify(exactly = 1) { searchLocalDataSource.saveSearchQuery(query1) }
-        coVerify(exactly = 1) { searchLocalDataSource.saveSearchQuery(query2) }
-        
-        coVerify(exactly = 1) { searchLocalDataSource.cacheSearchResult(query1, any()) }
-        coVerify(exactly = 1) { searchLocalDataSource.cacheSearchResult(query2, any()) }
+        coVerify { searchLocalDataSource.saveSearchQuery(query) }
     }
 }

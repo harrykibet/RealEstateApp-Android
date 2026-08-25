@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ApiKeyValidator
 import com.estatia.realestate.apps.core.network.utils.ServiceNames
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException.InvalidApiKey as InvalidApiKeyException
+import com.estatia.realestate.apps.core.testing.chaos.input.ChaosInputGenerator
 import com.estatia.realestate.apps.core.testing.chaos.input.InputBehavior
 import io.mockk.*
 import org.junit.jupiter.api.*
@@ -31,24 +32,20 @@ class ApiKeyValidatorTest {
     }
 
     @Test
-    fun `validate should throw exception when API key is empty`() {
-        // 🧪 Chaos Scenario: Empty Input
-        val behavior = InputBehavior.EmptyInput
-        
+    fun `validate should throw exception when API key is empty using chaos generator`() {
+        val emptyKey = ChaosInputGenerator.generateString(InputBehavior.EmptyInput)!!
         val exception = assertThrows(InvalidApiKeyException::class.java) {
-            apiKeyValidator.validate("", null)
+            apiKeyValidator.validate(emptyKey, null)
         }
         Assertions.assertEquals("Invalid API key : API key cannot be empty + null", exception.message)
     }
 
     @Test
-    fun `validate handles unicode chaos gracefully`() {
-        // 🧪 Chaos Scenario: Unicode Input
-        val behavior = InputBehavior.UnicodeChaos
-        val key = "AIzaSyD12345678901234567890123456789ABC\uD83D\uDCA3"
+    fun `validate handles unicode input chaos gracefully`() {
+        val unicodeKey = ChaosInputGenerator.generateString(InputBehavior.UnicodeChaos)!!
         
         assertThrows(InvalidApiKeyException::class.java) {
-            apiKeyValidator.validate(key, ServiceNames.AUTH)
+            apiKeyValidator.validate(unicodeKey, ServiceNames.AUTH)
         }
     }
 

@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.core.network.core
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
+import com.estatia.realestate.apps.core.testing.chaos.time.ChaosClock
+import com.estatia.realestate.apps.core.testing.chaos.time.TimeBehavior
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.every
 import io.mockk.mockk
@@ -17,11 +19,12 @@ class ExponentialRetryPolicyChaosTest {
     private lateinit var exceptionMapper: IExceptionMapper
     private lateinit var retryPolicy: ExponentialRetryPolicy
     private val testClock = TestClock(0L)
+    private val chaosClock = ChaosClock(testClock)
 
     @Before
     fun setup() {
         exceptionMapper = mockk()
-        retryPolicy = ExponentialRetryPolicy(exceptionMapper, clock = { testClock.currentTimeMillis() })
+        retryPolicy = ExponentialRetryPolicy(exceptionMapper, clock = { chaosClock.currentTimeMillis() })
     }
 
     @Test
@@ -34,7 +37,7 @@ class ExponentialRetryPolicyChaosTest {
             multiplier = 2.0
         )
 
-        val behaviors = listOf(
+        val failures = listOf(
             NetworkBehavior.Timeout,
             NetworkBehavior.Timeout,
             NetworkBehavior.Success
@@ -44,7 +47,7 @@ class ExponentialRetryPolicyChaosTest {
         every { exceptionMapper.map(any()) } returns NetworkException.Timeout
 
         val result = retryPolicy.execute(config) {
-            when (behaviors[callCount++]) {
+            when (failures[callCount++]) {
                 NetworkBehavior.Timeout -> throw IOException("Timeout")
                 else -> "Success"
             }
@@ -84,9 +87,7 @@ class ExponentialRetryPolicyChaosTest {
 
     @Test
     fun `retry policy handles server success but client timeout chaos`() = runTest {
-        // 🧪 Adversarial Behavior: Server processed but client timed out
-        val behavior = NetworkBehavior.ServerSuccessClientTimeout
-        
+        // 🧪 Chaos Scenario: Server processed but client timed out
         val config = RetryConfig(name = "test", maxAttempts = 2, initialDelayMs = 10, maxDelayMs = 100, multiplier = 2.0)
         every { exceptionMapper.map(any()) } returns NetworkException.Timeout
         
@@ -97,6 +98,18 @@ class ExponentialRetryPolicyChaosTest {
             "Recovered"
         }
         
+        assertEquals("Recovered", result)
+    }
+
+    @Test
+    fun `retry policy handles clock skew chaos safely`() = runTest {
+        // 🧪 Chaos Scenario: Clock Skew
+        chaosClock.setNextBehavior(TimeBehavior.ClockSkew)
+        
+        val config = RetryConfig(name = "test", maxAttempts = 2, initialDelayMs = 10, maxDelayMs = 100, multiplier = 2.0)
+        every { exceptionMapper.map(any()) } returns NetworkException.Timeout
+        
+        val result = retryPolicy.execute(config) { "Recovered" }
         assertEquals("Recovered", result)
     }
 }

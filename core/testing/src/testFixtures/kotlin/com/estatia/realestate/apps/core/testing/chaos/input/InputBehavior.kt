@@ -4,6 +4,7 @@ package com.estatia.realestate.apps.core.testing.chaos.input
  * Represents chaotic input scenarios for adversarial testing.
  */
 sealed interface InputBehavior {
+    data object Success : InputBehavior
     data object NullInput : InputBehavior
     data object EmptyInput : InputBehavior
     data object BlankInput : InputBehavior

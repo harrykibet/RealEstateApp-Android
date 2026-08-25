@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.localization
 
 import com.estatia.realestate.apps.core.localization.implementation.AndroidNumberFormatter
-import com.estatia.realestate.apps.core.testing.chaos.input.InputBehavior
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.Locale
@@ -18,12 +17,9 @@ class NumberFormatterTest {
     }
 
     @Test
-    fun `formatCompactNumber handles extreme value chaos`() {
-        // 🧪 Chaos Scenario: Maximum and Negative Values
-        println("Testing behavior: ${InputBehavior.MaximumValues}")
+    fun `formatCompactNumber handles extreme values safely`() {
         assertEquals("2.1B", formatter.formatCompactNumber(Int.MAX_VALUE))
         
-        println("Testing behavior: ${InputBehavior.NegativeValue}")
         // Implementation dependent, but should not crash
         formatter.formatCompactNumber(-100)
     }

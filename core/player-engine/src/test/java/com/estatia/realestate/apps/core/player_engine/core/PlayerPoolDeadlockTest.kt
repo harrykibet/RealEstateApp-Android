@@ -93,15 +93,17 @@ class PlayerPoolDeadlockTest {
 
     @Test
     fun `urgent request promotes in-flight non-urgent request and prevents deadlock chaos`() = runTest {
-        // 🧪 Adversarial Behavior: Concurrent Request on Same Resource
+        // 🧪 Chaos Scenario: Concurrent Mutation
         val behavior = ConcurrencyBehavior.ConcurrentMutation
-        println("Testing resilience against $behavior")
-
+        
         val mediaId = "race_id"
         val uri = MediaReference("http://test.com")
         
         coEvery { configurationFactory.create(mediaId, any(), any(), any(), any(), any()) } coAnswers {
-            delay(1000.milliseconds) 
+            // Simulate slow creation to trigger the race
+            if (behavior == ConcurrencyBehavior.ConcurrentMutation) {
+                delay(1000.milliseconds) 
+            }
             mockk(relaxed = true)
         }
         

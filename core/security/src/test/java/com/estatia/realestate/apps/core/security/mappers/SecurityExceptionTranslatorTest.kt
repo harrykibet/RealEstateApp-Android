@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.security.mappers
 
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
-import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.security.InvalidKeyException
@@ -48,10 +47,6 @@ class SecurityExceptionTranslatorTest {
 
     @Test
     fun `translate unknown Exception returns default fallback`() {
-        // 🧪 Adversarial Behavior: Unexpected Exception during Crypto
-        val behavior = AuthBehavior.SessionRestorationFailure
-        println("Testing mapping for: $behavior")
-        
         val exception = RuntimeException("Unknown crypto error")
         val result = translator.translate(exception, SecurityException.KeyGenerationFailed)
         assertEquals(SecurityException.KeyGenerationFailed, result)

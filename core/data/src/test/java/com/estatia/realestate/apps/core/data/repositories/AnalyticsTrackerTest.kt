@@ -8,9 +8,9 @@ import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataS
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
-import com.estatia.realestate.apps.core.testing.chaos.filesystem.ChaosFileSystem
-import com.estatia.realestate.apps.core.testing.fake.filesystem.FakeFileSystem
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Before
@@ -25,8 +25,6 @@ class AnalyticsTrackerTest {
     private lateinit var context: Context
     private val json = Json { ignoreUnknownKeys = true }
     private lateinit var analyticsTracker: AnalyticsTracker
-    
-    private val chaosFs = ChaosFileSystem(FakeFileSystem())
 
     @Before
     fun setup() {

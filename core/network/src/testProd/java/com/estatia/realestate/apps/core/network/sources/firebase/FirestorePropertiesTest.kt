@@ -3,13 +3,11 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
-import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
-import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
-import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
-import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
+import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
+import com.estatia.realestate.apps.core.testing.scenarios.EstatiaTestScenario
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
@@ -17,7 +15,6 @@ import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
@@ -29,7 +26,7 @@ class FirestorePropertiesTest {
     private lateinit var storage: FirebaseStorage
     private lateinit var networkClient: INetworkClient
     private lateinit var firestoreProperties: FirestoreProperties
-    private val chaosController = NetworkChaosController()
+    private val scenario = EstatiaTestScenario.networkTimeoutRetry()
 
     @Before
     fun setup() {
@@ -44,6 +41,8 @@ class FirestorePropertiesTest {
         } coAnswers {
             val apiCall = secondArg<suspend () -> Any?>()
             try {
+                // 🧪 Wire Chaos Scenario
+                scenario.networkChaos.executeNext()
                 AppResult.Success(apiCall())
             } catch (e: Exception) {
                 AppResult.Error(NetworkException.Unknown(e))
@@ -52,11 +51,8 @@ class FirestorePropertiesTest {
     }
 
     @Test
-    fun `fetchLikedProperties handles transient network timeouts`() = runTest {
+    fun `fetchLikedProperties handles transient network timeouts using scenario`() = runTest {
         mockkStatic("kotlinx.coroutines.tasks.TasksKt")
-        
-        // 🧪 Scripted Chaos: 1. Timeout -> 2. Success
-        chaosController.script(NetworkBehavior.Timeout, NetworkBehavior.Success)
         
         val userId = "user123"
         val likedCollRef = mockk<CollectionReference>()
@@ -79,14 +75,23 @@ class FirestorePropertiesTest {
         }
         every { likedSnapshot.documents } returns emptyList()
 
-        // Verify that the repository handles the internal exception from await() 
-        // when called through networkClient.execute (simulated retry behavior would happen here)
+        // 🧪 The scenario is already pre-configured for Timeout -> Success
         val result = firestoreProperties.fetchLikedProperties(userId)
         
         // If the real networkClient doesn't retry, it should be an Error
         assert(result is AppResult.Error)
 
         unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
+    }
+
+    @Test
+    fun `fetchLikedProperties handles malformed JSON server chaos`() = runTest {
+        // 🧪 Chaos Scenario: Server returns malformed response
+        scenario.networkChaos.setServerScenario(ServerScenario.MalformedJson)
+        
+        val result = firestoreProperties.fetchLikedProperties("user123")
+        
+        assert(result is AppResult.Error)
     }
 
     private fun createMockPropertyDoc(id: String): QueryDocumentSnapshot {

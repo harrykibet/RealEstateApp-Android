@@ -1,13 +1,13 @@
 package com.estatia.realestate.apps.core.common.system
 
 import com.estatia.realestate.apps.core.testing.chaos.filesystem.ChaosFileSystem
+import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
 import com.estatia.realestate.apps.core.testing.fake.filesystem.FakeFileSystem
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.io.File
 import java.nio.file.Files
 
 class FileUtilsTest {
@@ -32,9 +32,9 @@ class FileUtilsTest {
     }
 
     @Test
-    fun `doesFileExist returns false for non-existing file using platform models`() = runTest {
+    fun `doesFileExist returns false for non-existing file`() = runTest {
         // 🧪 Chaos Scenario: Missing File
-        chaosFs.failNext(ChaosFileSystem.FileSystemFailure.MissingFile)
+        chaosFs.failNext(TestFailure.FileMissing)
         
         assertFalse(FileUtils.doesFileExist("/path/to/non/existing/file"))
     }
@@ -51,11 +51,7 @@ class FileUtilsTest {
     }
 
     @Test
-    fun `deleteFile handles disk pressure scenario successfully`() = runTest {
-        // 🧪 Chaos Scenario: Disk Full
-        val behavior = ChaosFileSystem.FileSystemFailure.DiskFull
-        println("Simulating system stability under $behavior pressure")
-        
+    fun `deleteFile handles null file safely`() = runTest {
         val result = FileUtils.deleteFile(null)
         assertFalse(result)
     }

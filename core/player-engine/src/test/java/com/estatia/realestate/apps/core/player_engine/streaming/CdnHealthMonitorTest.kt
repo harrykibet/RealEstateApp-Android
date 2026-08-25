@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
-import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -69,7 +68,6 @@ class CdnHealthMonitorTest {
     @Test
     fun `monitor handles measurement timeout chaos gracefully`() = runTest(testDispatcher) {
         // 🧪 Chaos Scenario: Latency measurement times out
-        val behavior = NetworkBehavior.Timeout
         coEvery { measurer.measure(any(), any()) } throws java.net.SocketTimeoutException("Timeout")
 
         monitor.refreshIfStale(listOf(endpoint))

@@ -7,8 +7,6 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
-import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleBehavior
-import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -92,10 +90,7 @@ class PlayerManagerTest {
     }
 
     @Test
-    fun `player management handles rapid navigation away chaos`() = testScope.runTest {
-        // 🧪 Chaos Scenario: Navigation Away during playback initialization
-        println("Testing behavior: ${LifecycleBehavior.NavigationAway}")
-        
+    fun `player management handles rapid navigation away safely`() = testScope.runTest {
         val mediaId = "media_race"
         playerManager.play(mediaId, MediaReference(""), MediaType.VOD)
         

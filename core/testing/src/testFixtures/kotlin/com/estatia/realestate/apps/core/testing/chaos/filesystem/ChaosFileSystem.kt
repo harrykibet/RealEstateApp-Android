@@ -9,13 +9,13 @@ import java.io.IOException
  */
 class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delegate {
 
-    private var nextFailure: FileSystemFailure? = null
+    private var nextBehavior: FileSystemBehavior? = null
 
     /**
      * Script the next operation to fail.
      */
-    fun failNext(failure: FileSystemFailure) {
-        nextFailure = failure
+    fun failNext(behavior: FileSystemBehavior) {
+        nextBehavior = behavior
     }
 
     override suspend fun writeBytes(file: File, bytes: ByteArray) {
@@ -29,36 +29,21 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem by delega
     }
 
     private fun checkFailure() {
-        when (nextFailure) {
-            FileSystemFailure.DiskFull -> throw IOException("No space left on device (Chaos)")
-            FileSystemFailure.PermissionDenied -> throw IOException("Permission denied (Chaos)")
-            FileSystemFailure.MissingFile -> throw IOException("File not found (Chaos)")
-            FileSystemFailure.FileDisappearsDuringOp -> throw IOException("File disappeared (Chaos)")
-            FileSystemFailure.CorruptFile -> throw IOException("Corrupt file data (Chaos)")
-            FileSystemFailure.ZeroByteFile -> throw IOException("Zero-byte file (Chaos)")
-            FileSystemFailure.UnsupportedFormat -> throw IOException("Unsupported media format (Chaos)")
-            FileSystemFailure.WrongMimeType -> throw IOException("Wrong MIME type (Chaos)")
-            FileSystemFailure.PartialFile -> throw IOException("Partial file data (Chaos)")
-            FileSystemFailure.FileChangesWhileReading -> throw IOException("File content changed while reading (Chaos)")
-            FileSystemFailure.VeryLargeFile -> throw IOException("File size exceeds buffer limits (Chaos)")
-            FileSystemFailure.IoFailure -> throw IOException("General I/O failure (Chaos)")
-            null -> Unit
+        when (nextBehavior) {
+            FileSystemBehavior.DiskFull -> throw IOException("No space left on device (Chaos)")
+            FileSystemBehavior.PermissionDenied -> throw IOException("Permission denied (Chaos)")
+            FileSystemBehavior.FileMissing -> throw IOException("File not found (Chaos)")
+            FileSystemBehavior.FileDisappearsDuringOp -> throw IOException("File disappeared (Chaos)")
+            FileSystemBehavior.CorruptFile -> throw IOException("Corrupt file data (Chaos)")
+            FileSystemBehavior.ZeroByteFile -> throw IOException("Zero-byte file (Chaos)")
+            FileSystemBehavior.UnsupportedFormat -> throw IOException("Unsupported media format (Chaos)")
+            FileSystemBehavior.WrongMimeType -> throw IOException("Wrong MIME type (Chaos)")
+            FileSystemBehavior.PartialFile -> throw IOException("Partial file data (Chaos)")
+            FileSystemBehavior.FileChangesWhileReading -> throw IOException("File content changed while reading (Chaos)")
+            FileSystemBehavior.VeryLargeFile -> throw IOException("File size exceeds buffer limits (Chaos)")
+            FileSystemBehavior.IoFailure -> throw IOException("General I/O failure (Chaos)")
+            FileSystemBehavior.Success, null -> Unit
         }
-        nextFailure = null
-    }
-
-    sealed interface FileSystemFailure {
-        data object DiskFull : FileSystemFailure
-        data object PermissionDenied : FileSystemFailure
-        data object MissingFile : FileSystemFailure
-        data object FileDisappearsDuringOp : FileSystemFailure
-        data object CorruptFile : FileSystemFailure
-        data object ZeroByteFile : FileSystemFailure
-        data object UnsupportedFormat : FileSystemFailure
-        data object WrongMimeType : FileSystemFailure
-        data object PartialFile : FileSystemFailure
-        data object FileChangesWhileReading : FileSystemFailure
-        data object VeryLargeFile : FileSystemFailure
-        data object IoFailure : FileSystemFailure
+        nextBehavior = null
     }
 }

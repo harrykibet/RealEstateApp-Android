@@ -7,7 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.system.BatteryState
-import com.estatia.realestate.apps.core.common.system.SystemResourcesMonitor
+import com.estatia.realestate.apps.core.common.system.ISystemResourcesMonitor
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
@@ -36,7 +36,7 @@ class EnvironmentCoordinator @Inject constructor(
     private val batteryManager: IBatteryManager,
     private val bandwidthMeter: BandwidthMeter,
     private val connectivityManager: ConnectivityManager,
-    private val resourcesMonitor: SystemResourcesMonitor
+    private val resourcesMonitor: ISystemResourcesMonitor
 ) {
 
     private val _environment = MutableStateFlow(

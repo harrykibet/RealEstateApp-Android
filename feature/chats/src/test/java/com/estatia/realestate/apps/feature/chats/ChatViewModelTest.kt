@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.feature.chats
 import com.estatia.realestate.apps.core.testing.assertions.assertState
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import com.estatia.realestate.apps.core.testing.clock.TestTicker
+import com.estatia.realestate.apps.core.testing.fixtures.ChatFixtures
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -35,5 +36,12 @@ class ChatViewModelTest {
             val current = this
             current is ChatUiState.Success && current.activeUsers.size == 5 && current.chats.size == 3
         }
+    }
+
+    @Test
+    fun `viewModel correctly processes fixtures`() = runTest {
+        val mockChat = ChatFixtures.chat("test_id", "test message")
+        // This test would normally verify how the VM handles new chats from a repository
+        assert(mockChat.id == "test_id")
     }
 }

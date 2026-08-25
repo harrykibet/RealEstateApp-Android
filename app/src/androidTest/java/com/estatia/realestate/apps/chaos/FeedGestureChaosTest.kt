@@ -6,7 +6,6 @@ import androidx.test.uiautomator.UiDevice
 import com.estatia.realestate.apps.MainActivity
 import com.estatia.realestate.apps.core.player_engine.core.PlayerPool
 import com.estatia.realestate.apps.core.player_engine.core.PlayerManager
-import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertFalse
@@ -41,10 +40,6 @@ class FeedGestureChaosTest {
 
     @Test
     fun fastFlickThroughFeed() {
-        // 🧪 Adversarial Behavior: Rapid user interaction
-        val behavior = ConcurrencyBehavior.OutOfOrderResponse
-        println("Simulating user flick chaos under $behavior constraints")
-
         val width = device.displayWidth
         val height = device.displayHeight
         val centerX = width / 2
@@ -67,9 +62,6 @@ class FeedGestureChaosTest {
 
     @Test
     fun rapidReversalScroll() {
-        // 🧪 Adversarial Behavior: Cancellation Races
-        val behavior = ConcurrencyBehavior.CancellationRace
-        
         val width = device.displayWidth
         val height = device.displayHeight
         val centerX = width / 2

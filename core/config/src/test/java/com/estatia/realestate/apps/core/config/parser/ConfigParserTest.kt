@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.config.parser
 
-import com.estatia.realestate.apps.core.testing.chaos.input.InputBehavior
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -51,9 +50,7 @@ class ConfigParserTest {
     }
 
     @Test
-    fun `parse handles malformed input chaos gracefully`() {
-        // 🧪 Chaos Scenario: Unexpected Schema
-        println("Testing input behavior: ${InputBehavior.UnexpectedSchema}")
+    fun `parse handles malformed input safely`() {
         val json = """{"some_random_key": 123}"""
         
         try {
@@ -64,9 +61,7 @@ class ConfigParserTest {
     }
 
     @Test
-    fun `parse handles empty input scenarios`() {
-        // 🧪 Chaos Scenario: Empty Input
-        println("Testing input behavior: ${InputBehavior.EmptyInput}")
+    fun `parse handles empty input scenarios safely`() {
         val json = ""
         
         try {

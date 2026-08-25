@@ -6,8 +6,8 @@ This module provides a unified, **adversarial test platform** for the Estatia ap
 
 ### 1. Adversarial Chaos Injection
 Instead of testing "happy paths," this platform provides tools to inject production-grade failures at logical boundaries.
-- **`NetworkChaosController`**: Script complex connectivity sequences (e.g., `Timeout` -> `HttpError(503)` -> `Success`) to verify backoff and retry logic.
-- **`ChaosFileSystem`**: Simulate `DiskFull`, `FileNotFound`, or `PermissionDenied` errors to test persistence resilience.
+- **`NetworkChaosController`**: Script complex connectivity sequences (e.g., `TestFailure.Timeout` -> `TestFailure.Http(503)` -> `TestFailure.Success`) to verify backoff and retry logic.
+- **`ChaosFileSystem`**: Simulate `TestFailure.DiskFull`, `TestFailure.FileMissing`, or `TestFailure.PermissionDenied` errors to test persistence resilience.
 - **`ChaosStreamingPipeline`**: Inject segment-level failures in the media engine to test buffer stalls and watchdog recovery.
 - **`ChaosEnvironmentController`**: Force extreme hardware states like **High Thermal Throttling** or **Low Battery** to verify adaptive UI scaling.
 
@@ -56,7 +56,7 @@ dependencies {
 @Test
 fun `handles transient network failure`() = runTest {
     // 1. Script the failure
-    chaosController.script(NetworkBehavior.Timeout, NetworkBehavior.Success)
+    chaosController.script(TestFailure.Timeout, TestFailure.Success)
     
     // 2. Perform operation
     viewModel.refresh()

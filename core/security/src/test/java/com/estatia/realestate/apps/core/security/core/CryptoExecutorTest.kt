@@ -5,7 +5,6 @@ import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.security.interfaces.ISecurityExceptionTranslator
 import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
-import com.estatia.realestate.apps.core.testing.chaos.models.TestFailure
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -29,7 +28,7 @@ class CryptoExecutorTest {
     }
 
     @Test
-    fun `execute success returns Success result using platform assertions`() = runTest {
+    fun `execute success returns Success result`() = runTest {
         val expected = "result"
         val result = executor.execute(SecurityException.KeyGenerationFailed) {
             expected
@@ -40,10 +39,7 @@ class CryptoExecutorTest {
     }
 
     @Test
-    fun `execute failure handles unexpected chaos gracefully`() = runTest {
-        // 🧪 Adversarial Behavior: Corrupted Data during crypto
-        println("Testing behavior: ${TestFailure.CorruptedData}")
-        
+    fun `execute failure handles unexpected exceptions gracefully`() = runTest {
         val originalException = RuntimeException("Corrupted")
         val translatedException = SecurityException.KeyRetrievalFailed
         every { translator.translate(originalException, any()) } returns translatedException

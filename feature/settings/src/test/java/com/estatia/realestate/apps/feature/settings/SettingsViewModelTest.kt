@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.testing.assertions.assertState
-import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleBehavior
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,14 +36,10 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `viewModel handles state restoration after process death chaos`() {
-        // 🧪 Chaos Scenario: Process Death with State Restoration
-        val behavior = LifecycleBehavior.ProcessDeath
-        println("Simulating system restoration after $behavior")
-
+    fun `viewModel handles state restoration after process death`() {
         val savedStateHandle = SavedStateHandle(mapOf("some_key" to "restored_value"))
         // ViewModel would normally consume this handle
-        val vm = SettingsViewModel(userRepository)
+        SettingsViewModel(userRepository)
         // Verify consistency
     }
 }
