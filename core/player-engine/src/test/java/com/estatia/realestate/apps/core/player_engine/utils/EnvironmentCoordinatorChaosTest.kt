@@ -44,7 +44,7 @@ class EnvironmentCoordinatorChaosTest {
         connectivityManager = mockk(relaxed = true)
         
         resourceController = ChaosResourceController()
-        chaosMonitor = ChaosResourcesMonitor(resourceController)
+        chaosMonitor = ChaosResourcesMonitor(resourceController, testScope)
         
         coordinator = EnvironmentCoordinator(
             networkStateProvider,
@@ -61,7 +61,6 @@ class EnvironmentCoordinatorChaosTest {
         
         // 🧪 Chaos Scenario: Critical Memory Pressure
         resourceController.memoryPressure = ChaosResourceController.MemoryPressure.Critical
-        chaosMonitor.sync()
         
         val state = coordinator.environment.first { it.memoryTrimLevel == 15 }
         assertEquals(15, state.memoryTrimLevel)
@@ -73,7 +72,6 @@ class EnvironmentCoordinatorChaosTest {
         
         // 🧪 Chaos Scenario: App backgrounded via controller
         resourceController.isAppVisible = false
-        chaosMonitor.sync()
         
         val state = coordinator.environment.first { !it.isAppVisible }
         assertEquals(false, state.isAppVisible)

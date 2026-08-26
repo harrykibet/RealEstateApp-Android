@@ -1,56 +1,56 @@
 package com.estatia.realestate.apps.core.testing.chaos.resources
 
+import com.estatia.realestate.apps.core.common.system.ISystemResourcesMonitor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
 /**
  * Controller for simulating application-level resource pressure signals and visibility states.
+ * Uses reactive flows to ensure that any changes are immediately propagated to observers.
  */
 class ChaosResourceController {
     
-    var memoryPressure: MemoryPressure = MemoryPressure.Normal
-    var cpuPressure: CpuPressure = CpuPressure.Normal
-    var threadPressure: ThreadPressure = ThreadPressure.Normal
-    var poolPressure: PoolPressure = PoolPressure.Normal
-    var queuePressure: QueuePressure = QueuePressure.Normal
-    var diskPressure: DiskPressure = DiskPressure.Normal
-    var workerPressure: WorkerPressure = WorkerPressure.Normal
+    private val _memoryPressure = MutableStateFlow<MemoryPressure>(MemoryPressure.Normal)
+    val memoryPressureFlow: StateFlow<MemoryPressure> = _memoryPressure.asStateFlow()
+    var memoryPressure: MemoryPressure
+        get() = _memoryPressure.value
+        set(value) { _memoryPressure.value = value }
+
+    private val _cpuPressure = MutableStateFlow(ISystemResourcesMonitor.CpuPressure.Normal)
+    val cpuPressureFlow: StateFlow<ISystemResourcesMonitor.CpuPressure> = _cpuPressure.asStateFlow()
+    var cpuPressure: ISystemResourcesMonitor.CpuPressure
+        get() = _cpuPressure.value
+        set(value) { _cpuPressure.value = value }
+
+    private val _diskPressure = MutableStateFlow(ISystemResourcesMonitor.DiskPressure.Normal)
+    val diskPressureFlow: StateFlow<ISystemResourcesMonitor.DiskPressure> = _diskPressure.asStateFlow()
+    var diskPressure: ISystemResourcesMonitor.DiskPressure
+        get() = _diskPressure.value
+        set(value) { _diskPressure.value = value }
+
+    private val _batteryStatus = MutableStateFlow(ISystemResourcesMonitor.BatteryStatus.Healthy)
+    val batteryStatusFlow: StateFlow<ISystemResourcesMonitor.BatteryStatus> = _batteryStatus.asStateFlow()
+    var batteryStatus: ISystemResourcesMonitor.BatteryStatus
+        get() = _batteryStatus.value
+        set(value) { _batteryStatus.value = value }
     
-    var isAppVisible: Boolean = true
-    var isInteractive: Boolean = true
+    private val _isAppVisible = MutableStateFlow(true)
+    val isAppVisibleFlow: StateFlow<Boolean> = _isAppVisible.asStateFlow()
+    var isAppVisible: Boolean
+        get() = _isAppVisible.value
+        set(value) { _isAppVisible.value = value }
+
+    private val _isInteractive = MutableStateFlow(true)
+    val isInteractiveFlow: StateFlow<Boolean> = _isInteractive.asStateFlow()
+    var isInteractive: Boolean
+        get() = _isInteractive.value
+        set(value) { _isInteractive.value = value }
     
     sealed interface MemoryPressure {
         data object Normal : MemoryPressure
         data object Low : MemoryPressure
         data object Critical : MemoryPressure
-    }
-
-    sealed interface CpuPressure {
-        data object Normal : CpuPressure
-        data object High : CpuPressure
-        data object ThermalThrottling : CpuPressure
-    }
-
-    sealed interface ThreadPressure {
-        data object Normal : ThreadPressure
-        data object Exhausted : ThreadPressure
-    }
-
-    sealed interface PoolPressure {
-        data object Normal : PoolPressure
-        data object Exhausted : PoolPressure
-    }
-
-    sealed interface QueuePressure {
-        data object Normal : QueuePressure
-        data object Saturated : QueuePressure
-    }
-
-    sealed interface DiskPressure {
-        data object Normal : DiskPressure
-        data object Exhausted : DiskPressure
-    }
-
-    sealed interface WorkerPressure {
-        data object Normal : WorkerPressure
-        data object Exhausted : WorkerPressure
     }
 
     sealed interface DataScale {

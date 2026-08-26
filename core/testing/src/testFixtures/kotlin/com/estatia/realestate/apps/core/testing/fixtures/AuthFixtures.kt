@@ -36,11 +36,4 @@ object AuthFixtures {
             isEmailVerified = isEmailVerified
         )
     }
-
-    @Deprecated("Use default() or build()", ReplaceWith("default()"))
-    fun authenticatedUser(
-        id: String = "user_123",
-        email: String = "test@example.com",
-        isEmailVerified: Boolean = true
-    ) = build(id, email, isEmailVerified)
 }

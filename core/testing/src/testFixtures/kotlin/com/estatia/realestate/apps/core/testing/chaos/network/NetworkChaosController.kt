@@ -80,7 +80,7 @@ class NetworkChaosController {
                 // to receive the 'success' acknowledgement.
                 throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
             }
-            is NetworkBehavior.InvalidBody -> Unit
+            is NetworkBehavior.InvalidBody -> throw IOException("HTTP 400 Bad Request (Chaos): ${behavior.payload}")
         }
     }
 }

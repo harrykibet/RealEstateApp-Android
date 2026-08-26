@@ -9,14 +9,19 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntit
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * In-memory fake implementation of [IPropertyRemoteDatasource] with scriptable chaos.
  * Supports realistic pagination logic using [PropertyCursor].
  */
-class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
+class FakePropertyRemoteDataSource(
+    private val concurrencyChaos: ConcurrencyChaosController = ConcurrencyChaosController(),
+    private val lifecycleChaos: LifecycleChaosController = LifecycleChaosController()
+) : IPropertyRemoteDatasource {
 
     private val storage = ConcurrentHashMap<String, PropertyEntityModel>()
     private var nextBehavior: DatabaseBehavior = DatabaseBehavior.Success
@@ -31,7 +36,7 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> {
-        checkChaos()
+        checkChaos("upload_property")
         val id = property.id.ifBlank { java.util.UUID.randomUUID().toString() }
         storage[id] = property.copy(id = id, contact = contactInfo)
         return AppResult.Success(id)
@@ -41,7 +46,7 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
         propertyId: String,
         updates: PropertyUpdateFields
     ): AppResult<Unit> {
-        checkChaos()
+        checkChaos("update_property")
         val existing = storage[propertyId] ?: return AppResult.Error(DatabaseException.NotFound)
         storage[propertyId] = existing.copy(
             title = updates.title ?: existing.title,
@@ -51,39 +56,39 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
     }
 
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> {
-        checkChaos()
+        checkChaos("delete_property")
         storage.remove(propertyId)
         return AppResult.Success(Unit)
     }
 
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> {
-        checkChaos()
+        checkChaos("get_property_by_id")
         return storage[propertyId]?.let { AppResult.Success(it) } 
             ?: AppResult.Error(DatabaseException.NotFound)
     }
 
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> {
-        checkChaos()
+        checkChaos("fetch_liked_properties")
         return AppResult.Success(storage.values.toList())
     }
 
     override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> {
-        checkChaos()
+        checkChaos("like_property")
         return AppResult.Success(Unit)
     }
 
     override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> {
-        checkChaos()
+        checkChaos("unlike_property")
         return AppResult.Success(Unit)
     }
 
     override suspend fun recordView(propertyId: String): AppResult<Unit> {
-        checkChaos()
+        checkChaos("record_view")
         return AppResult.Success(Unit)
     }
 
     override suspend fun recordShare(propertyId: String): AppResult<Unit> {
-        checkChaos()
+        checkChaos("record_share")
         return AppResult.Success(Unit)
     }
 
@@ -92,7 +97,7 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyRemotePage> {
-        checkChaos()
+        checkChaos("fetch_properties_paginated")
 
         val allProperties = storage.values
             .sortedByDescending { it.createdAt }
@@ -117,13 +122,29 @@ class FakePropertyRemoteDataSource : IPropertyRemoteDatasource {
         return AppResult.Success(PropertyRemotePage(pageItems, nextCursor))
     }
 
-    private fun checkChaos() {
-        when (nextBehavior) {
+    private suspend fun checkChaos(point: String) {
+        lifecycleChaos.checkChaos()
+        concurrencyChaos.checkChaos(point)
+
+        val behavior = nextBehavior
+        nextBehavior = DatabaseBehavior.Success
+        
+        when (behavior) {
             DatabaseBehavior.Unavailable -> throw java.io.IOException("Remote service unavailable (Chaos)")
             DatabaseBehavior.Corrupted -> throw java.lang.RuntimeException("Data corruption (Chaos)")
+            DatabaseBehavior.Locked -> throw java.io.IOException("Database is locked (Chaos)")
+            DatabaseBehavior.ConstraintViolation -> throw java.lang.IllegalArgumentException("Constraint violation (Chaos)")
+            DatabaseBehavior.DiskFull -> throw java.io.IOException("No space left on device (Chaos)")
+            DatabaseBehavior.MigrationFailure -> throw java.lang.IllegalStateException("Migration failed (Chaos)")
+            DatabaseBehavior.SchemaMismatch -> throw java.lang.IllegalStateException("Schema mismatch (Chaos)")
+            DatabaseBehavior.DuplicateData -> throw java.lang.IllegalArgumentException("Duplicate entry (Chaos)")
+            DatabaseBehavior.ConcurrentWrites -> throw java.util.ConcurrentModificationException("Concurrent write detected (Chaos)")
+            DatabaseBehavior.TransactionFailure -> throw java.io.IOException("Transaction failed (Chaos)")
+            DatabaseBehavior.PartialTransaction -> throw java.io.IOException("Partial transaction committed (Chaos)")
+            DatabaseBehavior.ProcessDeathDuringTransaction -> throw java.lang.RuntimeException("Process died during transaction (Chaos)")
+            DatabaseBehavior.VeryLargeDataset -> Unit // Can be handled by populating more data
+            DatabaseBehavior.EmptyDataset -> storage.clear()
             DatabaseBehavior.Success -> Unit
-            else -> Unit
         }
-        nextBehavior = DatabaseBehavior.Success
     }
 }

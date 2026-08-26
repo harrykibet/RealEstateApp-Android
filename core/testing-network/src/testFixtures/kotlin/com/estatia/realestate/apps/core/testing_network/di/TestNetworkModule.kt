@@ -4,6 +4,8 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,11 +22,21 @@ object TestNetworkModule {
     @Provides
     @Singleton
     fun provideChaosNetworkClient(
-        chaosController: NetworkChaosController,
+        networkChaos: NetworkChaosController,
+        concurrencyChaos: ConcurrencyChaosController,
+        lifecycleChaos: LifecycleChaosController,
         exceptionMapper: IExceptionMapper
-    ): INetworkClient = ChaosNetworkClient(chaosController, exceptionMapper)
+    ): INetworkClient = ChaosNetworkClient(networkChaos, concurrencyChaos, lifecycleChaos, exceptionMapper)
 
     @Provides
     @Singleton
     fun provideNetworkChaosController(): NetworkChaosController = NetworkChaosController()
+
+    @Provides
+    @Singleton
+    fun provideConcurrencyChaosController(): ConcurrencyChaosController = ConcurrencyChaosController()
+
+    @Provides
+    @Singleton
+    fun provideLifecycleChaosController(): LifecycleChaosController = LifecycleChaosController()
 }

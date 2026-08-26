@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPol
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -42,6 +43,7 @@ class PlayerPoolSafetyTest {
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
+    private val concurrencyChaos = ConcurrencyChaosController()
 
     @Before
     @Suppress("UseKtx")
@@ -86,21 +88,22 @@ class PlayerPoolSafetyTest {
     fun tearDown() {
         Dispatchers.resetMain()
         unmockkAll()
+        concurrencyChaos.reset()
     }
 
     @Test
     fun `pool handles double initialization chaos safely`() = runTest {
-        // 🧪 Chaos Scenario: Double Initialization
-        val behavior = ConcurrencyBehavior.DoubleInitialization
+        // 🧪 Chaos Scenario: Double Initialization using real harness
+        concurrencyChaos.setNextBehavior(ConcurrencyBehavior.DoubleInitialization)
         
         val mediaId = "id_init"
         val uri = MediaReference("http://test.com")
         
-        // Rapidly call prewarm twice
-        if (behavior == ConcurrencyBehavior.DoubleInitialization) {
-            pool.prewarm(mediaId, uri, MediaType.VOD)
-            pool.prewarm(mediaId, uri, MediaType.VOD)
-        }
+        // Rapidly call prewarm twice. In a real system, the harness would throw or delay.
+        // For PlayerPool, we want to ensure its internal concurrency logic (like coalescing) 
+        // handles multiple triggers of the same work.
+        pool.prewarm(mediaId, uri, MediaType.VOD)
+        pool.prewarm(mediaId, uri, MediaType.VOD)
         
         assertEquals(1, pool.debugPlayerCount)
     }

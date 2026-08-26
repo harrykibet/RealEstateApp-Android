@@ -16,9 +16,17 @@ object ChaosInputGenerator {
             InputBehavior.BlankInput -> "   "
             InputBehavior.MalformedInput -> "malformed_!@#$%^&*"
             InputBehavior.OversizedInput -> "A".repeat(10_001)
+            InputBehavior.UnexpectedSchema -> "{\"unexpected\": \"field\"}"
+            InputBehavior.UnexpectedEnum -> "UNKNOWN_ENUM_VALUE"
+            InputBehavior.UnknownServerField -> "{\"new_server_field\": true, \"data\": \"$validDefault\"}"
+            InputBehavior.InvalidIdentifier -> "invalid-id-!!!"
+            InputBehavior.InvalidUrl -> "ftp://invalid-url"
+            InputBehavior.InvalidFileMetadata -> "{\"size\": -1, \"mime\": \"text/plain\"}"
             InputBehavior.UnicodeChaos -> "Unicode \uD83D\uDCA3 \u2623 \uD83D\uDD25"
-            InputBehavior.Success -> validDefault
-            else -> validDefault
+            InputBehavior.Success,
+            InputBehavior.NegativeValue,
+            InputBehavior.ZeroValue,
+            InputBehavior.MaximumValues -> validDefault
         }
     }
 

@@ -45,6 +45,15 @@ class SystemResourcesMonitor @Inject constructor(
     private val _isInteractive = MutableStateFlow(powerManager?.isInteractive ?: true)
     override val isInteractive: StateFlow<Boolean> = _isInteractive.asStateFlow()
 
+    private val _cpuPressure = MutableStateFlow(ISystemResourcesMonitor.CpuPressure.Normal)
+    override val cpuPressure: StateFlow<ISystemResourcesMonitor.CpuPressure> = _cpuPressure.asStateFlow()
+
+    private val _diskPressure = MutableStateFlow(ISystemResourcesMonitor.DiskPressure.Normal)
+    override val diskPressure: StateFlow<ISystemResourcesMonitor.DiskPressure> = _diskPressure.asStateFlow()
+
+    private val _batteryStatus = MutableStateFlow(ISystemResourcesMonitor.BatteryStatus.Healthy)
+    override val batteryStatus: StateFlow<ISystemResourcesMonitor.BatteryStatus> = _batteryStatus.asStateFlow()
+
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {

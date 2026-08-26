@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.IPlayerPoolSizingPol
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyBehavior
+import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +19,6 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -30,7 +30,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import javax.inject.Provider
-import kotlin.time.Duration.Companion.milliseconds
 
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,6 +44,7 @@ class PlayerPoolDeadlockTest {
     private lateinit var sizingPolicy: IPlayerPoolSizingPolicy
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
+    private val concurrencyChaos = ConcurrencyChaosController()
 
     @Before
     @Suppress("UseKtx")
@@ -89,21 +89,20 @@ class PlayerPoolDeadlockTest {
     fun tearDown() {
         Dispatchers.resetMain()
         unmockkAll()
+        concurrencyChaos.reset()
     }
 
     @Test
     fun `urgent request promotes in-flight non-urgent request and prevents deadlock chaos`() = runTest {
-        // 🧪 Chaos Scenario: Concurrent Mutation
-        val behavior = ConcurrencyBehavior.ConcurrentMutation
+        // 🧪 Chaos Scenario: Concurrent Mutation using real harness
+        concurrencyChaos.setNextBehavior(ConcurrencyBehavior.ConcurrentMutation)
         
         val mediaId = "race_id"
         val uri = MediaReference("http://test.com")
         
         coEvery { configurationFactory.create(mediaId, any(), any(), any(), any(), any()) } coAnswers {
-            // Simulate slow creation to trigger the race
-            if (behavior == ConcurrencyBehavior.ConcurrentMutation) {
-                delay(1000.milliseconds) 
-            }
+            // Use the real harness to widen the race window
+            concurrencyChaos.checkChaos("player_creation")
             mockk(relaxed = true)
         }
         
