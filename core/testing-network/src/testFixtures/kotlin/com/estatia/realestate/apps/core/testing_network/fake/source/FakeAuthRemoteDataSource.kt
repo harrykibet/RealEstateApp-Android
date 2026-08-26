@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.testing_network.fake.source
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
@@ -133,7 +134,7 @@ class FakeAuthRemoteDataSource(
             AuthBehavior.LogoutDuringRefresh -> throw AuthException.SessionExpired
             AuthBehavior.LogoutDuringRequest -> throw AuthException.SessionExpired
             AuthBehavior.AccountDisabled -> throw AuthException.UserNotFound
-            AuthBehavior.PermissionsRevoked -> throw AuthException.Unauthorized
+            AuthBehavior.PermissionsRevoked -> throw NetworkException.Unauthorized
             AuthBehavior.ProcessDeathDuringAuth -> throw IOException("Process death during auth (Chaos)")
             AuthBehavior.NetworkLostDuringRefresh -> throw IOException("Network lost during refresh (Chaos)")
             AuthBehavior.SessionRestorationFailure -> throw AuthException.SessionExpired

@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.data.repositories
 
 import android.app.Activity
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.data.mappers.auth.NetworkUserMapper
@@ -40,22 +42,34 @@ internal class AuthRepository @Inject constructor(
         email: String,
         password: String,
     ): AppResult<AuthUserDomainModel> {
-        return remoteDataSource.signUpWithEmail(email, password)
-            .map { networkUser ->
-                metricsTracker.incrementCounter("auth.signup.success")
-                NetworkUserMapper.fromEntity(networkUser)
-            }
+        return try {
+            remoteDataSource.signUpWithEmail(email, password)
+                .map { networkUser ->
+                    metricsTracker.incrementCounter("auth.signup.success")
+                    NetworkUserMapper.fromEntity(networkUser)
+                }
+        } catch (e: AuthException) {
+            AppResult.Error(e)
+        } catch (e: Exception) {
+            AppResult.Error(AuthException.Unknown(e))
+        }
     }
 
     override suspend fun signInWithEmail(
         email: String,
         password: String,
     ): AppResult<AuthUserDomainModel> {
-        return remoteDataSource.signInWithEmail(email, password)
-            .map { networkUser ->
-                metricsTracker.incrementCounter("auth.signin.success")
-                NetworkUserMapper.fromEntity(networkUser)
-            }
+        return try {
+            remoteDataSource.signInWithEmail(email, password)
+                .map { networkUser ->
+                    metricsTracker.incrementCounter("auth.signin.success")
+                    NetworkUserMapper.fromEntity(networkUser)
+                }
+        } catch (e: AuthException) {
+            AppResult.Error(e)
+        } catch (e: Exception) {
+            AppResult.Error(AuthException.Unknown(e))
+        }
     }
 
     override suspend fun signOut(): AppResult<Unit> {
