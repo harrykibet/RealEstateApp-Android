@@ -15,7 +15,7 @@ import javax.inject.Inject
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Provides 100% coverage for known network-layer failure modes.
  */
-internal class NetworkErrorMapper @Inject constructor()
+class NetworkErrorMapper @Inject constructor()
     : INetworkErrorMapper {
 
 

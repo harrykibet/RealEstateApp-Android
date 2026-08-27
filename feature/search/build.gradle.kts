@@ -20,4 +20,5 @@ dependencies {
 
     implementation(libs.media3.common)
 
+    testImplementation(projects.core.data)
 }

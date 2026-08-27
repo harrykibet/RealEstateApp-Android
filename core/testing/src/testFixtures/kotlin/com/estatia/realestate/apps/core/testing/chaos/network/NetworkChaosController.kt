@@ -53,6 +53,15 @@ class NetworkChaosController {
         applyBehavior(popNext())
     }
 
+    /**
+     * Clears the current script and resets to Success.
+     */
+    fun reset() {
+        script = emptyList()
+        serverScenario = ServerScenario.ValidResponse
+        currentIndex = 0
+    }
+
     private fun applyServerScenario(scenario: ServerScenario) {
         when (scenario) {
             ServerScenario.EmptyResponse -> throw IOException("Empty response (Chaos)")

@@ -4,18 +4,41 @@ import com.estatia.realestate.apps.core.testing.clock.TestClock
 
 /**
  * Adversarial decorator for [TestClock] that can simulate clock anomalies.
+ * 
+ * 🏎️ OPERATIONAL FIDELITY:
+ * Supports scripting a sequence of behaviors for complex time-anomaly scenarios
+ * (e.g., normal flow -> sudden jump -> frozen clock). Consistency with other chaos controllers
+ * ensures a predictable mental model for adversarial testing.
  */
 class ChaosClock(private val delegate: TestClock) {
 
-    private var nextBehavior: TimeBehavior = TimeBehavior.Success
+    private var script: List<TimeBehavior> = emptyList()
+    private var currentIndex = 0
 
+    /**
+     * Scripts a sequence of behaviors for subsequent [currentTimeMillis] calls.
+     */
+    fun script(vararg behaviors: TimeBehavior) {
+        script = behaviors.toList()
+        currentIndex = 0
+    }
+
+    /**
+     * Shortcut for scripting a single next behavior.
+     */
     fun setNextBehavior(behavior: TimeBehavior) {
-        nextBehavior = behavior
+        script(behavior)
     }
 
     fun currentTimeMillis(): Long {
+        val behavior = if (currentIndex < script.size) {
+            script[currentIndex++]
+        } else {
+            TimeBehavior.Success
+        }
+
         val base = delegate.currentTimeMillis()
-        val result = when (nextBehavior) {
+        return when (behavior) {
             TimeBehavior.ClockSkipForward -> base + 1_000_000L
             TimeBehavior.ClockSkipBackward -> base - 1_000_000L
             TimeBehavior.FrozenClock -> base
@@ -30,9 +53,17 @@ class ChaosClock(private val delegate: TestClock) {
             TimeBehavior.LongRunningOperation -> base + 300_000L
             TimeBehavior.Success -> base
         }
-        nextBehavior = TimeBehavior.Success
-        return result
+    }
+
+    /**
+     * Clears the current script and resets to Success.
+     */
+    fun reset() {
+        script = emptyList()
+        currentIndex = 0
     }
 
     fun advanceBy(millis: Long) = delegate.advanceBy(millis)
+    
+    fun set(millis: Long) = delegate.set(millis)
 }

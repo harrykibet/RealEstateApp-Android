@@ -12,13 +12,36 @@ class ChaosClockTest {
     private val chaosClock = ChaosClock(baseClock)
 
     @Test
-    fun `resets to Success after one call`() {
+    fun `resets to Success after script is exhausted`() {
         chaosClock.setNextBehavior(TimeBehavior.ClockSkipForward)
         val firstCall = chaosClock.currentTimeMillis()
         val secondCall = chaosClock.currentTimeMillis()
         
         assertEquals(1000L + 1_000_000L, firstCall)
         assertEquals(1000L, secondCall)
+    }
+
+    @Test
+    fun `honors script sequence across multiple calls`() {
+        chaosClock.script(
+            TimeBehavior.Success,
+            TimeBehavior.ClockSkipForward,
+            TimeBehavior.ClockSkipBackward,
+            TimeBehavior.Success
+        )
+
+        assertEquals(1000L, chaosClock.currentTimeMillis())               // Success
+        assertEquals(1000L + 1_000_000L, chaosClock.currentTimeMillis())  // Forward
+        assertEquals(1000L - 1_000_000L, chaosClock.currentTimeMillis())  // Backward
+        assertEquals(1000L, chaosClock.currentTimeMillis())               // Success
+        assertEquals(1000L, chaosClock.currentTimeMillis())               // Exhausted -> Success
+    }
+
+    @Test
+    fun `reset clears pending script`() {
+        chaosClock.script(TimeBehavior.ClockSkipForward)
+        chaosClock.reset()
+        assertEquals(1000L, chaosClock.currentTimeMillis())
     }
 
     @Test

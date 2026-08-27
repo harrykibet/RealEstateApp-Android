@@ -26,6 +26,7 @@ dependencies {
     testFixturesApi(projects.core.model)
     testFixturesApi(projects.core.common)
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.database)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.kotlinx.datetime)
     testFixturesApi(libs.junit.junit)

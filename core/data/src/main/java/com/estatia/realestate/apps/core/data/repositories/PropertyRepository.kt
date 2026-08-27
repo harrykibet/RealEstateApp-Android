@@ -45,7 +45,7 @@ private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
  * - Resilience: Implements multi-stage offline fallbacks for liked properties.
  * - Safety: Enforces on-device content moderation for all media uploads.
  */
-internal class PropertyRepository @Inject constructor(
+class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,
     private val userRepository: IUserRepository,

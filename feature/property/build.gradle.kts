@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.estatia.android.feature)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -18,6 +19,7 @@ dependencies {
 
     debugImplementation(testFixtures(projects.core.testing))
     testImplementation(testFixtures(projects.core.testingNetwork))
+    testImplementation(projects.core.data)
     androidTestImplementation(testFixtures(projects.core.testingNetwork))
 
     implementation(libs.play.services.location)

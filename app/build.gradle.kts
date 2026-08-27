@@ -1,14 +1,9 @@
- plugins {
+     plugins {
     alias(libs.plugins.estatia.android.application)
 }
 
 android {
     namespace = "com.estatia.realestate.apps"
-    buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
 }
 
  dokka {

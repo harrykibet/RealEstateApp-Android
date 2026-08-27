@@ -1,9 +1,12 @@
 package com.estatia.realestate.apps.feature.property.utils
 
+import android.os.Parcelable
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
 @Serializable
+@Parcelize
 data class AddPropertyDraft(
     val title: String = "",
     val description: String? = null,
@@ -35,4 +38,4 @@ data class AddPropertyDraft(
 
     val images: List<MediaReference> = emptyList(),
     val videos: List<MediaReference> = emptyList()
-)
+) : Parcelable

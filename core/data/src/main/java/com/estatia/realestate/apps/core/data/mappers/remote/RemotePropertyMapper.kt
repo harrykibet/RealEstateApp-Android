@@ -15,7 +15,7 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Surfaces "Untitled" for blank titles to avoid UI empty states.
  */
-internal object RemotePropertyMapper {
+object RemotePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {
         return PropertyDomainModel(

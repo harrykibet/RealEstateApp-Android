@@ -27,7 +27,7 @@ import javax.inject.Inject
  * - Resilience: Transparent fallback to local search cache when remote is unavailable.
  * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
  */
-internal class SearchRepository @Inject constructor(
+class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,
     private val propertyLocalDataSource: IPropertyLocalDataSource,

@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.model.common
 
+import android.os.Parcelable
 import kotlin.jvm.JvmInline
 import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
 /**
  * A domain-agnostic reference to a media file (image, video, etc.).
@@ -10,4 +12,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @JvmInline
-value class MediaReference(val value: String)
+@Parcelize
+value class MediaReference(val value: String) : Parcelable

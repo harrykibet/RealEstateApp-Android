@@ -12,7 +12,9 @@ class TestingConventionPlugin : Plugin<Project> {
                 
                 // Add our centralized test platform via testFixtures
                 add("testImplementation", testFixtures(project(":core:testing")))
+                add("testImplementation", testFixtures(project(":core:testing-network")))
                 add("androidTestImplementation", testFixtures(project(":core:testing")))
+                add("androidTestImplementation", testFixtures(project(":core:testing-network")))
 
                 // Common unit test dependencies
                 listOf(
