@@ -138,6 +138,7 @@ internal class CommentsRepository @Inject constructor(
                         metricsTracker.trackDuration("comments.submit.latency", duration.milliseconds)
                         if (result is AppResult.Success) {
                             metricsTracker.incrementCounter("comments.submit.success")
+                            localDataSource.incrementComments(propertyId)
                         } else {
                             metricsTracker.incrementCounter("comments.submit.failure")
                         }

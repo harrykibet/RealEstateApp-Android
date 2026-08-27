@@ -129,6 +129,31 @@ internal class PropertyLocalDataSource @Inject constructor(
             System.currentTimeMillis() - latest > maxAgeMillis
         }
 
+    override suspend fun incrementLikes(id: String): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.incrementLikes(id)
+        }
+
+    override suspend fun decrementLikes(id: String): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.decrementLikes(id)
+        }
+
+    override suspend fun incrementViews(id: String): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.incrementViews(id)
+        }
+
+    override suspend fun incrementShares(id: String): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.incrementShares(id)
+        }
+
+    override suspend fun incrementComments(id: String): AppResult<Unit> =
+        databaseExecutor.execute {
+            cacheDao.incrementComments(id)
+        }
+
     // ---------------- COMMENTS CACHE ----------------
 
     override suspend fun cacheComments(

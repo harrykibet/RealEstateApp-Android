@@ -32,4 +32,19 @@ interface PropertyCacheDao {
 
     @Query("DELETE FROM properties_cache WHERE id NOT IN (SELECT id FROM properties_cache ORDER BY created_at DESC LIMIT :targetSize)")
     suspend fun trim(targetSize: Int)
+
+    @Query("UPDATE properties_cache SET likes_count = likes_count + 1 WHERE id = :id")
+    suspend fun incrementLikes(id: String)
+
+    @Query("UPDATE properties_cache SET likes_count = MAX(0, likes_count - 1) WHERE id = :id")
+    suspend fun decrementLikes(id: String)
+
+    @Query("UPDATE properties_cache SET views_count = views_count + 1 WHERE id = :id")
+    suspend fun incrementViews(id: String)
+
+    @Query("UPDATE properties_cache SET shares_count = shares_count + 1 WHERE id = :id")
+    suspend fun incrementShares(id: String)
+
+    @Query("UPDATE properties_cache SET comments_count = comments_count + 1 WHERE id = :id")
+    suspend fun incrementComments(id: String)
 }

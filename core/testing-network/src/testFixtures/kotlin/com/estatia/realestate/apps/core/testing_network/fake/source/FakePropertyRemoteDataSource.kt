@@ -36,7 +36,7 @@ class FakePropertyRemoteDataSource(
         imageUris: List<Uri>,
         videoUris: List<Uri>
     ): AppResult<String> {
-        checkChaos("upload_property")
+        checkChaos("upload_property")?.let { return it }
         val id = property.id.ifBlank { java.util.UUID.randomUUID().toString() }
         storage[id] = property.copy(id = id, contact = contactInfo)
         return AppResult.Success(id)
@@ -46,7 +46,7 @@ class FakePropertyRemoteDataSource(
         propertyId: String,
         updates: PropertyUpdateFields
     ): AppResult<Unit> {
-        checkChaos("update_property")
+        checkChaos("update_property")?.let { return it }
         val existing = storage[propertyId] ?: return AppResult.Error(DatabaseException.NotFound)
         storage[propertyId] = existing.copy(
             title = updates.title ?: existing.title,
@@ -56,39 +56,39 @@ class FakePropertyRemoteDataSource(
     }
 
     override suspend fun deleteProperty(propertyId: String): AppResult<Unit> {
-        checkChaos("delete_property")
+        checkChaos("delete_property")?.let { return it }
         storage.remove(propertyId)
         return AppResult.Success(Unit)
     }
 
     override suspend fun getPropertyById(propertyId: String): AppResult<PropertyEntityModel> {
-        checkChaos("get_property_by_id")
+        checkChaos("get_property_by_id")?.let { return it }
         return storage[propertyId]?.let { AppResult.Success(it) } 
             ?: AppResult.Error(DatabaseException.NotFound)
     }
 
     override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> {
-        checkChaos("fetch_liked_properties")
+        checkChaos("fetch_liked_properties")?.let { return it }
         return AppResult.Success(storage.values.toList())
     }
 
     override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> {
-        checkChaos("like_property")
+        checkChaos("like_property")?.let { return it }
         return AppResult.Success(Unit)
     }
 
     override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> {
-        checkChaos("unlike_property")
+        checkChaos("unlike_property")?.let { return it }
         return AppResult.Success(Unit)
     }
 
     override suspend fun recordView(propertyId: String): AppResult<Unit> {
-        checkChaos("record_view")
+        checkChaos("record_view")?.let { return it }
         return AppResult.Success(Unit)
     }
 
     override suspend fun recordShare(propertyId: String): AppResult<Unit> {
-        checkChaos("record_share")
+        checkChaos("record_share")?.let { return it }
         return AppResult.Success(Unit)
     }
 
@@ -97,7 +97,7 @@ class FakePropertyRemoteDataSource(
         cursor: PropertyCursor?,
         pageSize: Int
     ): AppResult<PropertyRemotePage> {
-        checkChaos("fetch_properties_paginated")
+        checkChaos("fetch_properties_paginated")?.let { return it }
 
         val allProperties = storage.values
             .sortedByDescending { it.createdAt }
@@ -122,29 +122,36 @@ class FakePropertyRemoteDataSource(
         return AppResult.Success(PropertyRemotePage(pageItems, nextCursor))
     }
 
-    private suspend fun checkChaos(point: String) {
-        lifecycleChaos.checkChaos()
-        concurrencyChaos.checkChaos(point)
+    private suspend fun checkChaos(point: String): AppResult<Nothing>? {
+        try {
+            lifecycleChaos.checkChaos()
+            concurrencyChaos.checkChaos(point)
+        } catch (e: Exception) {
+            return AppResult.Error(DatabaseException.Unknown(e))
+        }
 
         val behavior = nextBehavior
         nextBehavior = DatabaseBehavior.Success
         
-        when (behavior) {
-            DatabaseBehavior.Unavailable -> throw java.io.IOException("Remote service unavailable (Chaos)")
-            DatabaseBehavior.Corrupted -> throw java.lang.RuntimeException("Data corruption (Chaos)")
-            DatabaseBehavior.Locked -> throw java.io.IOException("Database is locked (Chaos)")
-            DatabaseBehavior.ConstraintViolation -> throw java.lang.IllegalArgumentException("Constraint violation (Chaos)")
-            DatabaseBehavior.DiskFull -> throw java.io.IOException("No space left on device (Chaos)")
-            DatabaseBehavior.MigrationFailure -> throw java.lang.IllegalStateException("Migration failed (Chaos)")
-            DatabaseBehavior.SchemaMismatch -> throw java.lang.IllegalStateException("Schema mismatch (Chaos)")
-            DatabaseBehavior.DuplicateData -> throw java.lang.IllegalArgumentException("Duplicate entry (Chaos)")
-            DatabaseBehavior.ConcurrentWrites -> throw java.util.ConcurrentModificationException("Concurrent write detected (Chaos)")
-            DatabaseBehavior.TransactionFailure -> throw java.io.IOException("Transaction failed (Chaos)")
-            DatabaseBehavior.PartialTransaction -> throw java.io.IOException("Partial transaction committed (Chaos)")
-            DatabaseBehavior.ProcessDeathDuringTransaction -> throw java.lang.RuntimeException("Process died during transaction (Chaos)")
-            DatabaseBehavior.VeryLargeDataset -> Unit // Can be handled by populating more data
-            DatabaseBehavior.EmptyDataset -> storage.clear()
-            DatabaseBehavior.Success -> Unit
+        return when (behavior) {
+            DatabaseBehavior.Unavailable -> AppResult.Error(DatabaseException.Unavailable)
+            DatabaseBehavior.Corrupted -> AppResult.Error(DatabaseException.CorruptedDatabase(java.lang.RuntimeException("Chaos")))
+            DatabaseBehavior.Locked -> AppResult.Error(DatabaseException.Unknown(java.io.IOException("Database is locked (Chaos)")))
+            DatabaseBehavior.ConstraintViolation -> AppResult.Error(DatabaseException.ConstraintViolation(java.lang.IllegalArgumentException("Chaos")))
+            DatabaseBehavior.DiskFull -> AppResult.Error(DatabaseException.StorageFull(java.io.IOException("Chaos")))
+            DatabaseBehavior.MigrationFailure -> AppResult.Error(DatabaseException.Unknown(java.lang.IllegalStateException("Migration failed (Chaos)")))
+            DatabaseBehavior.SchemaMismatch -> AppResult.Error(DatabaseException.Unknown(java.lang.IllegalStateException("Schema mismatch (Chaos)")))
+            DatabaseBehavior.DuplicateData -> AppResult.Error(DatabaseException.AlreadyExists)
+            DatabaseBehavior.ConcurrentWrites -> AppResult.Error(DatabaseException.Unknown(java.util.ConcurrentModificationException("Concurrent write detected (Chaos)")))
+            DatabaseBehavior.TransactionFailure -> AppResult.Error(DatabaseException.TransactionFailed)
+            DatabaseBehavior.PartialTransaction -> AppResult.Error(DatabaseException.TransactionFailed)
+            DatabaseBehavior.ProcessDeathDuringTransaction -> AppResult.Error(DatabaseException.Unknown(java.lang.RuntimeException("Process died during transaction (Chaos)")))
+            DatabaseBehavior.VeryLargeDataset -> null
+            DatabaseBehavior.EmptyDataset -> {
+                storage.clear()
+                null
+            }
+            DatabaseBehavior.Success -> null
         }
     }
 }

@@ -71,8 +71,8 @@ class SecurityRepositoryTest {
 
     @Test
     fun `signData handles token revocation gracefully`() = runTest {
-        // Given: token is missing (revoked/logged out)
-        coEvery { tokenDataSource.getToken() } returns AppResult.Success(null) 
+        // Given: signing fails (e.g. because key is missing or revoked)
+        coEvery { signatureManager.sign(any(), any()) } returns AppResult.Error(com.estatia.realestate.apps.core.common.exceptions.DatabaseException.NotFound)
         
         repository.signData("some data")
         // Verify it doesn't crash

@@ -58,6 +58,12 @@ interface IPropertyLocalDataSource {
         maxAgeMillis: Long
     ): AppResult<Boolean>
 
+    suspend fun incrementLikes(id: String): AppResult<Unit>
+    suspend fun decrementLikes(id: String): AppResult<Unit>
+    suspend fun incrementViews(id: String): AppResult<Unit>
+    suspend fun incrementShares(id: String): AppResult<Unit>
+    suspend fun incrementComments(id: String): AppResult<Unit>
+
     // -----------------------------
     // Comments Cache
     // -----------------------------

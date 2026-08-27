@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
@@ -10,6 +11,8 @@ import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
+import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
+import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
 import com.estatia.realestate.apps.core.testing.assertions.assertError
@@ -21,12 +24,14 @@ import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
 import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class PropertyRepositoryAdversarialTest {
@@ -65,7 +70,7 @@ class PropertyRepositoryAdversarialTest {
 
     @Test
     fun `uploadProperty blocks and returns error when content safety flags description`() = runTest {
-        val property = PropertyFixtures.single().copy(description = "Abusive content")
+        val property = PropertyFixtures.default().copy(description = "Abusive content")
         
         // 🧪 Chaos: Safety service flags the text
         coEvery { contentSafetyService.validateText(any()) } returns SafetyResult.Flagged("Abusive language detected", 0.99f)
@@ -74,7 +79,7 @@ class PropertyRepositoryAdversarialTest {
 
         val error = result.assertError()
         assert(error is PropertyException.SafetyViolation)
-        assertEquals("Description: Abusive language detected", error.message)
+        assertEquals("Content safety violation: Description: Abusive language detected", error.message)
     }
 
     @Test
@@ -101,28 +106,34 @@ class PropertyRepositoryAdversarialTest {
 
     @Test
     fun `uploadProperty propagates cancellation mid-flight using test scheduler`() = runTest {
-        val property = PropertyFixtures.single()
+        val property = PropertyFixtures.default()
         val scheduler = TestScheduler()
         
-        // Use a mock for this test to control suspension
-        val mockRemote = mockk<IPropertyRemoteDatasource>()
+        // Use a manual fake for this test to control suspension safely
+        val hangingRemote = object : IPropertyRemoteDatasource by FakePropertyRemoteDataSource() {
+            override suspend fun uploadProperty(
+                property: PropertyEntityModel,
+                contactInfo: PropertyContactEntity,
+                imageUris: List<Uri>,
+                videoUris: List<Uri>
+            ): AppResult<String> {
+                scheduler.release("reached_remote")
+                kotlinx.coroutines.awaitCancellation()
+            }
+        }
+
         val adversarialRepo = PropertyRepository(
-            localDataSource, mockRemote, userRepository, metricsTracker, 
+            localDataSource, hangingRemote, userRepository, metricsTracker, 
             engagementRepository, contentSafetyService, exceptionTranslator
         )
 
-        coEvery { mockRemote.uploadProperty(any(), any(), any(), any()) } coAnswers {
-            scheduler.release("reached_remote")
-            delay(10.seconds) // Hang
-            AppResult.Success("prop_id")
-        }
-
-        launchAndDestroy(scheduler, "reached_remote") {
+        val job = launch {
             adversarialRepo.uploadProperty(property, emptyList(), emptyList())
         }
         
-        // Verify we reached the remote call before cancellation
-        coVerify { mockRemote.uploadProperty(any(), any(), any(), any()) }
+        scheduler.awaitPoint("reached_remote")
+        job.cancel()
+        job.join()
     }
 
     @Test

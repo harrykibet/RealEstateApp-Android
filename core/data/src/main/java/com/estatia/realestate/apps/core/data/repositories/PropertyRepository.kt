@@ -203,6 +203,7 @@ internal class PropertyRepository @Inject constructor(
     ): AppResult<Unit> {
 
         userRepository.setPropertyIdLiked(propertyId, true)
+        localDataSource.incrementLikes(propertyId)
 
         return remoteDataSource
             .likeProperty(
@@ -211,7 +212,12 @@ internal class PropertyRepository @Inject constructor(
             )
             .translatePropertyFailures(
                 exceptionTranslator
-            )
+            ).also { result ->
+                // Rollback local cache if remote fails
+                if (result is AppResult.Error) {
+                    localDataSource.decrementLikes(propertyId)
+                }
+            }
     }
 
     override suspend fun unlikeProperty(
@@ -220,6 +226,7 @@ internal class PropertyRepository @Inject constructor(
     ): AppResult<Unit> {
 
         userRepository.setPropertyIdLiked(propertyId, false)
+        localDataSource.decrementLikes(propertyId)
 
         return remoteDataSource.unlikeProperty(
             userId,
@@ -227,7 +234,12 @@ internal class PropertyRepository @Inject constructor(
         )
             .translatePropertyFailures(
                 exceptionTranslator
-            )
+            ).also { result ->
+                // Rollback local cache if remote fails
+                if (result is AppResult.Error) {
+                    localDataSource.incrementLikes(propertyId)
+                }
+            }
     }
 
     override suspend fun fetchLikedProperties(
@@ -262,6 +274,8 @@ internal class PropertyRepository @Inject constructor(
     override suspend fun recordView(propertyId: String): AppResult<Unit> {
         // 🏎️ Report engagement signal for personalization
         engagementRepository.reportInteraction(propertyId, EngagementAction.VIEW)
+        localDataSource.incrementViews(propertyId)
+
         return remoteDataSource.recordView(propertyId)
             .translatePropertyFailures(exceptionTranslator)
     }
@@ -269,6 +283,8 @@ internal class PropertyRepository @Inject constructor(
     override suspend fun recordShare(propertyId: String): AppResult<Unit> {
         // 🏎️ Report engagement signal for personalization
         engagementRepository.reportInteraction(propertyId, EngagementAction.SHARE)
+        localDataSource.incrementShares(propertyId)
+
         return remoteDataSource.recordShare(propertyId)
             .translatePropertyFailures(exceptionTranslator)
     }
