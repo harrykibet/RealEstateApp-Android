@@ -8,12 +8,12 @@ import java.util.UUID
 /**
  * Unified source of truth for user domain fixtures.
  */
-object UserFixtures {
+object UserFixtures : FixtureContract<UserDomainModel> {
 
     /**
      * Returns a default tenant user model.
      */
-    fun default(): UserDomainModel {
+    override fun default(): UserDomainModel {
         return UserDomainModel(
             userId = "user_001",
             name = "Alice Wanjiku",
@@ -28,6 +28,11 @@ object UserFixtures {
 
     /**
      * Factory method for building customized or randomized user models.
+     */
+    override fun build(id: String): UserDomainModel = build(id = id, name = "Generated User")
+
+    /**
+     * Overload for [build] to support custom attributes.
      */
     fun build(
         id: String = UUID.randomUUID().toString(),
@@ -44,27 +49,7 @@ object UserFixtures {
         )
     }
 
-    val list = listOf(
-        default(),
-        UserDomainModel(
-            userId = "user_002",
-            name = "Brian Otieno",
-            email = "brian@example.com",
-            phoneNumber = "+254798765432",
-            profilePictureUrl = "https://randomuser.me/api/portraits/men/2.jpg",
-            userType = UserType.PROPERTY_OWNER,
-            verificationLevel = VerificationLevel.NONE,
-            likedProperties = listOf("property_103")
-        ),
-        UserDomainModel(
-            userId = "user_003",
-            name = "Clara Mwende",
-            email = "clara@example.com",
-            phoneNumber = "+254701234567",
-            profilePictureUrl = "https://randomuser.me/api/portraits/women/3.jpg",
-            userType = UserType.AGENT,
-            verificationLevel = VerificationLevel.TRUSTED_PARTNER,
-            likedProperties = emptyList()
-        )
-    )
+    override fun list(count: Int): List<UserDomainModel> = List(count) { i ->
+        if (i == 0) default() else build(id = "user_00${i + 1}")
+    }
 }

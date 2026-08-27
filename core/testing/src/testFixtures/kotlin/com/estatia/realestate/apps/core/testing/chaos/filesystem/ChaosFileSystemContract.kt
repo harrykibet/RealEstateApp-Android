@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
  * Contract test for [ChaosFileSystem] to ensure it correctly applies chaos behaviors.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBehavior>() {
+open class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBehavior>() {
 
     override fun createSubject(behavior: FileSystemBehavior): ChaosFileSystem {
         return ChaosFileSystem(FakeFileSystem()).apply {

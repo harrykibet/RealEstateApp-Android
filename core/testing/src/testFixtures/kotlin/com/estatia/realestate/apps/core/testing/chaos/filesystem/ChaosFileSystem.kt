@@ -45,7 +45,9 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem {
     }
 
     private fun checkFailure() {
-        when (nextBehavior) {
+        val behavior = nextBehavior
+        nextBehavior = null
+        when (behavior) {
             FileSystemBehavior.DiskFull -> throw IOException("No space left on device (Chaos)")
             FileSystemBehavior.PermissionDenied -> throw IOException("Permission denied (Chaos)")
             FileSystemBehavior.FileMissing -> throw IOException("File not found (Chaos)")
@@ -60,6 +62,5 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem {
             FileSystemBehavior.IoFailure -> throw IOException("General I/O failure (Chaos)")
             FileSystemBehavior.Success, null -> Unit
         }
-        nextBehavior = null
     }
 }

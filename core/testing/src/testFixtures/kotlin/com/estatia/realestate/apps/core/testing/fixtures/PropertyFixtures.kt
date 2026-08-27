@@ -15,12 +15,12 @@ import java.util.UUID
  * - Customized: Use [build] or [default].copy(...) for specific scenario testing.
  * - Randomized: Use [build] with default arguments for property-based testing.
  */
-object PropertyFixtures {
+object PropertyFixtures : FixtureContract<PropertyDomainModel> {
 
     /**
      * Returns a rich, realistic property model with deterministic values.
      */
-    fun default(): PropertyDomainModel {
+    override fun default(): PropertyDomainModel {
         return PropertyDomainModel(
             id = PropertyId("prop_001"),
             title = "Modern 2 Bedroom Apartment",
@@ -68,6 +68,11 @@ object PropertyFixtures {
     /**
      * Factory method for building customized or randomized property models.
      */
+    override fun build(id: String): PropertyDomainModel = build(id = id, title = "Generated Property")
+
+    /**
+     * Overload for [build] to support custom attributes.
+     */
     fun build(
         id: String = UUID.randomUUID().toString(),
         title: String = "Generated Property",
@@ -83,7 +88,7 @@ object PropertyFixtures {
         )
     }
 
-    fun list(count: Int = 5): List<PropertyDomainModel> = List(count) {
+    override fun list(count: Int): List<PropertyDomainModel> = List(count) {
         build(
             id = "prop_${it + 1}",
             title = "Property #${it + 1}",

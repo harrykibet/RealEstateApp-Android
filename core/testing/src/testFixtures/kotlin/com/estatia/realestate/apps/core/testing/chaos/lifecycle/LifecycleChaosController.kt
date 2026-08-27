@@ -20,6 +20,7 @@ class LifecycleChaosController {
      */
     fun checkChaos() {
         val behavior = nextBehavior
+        nextBehavior = LifecycleBehavior.Success // One-shot for failures
         eventHistory.add(behavior)
         
         when (behavior) {
@@ -28,10 +29,6 @@ class LifecycleChaosController {
             LifecycleBehavior.DependencyDisposed -> throw IllegalStateException("Dependency already disposed (Chaos)")
             LifecycleBehavior.ScreenDestructionDuringOp -> throw IllegalStateException("Screen destroyed (Chaos)")
             else -> Unit
-        }
-        
-        if (behavior != LifecycleBehavior.Success) {
-            nextBehavior = LifecycleBehavior.Success // One-shot for failures
         }
     }
 

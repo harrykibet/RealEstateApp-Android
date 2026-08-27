@@ -6,12 +6,12 @@ import java.util.UUID
 /**
  * Unified source of truth for authentication domain fixtures.
  */
-object AuthFixtures {
+object AuthFixtures : FixtureContract<AuthUserDomainModel> {
 
     /**
      * Returns a rich, verified authenticated user model with deterministic values.
      */
-    fun default(): AuthUserDomainModel {
+    override fun default(): AuthUserDomainModel {
         return AuthUserDomainModel(
             userId = "user_123",
             email = "test@example.com",
@@ -25,6 +25,11 @@ object AuthFixtures {
     /**
      * Factory method for building customized or randomized authenticated user models.
      */
+    override fun build(id: String): AuthUserDomainModel = build(id = id, email = "$id@example.com")
+
+    /**
+     * Overload for [build] to support custom attributes.
+     */
     fun build(
         id: String = UUID.randomUUID().toString(),
         email: String = "$id@example.com",
@@ -35,5 +40,9 @@ object AuthFixtures {
             email = email,
             isEmailVerified = isEmailVerified
         )
+    }
+
+    override fun list(count: Int): List<AuthUserDomainModel> = List(count) { i ->
+        if (i == 0) default() else build(id = "user_${123 + i}")
     }
 }
