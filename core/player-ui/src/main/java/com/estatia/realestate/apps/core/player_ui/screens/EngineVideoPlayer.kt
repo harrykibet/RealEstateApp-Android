@@ -173,6 +173,15 @@ fun EngineVideoPlayer(
         }
     }
 
+    // Stable surface reference to avoid flicker during player swaps
+    var activeSurface by remember { mutableStateOf<android.view.Surface?>(null) }
+
+    LaunchedEffect(player, activeSurface) {
+        if (player != null && activeSurface != null) {
+            player.setVideoSurface(activeSurface)
+        }
+    }
+
     Box(modifier = modifier) {
         Crossfade(
             targetState = isBuffering && posterUri != null,
@@ -183,7 +192,9 @@ fun EngineVideoPlayer(
                 AsyncImage(
                     model = posterUri,
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("EngineVideoPlayer_Poster"),
                     contentScale = ContentScale.Crop
                 )
             } else {
@@ -234,8 +245,9 @@ fun EngineVideoPlayer(
                     zOrder = AndroidExternalSurfaceZOrder.Behind,
                     onInit = {
                         onSurface { surface, _, _ ->
-                            player?.setVideoSurface(surface)
+                            activeSurface = surface
                             surface.onDestroyed {
+                                activeSurface = null
                                 player?.setVideoSurface(null)
                             }
                         }

@@ -62,6 +62,7 @@ class PlayerPool @Inject constructor(
 ) {
     private val inFlightCreations = mutableMapOf<String, InFlightRequest>()
     private val playerToIdMap = IdentityHashMap<Player, String>()
+    private val playbackPositions = mutableMapOf<String, Long>()
 
     // Guards ensureIdlePlayers against reentrant/overlapping fills once we
     // introduce a suspension point (yield) inside the fill loop.
@@ -262,6 +263,12 @@ class PlayerPool @Inject constructor(
         player.trackSelectionParameters = playerConfig.trackSelectionParameters
         player.clearMediaItems()
         player.setMediaItem(playerConfig.mediaItem)
+
+        // Restore saved position if it exists
+        playbackPositions[mediaId]?.let { position ->
+            player.seekTo(position)
+        }
+
         player.playWhenReady = false
         player.prepare()
         
@@ -285,6 +292,11 @@ class PlayerPool @Inject constructor(
     ): ManagedPlayer {
         val playerConfig = configurationFactory.create(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val created = playerFactory.create(playerConfig)
+
+        // Restore saved position if it exists
+        playbackPositions[mediaId]?.let { position ->
+            created.player.seekTo(position)
+        }
 
         val managed = ManagedPlayer(
             mediaId = mediaId,
@@ -312,6 +324,7 @@ class PlayerPool @Inject constructor(
     fun release(mediaId: String) {
         checkConfinement()
         players.remove(mediaId)?.let { managed ->
+            playbackPositions[mediaId] = managed.player.currentPosition
             playerToIdMap.remove(managed.player)
             // 🛡️ Hygiene: Reset state to cancel in-flight watchdog jobs before recycling
             managed.reducer.dispatch(PlaybackStateReducer.Event.Reset)

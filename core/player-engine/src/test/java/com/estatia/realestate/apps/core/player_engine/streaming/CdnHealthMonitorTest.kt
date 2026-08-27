@@ -3,12 +3,16 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -26,8 +30,16 @@ class CdnHealthMonitorTest {
 
     @Before
     fun setup() {
+        mockkStatic(System::class)
+        every { System.currentTimeMillis() } answers { testClock.currentTimeMillis() }
+
         measurer = mockk()
         monitor = CdnHealthMonitor(measurer, testScope, testDispatcher, clock = { testClock.currentTimeMillis() })
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
@@ -35,7 +47,7 @@ class CdnHealthMonitorTest {
         coEvery { measurer.measure(any(), any()) } returns 50L
 
         monitor.refreshIfStale(listOf(endpoint))
-        testScope.advanceUntilIdle()
+        advanceUntilIdle()
 
         val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
         
@@ -71,7 +83,7 @@ class CdnHealthMonitorTest {
         coEvery { measurer.measure(any(), any()) } throws java.net.SocketTimeoutException("Timeout")
 
         monitor.refreshIfStale(listOf(endpoint))
-        testScope.advanceUntilIdle()
+        advanceUntilIdle()
 
         val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
         // Should have a high latency or failure marker

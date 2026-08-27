@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /**
@@ -98,6 +99,7 @@ fun VideoProgressBar(
                 .height(height)
                 .align(Alignment.CenterStart)
                 .background(if (isDragging) MaterialTheme.colorScheme.primary else Color.White)
+                .testTag("VideoProgressBar_ActiveTrack")
         )
 
         // Knob (Handle)
@@ -111,7 +113,11 @@ fun VideoProgressBar(
                     .size(16.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
+                    .testTag("VideoProgressBar_Knob")
             )
         }
     }
 }
+
+// Helper to avoid import conflicts or if using a custom one, but standard is Modifier.testTag
+// Wait, I should use androidx.compose.ui.platform.testTag

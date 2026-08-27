@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
 import android.os.Looper
+import android.os.SystemClock
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.every
@@ -33,6 +34,9 @@ class PlaybackStateReducerTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         mockkStatic(Looper::class)
+        mockkStatic(SystemClock::class)
+        every { SystemClock.elapsedRealtime() } returns 0L
+
         val mockLooper = mockk<Looper>(relaxed = true)
         every { Looper.getMainLooper() } returns mockLooper
         every { Looper.myLooper() } returns mockLooper
