@@ -1,7 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.project
 import com.estatia.realestate.apps.libs
 
 class TestingConventionPlugin : Plugin<Project> {
@@ -19,30 +18,20 @@ class TestingConventionPlugin : Plugin<Project> {
                 listOf(
                     libs.findLibrary("junit.junit").get(),
                     libs.findLibrary("junit.jupiter").get(),
-                    libs.findLibrary("junit.vintage.engine").get(),
-                    libs.findLibrary("kotest.runner.junit5").get(),
                     libs.findLibrary("mockk").get(),
                     libs.findLibrary("turbine").get(),
                     libs.findLibrary("kotlinx-coroutines-test").get(),
                     libs.findLibrary("core.testing").get(),
-                    libs.findLibrary("androidx.test.core.ktx").get(),
-                    libs.findLibrary("hilt.android.testing").get(),
-                    libs.findLibrary("leakcanary.android.instrumentation").get()
+                    libs.findLibrary("androidx.test.core.ktx").get()
                 ).forEach { add("testImplementation", it) }
-
-                // Android test dependencies
-                listOf(
-                    libs.findLibrary("uiautomator").get(),
-                    libs.findLibrary("espresso.intents").get(),
-                    libs.findLibrary("espresso.contrib").get(),
-                    libs.findLibrary("core.testing").get(),
-                    libs.findLibrary("androidx.test.ext.junit").get(),
-                    libs.findLibrary("espresso.core").get(),
-                    libs.findLibrary("hilt.android.testing").get(),
-                    libs.findLibrary("androidx.compose.ui.test.junit4").get()
-                ).forEach { add("androidTestImplementation", it) }
                 
-                "debugImplementation"(libs.findLibrary("androidx.compose.ui.test.manifest").get())
+                add("testRuntimeOnly", libs.findLibrary("junit.vintage.engine").get())
+
+                // Common Android test dependencies
+                listOf(
+                    libs.findLibrary("androidx.test.ext.junit").get(),
+                    libs.findLibrary("core.testing").get()
+                ).forEach { add("androidTestImplementation", it) }
             }
         }
     }

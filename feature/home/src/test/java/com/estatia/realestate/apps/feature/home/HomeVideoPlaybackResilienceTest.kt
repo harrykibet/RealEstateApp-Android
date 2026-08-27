@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.home
 
+import android.net.Uri
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.core.VideoPlaybackCoordinator
@@ -11,6 +12,8 @@ import com.estatia.realestate.apps.core.testing.assertions.assertState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.playback.HomeVideoPlaybackViewModel
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import androidx.core.net.toUri
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +44,13 @@ class HomeVideoPlaybackResilienceTest {
 
     @Before
     fun setup() {
+        mockkStatic(Uri::class)
+        val mockUri = mockk<Uri>(relaxed = true) {
+            every { scheme } returns "https"
+            every { host } returns "test.mp4"
+        }
+        every { Uri.parse(any()) } returns mockUri
+
         Dispatchers.setMain(testDispatcher)
         coordinator = mockk(relaxed = true)
         environmentCoordinator = mockk(relaxed = true)
@@ -55,6 +66,7 @@ class HomeVideoPlaybackResilienceTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkStatic(Uri::class)
     }
 
     @Test

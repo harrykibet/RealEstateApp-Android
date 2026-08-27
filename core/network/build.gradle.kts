@@ -5,6 +5,14 @@ plugins {
 
 android {
     namespace = "com.estatia.realestate.apps.core.network"
+
+    testOptions {
+        unitTests {
+            all {
+                it.useJUnitPlatform()
+            }
+        }
+    }
 }
 
 dependencies {
@@ -39,6 +47,9 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
 
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotest.runner.junit5)
+    testRuntimeOnly(libs.junit.vintage.engine)
     testImplementation(testFixtures(projects.core.testingNetwork))
     androidTestImplementation(testFixtures(projects.core.testingNetwork))
 }

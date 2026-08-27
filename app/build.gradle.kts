@@ -61,6 +61,12 @@ dependencies {
     implementation(libs.androidx.compose.material3.windowSizeClass)
 
     androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.uiautomator)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.espresso.intents)
+    androidTestImplementation(libs.espresso.contrib)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation(libs.glide)
     ksp(libs.glide.compiler)

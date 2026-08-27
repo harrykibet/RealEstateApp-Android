@@ -1,3 +1,5 @@
+package com.estatia.realestate.apps.core.network.sources.aws
+
 import android.content.Context
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.api.aws.AWSApiPlugin

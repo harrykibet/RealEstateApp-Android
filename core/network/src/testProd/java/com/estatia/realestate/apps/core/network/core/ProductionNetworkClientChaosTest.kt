@@ -1,8 +1,4 @@
-/*
 package com.estatia.realestate.apps.core.network.core
-
-// This test has been moved to src/testProd to avoid compilation errors in the demo variant.
-// ProductionNetworkClient only exists in the prod source set.
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
@@ -58,4 +54,3 @@ class ProductionNetworkClientChaosTest {
         verify { logger.e(message = any(), throwable = mapped) }
     }
 }
-*/

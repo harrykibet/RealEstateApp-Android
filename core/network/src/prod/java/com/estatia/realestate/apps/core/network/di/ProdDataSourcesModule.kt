@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.di
 
-import AwsBackendInitializer
+import com.estatia.realestate.apps.core.network.sources.aws.AwsBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource

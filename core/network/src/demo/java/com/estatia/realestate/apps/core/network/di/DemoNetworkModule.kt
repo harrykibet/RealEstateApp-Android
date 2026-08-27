@@ -10,24 +10,19 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
-import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirebaseStorageErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IFirestoreErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IInfrastructureErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
+import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.network.di.AuthClient
-import com.estatia.realestate.apps.core.network.di.PlaybackClient
-import com.estatia.realestate.apps.core.network.di.UploadClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,6 +35,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -107,20 +103,20 @@ object DemoNetworkModule {
 
     @Provides
     @Singleton
-    fun provideFirestoreErrorMapper(): IFirestoreErrorMapper = object : IFirestoreErrorMapper {
+    fun provideDatabaseErrorMapper(): IDatabaseErrorMapper = object : IDatabaseErrorMapper {
         override fun map(throwable: Throwable): DatabaseException = DatabaseException.Unknown(throwable)
     }
 
     @Provides
     @Singleton
-    fun provideFirebaseStorageErrorMapper(): IFirebaseStorageErrorMapper = object : IFirebaseStorageErrorMapper {
+    fun provideStorageErrorMapper(): IStorageErrorMapper = object : IStorageErrorMapper {
         override fun map(throwable: Throwable): StorageException = StorageException.Unknown(throwable)
     }
 
     @Provides
     @Singleton
-    fun provideFirebaseErrorMapper(): IFirebaseErrorMapper = object : IFirebaseErrorMapper {
-        override fun map(throwable: com.google.firebase.FirebaseException): AppException = NetworkException.Unknown(throwable)
+    fun provideInfrastructureErrorMapper(): IInfrastructureErrorMapper = object : IInfrastructureErrorMapper {
+        override fun map(throwable: Throwable): AppException = NetworkException.Unknown(throwable)
     }
     
     @Provides
