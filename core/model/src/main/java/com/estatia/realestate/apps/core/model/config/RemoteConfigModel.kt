@@ -19,7 +19,9 @@ data class NetworkConfigModel(
     @SerialName("api_endpoints")
     val apiEndpoints: List<ApiEndpoint> = emptyList(),
     @SerialName("cdn_endpoints")
-    val cdnEndpoints: List<CdnEndpoint> = emptyList()
+    val cdnEndpoints: List<CdnEndpoint> = emptyList(),
+    @SerialName("enable_http_logging")
+    val enableHttpLogging: Boolean = false
 )
 
 @Serializable

@@ -43,6 +43,12 @@ static-analysis:
   script:
     - ./gradlew lint --stacktrace
 
+firebase-rules-lint:
+  stage: lint
+  image: node:lts
+  script:
+    - npx -y firebase-tools deploy --only firestore:rules --dry-run
+
 unit-test:
   stage: test
   script:

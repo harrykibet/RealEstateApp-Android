@@ -7,4 +7,5 @@ interface INetworkConfig : IConfigLifecycle {
     val baseUrl: String
     val apiEndpoints: List<ApiEndpoint>
     val cdnEndpoints: List<CdnEndpoint>
+    val isHttpLoggingEnabled: Boolean
 }

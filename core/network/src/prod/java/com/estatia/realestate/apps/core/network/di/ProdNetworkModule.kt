@@ -83,14 +83,15 @@ object ProdNetworkModule {
     @BaseClient
     fun provideBaseOkHttpClient(
         connectionPool: ConnectionPool,
-        tracingInterceptor: TracingInterceptor
+        tracingInterceptor: TracingInterceptor,
+        networkConfig: INetworkConfig
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectionPool(connectionPool)
             .addInterceptor(tracingInterceptor)
             .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
             .apply {
-                if (BuildConfig.DEBUG) {
+                if (networkConfig.isHttpLoggingEnabled) {
                     addInterceptor(
                         HttpLoggingInterceptor().apply {
                             level = HttpLoggingInterceptor.Level.BODY

@@ -138,6 +138,9 @@ internal class ConfigProvider @Inject constructor(
     override val apiEndpoints: List<ApiEndpoint>
         get() = requireConfig().network.apiEndpoints
 
+    override val isHttpLoggingEnabled: Boolean
+        get() = requireConfig().network.enableHttpLogging
+
     override val isLoggingEnabled: Boolean
         get() = requireConfig().security.enableLogging
 

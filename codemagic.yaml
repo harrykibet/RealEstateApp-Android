@@ -84,7 +84,7 @@ workflows:
         script: |
           ./gradlew test --no-daemon
 
-      # 7 Build release APK or AAB (Gradle handles signing)
+      # 8 Build release APK or AAB (Gradle handles signing)
       - name: Build Android Release
         script: |
           ./gradlew bundleRelease \
@@ -93,7 +93,16 @@ workflows:
             --build-cache \
             --no-daemon
 
-      # 8 Verify Output
+      # 9 Deploy Firebase Rules
+      - name: Deploy Firebase Rules
+        script: |
+          if [ -z "$FIREBASE_TOKEN" ]; then
+            echo "FIREBASE_TOKEN is not set. Skipping rules deployment."
+          else
+            npx -y firebase-tools deploy --only firestore:rules --token "$FIREBASE_TOKEN"
+          fi
+
+      # 10 Verify Output
       - name: Verify build output
         script: |
           ARTIFACT_DIR="app/build/outputs/bundle/release"
