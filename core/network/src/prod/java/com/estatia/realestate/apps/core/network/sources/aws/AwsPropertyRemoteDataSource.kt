@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.interfaces.IMediaCompressor
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
+import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
@@ -49,7 +50,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         contactInfo: PropertyContactEntity,
         imageUris: List<Uri>,
         videoUris: List<Uri>
-    ): AppResult<String> = networkClient.execute {
+    ): AppResult<String> = networkClient.execute(RetryConfigs.IMAGE_UPLOAD) { // Reuse upload policy
         val propertyId = property.id.ifBlank { UUID.randomUUID().toString() }
         val outputDir = File(context.cacheDir, "uploads/$propertyId").apply { mkdirs() }
         val startTime = System.currentTimeMillis()
@@ -129,7 +130,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         )
     }
 
-    override suspend fun updateProperty(propertyId: String, updates: PropertyUpdateFields): AppResult<Unit> = networkClient.execute {
+    override suspend fun updateProperty(propertyId: String, updates: PropertyUpdateFields): AppResult<Unit> = networkClient.execute(RetryConfigs.PROPERTY_FEED) {
         val mutation = $$"""
             mutation UpdateProperty($id: ID!, $updates: PropertyUpdateInput!) {
                 updateProperty(id: $id, updates: $updates) { id }
@@ -151,7 +152,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = networkClient.execute {
+    override suspend fun deleteProperty(propertyId: String): AppResult<Unit> = networkClient.execute(RetryConfigs.PROPERTY_FEED) {
         val mutation = $$"""
             mutation DeleteProperty($id: ID!) {
                 deleteProperty(id: $id) { id }
@@ -206,7 +207,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
             null
         )
 
-        return networkClient.execute {
+        return networkClient.execute(RetryConfigs.PROPERTY_FEED) {
             suspendCancellableCoroutine { continuation ->
                 Amplify.API.query(request,
                     { response -> 
@@ -220,7 +221,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = networkClient.execute {
+    override suspend fun fetchLikedProperties(userId: String): AppResult<List<PropertyEntityModel>> = networkClient.execute(RetryConfigs.PROPERTY_FEED) {
         val query = $$"""
             query ListLikedProperties($userId: ID!) {
                 listLikedProperties(userId: $userId) {
@@ -245,7 +246,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute {
+    override suspend fun likeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute(RetryConfigs.PROPERTY_FEED) {
         val mutation = $$"""
             mutation LikeProperty($userId: ID!, $propertyId: ID!) {
                 likeProperty(userId: $userId, propertyId: $propertyId) { success }
@@ -267,7 +268,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute {
+    override suspend fun unlikeProperty(userId: String, propertyId: String): AppResult<Unit> = networkClient.execute(RetryConfigs.PROPERTY_FEED) {
         val mutation = $$"""
             mutation UnlikeProperty($userId: ID!, $propertyId: ID!) {
                 unlikeProperty(userId: $userId, propertyId: $propertyId) { success }
@@ -289,7 +290,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun recordView(propertyId: String): AppResult<Unit> = networkClient.execute {
+    override suspend fun recordView(propertyId: String): AppResult<Unit> = networkClient.execute(RetryConfigs.ANALYTICS) {
         val mutation = $$"""
             mutation RecordView($propertyId: ID!) {
                 recordView(propertyId: $propertyId) { success }
@@ -311,7 +312,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun recordShare(propertyId: String): AppResult<Unit> = networkClient.execute {
+    override suspend fun recordShare(propertyId: String): AppResult<Unit> = networkClient.execute(RetryConfigs.ANALYTICS) {
         val mutation = $$"""
             mutation RecordShare($propertyId: ID!) {
                 recordShare(propertyId: $propertyId) { success }
@@ -369,7 +370,7 @@ internal class AwsPropertyRemoteDataSource @Inject constructor(
             null
         )
 
-        return networkClient.execute {
+        return networkClient.execute(RetryConfigs.PROPERTY_FEED) {
             suspendCancellableCoroutine { continuation ->
                 Amplify.API.query(request,
                     { response -> 

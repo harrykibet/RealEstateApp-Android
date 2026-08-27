@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
  * Contract test for [ChaosFileSystem] to ensure it correctly applies chaos behaviors.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-open class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBehavior>() {
+open class ChaosFileSystemContract : FileSystemChaosContract() {
 
     override fun createSubject(behavior: FileSystemBehavior): ChaosFileSystem {
         return ChaosFileSystem(FakeFileSystem()).apply {
@@ -24,19 +24,24 @@ open class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBe
         }
     }
 
+    override suspend fun performOperation(subject: IFileSystem): Any? {
+        return subject.exists(File("test.txt"))
+    }
+
     @Test
     override fun cancellationPropagates() = runTest {
         val scheduler = TestScheduler()
         val hangingFs = object : IFileSystem by FakeFileSystem() {
-            override suspend fun writeBytes(file: File, bytes: ByteArray) {
-                scheduler.release("writing")
+            override suspend fun exists(file: File): Boolean {
+                scheduler.release("hanging")
                 delay(10.seconds)
+                return true
             }
         }
         val fs = ChaosFileSystem(hangingFs)
         
-        launchAndDestroy(scheduler, "writing") {
-            fs.writeBytes(File("test.txt"), byteArrayOf(1))
+        launchAndDestroy(scheduler, "hanging") {
+            performOperation(fs)
         }
     }
 
@@ -45,6 +50,7 @@ open class ChaosFileSystemContract : ChaosContract<ChaosFileSystem, FileSystemBe
         val fs = createSubject(FileSystemBehavior.DiskFull)
         fs.writeBytes(File("test.txt"), byteArrayOf(1))
     }
+
 
     @Test(expected = java.io.IOException::class)
     fun failNextPermissionDeniedAffectsExists() = runTest {

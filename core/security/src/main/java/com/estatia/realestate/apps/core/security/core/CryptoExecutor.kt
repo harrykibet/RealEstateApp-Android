@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.security.interfaces.ICryptoExecutor
 import com.estatia.realestate.apps.core.security.interfaces.ISecurityExceptionTranslator
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,6 +32,9 @@ class CryptoExecutor @Inject constructor(
     ): AppResult<T> {
         return try {
             AppResult.Success(operation())
+        } catch (cancellation: CancellationException) {
+            // 🏎️ Fidelity: Rethrow cancellation to respect coroutine contracts.
+            throw cancellation
         } catch (throwable: Throwable) {
             val securityException = translator.translate(throwable, defaultException)
 

@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
+import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
@@ -36,9 +37,19 @@ class FirestorePropertiesTest {
         networkChaos = NetworkChaosController()
         
         val exceptionMapper = mockk<IExceptionMapper>(relaxed = true)
+        // Ensure it maps SocketTimeoutException to something retryable for the policy
+        every { exceptionMapper.map(any()) } answers {
+            val throwable = it.invocation.args[0] as Throwable
+            if (throwable is java.net.SocketTimeoutException) com.estatia.realestate.apps.core.common.exceptions.NetworkException.Timeout
+            else com.estatia.realestate.apps.core.common.exceptions.NetworkException.ConnectionFailed
+        }
+
+        val retryPolicy = ExponentialRetryPolicy(exceptionMapper)
+
         val networkClient = ChaosNetworkClient(
             networkChaos = networkChaos,
-            exceptionMapper = exceptionMapper
+            exceptionMapper = exceptionMapper,
+            retryPolicy = retryPolicy
         )
         
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
@@ -65,19 +76,14 @@ class FirestorePropertiesTest {
         val likedTask = mockk<Task<QuerySnapshot>>()
         every { likedCollRef.get() } returns likedTask
         
-        var attempt = 0
-        coEvery { likedTask.await() } coAnswers {
-            attempt++
-            if (attempt == 1) throw IOException("Timeout (Chaos)")
-            likedSnapshot
-        }
+        coEvery { likedTask.await() } returns likedSnapshot
         every { likedSnapshot.documents } returns emptyList()
 
-        // 🧪 The scenario is already pre-configured for Timeout -> Success
+        // 🧪 The scenario is now driven by the production retry implementation.
+        // It should catch the first Timeout and retry, hitting Success on the second attempt.
         val result = firestoreProperties.fetchLikedProperties(userId)
         
-        // If the real networkClient doesn't retry, it should be an Error
-        assert(result is AppResult.Error)
+        assert(result is AppResult.Success)
 
         unmockkStatic("kotlinx.coroutines.tasks.TasksKt")
     }

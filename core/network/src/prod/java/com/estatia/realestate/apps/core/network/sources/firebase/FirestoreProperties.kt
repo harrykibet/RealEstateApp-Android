@@ -22,6 +22,8 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
+import com.estatia.realestate.apps.core.network.core.RetryConfig
+import com.estatia.realestate.apps.core.network.core.RetryConfigs
 import com.estatia.realestate.apps.core.network.db_entities.PropertyRemotePage
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
@@ -220,7 +222,7 @@ internal class FirestoreProperties @Inject constructor(
         userId: String
     ): AppResult<List<PropertyEntityModel>> {
 
-        return networkClient.execute {
+        return networkClient.execute(RetryConfigs.PROPERTY_FEED) {
 
             val likedPropertyIds = database.collection(USERS)
                 .document(userId)
@@ -361,7 +363,7 @@ internal class FirestoreProperties @Inject constructor(
     ): AppResult<PropertyRemotePage> {
 
 
-        return networkClient.execute {
+        return networkClient.execute(RetryConfigs.PROPERTY_FEED) {
 
 
             val query =

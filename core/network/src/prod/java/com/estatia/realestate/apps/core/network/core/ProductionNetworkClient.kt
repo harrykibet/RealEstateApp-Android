@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -46,6 +47,9 @@ class ProductionNetworkClient @Inject constructor(
 
             AppResult.Success(data)
 
+        } catch (cancellation: CancellationException) {
+            // 🏎️ Fidelity: Rethrow cancellation to respect coroutine contracts.
+            throw cancellation
         } catch (
             throwable: Throwable
         ) {

@@ -13,6 +13,7 @@ import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -50,6 +51,9 @@ internal class AuthRepository @Inject constructor(
                 }
         } catch (e: AuthException) {
             AppResult.Error(e)
+        } catch (e: CancellationException) {
+            // 🏎️ Fidelity: Rethrow cancellation to respect coroutine contracts.
+            throw e
         } catch (e: Exception) {
             AppResult.Error(AuthException.Unknown(e))
         }
@@ -67,6 +71,9 @@ internal class AuthRepository @Inject constructor(
                 }
         } catch (e: AuthException) {
             AppResult.Error(e)
+        } catch (e: CancellationException) {
+            // 🏎️ Fidelity: Rethrow cancellation to respect coroutine contracts.
+            throw e
         } catch (e: Exception) {
             AppResult.Error(AuthException.Unknown(e))
         }

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.testing_network.di
 
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
+import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
@@ -25,8 +26,9 @@ object TestNetworkModule {
         networkChaos: NetworkChaosController,
         concurrencyChaos: ConcurrencyChaosController,
         lifecycleChaos: LifecycleChaosController,
-        exceptionMapper: IExceptionMapper
-    ): INetworkClient = ChaosNetworkClient(networkChaos, concurrencyChaos, lifecycleChaos, exceptionMapper)
+        exceptionMapper: IExceptionMapper,
+        retryPolicy: IRetryPolicy
+    ): INetworkClient = ChaosNetworkClient(networkChaos, concurrencyChaos, lifecycleChaos, exceptionMapper, retryPolicy)
 
     @Provides
     @Singleton

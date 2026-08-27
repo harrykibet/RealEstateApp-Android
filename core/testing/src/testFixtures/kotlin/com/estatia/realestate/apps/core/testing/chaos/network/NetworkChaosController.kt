@@ -30,20 +30,27 @@ class NetworkChaosController {
     }
 
     /**
-     * Executes the next behavior in the script, or Success if no script is active.
+     * Retrieves the next behavior in the script without applying it.
+     * Used by the client to handle semantic chaos.
+     */
+    fun popNext(): NetworkBehavior {
+        return if (currentIndex < script.size) {
+            script[currentIndex++]
+        } else {
+            NetworkBehavior.Success
+        }
+    }
+
+    /**
+     * Executes the next behavior in the script.
+     * ⚠️ WARNING: This will throw for Exception Injection types but returns immediately
+     * for Semantic types. Prefer using [popNext] in semantic-aware clients.
      */
     suspend fun executeNext() {
         if (serverScenario != ServerScenario.ValidResponse) {
             applyServerScenario(serverScenario)
         }
-
-        val behavior = if (currentIndex < script.size) {
-            script[currentIndex++]
-        } else {
-            NetworkBehavior.Success
-        }
-
-        applyBehavior(behavior)
+        applyBehavior(popNext())
     }
 
     private fun applyServerScenario(scenario: ServerScenario) {
@@ -58,7 +65,11 @@ class NetworkChaosController {
         }
     }
 
-    private suspend fun applyBehavior(behavior: NetworkBehavior) {
+    /**
+     * Internal helper to apply the behavior (throw or delay).
+     * Used by the client to drive the failure.
+     */
+    suspend fun applyBehavior(behavior: NetworkBehavior) {
         when (behavior) {
             NetworkBehavior.Success -> Unit
             NetworkBehavior.Offline -> throw IOException("No network connectivity (Chaos)")
@@ -70,14 +81,15 @@ class NetworkChaosController {
             is NetworkBehavior.HttpError -> throw IOException("HTTP ${behavior.statusCode} (Chaos)")
             NetworkBehavior.MalformedResponse -> throw IOException("Malformed response data (Chaos)")
             NetworkBehavior.EmptyResponse -> throw IOException("Empty response body (Chaos)")
-            NetworkBehavior.PartialResponse -> throw IOException("Unexpected end of stream (Chaos)")
             NetworkBehavior.UnexpectedSchema -> throw IOException("Unexpected response schema (Chaos)")
             NetworkBehavior.OversizedResponse -> throw IOException("Response exceeds buffer size (Chaos)")
-            NetworkBehavior.DuplicateResponse -> throw IOException("Duplicate network response (Chaos)")
-            NetworkBehavior.OutOfOrderResponse -> throw IOException("Network response arrived out of order (Chaos)")
+            
+            // --- Semantic Chaos (Handled by the Client) ---
+            NetworkBehavior.PartialResponse,
+            NetworkBehavior.DuplicateResponse,
+            NetworkBehavior.OutOfOrderResponse -> Unit 
+            
             NetworkBehavior.ServerSuccessClientTimeout -> {
-                // 🧪 Specific case: Server processed the request but the client didn't wait long enough
-                // to receive the 'success' acknowledgement.
                 throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
             }
             is NetworkBehavior.InvalidBody -> throw IOException("HTTP 400 Bad Request (Chaos): ${behavior.payload}")

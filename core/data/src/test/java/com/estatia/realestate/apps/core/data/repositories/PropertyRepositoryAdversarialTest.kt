@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import android.net.Uri
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
@@ -23,9 +22,15 @@ import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
 import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -34,6 +39,7 @@ import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PropertyRepositoryAdversarialTest {
 
     private lateinit var localDataSource: IPropertyLocalDataSource
@@ -49,6 +55,9 @@ class PropertyRepositoryAdversarialTest {
 
     @Before
     fun setup() {
+        mockkStatic(Uri::class)
+        every { Uri.parse(any()) } returns mockk(relaxed = true)
+
         localDataSource = mockk(relaxed = true)
         remoteDataSource = FakePropertyRemoteDataSource()
         userRepository = mockk(relaxed = true)
@@ -66,6 +75,11 @@ class PropertyRepositoryAdversarialTest {
             contentSafetyService,
             exceptionTranslator
         )
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(Uri::class)
     }
 
     @Test
@@ -118,7 +132,7 @@ class PropertyRepositoryAdversarialTest {
                 videoUris: List<Uri>
             ): AppResult<String> {
                 scheduler.release("reached_remote")
-                kotlinx.coroutines.awaitCancellation()
+                awaitCancellation()
             }
         }
 
@@ -127,7 +141,9 @@ class PropertyRepositoryAdversarialTest {
             engagementRepository, contentSafetyService, exceptionTranslator
         )
 
-        val job = launch {
+        // Use UnconfinedTestDispatcher to ensure the coroutine advances 
+        // to the suspension point immediately and releases the scheduler.
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             adversarialRepo.uploadProperty(property, emptyList(), emptyList())
         }
         

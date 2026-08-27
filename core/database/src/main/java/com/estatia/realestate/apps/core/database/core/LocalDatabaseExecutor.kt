@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import kotlinx.coroutines.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 import javax.inject.Inject
 
@@ -35,6 +36,9 @@ internal class LocalDatabaseExecutor @Inject constructor(
             metricsTracker.incrementCounter("database.operation.success")
             
             AppResult.Success(result)
+        } catch (cancellation: CancellationException) {
+            // 🏎️ Fidelity: Rethrow cancellation to respect coroutine contracts.
+            throw cancellation
         } catch (throwable: Throwable) {
             val duration = System.currentTimeMillis() - startTime
             metricsTracker.trackDuration("database.operation.latency", duration.milliseconds)
