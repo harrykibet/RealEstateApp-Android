@@ -42,27 +42,16 @@ class MediaUploadResilienceTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         mockkStatic(Uri::class)
-        every { Uri.parse(any()) } answers {
-            val mock = mockk<Uri>(relaxed = true)
-            every { mock.toString() } returns it.invocation.args[0] as String
-            mock
-        }
+        every { Uri.parse(any()) } answers { mockk<Uri>(relaxed = true) }
 
         networkChaos = NetworkChaosController()
         val exceptionMapper = mockk<com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper>()
         every { exceptionMapper.map(any()) } answers {
-            val t = firstArg<Throwable>()
-            println("🧪 Mapping exception: ${t.javaClass.simpleName} - ${t.message}")
+            val t = it.invocation.args[0] as Throwable
             when {
                 t is AppException -> t
-                t is SocketTimeoutException || t.message?.contains("timed out") == true -> {
-                    println("🧪 Detected Timeout, returning NetworkException.Timeout")
-                    NetworkException.Timeout
-                }
-                else -> {
-                    println("🧪 Falling back to ConnectionFailed")
-                    NetworkException.ConnectionFailed
-                }
+                t is SocketTimeoutException || t.message?.contains("timed out") == true -> NetworkException.Timeout
+                else -> NetworkException.ConnectionFailed
             }
         }
         val retryPolicy = com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy(exceptionMapper)

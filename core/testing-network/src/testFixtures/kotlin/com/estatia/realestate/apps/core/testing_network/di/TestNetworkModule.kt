@@ -1,30 +1,30 @@
 package com.estatia.realestate.apps.core.testing_network.di
 
-import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
-import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
+import com.estatia.realestate.apps.core.network.di.*
+import com.estatia.realestate.apps.core.network.interfaces.*
 import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyChaosController
 import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
-import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
-import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
-import com.estatia.realestate.apps.core.network.interfaces.ISearchRemoteDataSource
 import com.estatia.realestate.apps.core.testing_network.chaos.EstatiaTestScenario
+import com.estatia.realestate.apps.core.testing_network.chaos.interceptors.ChaosInterceptor
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakeAuthRemoteDataSource
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakePropertyRemoteDataSource
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakeSearchRemoteDataSource
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 /**
  * Hilt module for providing adversarial network infrastructure in integration tests.
+ * Complements production modules by providing a ChaosInterceptor and Fake sources.
  */
 @Module
-@InstallIn(SingletonComponent::class)
+@dagger.hilt.InstallIn(SingletonComponent::class)
 object TestNetworkModule {
 
     @Provides
@@ -36,6 +36,20 @@ object TestNetworkModule {
         exceptionMapper: IExceptionMapper,
         retryPolicy: IRetryPolicy
     ): INetworkClient = ChaosNetworkClient(networkChaos, concurrencyChaos, lifecycleChaos, exceptionMapper, retryPolicy)
+
+    @Provides
+    @Singleton
+    @IntoSet
+    @NetworkInterceptors
+    fun bindChaosInterceptor(
+        interceptor: ChaosInterceptor
+    ): Interceptor = interceptor
+
+    @Provides
+    @Singleton
+    fun provideChaosInterceptor(
+        networkChaos: NetworkChaosController
+    ): ChaosInterceptor = ChaosInterceptor(networkChaos)
 
     @Provides
     @Singleton

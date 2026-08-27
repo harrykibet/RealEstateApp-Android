@@ -28,6 +28,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.net.SocketTimeoutException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchResilienceTest {
@@ -50,7 +51,7 @@ class SearchResilienceTest {
         val exceptionMapper = mockk<com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper>()
         every { exceptionMapper.map(any()) } answers {
             val t = firstArg<Throwable>()
-            if (t is java.net.SocketTimeoutException) NetworkException.Timeout
+            if (t is SocketTimeoutException || t.message?.contains("timed out") == true) NetworkException.Timeout
             else NetworkException.ConnectionFailed
         }
         val retryPolicy = com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy(exceptionMapper)

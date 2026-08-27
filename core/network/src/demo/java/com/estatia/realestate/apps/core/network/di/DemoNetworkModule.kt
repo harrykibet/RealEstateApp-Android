@@ -13,6 +13,7 @@ import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.core.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig
+import com.estatia.realestate.apps.core.network.di.NetworkInterceptors
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
@@ -30,6 +31,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -127,7 +129,15 @@ object DemoNetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+    fun provideOkHttpClient(
+        @NetworkInterceptors interceptors: Set<@JvmSuppressWildcards Interceptor>
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .apply {
+                interceptors.forEach { addInterceptor(it) }
+            }
+            .build()
+    }
 
     @Provides
     @Singleton

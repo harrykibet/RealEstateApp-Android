@@ -41,7 +41,8 @@ class AddPropertyViewModelTest {
         Dispatchers.setMain(testDispatcher)
         
         mockkStatic(Uri::class)
-        every { Uri.parse(any()) } answers { mockk<Uri>(relaxed = true) }
+        val mockUri = mockk<Uri>(relaxed = true)
+        every { Uri.parse(any()) } returns mockUri
 
         repository = mockk()
         authRepository = mockk()
@@ -81,7 +82,6 @@ class AddPropertyViewModelTest {
         viewModel.draft.assertProperty("Villa") { title }
         
         advanceTimeBy(11.seconds)
-        runCurrent()
         
         viewModel.draft.assertProperty(emptySet<String>()) { amenities }
     }

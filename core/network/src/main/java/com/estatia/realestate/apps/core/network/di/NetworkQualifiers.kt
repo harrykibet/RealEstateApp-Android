@@ -22,3 +22,11 @@ annotation class UploadClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class PlaybackClient
+
+/**
+ * Qualifier for a set of OkHttp interceptors to be added to all network clients.
+ * Used to inject ChaosInterceptor in test environments.
+ */
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NetworkInterceptors

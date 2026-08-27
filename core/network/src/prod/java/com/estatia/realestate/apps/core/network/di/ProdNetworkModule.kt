@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.ConnectionPool
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
@@ -84,11 +85,15 @@ object ProdNetworkModule {
     fun provideBaseOkHttpClient(
         connectionPool: ConnectionPool,
         tracingInterceptor: TracingInterceptor,
-        networkConfig: INetworkConfig
+        networkConfig: INetworkConfig,
+        @NetworkInterceptors interceptors: Set<@JvmSuppressWildcards Interceptor>
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectionPool(connectionPool)
             .addInterceptor(tracingInterceptor)
+            .apply {
+                interceptors.forEach { addInterceptor(it) }
+            }
             .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
             .apply {
                 if (networkConfig.isHttpLoggingEnabled) {

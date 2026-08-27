@@ -21,4 +21,5 @@ dependencies {
     testFixturesApi(projects.core.domain)
     testFixturesApi(projects.core.model)
     testFixturesApi(projects.core.common)
+    testFixturesApi(libs.okhttp)
 }
