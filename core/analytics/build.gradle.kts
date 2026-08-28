@@ -16,5 +16,6 @@ dependencies {
     implementation(libs.bundles.analytics)
     implementation(libs.bundles.firebase)
     implementation(projects.core.common)
-
+    api(libs.protobufJava)
+    testImplementation(libs.protobufJava)
 }

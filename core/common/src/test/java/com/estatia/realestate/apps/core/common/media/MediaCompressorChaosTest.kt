@@ -29,8 +29,8 @@ class MediaCompressorChaosTest {
         chaosFileSystem = ChaosFileSystem(fakeFileSystem)
         compressor = MediaCompressor(logger, chaosFileSystem)
         
-        mockkStatic(MediaFileUtils::class)
-        mockkStatic(FileUtils::class)
+        mockkObject(MediaFileUtils)
+        mockkObject(FileUtils)
     }
 
     @Test

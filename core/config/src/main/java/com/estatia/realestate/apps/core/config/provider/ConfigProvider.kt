@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.config.provider
 
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
 import com.estatia.realestate.apps.core.config.parser.ConfigParser
@@ -101,19 +102,31 @@ internal class ConfigProvider @Inject constructor(
     override suspend fun refresh() {
 
         val result = dataRepository.fetchRemoteConfig()
-        
-        if (result is AppResult.Success<*>) {
-            val remoteJson = result.data as? String ?: return
 
-            val parsedResult = runCatching {
-                // For remote refresh, we still assume a single unified RemoteConfigModel
-                // but we might need to handle the new structure if the backend changes.
-                // For now, this parse() will expect the new RemoteConfigModel structure.
-                parser.parse(remoteJson)
+        when (result) {
+            is AppResult.Success -> {
+                val remoteJson = result.data as? String ?: return
+
+                val parsedResult = runCatching {
+                    parser.parse(remoteJson)
+                }
+                val parsed = parsedResult.getOrNull()
+
+                if (parsed != null) {
+                    applyConfig(parsed)
+                } else {
+                    metricsTracker.incrementCounter(
+                        "config_refresh_failed",
+                        mapOf("reason" to "parse_error")
+                    )
+                }
             }
-            val parsed = parsedResult.getOrNull() ?: return
-
-            applyConfig(parsed)
+            is AppResult.Error -> {
+                metricsTracker.incrementCounter(
+                    "config_refresh_failed",
+                    mapOf("reason" to (result.exception.javaClass.simpleName ?: "unknown"))
+                )
+            }
         }
     }
 

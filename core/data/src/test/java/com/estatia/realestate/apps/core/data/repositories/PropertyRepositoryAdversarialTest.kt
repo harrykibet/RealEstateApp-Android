@@ -23,16 +23,10 @@ import com.estatia.realestate.apps.core.testing_network.fake.source.FakeProperty
 import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import com.estatia.realestate.apps.core.testing.clock.TestClock
-import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
-import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.*
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.*
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -70,6 +64,10 @@ class PropertyRepositoryAdversarialTest {
         metricsTracker = mockk(relaxed = true)
         engagementRepository = mockk(relaxed = true)
         contentSafetyService = mockk(relaxed = true)
+        coEvery { contentSafetyService.validateText(any()) } returns SafetyResult.Safe
+        coEvery { contentSafetyService.validateImage(any()) } returns SafetyResult.Safe
+        coEvery { contentSafetyService.validateVideo(any()) } returns SafetyResult.Safe
+        
         exceptionTranslator = mockk(relaxed = true)
         clock = TestClock()
         
@@ -127,11 +125,10 @@ class PropertyRepositoryAdversarialTest {
     }
 
     @Test
-    fun `uploadProperty propagates cancellation mid-flight using test scheduler`() = runTest {
+    fun `uploadProperty propagates cancellation mid-flight`() = runTest {
         val property = PropertyFixtures.default()
-        val scheduler = TestScheduler()
+        val reachedRemote = CompletableDeferred<Unit>()
         
-        // Use a manual fake for this test to control suspension safely
         val hangingRemote = object : IPropertyRemoteDatasource by FakePropertyRemoteDataSource() {
             override suspend fun uploadProperty(
                 property: PropertyEntityModel,
@@ -139,7 +136,7 @@ class PropertyRepositoryAdversarialTest {
                 imageUris: List<Uri>,
                 videoUris: List<Uri>
             ): AppResult<String> {
-                scheduler.release("reached_remote")
+                reachedRemote.complete(Unit)
                 awaitCancellation()
             }
         }
@@ -150,15 +147,16 @@ class PropertyRepositoryAdversarialTest {
             clock
         )
 
-        // Use UnconfinedTestDispatcher to ensure the coroutine advances 
-        // to the suspension point immediately and releases the scheduler.
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             adversarialRepo.uploadProperty(property, emptyList(), emptyList())
         }
         
-        scheduler.awaitPoint("reached_remote")
-        job.cancel()
-        job.join()
+        // Pump the scheduler until the remote is reached
+        while (!reachedRemote.isCompleted) {
+            yield()
+        }
+        
+        job.cancelAndJoin()
     }
 
     @Test

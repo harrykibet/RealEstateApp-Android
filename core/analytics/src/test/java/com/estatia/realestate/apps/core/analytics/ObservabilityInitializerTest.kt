@@ -48,7 +48,7 @@ class ObservabilityInitializerTest {
             securityConfig
         )
 
-        Metrics.globalRegistry.registries.forEach { Metrics.removeRegistry(it) }
+        Metrics.globalRegistry.registries.toList().forEach { Metrics.removeRegistry(it) }
     }
 
     @Test

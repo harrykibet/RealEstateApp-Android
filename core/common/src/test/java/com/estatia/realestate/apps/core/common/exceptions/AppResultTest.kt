@@ -41,13 +41,21 @@ class AppResultTest {
 
     @Test
     fun `fold calls onError for error`() {
-        val result: AppResult<String> = AppResult.Error(RemoteServiceException.Unknown(Exception("fail")))
-        val output = result.fold(
-            onSuccess = { "Success: $it" },
-            onError = { "Error: ${it.message}" }
+        val cause = Exception("fail")
+        val exception = RemoteServiceException.Unknown(cause)
+        val result: AppResult<String> = AppResult.Error(exception)
+
+        var received: AppException? = null
+
+        result.fold(
+            onSuccess = { error("onSuccess should not be called") },
+            onError = {
+                received = it
+                Unit
+            }
         )
-        
-        assertEquals("Error: fail", output)
+
+        assertEquals(exception, received)
     }
 
     @Test
