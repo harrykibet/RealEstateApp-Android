@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing.chaos.time
 
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 
 /**
@@ -10,7 +11,7 @@ import com.estatia.realestate.apps.core.testing.clock.TestClock
  * (e.g., normal flow -> sudden jump -> frozen clock). Consistency with other chaos controllers
  * ensures a predictable mental model for adversarial testing.
  */
-class ChaosClock(private val delegate: TestClock) {
+class ChaosClock(private val delegate: TestClock) : IClock {
 
     private var script: List<TimeBehavior> = emptyList()
     private var currentIndex = 0
@@ -30,7 +31,7 @@ class ChaosClock(private val delegate: TestClock) {
         script(behavior)
     }
 
-    fun currentTimeMillis(): Long {
+    override fun currentTimeMillis(): Long {
         val behavior = if (currentIndex < script.size) {
             script[currentIndex++]
         } else {

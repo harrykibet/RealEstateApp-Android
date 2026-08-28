@@ -8,17 +8,21 @@ import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.data.mappers.remote.RemotePropertyMapper
+import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
+import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.testing.assertions.assertError
 import com.estatia.realestate.apps.core.testing.assertions.assertSuccess
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakePropertyRemoteDataSource
 import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
+import com.estatia.realestate.apps.core.testing.clock.TestClock
 import com.estatia.realestate.apps.core.testing.coroutine.TestScheduler
 import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.*
@@ -26,6 +30,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
@@ -49,6 +54,7 @@ class PropertyRepositoryAdversarialTest {
     private lateinit var engagementRepository: IEngagementRepository
     private lateinit var contentSafetyService: IContentSafetyService
     private lateinit var exceptionTranslator: IExceptionTranslator
+    private lateinit var clock: IClock
     private lateinit var repository: PropertyRepository
 
     private val fakeRemoteSource get() = remoteDataSource as FakePropertyRemoteDataSource
@@ -65,6 +71,7 @@ class PropertyRepositoryAdversarialTest {
         engagementRepository = mockk(relaxed = true)
         contentSafetyService = mockk(relaxed = true)
         exceptionTranslator = mockk(relaxed = true)
+        clock = TestClock()
         
         repository = PropertyRepository(
             localDataSource,
@@ -73,7 +80,8 @@ class PropertyRepositoryAdversarialTest {
             metricsTracker,
             engagementRepository,
             contentSafetyService,
-            exceptionTranslator
+            exceptionTranslator,
+            clock
         )
     }
 
@@ -102,13 +110,13 @@ class PropertyRepositoryAdversarialTest {
         fakeRemoteSource.setNextBehavior(DatabaseBehavior.Unavailable)
         
         // Local user has liked IDs
-        val mockUserData = mockk<com.estatia.realestate.apps.core.model.user.UserData>(relaxed = true) {
+        val mockUserData = mockk<UserData>(relaxed = true) {
             every { likedProperties } returns setOf("liked_1", "liked_2")
         }
-        every { userRepository.userData } returns kotlinx.coroutines.flow.flowOf(mockUserData)
+        every { userRepository.userData } returns flowOf(mockUserData)
         
         // Local cache has the properties
-        val cached = listOf(mockk<com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity>(relaxed = true))
+        val cached = listOf(mockk<PropertyCacheEntity>(relaxed = true))
         coEvery { localDataSource.getCachedPropertiesByIds(any()) } returns AppResult.Success(cached)
 
         val result = repository.fetchLikedProperties("user_1")
@@ -138,7 +146,8 @@ class PropertyRepositoryAdversarialTest {
 
         val adversarialRepo = PropertyRepository(
             localDataSource, hangingRemote, userRepository, metricsTracker, 
-            engagementRepository, contentSafetyService, exceptionTranslator
+            engagementRepository, contentSafetyService, exceptionTranslator,
+            clock
         )
 
         // Use UnconfinedTestDispatcher to ensure the coroutine advances 

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.common.interfaces
 /**
  * Interface for time-related operations to allow for deterministic testing.
  */
-interface IClock {
+fun interface IClock {
     /**
      * Returns the current time in milliseconds.
      */
