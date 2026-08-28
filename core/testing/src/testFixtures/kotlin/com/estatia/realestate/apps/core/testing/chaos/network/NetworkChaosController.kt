@@ -87,7 +87,7 @@ class NetworkChaosController {
             NetworkBehavior.ConnectionRefused -> throw IOException("Connection refused (Chaos)")
             NetworkBehavior.DnsFailure -> throw IOException("DNS resolution failed (Chaos)")
             is NetworkBehavior.Delay -> delay(behavior.duration)
-            is NetworkBehavior.HttpError -> throw IOException("HTTP ${behavior.statusCode} (Chaos)")
+            is NetworkBehavior.HttpError -> throw HttpStatusException(behavior.statusCode)
             NetworkBehavior.MalformedResponse -> throw IOException("Malformed response data (Chaos)")
             NetworkBehavior.EmptyResponse -> throw IOException("Empty response body (Chaos)")
             NetworkBehavior.UnexpectedSchema -> throw IOException("Unexpected response schema (Chaos)")
@@ -101,7 +101,15 @@ class NetworkChaosController {
             NetworkBehavior.ServerSuccessClientTimeout -> {
                 throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
             }
-            is NetworkBehavior.InvalidBody -> throw IOException("HTTP 400 Bad Request (Chaos): ${behavior.payload}")
+            is NetworkBehavior.InvalidBody -> throw HttpStatusException(400)
         }
     }
 }
+
+/**
+ * Custom exception that carries HTTP status codes for chaos injection.
+ * Allows the [IExceptionMapper] to correctly classify retryability based on status.
+ */
+class HttpStatusException(
+    val statusCode: Int
+) : IOException("HTTP $statusCode (Chaos)")

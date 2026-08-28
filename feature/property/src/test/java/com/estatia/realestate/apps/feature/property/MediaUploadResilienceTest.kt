@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
+import com.estatia.realestate.apps.core.testing.chaos.network.HttpStatusException
 import com.estatia.realestate.apps.core.testing.fake.analytics.FakeEngagementRepository
 import com.estatia.realestate.apps.core.testing.fake.source.FakePropertyLocalDataSource
 import com.estatia.realestate.apps.core.testing_network.chaos.ChaosNetworkClient
@@ -60,6 +61,14 @@ class MediaUploadResilienceTest {
             when {
                 t is NetworkException -> t
                 t is SocketTimeoutException || t.message?.contains("timed out") == true -> NetworkException.Timeout
+                t is HttpStatusException -> {
+                    when (t.statusCode) {
+                        401 -> NetworkException.Unauthorized
+                        in 400..499 -> NetworkException.ClientError(t.statusCode)
+                        in 500..599 -> NetworkException.ServerError(t.statusCode)
+                        else -> NetworkException.Unknown(t)
+                    }
+                }
                 else -> NetworkException.ConnectionFailed
             }
         }
@@ -184,6 +193,6 @@ class MediaUploadResilienceTest {
         advanceUntilIdle()
 
         assertEquals("Expected exactly 1 attempt", 1, actualAttempts)
-        assertTrue("Expected ConnectionFailed (from mapping 401)", caughtException is NetworkException.ConnectionFailed)
+        assertTrue("Expected Unauthorized exception", caughtException is NetworkException.Unauthorized)
     }
 }

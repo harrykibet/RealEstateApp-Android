@@ -60,12 +60,13 @@ class NetworkChaosControllerTest {
     }
 
     @Test
-    fun `HttpError throws with status code`() = runTest {
+    fun `HttpError throws HttpStatusException with correct code`() = runTest {
         controller.script(NetworkBehavior.HttpError(404))
         try {
             controller.executeNext()
             fail("Should have thrown HttpError")
-        } catch (e: IOException) {
+        } catch (e: HttpStatusException) {
+            assertEquals(404, e.statusCode)
             assertEquals("HTTP 404 (Chaos)", e.message)
         }
     }
