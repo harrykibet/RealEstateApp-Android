@@ -22,4 +22,5 @@ dependencies {
     testFixturesApi(projects.core.model)
     testFixturesApi(projects.core.common)
     testFixturesApi(libs.okhttp)
+    testFixturesApi(libs.okhttp.mockwebserver)
 }

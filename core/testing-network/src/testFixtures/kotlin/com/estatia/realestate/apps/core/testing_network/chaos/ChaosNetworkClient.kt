@@ -26,7 +26,8 @@ class ChaosNetworkClient(
     private val concurrencyChaos: ConcurrencyChaosController = ConcurrencyChaosController(),
     private val lifecycleChaos: LifecycleChaosController = LifecycleChaosController(),
     private val exceptionMapper: IExceptionMapper,
-    private val retryPolicy: IRetryPolicy
+    private val retryPolicy: IRetryPolicy,
+    private val onAttempt: () -> Unit = {}
 ) : INetworkClient {
 
     private val heldRequests = Channel<CompletableDeferred<Unit>>(Channel.UNLIMITED)
@@ -37,6 +38,9 @@ class ChaosNetworkClient(
     ): AppResult<T> {
         return try {
             val data = retryPolicy.execute(config) {
+                // 🏎️ Track attempt before any chaos can throw
+                onAttempt()
+
                 // 1. Inject before-request lifecycle/concurrency checks
                 lifecycleChaos.checkChaos()
                 concurrencyChaos.checkChaos("network_pre_execute")

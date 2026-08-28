@@ -8,4 +8,5 @@ digraph {
   ":" -> ":core:navigation"
   ":" -> ":core:model"
   ":" -> ":core:design-system"
+  ":" -> ":core:testing"
 }

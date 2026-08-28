@@ -54,7 +54,7 @@ class SearchResilienceTest {
             if (t is SocketTimeoutException || t.message?.contains("timed out") == true) NetworkException.Timeout
             else NetworkException.ConnectionFailed
         }
-        val retryPolicy = com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy(exceptionMapper)
+        val retryPolicy = com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy(exceptionMapper, mockk(relaxed = true))
         
         val chaosNetworkClient = ChaosNetworkClient(
             networkChaos = networkChaos,

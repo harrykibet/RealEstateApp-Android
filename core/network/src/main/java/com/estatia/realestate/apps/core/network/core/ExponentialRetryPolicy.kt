@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.network.core
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.RetryableException
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
 import kotlinx.coroutines.delay
@@ -23,7 +24,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class ExponentialRetryPolicy @Inject constructor(
     private val exceptionMapper: IExceptionMapper,
-    private val clock: () -> Long = { System.currentTimeMillis() }
+    private val clock: IClock
 ) : IRetryPolicy {
 
 
@@ -40,7 +41,7 @@ class ExponentialRetryPolicy @Inject constructor(
         var attempt = 0
         var delayMs = retryConfig.initialDelayMs
         var lastException: AppException? = null
-        val startTime = clock()
+        val startTime = clock.currentTimeMillis()
 
 
         while(
@@ -48,7 +49,7 @@ class ExponentialRetryPolicy @Inject constructor(
         ) {
             
             retryConfig.maxTotalDurationMs?.let { maxDuration ->
-                if (clock() - startTime > maxDuration) {
+                if (clock.currentTimeMillis() - startTime > maxDuration) {
                     throw lastException ?: IllegalStateException("Retry total duration exceeded")
                 }
             }

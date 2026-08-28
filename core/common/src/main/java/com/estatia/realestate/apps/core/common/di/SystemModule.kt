@@ -1,14 +1,16 @@
 package com.estatia.realestate.apps.core.common.di
 
+import android.content.Context
+import android.hardware.display.DisplayManager
 import android.os.PowerManager
-import dagger.hilt.components.SingletonComponent
+import com.estatia.realestate.apps.core.common.interfaces.IClock
+import com.estatia.realestate.apps.core.common.interfaces.SystemClock
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import android.content.Context
-import android.hardware.display.DisplayManager
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -25,4 +27,8 @@ object SystemModule {
     fun provideDisplayManager(@ApplicationContext context: Context): DisplayManager {
         return context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
+
+    @Provides
+    @Singleton
+    fun provideClock(): IClock = SystemClock()
 }

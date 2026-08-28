@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.network.di
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
@@ -13,16 +14,7 @@ import com.estatia.realestate.apps.core.network.core.ProductionNetworkClient
 import com.estatia.realestate.apps.core.network.error_mappers.ExceptionMapper
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
 import com.estatia.realestate.apps.core.network.interceptors.TracingInterceptor
-import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
-import com.estatia.realestate.apps.core.network.interfaces.IInfrastructureErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
-import com.estatia.realestate.apps.core.network.interfaces.INetworkErrorMapper
-import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
-import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
-import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
-import com.estatia.realestate.apps.core.network.BuildConfig
+import com.estatia.realestate.apps.core.network.interfaces.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -201,9 +193,10 @@ object ProdNetworkModule {
     @Provides
     @Singleton
     fun provideRetryPolicy(
-        exceptionMapper: IExceptionMapper
+        exceptionMapper: IExceptionMapper,
+        clock: IClock
     ): IRetryPolicy {
-        return ExponentialRetryPolicy(exceptionMapper)
+        return ExponentialRetryPolicy(exceptionMapper, clock)
     }
 
     @Provides

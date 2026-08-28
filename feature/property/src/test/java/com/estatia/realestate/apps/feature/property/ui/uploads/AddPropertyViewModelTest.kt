@@ -32,7 +32,7 @@ class AddPropertyViewModelTest {
     private lateinit var intelligenceService: IMediaIntelligenceService
     private lateinit var viewModel: AddPropertyViewModel
     private lateinit var savedStateHandle: SavedStateHandle
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
     
     private val propertyData = PropertyData()
 
@@ -42,6 +42,7 @@ class AddPropertyViewModelTest {
         
         mockkStatic(Uri::class)
         val mockUri = mockk<Uri>(relaxed = true)
+        every { mockUri.toString() } returns "mock_uri"
         every { Uri.parse(any()) } returns mockUri
 
         repository = mockk()
@@ -79,11 +80,14 @@ class AddPropertyViewModelTest {
         viewModel.addImage(uri)
         
         viewModel.updateTitle("Villa")
+        advanceUntilIdle()
+        
         viewModel.draft.assertProperty("Villa") { title }
         
         advanceTimeBy(11.seconds)
+        runCurrent()
         
-        viewModel.draft.assertProperty(emptySet<String>()) { amenities }
+        assertTrue("Amenities should be empty", viewModel.draft.value.amenities.isEmpty())
     }
 
     @Test
@@ -96,6 +100,7 @@ class AddPropertyViewModelTest {
 
         var caughtException: Exception? = null
         viewModel.saveProperty(onFailure = { caughtException = it }, onSuccess = {})
+        advanceUntilIdle()
 
         assertTrue(caughtException is PropertyException.SafetyViolation)
     }
@@ -105,10 +110,14 @@ class AddPropertyViewModelTest {
         val imageUri = mockk<Uri>(relaxed = true)
         val videoUri = mockk<Uri>(relaxed = true)
         
-        viewModel.addImage(imageUri)
-        viewModel.addVideo(videoUri)
-        
         viewModel.allMedia.test {
+            // Drop initial empty list
+            assertEquals(emptyList<Uri>(), awaitItem())
+            
+            viewModel.addImage(imageUri)
+            viewModel.addVideo(videoUri)
+            advanceUntilIdle()
+            
             val current = awaitItem()
             assertEquals("Expected 2 media items", 2, current.size)
         }

@@ -15,6 +15,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.IPropertyRemoteDatasource
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
@@ -52,7 +53,8 @@ class PropertyRepository @Inject constructor(
     private val metricsTracker: IMetricsTracker,
     private val engagementRepository: IEngagementRepository,
     private val contentSafetyService: IContentSafetyService,
-    private val exceptionTranslator: IExceptionTranslator
+    private val exceptionTranslator: IExceptionTranslator,
+    private val clock: IClock
 ) : IPropertyRepository {
 
     override suspend fun saveDraft(
@@ -121,7 +123,7 @@ class PropertyRepository @Inject constructor(
             }
         }
 
-        val startTime = System.currentTimeMillis()
+        val startTime = clock.currentTimeMillis()
         val result = remoteDataSource
             .uploadProperty(
                 RemotePropertyMapper.toEntity(property),
@@ -133,7 +135,7 @@ class PropertyRepository @Inject constructor(
                 videoUris.map { it.value.toUri() }
             )
         
-        val duration = System.currentTimeMillis() - startTime
+        val duration = clock.currentTimeMillis() - startTime
         metricsTracker.trackDuration("property.upload.duration", duration.milliseconds)
         
         if (result is AppResult.Success) {
@@ -313,9 +315,9 @@ class PropertyRepository @Inject constructor(
         }
 
         // 2. Fetch from remote
-        val startTime = System.currentTimeMillis()
+        val startTime = clock.currentTimeMillis()
         val remoteResult = remoteDataSource.fetchPropertiesPaginated(userId, cursor, pageSize)
-        val duration = System.currentTimeMillis() - startTime
+        val duration = clock.currentTimeMillis() - startTime
         metricsTracker.trackDuration("property.fetch_paginated.duration", duration.milliseconds)
 
         return remoteResult.map { remotePage ->
