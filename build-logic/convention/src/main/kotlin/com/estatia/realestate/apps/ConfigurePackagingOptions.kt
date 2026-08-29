@@ -33,25 +33,25 @@ fun configurePackagingOptions(project: Project) {
             is ApplicationExtension -> {
                 dsl.packaging.resources.excludes.addAll(excludes)
                 dsl.packaging.resources.pickFirsts.addAll(pickFirsts)
-                dsl.packaging.jniLibs.useLegacyPackaging = false
+                dsl.packaging.jniLibs.useLegacyPackaging = true
             }
 
             is LibraryExtension -> {
                 dsl.packaging.resources.excludes.addAll(excludes)
                 dsl.packaging.resources.pickFirsts.addAll(pickFirsts)
-                dsl.packaging.jniLibs.useLegacyPackaging = false
+                dsl.packaging.jniLibs.useLegacyPackaging = true
             }
 
             is TestExtension -> {
                 dsl.packaging.resources.excludes.addAll(excludes)
                 dsl.packaging.resources.pickFirsts.addAll(pickFirsts)
-                dsl.packaging.jniLibs.useLegacyPackaging = false
+                dsl.packaging.jniLibs.useLegacyPackaging = true
             }
 
             is DynamicFeatureExtension -> {
                 dsl.packaging.resources.excludes.addAll(excludes)
                 dsl.packaging.resources.pickFirsts.addAll(pickFirsts)
-                dsl.packaging.jniLibs.useLegacyPackaging = false
+                dsl.packaging.jniLibs.useLegacyPackaging = true
             }
         }
     }

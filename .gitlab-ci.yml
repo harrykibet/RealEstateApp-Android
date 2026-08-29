@@ -54,9 +54,20 @@ unit-test:
   script:
     - ./gradlew test --stacktrace
 
+device-test:
+  stage: test
+  needs: ["unit-test"]
+  # NOTE: Performance will be slow due to lack of KVM on standard runners
+  script:
+    - ./gradlew :app:pixel2Api34DebugAndroidTest --stacktrace
+  artifacts:
+    paths:
+      - app/build/outputs/androidTest-results/
+    when: always
+
 build-apk:
   stage: build
-  needs: ["unit-test"]
+  needs: ["unit-test", "device-test"]
   script:
     - ./gradlew assembleRelease --stacktrace
   artifacts:

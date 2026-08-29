@@ -3,8 +3,10 @@ package com.estatia.realestate.apps
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.DynamicFeatureExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.ManagedVirtualDevice
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.*
 
 /**
  * Common Android configuration shared across application, library,
@@ -45,6 +47,16 @@ private fun ApplicationExtension.applyCommon(
     compileSdk = 37
 
     configureCommonBuildFeatures(this)
+
+    testOptions {
+        managedDevices {
+            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
+                device = "Pixel 2"
+                apiLevel = 34
+                systemImageSource = "aosp"
+            }
+        }
+    }
 
     defaultConfig {
         minSdk = 28
@@ -89,6 +101,16 @@ private fun LibraryExtension.applyCommon(
 
     configureCommonBuildFeatures(this)
 
+    testOptions {
+        managedDevices {
+            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
+                device = "Pixel 2"
+                apiLevel = 34
+                systemImageSource = "aosp"
+            }
+        }
+    }
+
     defaultConfig {
         minSdk = 28
         testInstrumentationRunner =
@@ -131,6 +153,16 @@ private fun DynamicFeatureExtension.applyCommon(
     compileSdk = 37
 
     configureCommonBuildFeatures(this)
+
+    testOptions {
+        managedDevices {
+            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
+                device = "Pixel 2"
+                apiLevel = 34
+                systemImageSource = "aosp"
+            }
+        }
+    }
 
     defaultConfig {
         minSdk = 28

@@ -84,6 +84,11 @@ workflows:
         script: |
           ./gradlew test --no-daemon
 
+      # 7.5 Run instrumented tests
+      - name: Run Instrumented Tests
+        script: |
+          ./gradlew :app:pixel2Api34DebugAndroidTest --no-daemon
+
       # 8 Build release APK or AAB (Gradle handles signing)
       - name: Build Android Release
         script: |
