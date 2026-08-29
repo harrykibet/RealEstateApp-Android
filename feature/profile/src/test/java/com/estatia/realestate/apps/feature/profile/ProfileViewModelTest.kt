@@ -12,7 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -26,11 +26,10 @@ class ProfileViewModelTest {
     private lateinit var authRepository: IAuthRepository
     private lateinit var userRepository: IUserRepository
     private lateinit var viewModel: ProfileViewModel
-    private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         authRepository = mockk()
         userRepository = mockk()
     }
@@ -50,23 +49,20 @@ class ProfileViewModelTest {
 
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty(false) { isLoading }
         viewModel.uiState.assertProperty("John Doe") { name }
     }
 
     @Test
-    fun `loadUserProfile handles transient timeout with automatic retry or error state`() = runTest {
+    fun `loadUserProfile timeout updates error state`() = runTest {
         val userId = "user_123"
         every { authRepository.getCurrentUserId() } returns userId
         
-        // 🧪 Chaos: 1. Timeout -> 2. Success (Simulated by manual retry in UI or internal logic)
         coEvery { userRepository.getUserById(userId) } returns AppResult.Error(NetworkException.Timeout)
 
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty("Connection timed out") { error }
     }
@@ -77,7 +73,6 @@ class ProfileViewModelTest {
 
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.assertProperty("User not authenticated") { error }
     }

@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.feature.profile.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
@@ -75,11 +76,17 @@ class ProfileViewModel @Inject constructor(
                     _uiState.update { 
                         it.copy(
                             isLoading = false, 
-                            error = result.exception.message ?: "Failed to load profile"
+                            error = result.exception.toProfileError()
                         ) 
                     }
                 }
             }
         }
     }
+
+    private fun Throwable.toProfileError(): String =
+        when (this) {
+            is NetworkException.Timeout -> "Connection timed out"
+            else -> message ?: "Failed to load profile"
+        }
 }
