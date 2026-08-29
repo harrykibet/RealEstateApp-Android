@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.config.IConfigProvider
@@ -8,7 +7,6 @@ import com.estatia.realestate.apps.core.domain.repository.IUserRepository
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
-import com.estatia.realestate.apps.core.testing.assertions.assertState
 import com.estatia.realestate.apps.core.testing.lifecycle.launchAndDestroy
 import io.mockk.every
 import io.mockk.mockk
@@ -31,6 +29,7 @@ class MainActivityViewModelTest {
     private lateinit var userRepository: IUserRepository
     private lateinit var authRepository: IAuthRepository
     private lateinit var configProvider: IConfigProvider
+    private lateinit var userDataFlow: MutableStateFlow<UserData>
     private val testDispatcher = StandardTestDispatcher()
     
     private val defaultUserData = UserData(
@@ -45,11 +44,10 @@ class MainActivityViewModelTest {
         isMuted = false
     )
 
-    private val userDataFlow = MutableStateFlow(defaultUserData)
-
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        userDataFlow = MutableStateFlow(defaultUserData)
         userRepository = mockk()
         authRepository = mockk()
         configProvider = mockk()
@@ -71,17 +69,25 @@ class MainActivityViewModelTest {
         viewModel.uiState.test {
             assertEquals(MainActivityViewModel.MainActivityUiState.Loading, awaitItem())
 
-            viewModel.uiState.assertState { 
-                this is MainActivityViewModel.MainActivityUiState.Success && !userData.useDynamicColor 
-            }
-            awaitItem() // Consume Success
+            val initialState = awaitItem()
+            assertEquals(
+                MainActivityViewModel.MainActivityUiState.Success(
+                    userData = defaultUserData,
+                    isAuthenticated = true,
+                ),
+                initialState,
+            )
 
-            userDataFlow.value = userDataFlow.value.copy(useDynamicColor = true)
+            userDataFlow.value = defaultUserData.copy(useDynamicColor = true)
             
-            viewModel.uiState.assertState { 
-                this is MainActivityViewModel.MainActivityUiState.Success && userData.useDynamicColor 
-            }
-            awaitItem() // Consume Success
+            val updatedState = awaitItem()
+            assertEquals(
+                MainActivityViewModel.MainActivityUiState.Success(
+                    userData = defaultUserData.copy(useDynamicColor = true),
+                    isAuthenticated = true,
+                ),
+                updatedState,
+            )
         }
     }
 
@@ -90,14 +96,5 @@ class MainActivityViewModelTest {
         launchAndDestroy {
             MainActivityViewModel(userRepository, authRepository, configProvider)
         }
-    }
-
-    @Test
-    fun `viewModel restores state after process death`() = runTest {
-        val restoredBrand = ThemeBrand.ANDROID
-        val savedStateHandle = SavedStateHandle(mapOf("theme_brand" to restoredBrand.name))
-        
-        MainActivityViewModel(userRepository, authRepository, configProvider)
-        // Verify ViewModel initialization logic with saved state
     }
 }

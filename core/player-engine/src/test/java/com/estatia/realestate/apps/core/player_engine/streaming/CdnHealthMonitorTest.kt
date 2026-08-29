@@ -9,7 +9,6 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -21,10 +20,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class CdnHealthMonitorTest {
 
-    private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
     private lateinit var measurer: ILatencyMeasurer
-    private lateinit var monitor: CdnHealthMonitor
     private val testClock = TestClock(1000L)
     private val endpoint = CdnEndpoint("Test", "127.0.0.1")
 
@@ -34,7 +30,6 @@ class CdnHealthMonitorTest {
         every { System.currentTimeMillis() } answers { testClock.currentTimeMillis() }
 
         measurer = mockk()
-        monitor = CdnHealthMonitor(measurer, testScope, testDispatcher, clock = { testClock.currentTimeMillis() })
     }
 
     @After
@@ -43,7 +38,14 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `refreshIfStale performs measurement in background`() = runTest(testDispatcher) {
+    fun `refreshIfStale performs measurement in background`() = runTest {
+        val monitor = CdnHealthMonitor(
+            latencyMeasurer = measurer,
+            scope = backgroundScope,
+            ioDispatcher = StandardTestDispatcher(testScheduler),
+            clock = { testClock.currentTimeMillis() }
+        )
+
         coEvery { measurer.measure(any(), any()) } returns 50L
 
         monitor.refreshIfStale(listOf(endpoint))
@@ -57,7 +59,13 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `reportExternalFailure increments failure count and trips circuit breaker using platform clock`() = runTest(testDispatcher) {
+    fun `reportExternalFailure increments failure count and trips circuit breaker using platform clock`() = runTest {
+        val monitor = CdnHealthMonitor(
+            latencyMeasurer = measurer,
+            scope = backgroundScope,
+            ioDispatcher = StandardTestDispatcher(testScheduler),
+            clock = { testClock.currentTimeMillis() }
+        )
         val baseUrl = endpoint.baseUrl
         
         repeat(3) {
@@ -78,7 +86,13 @@ class CdnHealthMonitorTest {
     }
 
     @Test
-    fun `monitor handles measurement timeout chaos gracefully`() = runTest(testDispatcher) {
+    fun `monitor handles measurement timeout chaos gracefully`() = runTest {
+        val monitor = CdnHealthMonitor(
+            latencyMeasurer = measurer,
+            scope = backgroundScope,
+            ioDispatcher = StandardTestDispatcher(testScheduler),
+            clock = { testClock.currentTimeMillis() }
+        )
         // 🧪 Chaos Scenario: Latency measurement times out
         coEvery { measurer.measure(any(), any()) } throws java.net.SocketTimeoutException("Timeout")
 
