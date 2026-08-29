@@ -6,6 +6,10 @@ data class CdnHealth(
     val lastCheckedAt: Long,
     val circuitOpenUntil: Long?
 ) {
+    fun isCircuitOpen(now: Long): Boolean =
+        circuitOpenUntil != null && now < circuitOpenUntil
+
+    // Legacy property for backward compatibility where clock is not available
     val isCircuitOpen: Boolean
-        get() = circuitOpenUntil != null && System.currentTimeMillis() < circuitOpenUntil
+        get() = isCircuitOpen(System.currentTimeMillis())
 }

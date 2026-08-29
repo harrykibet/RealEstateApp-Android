@@ -3,9 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.testing.clock.TestClock
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -26,9 +24,6 @@ class CdnHealthMonitorTest {
 
     @Before
     fun setup() {
-        mockkStatic(System::class)
-        every { System.currentTimeMillis() } answers { testClock.currentTimeMillis() }
-
         measurer = mockk()
     }
 
@@ -39,31 +34,35 @@ class CdnHealthMonitorTest {
 
     @Test
     fun `refreshIfStale performs measurement in background`() = runTest {
+        val dispatcher = StandardTestDispatcher(testScheduler)
         val monitor = CdnHealthMonitor(
             latencyMeasurer = measurer,
-            scope = backgroundScope,
-            ioDispatcher = StandardTestDispatcher(testScheduler),
+            scope = this, // Use the test scope itself
+            ioDispatcher = dispatcher,
             clock = { testClock.currentTimeMillis() }
         )
-
+        
         coEvery { measurer.measure(any(), any()) } returns 50L
 
         monitor.refreshIfStale(listOf(endpoint))
+        
+        // Fully flush the scheduler to ensure all launched jobs and withContext blocks finish
         advanceUntilIdle()
 
         val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
         
-        assertNotNull(health)
+        assertNotNull("Health snapshot should not be null after refresh", health)
         assertEquals(50L, health?.latencyMs)
         assertEquals(0, health?.failureCount)
     }
 
     @Test
-    fun `reportExternalFailure increments failure count and trips circuit breaker using platform clock`() = runTest {
+    fun `reportExternalFailure increments failure count and trips circuit breaker`() = runTest {
+        val dispatcher = StandardTestDispatcher(testScheduler)
         val monitor = CdnHealthMonitor(
             latencyMeasurer = measurer,
-            scope = backgroundScope,
-            ioDispatcher = StandardTestDispatcher(testScheduler),
+            scope = this,
+            ioDispatcher = dispatcher,
             clock = { testClock.currentTimeMillis() }
         )
         val baseUrl = endpoint.baseUrl
@@ -75,33 +74,36 @@ class CdnHealthMonitorTest {
         val health = monitor.getHealthSnapshot()[baseUrl]
         assertNotNull(health)
         assertEquals(3, health?.failureCount)
-        assertEquals(true, health?.isCircuitOpen)
+        assertEquals(true, health?.isCircuitOpen(testClock.currentTimeMillis()))
         
         // 🧪 Deterministic Time Advancement:
         // Advance time beyond circuit open duration (60s)
         testClock.advanceBy(61_000L)
         
         val healthAfter = monitor.getHealthSnapshot()[baseUrl]
-        assertEquals(false, healthAfter?.isCircuitOpen)
+        assertEquals(false, healthAfter?.isCircuitOpen(testClock.currentTimeMillis()))
     }
 
     @Test
     fun `monitor handles measurement timeout chaos gracefully`() = runTest {
+        val dispatcher = StandardTestDispatcher(testScheduler)
         val monitor = CdnHealthMonitor(
             latencyMeasurer = measurer,
-            scope = backgroundScope,
-            ioDispatcher = StandardTestDispatcher(testScheduler),
+            scope = this,
+            ioDispatcher = dispatcher,
             clock = { testClock.currentTimeMillis() }
         )
+        
         // 🧪 Chaos Scenario: Latency measurement times out
         coEvery { measurer.measure(any(), any()) } throws java.net.SocketTimeoutException("Timeout")
 
         monitor.refreshIfStale(listOf(endpoint))
+        
+        // Fully flush the scheduler
         advanceUntilIdle()
 
         val health = monitor.getHealthSnapshot()[endpoint.baseUrl]
-        // Should have a high latency or failure marker
-        assertNotNull(health)
+        assertNotNull("Health snapshot should not be null even after failure", health)
         assertEquals(1, health?.failureCount)
     }
 }

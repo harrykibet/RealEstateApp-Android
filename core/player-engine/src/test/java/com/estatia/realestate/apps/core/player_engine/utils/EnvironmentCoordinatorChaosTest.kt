@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
 import android.net.ConnectivityManager
+import android.os.Looper
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
@@ -10,11 +11,13 @@ import com.estatia.realestate.apps.core.testing.chaos.resources.ChaosResourceCon
 import com.estatia.realestate.apps.core.testing.chaos.resources.ChaosResourcesMonitor
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -28,12 +31,12 @@ class EnvironmentCoordinatorChaosTest {
     private lateinit var bandwidthMeter: BandwidthMeter
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var resourceController: ChaosResourceController
-    private lateinit var chaosMonitor: ChaosResourcesMonitor
-    private lateinit var coordinator: EnvironmentCoordinator
-    private val testScope = TestScope()
 
     @Before
     fun setup() {
+        mockkStatic(Looper::class)
+        every { Looper.getMainLooper() } returns mockk(relaxed = true)
+
         networkStateProvider = mockk(relaxed = true) {
             every { observe() } returns MutableStateFlow(mockk(relaxed = true))
         }
@@ -44,20 +47,18 @@ class EnvironmentCoordinatorChaosTest {
         connectivityManager = mockk(relaxed = true)
         
         resourceController = ChaosResourceController()
-        chaosMonitor = ChaosResourcesMonitor(resourceController, testScope)
-        
-        coordinator = EnvironmentCoordinator(
-            networkStateProvider,
-            batteryManager,
-            bandwidthMeter,
-            connectivityManager,
-            chaosMonitor
-        )
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(Looper::class)
     }
 
     @Test
     fun `coordinator reflects memory pressure from chaos monitor`() = runTest {
-        coordinator.start(testScope)
+        val chaosMonitor = ChaosResourcesMonitor(resourceController, backgroundScope)
+        val coordinator = createCoordinator(chaosMonitor)
+        coordinator.start(backgroundScope)
         
         // 🧪 Chaos Scenario: Critical Memory Pressure
         resourceController.memoryPressure = ChaosResourceController.MemoryPressure.Critical
@@ -68,7 +69,9 @@ class EnvironmentCoordinatorChaosTest {
 
     @Test
     fun `coordinator reflects visibility changes from chaos controller`() = runTest {
-        coordinator.start(testScope)
+        val chaosMonitor = ChaosResourcesMonitor(resourceController, backgroundScope)
+        val coordinator = createCoordinator(chaosMonitor)
+        coordinator.start(backgroundScope)
         
         // 🧪 Chaos Scenario: App backgrounded via controller
         resourceController.isAppVisible = false
@@ -76,4 +79,12 @@ class EnvironmentCoordinatorChaosTest {
         val state = coordinator.environment.first { !it.isAppVisible }
         assertEquals(false, state.isAppVisible)
     }
+
+    private fun createCoordinator(chaosMonitor: ChaosResourcesMonitor) = EnvironmentCoordinator(
+        networkStateProvider,
+        batteryManager,
+        bandwidthMeter,
+        connectivityManager,
+        chaosMonitor
+    )
 }

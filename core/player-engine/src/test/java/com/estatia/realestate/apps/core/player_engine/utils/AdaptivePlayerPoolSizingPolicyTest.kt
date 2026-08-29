@@ -68,6 +68,7 @@ class AdaptivePlayerPoolSizingPolicyTest {
         // 🧪 Hardware Constraint Simulation
         every { deviceUtils.getMaxSupportedVideoDecoders() } returns 3 // Only 3 concurrent decoders allowed
         every { deviceUtils.isHighEndDevice() } returns true
+        every { deviceUtils.getAvailableMemoryMB() } returns 1024 // Avoid internal memory pressure check
         
         val state = defaultState.copy(isAppVisible = true)
         val result = policy.calculateMaxPoolSize(state)

@@ -39,7 +39,7 @@ class CdnPolicyTest {
         random = mockk {
             every { nextInt(any()) } returns 0
         }
-        policy = CdnPolicy(environmentCoordinator, random)
+        policy = CdnPolicy(environmentCoordinator, random, clock = { testClock.currentTimeMillis() })
     }
 
     @Test

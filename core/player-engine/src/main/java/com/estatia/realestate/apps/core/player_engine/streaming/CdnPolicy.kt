@@ -10,7 +10,8 @@ import kotlin.random.Random
 @UnstableApi
 class CdnPolicy @Inject constructor(
     private val environmentCoordinator: EnvironmentCoordinator,
-    private val random: Random
+    private val random: Random,
+    private val clock: () -> Long = { System.currentTimeMillis() }
 ) : ICdnPolicy {
 
     override fun select(
@@ -18,6 +19,7 @@ class CdnPolicy @Inject constructor(
         healthSnapshot: Map<String, CdnHealth>
     ): CdnEndpoint {
         val env = environmentCoordinator.environment.value
+        val now = clock()
 
         if (shouldUseRandomFallback(env)) {
             return endpoints.random(random)
@@ -25,7 +27,7 @@ class CdnPolicy @Inject constructor(
 
         val scored = endpoints.mapNotNull { endpoint ->
             val health = healthSnapshot[endpoint.baseUrl]
-            if (health == null || health.isCircuitOpen || health.latencyMs == null) {
+            if (health == null || health.isCircuitOpen(now) || health.latencyMs == null) {
                 null
             } else {
                 val latencyPenalty = health.latencyMs + (health.failureCount * 250L)
