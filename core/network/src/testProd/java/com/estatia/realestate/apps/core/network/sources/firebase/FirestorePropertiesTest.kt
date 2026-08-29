@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
@@ -44,7 +45,8 @@ class FirestorePropertiesTest {
             else com.estatia.realestate.apps.core.common.exceptions.NetworkException.ConnectionFailed
         }
 
-        val retryPolicy = ExponentialRetryPolicy(exceptionMapper)
+        val clock = mockk<IClock>(relaxed = true)
+        val retryPolicy = ExponentialRetryPolicy(exceptionMapper, clock)
 
         val networkClient = ChaosNetworkClient(
             networkChaos = networkChaos,

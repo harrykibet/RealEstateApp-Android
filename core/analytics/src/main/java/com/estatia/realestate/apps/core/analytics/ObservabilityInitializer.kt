@@ -1,18 +1,13 @@
 package com.estatia.realestate.apps.core.analytics
 
+import com.estatia.realestate.apps.core.common.interfaces.BuildEnvironment
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
-import io.micrometer.core.instrument.Clock
-import io.micrometer.core.instrument.Metrics
-import io.micrometer.core.instrument.logging.LoggingMeterRegistry
-import io.micrometer.prometheusmetrics.PrometheusConfig
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import io.micrometer.registry.otlp.OtlpConfig
-import io.micrometer.registry.otlp.OtlpMeterRegistry
+import io.micrometer.core.instrument.MeterRegistry
 import javax.inject.Inject
 
 /**
@@ -29,7 +24,10 @@ internal class ObservabilityInitializer @Inject constructor(
     private val deviceUtils: IDeviceUtils,
     private val authRepository: IAuthRepository,
     private val networkConfig: INetworkConfig,
-    private val securityConfig: ISecurityConfig
+    private val securityConfig: ISecurityConfig,
+    private val meterRegistries: Set<@JvmSuppressWildcards MeterRegistry>,
+    private val metricsRegistrar: MetricsRegistrar,
+    private val buildEnvironment: BuildEnvironment
 ) : IBackendInitializer {
 
     override suspend fun initialize() {
@@ -49,30 +47,8 @@ internal class ObservabilityInitializer @Inject constructor(
         }
 
         // 📊 Enable Metrics Egress for validation in debug builds OR if telemetry flag is enabled
-        if (BuildConfig.DEBUG || securityConfig.isTelemetryEnabled) {
-            Metrics.addRegistry(LoggingMeterRegistry())
-            
-            // 📈 Real-world sinks for data-driven tuning
-            setupAdvancedMetricsRegistries()
+        if (buildEnvironment.isDebug || securityConfig.isTelemetryEnabled) {
+            meterRegistries.forEach(metricsRegistrar::register)
         }
-    }
-
-    private fun setupAdvancedMetricsRegistries() {
-        // 1. Prometheus Registry (for local scraping/aggregation if needed)
-        Metrics.addRegistry(PrometheusMeterRegistry(PrometheusConfig.DEFAULT))
-
-        // 2. OTLP Registry (Push to OpenTelemetry Collector)
-        val otlpConfig = object : OtlpConfig {
-            override fun url(): String {
-                val base = networkConfig.baseUrl
-                return if (base.endsWith("/")) "${base}v1/metrics" else "$base/v1/metrics"
-            }
-            override fun get(key: String): String? = null
-            
-            // Aggregation temporality must be CUMULATIVE for many OTLP backends
-            override fun step(): java.time.Duration = java.time.Duration.ofMinutes(1)
-        }
-        
-        Metrics.addRegistry(OtlpMeterRegistry(otlpConfig, Clock.SYSTEM))
     }
 }
