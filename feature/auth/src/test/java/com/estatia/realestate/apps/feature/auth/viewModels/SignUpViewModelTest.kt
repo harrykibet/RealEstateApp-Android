@@ -70,10 +70,10 @@ class SignUpViewModelTest {
         viewModel.onAction(SignUpAction.PasswordChanged(password))
         viewModel.onAction(SignUpAction.UserTypeChanged(userType))
 
-        val authUser = AuthFixtures.build(email = email, isEmailVerified = false)
+        val authUser = AuthFixtures.build(id = "user_123", email = email, isEmailVerified = false)
 
         coEvery { authRepository.signUpWithEmail(email, password) } returns AppResult.Success(authUser)
-        coEvery { authRepository.createOrUpdateUserProfile(any(), any()) } returns AppResult.Success(Unit)
+        coEvery { authRepository.createOrUpdateUserProfile("user_123", any()) } returns AppResult.Success(Unit)
 
         viewModel.events.test {
             // When
@@ -100,10 +100,10 @@ class SignUpViewModelTest {
         viewModel.onAction(SignUpAction.UserTypeChanged(userType))
         viewModel.onAction(SignUpAction.PhoneChanged(phone))
 
-        val authUser = AuthFixtures.build(email = email, isEmailVerified = false).copy(phoneNumber = phone)
+        val authUser = AuthFixtures.build(id = "user_123", email = email, isEmailVerified = false).copy(phoneNumber = phone)
 
         coEvery { authRepository.signUpWithEmail(email, password) } returns AppResult.Success(authUser)
-        coEvery { authRepository.createOrUpdateUserProfile(any(), any()) } returns AppResult.Success(Unit)
+        coEvery { authRepository.createOrUpdateUserProfile("user_123", any()) } returns AppResult.Success(Unit)
 
         viewModel.events.test {
             // When

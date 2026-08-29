@@ -27,7 +27,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val STATE_SIGNUP_FORM = "signup_form"
+private const val KEY_USER_NAME = "signup_user_name"
+private const val KEY_EMAIL = "signup_email"
+private const val KEY_PHONE = "signup_phone"
+private const val KEY_USER_TYPE = "signup_user_type"
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -38,7 +41,12 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        savedStateHandle.get<SignUpFormState>(STATE_SIGNUP_FORM) ?: SignUpFormState()
+        SignUpFormState(
+            userName = savedStateHandle.get<String>(KEY_USER_NAME).orEmpty(),
+            email = savedStateHandle.get<String>(KEY_EMAIL).orEmpty(),
+            phone = savedStateHandle.get<String>(KEY_PHONE).orEmpty(),
+            userType = savedStateHandle.get<String>(KEY_USER_TYPE).orEmpty()
+        )
     )
     val state: StateFlow<SignUpFormState> = _state.asStateFlow()
 
@@ -46,9 +54,12 @@ class SignUpViewModel @Inject constructor(
     val events = _events.asSharedFlow()
 
     init {
-        // 🛡️ State Restoration: Persist form changes (excluding sensitive fields if needed)
+        // 🛡️ State Restoration: Persist non-sensitive form changes
         _state.onEach { form ->
-            savedStateHandle[STATE_SIGNUP_FORM] = form
+            savedStateHandle[KEY_USER_NAME] = form.userName
+            savedStateHandle[KEY_EMAIL] = form.email
+            savedStateHandle[KEY_PHONE] = form.phone
+            savedStateHandle[KEY_USER_TYPE] = form.userType
         }.launchIn(viewModelScope)
     }
 
@@ -122,8 +133,10 @@ class SignUpViewModel @Inject constructor(
         authResult: AuthUserDomainModel,
         current: SignUpFormState
     ) {
+        val userId = authResult.userId
+
         val userDomainModel = UserDomainModel(
-            userId = authResult.userId,
+            userId = userId,
             name = current.userName,
             email = current.email,
             phoneNumber = current.phone,
@@ -135,7 +148,7 @@ class SignUpViewModel @Inject constructor(
 
         when (
             val result = authRepository.createOrUpdateUserProfile(
-                userDomainModel.userId!!,
+                userId,
                 userDomainModel
             )
         ) {

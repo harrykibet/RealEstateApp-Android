@@ -11,6 +11,8 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.testing.assertions.assertState
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +26,8 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import android.net.Uri
+import android.os.SystemClock
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,6 +46,14 @@ class FavoritesVideoPlaybackViewModelTest {
         environmentCoordinator = mockk(relaxed = true)
         userRepository = mockk(relaxed = true)
 
+        mockkStatic(Uri::class)
+        mockkStatic(SystemClock::class)
+        every { SystemClock.elapsedRealtime() } returns 0L
+        every { Uri.parse(any()) } returns mockk {
+            every { scheme } returns "http"
+            every { host } returns "estatia.com"
+        }
+
         every { userRepository.userData } returns flowOf(mockk(relaxed = true))
         every { environmentCoordinator.environment } returns MutableStateFlow(mockk(relaxed = true))
         every { environmentCoordinator.meteredConnectionDetected } returns MutableSharedFlow()
@@ -52,6 +64,8 @@ class FavoritesVideoPlaybackViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkStatic(Uri::class)
+        unmockkStatic(SystemClock::class)
     }
 
     @Test
@@ -73,6 +87,8 @@ class FavoritesVideoPlaybackViewModelTest {
             val watchdogException = PlaybackException("Watchdog", null, PlaybackException.ERROR_CODE_UNSPECIFIED)
             engineState.value = PlaybackStateReducer.State.Error(watchdogException)
             
+            testDispatcher.scheduler.advanceUntilIdle()
+
             // Verify event emitted
             awaitItem()
             

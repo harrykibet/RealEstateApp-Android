@@ -56,11 +56,7 @@ class LoginViewModelTest {
 
             // Then
             assertEquals(AuthState.Loading, awaitItem())
-            
-            // Using new platform assertions
-            viewModel.authState.assertState { 
-                this is AuthState.Authenticated && this.user == user 
-            }
+            assertEquals(AuthState.Authenticated(user), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -68,17 +64,18 @@ class LoginViewModelTest {
     @Test
     fun `login with unverified email updates state to verification required`() = runTest {
         // Given
-        val user = AuthFixtures.build(isEmailVerified = false)
-        coEvery { authRepository.signInWithEmail("test@example.com", "password") } returns AppResult.Success(user)
+        val email = "test@example.com"
+        val user = AuthFixtures.build(email = email, isEmailVerified = false)
+        coEvery { authRepository.signInWithEmail(email, "password") } returns AppResult.Success(user)
 
         viewModel.authState.test {
             awaitItem() // Idle
-            viewModel.loginWithEmail("test@example.com", "password")
-            awaitItem() // Loading
+            viewModel.loginWithEmail(email, "password")
+            assertEquals(AuthState.Loading, awaitItem())
             
-            viewModel.authState.assertState { 
-                this is AuthState.EmailVerificationRequired && email == "test@example.com" 
-            }
+            val state = awaitItem()
+            assert(state is AuthState.EmailVerificationRequired)
+            assertEquals(email, (state as AuthState.EmailVerificationRequired).email)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -92,11 +89,11 @@ class LoginViewModelTest {
         viewModel.authState.test {
             awaitItem() // Idle
             viewModel.loginWithEmail("test@example.com", "password")
-            awaitItem() // Loading
+            assertEquals(AuthState.Loading, awaitItem())
             
-            viewModel.authState.assertState { 
-                this is AuthState.Error && message.contains("Unknown") 
-            }
+            val state = awaitItem()
+            assert(state is AuthState.Error)
+            assert((state as AuthState.Error).message.contains("Unknown"))
             cancelAndIgnoreRemainingEvents()
         }
     }
