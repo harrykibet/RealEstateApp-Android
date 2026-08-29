@@ -8,7 +8,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -41,16 +40,6 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
 
             // Configure common packaging options
             configurePackagingOptions(this@with)
-
-            // Resolve Protobuf duplicate class conflict
-            configurations.all {
-                exclude(group = "com.google.protobuf", module = "protobuf-lite")
-                exclude(group = "com.google.protobuf", module = "protobuf-java")
-                exclude(group = "com.google.firebase", module = "protolite-well-known-types")
-                resolutionStrategy {
-                    force(libs.findLibrary("protobuf.javalite").get())
-                }
-            }
 
             pluginManager.apply("estatia.android.lint")
 
