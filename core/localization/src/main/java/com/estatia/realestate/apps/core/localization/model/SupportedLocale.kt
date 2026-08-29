@@ -11,9 +11,14 @@ data class SupportedLocale(
 ) {
     fun toJavaLocale(): Locale {
         return if (region != null) {
-            Locale(language.code, region.code)
+            Locale.Builder()
+                .setLanguage(language.code)
+                .setRegion(region.code)
+                .build()
         } else {
-            Locale(language.code)
+            Locale.Builder()
+                .setLanguage(language.code)
+                .build()
         }
     }
 }

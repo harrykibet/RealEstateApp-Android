@@ -36,7 +36,7 @@ class PlaybackConfigurationProvider @Inject constructor(
     }
 
     override fun createTrackSelectionParameters(matchScore: Float, environment: EnvironmentState): TrackSelectionParameters {
-        val builder = TrackSelectionParameters.Builder(context)
+        val builder = TrackSelectionParameters.Builder()
 
         // 🧠 Match-Aware Initial Rendition:
         // High Match -> Start at 1080p if bandwidth allows.

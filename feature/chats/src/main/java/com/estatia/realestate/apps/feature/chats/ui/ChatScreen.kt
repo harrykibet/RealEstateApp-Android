@@ -44,7 +44,7 @@ import com.estatia.realestate.apps.core.model.feature.Chat
 import com.estatia.realestate.apps.core.model.feature.ChatUser
 import com.estatia.realestate.apps.feature.chats.ChatUiState
 import com.estatia.realestate.apps.feature.chats.ChatViewModel
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 

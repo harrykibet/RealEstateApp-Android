@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.feature
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class Chat(
     val id: String,

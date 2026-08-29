@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.testing.fixtures
 
 import com.estatia.realestate.apps.core.model.feature.Chat
 import com.estatia.realestate.apps.core.model.feature.ChatUser
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.util.UUID
 
 /**
