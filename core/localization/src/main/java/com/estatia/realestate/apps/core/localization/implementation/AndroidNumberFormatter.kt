@@ -22,10 +22,23 @@ class AndroidNumberFormatter @Inject constructor() : NumberFormatter {
     }
 
     override fun formatCompactNumber(number: Number): String {
+        val value = number.toDouble()
+        val absValue = kotlin.math.abs(value)
+
         return when {
-            number.toDouble() >= 1_000_000 -> String.format(Locale.getDefault(), "%.1fM", number.toDouble() / 1_000_000f).replace(".0", "")
-            number.toDouble() >= 1_000 -> String.format(Locale.getDefault(), "%.1fk", number.toDouble() / 1_000f).replace(".0", "")
-            else -> number.toString()
+            absValue >= 1_000_000_000 -> formatUnit(value, 1_000_000_000.0, "B")
+            absValue >= 1_000_000 -> formatUnit(value, 1_000_000.0, "M")
+            absValue >= 1_000 -> formatUnit(value, 1_000.0, "k")
+            else -> number.toLong().toString()
+        }
+    }
+
+    private fun formatUnit(value: Double, divisor: Double, unit: String): String {
+        val formatted = String.format(Locale.getDefault(), "%.1f", value / divisor)
+        return if (formatted.endsWith(".0") || formatted.endsWith(",0")) {
+            formatted.substring(0, formatted.length - 2) + unit
+        } else {
+            formatted + unit
         }
     }
 }

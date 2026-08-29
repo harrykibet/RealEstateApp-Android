@@ -48,6 +48,7 @@ class HashManager @Inject constructor(
         }
 
     override fun generateSalt(size: Int): ByteArray {
+        require(size > 0) { "Salt length must be greater than zero" }
         val salt = ByteArray(size)
         secureRandom.nextBytes(salt)
         return salt

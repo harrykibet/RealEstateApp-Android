@@ -18,10 +18,12 @@ class NumberFormatterTest {
 
     @Test
     fun `formatCompactNumber handles extreme values safely`() {
+        Locale.setDefault(Locale.US)
         assertEquals("2.1B", formatter.formatCompactNumber(Int.MAX_VALUE))
         
-        // Implementation dependent, but should not crash
-        formatter.formatCompactNumber(-100)
+        assertEquals("-100", formatter.formatCompactNumber(-100))
+        assertEquals("-1.2k", formatter.formatCompactNumber(-1200))
+        assertEquals("-1.5M", formatter.formatCompactNumber(-1_500_000))
     }
 
     @Test
