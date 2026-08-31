@@ -149,7 +149,7 @@ internal fun EstatiaAppContent(
                                 label = { EstatiaText(stringResource(destination.iconTextId)) },
                                 modifier =
                                 Modifier
-                                    .testTag("EstatiaNavItem")
+                                    .testTag("EstatiaNavItem_${destination.name}")
                                     .then(
                                         if (hasUnread) {
                                             Modifier.notificationDot(notificationDotColor)

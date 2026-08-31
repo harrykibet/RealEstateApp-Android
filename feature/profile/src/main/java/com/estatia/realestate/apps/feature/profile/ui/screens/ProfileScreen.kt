@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -232,6 +233,14 @@ fun ProfileScreen(
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
+                        modifier = Modifier.testTag(
+                            when (index) {
+                                0 -> "ProfileTab_LISTINGS"
+                                1 -> "ProfileTab_FAVORITES"
+                                2 -> "ProfileTab_REVIEWS"
+                                else -> error("Unknown profile tab index: $index")
+                            }
+                        ),
                         text = {
                             EstatiaText(
                                 text = title,
