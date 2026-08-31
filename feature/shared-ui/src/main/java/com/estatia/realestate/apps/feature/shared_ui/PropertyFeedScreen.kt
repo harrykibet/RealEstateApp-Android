@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +72,9 @@ fun PropertyFeedScreen(
  {
         VerticalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("PropertyFeed")
         ) { page ->
 
             val listing = listings[page]

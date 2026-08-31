@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaOutlinedButton
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
@@ -109,7 +110,8 @@ fun LoginScreen(
             label = stringResource(R.string.email_or_phone_number),
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .padding(vertical = 4.dp),
+                .padding(vertical = 4.dp)
+                .testTag("LoginEmailField"),
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -118,7 +120,9 @@ fun LoginScreen(
             value = password,
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
-            modifier = Modifier.fillMaxWidth(0.9f),
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .testTag("LoginPasswordField"),
             isPassword = true,
         )
 
@@ -129,7 +133,8 @@ fun LoginScreen(
             enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
-                .height(50.dp),
+                .height(50.dp)
+                .testTag("LoginButton"),
         ) {
             if (isLoading) {
                 CircularProgressIndicator(

@@ -38,7 +38,10 @@ fun EstatiaTopAppBar(
         },
         navigationIcon = {
             if (navigationIcon != null && navigationIconContentDescription != null) {
-                IconButton(onClick = onNavigationClick) {
+                IconButton(
+                    onClick = onNavigationClick,
+                    modifier = Modifier.testTag("EstatiaTopAppBarNavIcon")
+                ) {
                     Icon(
                         imageVector = navigationIcon,
                         contentDescription = navigationIconContentDescription,
