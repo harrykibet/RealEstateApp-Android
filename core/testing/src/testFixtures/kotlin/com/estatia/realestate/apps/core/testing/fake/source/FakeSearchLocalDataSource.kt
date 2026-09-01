@@ -9,12 +9,14 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class FakeSearchLocalDataSource : ISearchLocalDataSource {
 
-    private val searchHistory = mutableListOf<String>()
+    private val searchHistory = java.util.Collections.synchronizedList(mutableListOf<String>())
     private val searchCache = ConcurrentHashMap<String, List<String>>()
 
     override suspend fun saveSearchQuery(query: String): AppResult<Unit> {
-        if (!searchHistory.contains(query)) {
-            searchHistory.add(0, query)
+        synchronized(searchHistory) {
+            if (!searchHistory.contains(query)) {
+                searchHistory.add(0, query)
+            }
         }
         return AppResult.Success(Unit)
     }

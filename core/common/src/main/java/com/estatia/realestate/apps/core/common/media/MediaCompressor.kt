@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 
 /**
  * High-performance media compression engine.
@@ -82,6 +83,8 @@ class MediaCompressor @Inject constructor(
 
             logger.d(message = "Image compression successful: ${compressedFile.absolutePath}")
             compressedFile
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             logger.e(message = "Image compression failed: ${e.message}", throwable = e)
             null

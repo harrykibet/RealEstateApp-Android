@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * In-memory fake implementation of [IPropertyLocalDataSource].
@@ -16,6 +17,7 @@ class FakePropertyLocalDataSource : IPropertyLocalDataSource {
     private val cache = ConcurrentHashMap<String, PropertyCacheEntity>()
     private val drafts = ConcurrentHashMap<Long, PropertyDraftEntity>()
     private val comments = ConcurrentHashMap<String, MutableList<CommentCacheEntity>>()
+    private val nextDraftId = AtomicLong(1L)
 
     override suspend fun cacheProperties(properties: List<PropertyCacheEntity>): AppResult<Unit> {
         properties.forEach { cache[it.id] = it }
@@ -44,45 +46,48 @@ class FakePropertyLocalDataSource : IPropertyLocalDataSource {
     }
 
     override suspend fun incrementLikes(propertyId: String): AppResult<Unit> {
-        cache[propertyId]?.let {
-            cache[propertyId] = it.copy(likesCount = it.likesCount + 1)
+        cache.computeIfPresent(propertyId) { _, it ->
+            it.copy(likesCount = it.likesCount + 1)
         }
         return AppResult.Success(Unit)
     }
 
     override suspend fun decrementLikes(propertyId: String): AppResult<Unit> {
-        cache[propertyId]?.let {
-            cache[propertyId] = it.copy(likesCount = (it.likesCount - 1).coerceAtLeast(0))
+        cache.computeIfPresent(propertyId) { _, it ->
+            it.copy(likesCount = (it.likesCount - 1).coerceAtLeast(0))
         }
         return AppResult.Success(Unit)
     }
 
     override suspend fun incrementViews(propertyId: String): AppResult<Unit> {
-        cache[propertyId]?.let {
-            cache[propertyId] = it.copy(viewsCount = it.viewsCount + 1)
+        cache.computeIfPresent(propertyId) { _, it ->
+            it.copy(viewsCount = it.viewsCount + 1)
         }
         return AppResult.Success(Unit)
     }
 
     override suspend fun incrementShares(propertyId: String): AppResult<Unit> {
-        cache[propertyId]?.let {
-            cache[propertyId] = it.copy(sharesCount = it.sharesCount + 1)
+        cache.computeIfPresent(propertyId) { _, it ->
+            it.copy(sharesCount = it.sharesCount + 1)
         }
         return AppResult.Success(Unit)
     }
 
     override suspend fun incrementComments(id: String): AppResult<Unit> {
-        cache[id]?.let {
-            cache[id] = it.copy(commentsCount = it.commentsCount + 1)
+        cache.computeIfPresent(id) { _, it ->
+            it.copy(commentsCount = it.commentsCount + 1)
         }
         return AppResult.Success(Unit)
     }
 
     override suspend fun cacheComments(comments: List<CommentCacheEntity>): AppResult<Unit> {
         comments.forEach { comment ->
-            val list = this.comments.getOrPut(comment.propertyId) { mutableListOf() }
-            list.removeIf { it.id == comment.id }
-            list.add(comment)
+            this.comments.compute(comment.propertyId) { _, existing ->
+                val list = existing ?: mutableListOf()
+                list.removeIf { it.id == comment.id }
+                list.add(comment)
+                list
+            }
         }
         return AppResult.Success(Unit)
     }
@@ -97,7 +102,7 @@ class FakePropertyLocalDataSource : IPropertyLocalDataSource {
     }
 
     override suspend fun saveDraft(draft: PropertyDraftEntity): AppResult<Long> {
-        val id = if (draft.id == 0L) drafts.size.toLong() + 1 else draft.id
+        val id = if (draft.id == 0L) nextDraftId.getAndIncrement() else draft.id
         drafts[id] = draft.copy(id = id)
         return AppResult.Success(id)
     }

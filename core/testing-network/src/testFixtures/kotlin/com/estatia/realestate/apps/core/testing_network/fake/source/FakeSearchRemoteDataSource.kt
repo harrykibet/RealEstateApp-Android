@@ -8,6 +8,8 @@ import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyCha
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CancellationException
 
 /**
  * In-memory fake implementation of [ISearchRemoteDataSource] with scriptable chaos.
@@ -18,10 +20,10 @@ class FakeSearchRemoteDataSource(
 ) : ISearchRemoteDataSource {
 
     private val properties = ConcurrentHashMap<String, PropertyEntityModel>()
-    private var nextBehavior: DatabaseBehavior = DatabaseBehavior.Success
+    private val nextBehavior = AtomicReference<DatabaseBehavior>(DatabaseBehavior.Success)
 
     fun setNextBehavior(behavior: DatabaseBehavior) {
-        nextBehavior = behavior
+        nextBehavior.set(behavior)
     }
 
     fun addProperty(property: PropertyEntityModel) {
@@ -51,12 +53,13 @@ class FakeSearchRemoteDataSource(
         try {
             lifecycleChaos.checkChaos()
             concurrencyChaos.checkChaos(point)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             return AppResult.Error(DatabaseException.Unknown(e))
         }
 
-        val behavior = nextBehavior
-        nextBehavior = DatabaseBehavior.Success
+        val behavior = nextBehavior.getAndSet(DatabaseBehavior.Success)
         
         return when (behavior) {
             DatabaseBehavior.Unavailable -> AppResult.Error(DatabaseException.Unavailable)

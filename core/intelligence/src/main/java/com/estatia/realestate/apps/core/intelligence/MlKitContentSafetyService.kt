@@ -13,6 +13,7 @@ import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -104,6 +105,8 @@ class MlKitContentSafetyService @Inject constructor(
                 }
             }
             SafetyResult.Safe
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             SafetyResult.Safe // Fallback to safe if extraction fails
         } finally {

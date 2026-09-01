@@ -51,7 +51,7 @@ class ConcurrencyChaosController {
             ConcurrencyBehavior.DoubleInitialization,
             ConcurrencyBehavior.DoubleRelease,
             ConcurrencyBehavior.OperationAfterDisposal -> {
-                val count = requestCounts.getOrPut(point) { AtomicInteger(0) }
+                val count = requestCounts.computeIfAbsent(point) { AtomicInteger(0) }
                 if (count.incrementAndGet() > 1) {
                     throw IllegalStateException("${behavior::class.simpleName} detected at $point (Chaos)")
                 }

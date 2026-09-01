@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.testing_network.chaos.contracts
 
 import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
 import com.estatia.realestate.apps.core.testing.witness.Witness
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -22,6 +23,8 @@ abstract class NetworkChaosContract<T, B> : ChaosContract<T, B>() {
         val subject = createSubject(timeoutBehavior)
         try {
             performOperation(subject)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // Expected for many network clients
             return@runTest

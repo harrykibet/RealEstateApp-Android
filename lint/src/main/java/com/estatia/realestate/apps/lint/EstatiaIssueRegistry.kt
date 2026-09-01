@@ -7,7 +7,13 @@ import com.android.tools.lint.detector.api.CURRENT_API
 class EstatiaIssueRegistry : IssueRegistry() {
     override val issues = listOf(
         DesignSystemDetector.ISSUE,
-        ModulePackageDetector.ISSUE
+        ModulePackageDetector.ISSUE,
+        CoroutineCancellationDetector.ISSUE,
+        MutableStateDetector.ISSUE,
+        ForbiddenCoroutineScopeDetector.ISSUE,
+        SensitiveLoggingDetector.ISSUE,
+        InfrastructureLeakageDetector.ISSUE,
+        ConcurrencyCheckDetector.ISSUE
     )
 
     override val api: Int = CURRENT_API

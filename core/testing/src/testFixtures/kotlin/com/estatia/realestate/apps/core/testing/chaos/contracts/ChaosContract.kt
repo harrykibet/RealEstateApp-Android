@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.testing.chaos.contracts
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -41,6 +42,8 @@ abstract class ChaosContract<T, B> {
         val subject = createSubject(failureBehavior)
         val result = try {
             performOperation(subject)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // Success if it throws
             return@runTest
