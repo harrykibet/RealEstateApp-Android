@@ -57,6 +57,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.android.compose")
         pluginManager.apply("com.estatia.realestate.apps.android.packaging")
+        pluginManager.apply("com.estatia.realestate.apps.android.jacoco")
 
         extensions.configure<ApplicationExtension>("android") {
 

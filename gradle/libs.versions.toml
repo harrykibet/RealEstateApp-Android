@@ -64,6 +64,7 @@ truth = "1.4.5"
 benchmarkMacroJunit4 = "1.4.1"
 baselineprofile = "1.4.1"
 profileinstaller = "1.4.1"
+jacoco = "0.8.15"
 sonarqube = "7.4.0.8496"
 kotlinxSerializationJson = "1.11.0"
 coil = "2.7.0"
@@ -144,6 +145,7 @@ android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "a
 estatia-android-flavors = { id = "com.estatia.realestate.apps.android.flavors"}
 estatia-android-core = { id = "com.estatia.realestate.apps.android.core"}
 estatia-android-protolite = { id = "com.estatia.realestate.apps.android.protolite"}
+estatia-android-coverage = { id = "com.estatia.realestate.apps.android.jacoco"}
 
 
 

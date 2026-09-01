@@ -76,6 +76,9 @@ private fun ApplicationExtension.applyCommon(
     }
 
     buildTypes {
+        getByName("debug") {
+            enableUnitTestCoverage = true
+        }
         getByName("release") {
             isMinifyEnabled = false
 
@@ -129,6 +132,9 @@ private fun LibraryExtension.applyCommon(
     }
 
     buildTypes {
+        getByName("debug") {
+            enableUnitTestCoverage = true
+        }
         getByName("release") {
             isMinifyEnabled = false
 
@@ -174,6 +180,12 @@ private fun DynamicFeatureExtension.applyCommon(
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
+    }
+
+    buildTypes {
+        getByName("debug") {
+            enableUnitTestCoverage = true
+        }
     }
 }
 

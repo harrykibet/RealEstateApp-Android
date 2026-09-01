@@ -94,6 +94,10 @@ gradlePlugin {
             id = libs.plugins.estatia.android.protolite.get().pluginId
             implementationClass = "AndroidProtoliteConventionPlugin"
         }
+        register("androidJacoco") {
+            id = libs.plugins.estatia.android.coverage.get().pluginId
+            implementationClass = "JacocoConventionPlugin"
+        }
         register("androidLint") {
             id = "estatia.android.lint"
             implementationClass = "LintConventionPlugin"

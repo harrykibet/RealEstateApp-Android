@@ -9,5 +9,6 @@ class AndroidCoreConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.hilt")
         pluginManager.apply("com.estatia.realestate.apps.android.flavors")
+        pluginManager.apply("com.estatia.realestate.apps.android.jacoco")
     }
 }
