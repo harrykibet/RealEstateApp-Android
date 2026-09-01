@@ -13,7 +13,19 @@ class EstatiaIssueRegistry : IssueRegistry() {
         ForbiddenCoroutineScopeDetector.ISSUE,
         SensitiveLoggingDetector.ISSUE,
         InfrastructureLeakageDetector.ISSUE,
-        ConcurrencyCheckDetector.ISSUE
+        ConcurrencyCheckDetector.ISSUE,
+        HardcodedDispatcherDetector.ISSUE,
+        DirectSystemTimeDetector.ISSUE,
+        ServiceLocatorDetector.ISSUE,
+        UnsafeStateCollectionDetector.ISSUE,
+        NonThreadSafeCollectionDetector.ISSUE,
+        BusinessLogicInComposeDetector.ISSUE,
+        HardcodedColorDimensionDetector.ISSUE,
+        UnboundedInternalBufferDetector.ISSUE,
+        HardcodedStringDetector.ISSUE,
+        MissingResultWrapperDetector.ISSUE,
+        RememberMissingDetector.ISSUE,
+        MockInProductionDetector.ISSUE
     )
 
     override val api: Int = CURRENT_API
