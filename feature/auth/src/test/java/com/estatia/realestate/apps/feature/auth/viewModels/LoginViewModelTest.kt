@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.RemoteServiceException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.core.testing.fixtures.AuthFixtures
 import com.estatia.realestate.apps.feature.auth.state.AuthState
 import io.mockk.coEvery

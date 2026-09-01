@@ -2,74 +2,106 @@ stages:
   - lint
   - test
   - build
+  - optimize
 
-image: cirrusci/android-sdk:30  # ✅ Android SDK Docker image
+image: cirrusci/android-sdk:34
 
 variables:
-  CI: "true"  # ✅ Define CI environment variable for Kotlin daemon optimization
+  CI: "true"
+  JAVA_HOME: "/usr/lib/jvm/java-17-openjdk-amd64"
 
 before_script:
-  - apt-get update && apt-get install -y openjdk-17-jdk  # ✅ Ensure Java 17 is installed
-  - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+  - apt-get update && apt-get install -y openjdk-17-jdk
   - export PATH="$JAVA_HOME/bin:$PATH"
-  - java -version  # ✅ Verify Java installation
-  - chmod +x ./gradlew  # ✅ Ensure Gradle wrapper is executable
-  - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties  # ✅ Create `local.properties`
+  - chmod +x ./gradlew
+  - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-  # ✅ Generate Debug Keystore
-  - |
-    DEBUG_KEYSTORE_PATH="$HOME/.android/debug.keystore"
+# ------------------------------------------------------------------------------
+# 🛡️ PR CHECK (Fast Feedback)
+# ------------------------------------------------------------------------------
 
-    if [ -f "$DEBUG_KEYSTORE_PATH" ]; then
-      echo "Removing existing debug keystore..."
-      rm -f "$DEBUG_KEYSTORE_PATH"
-    fi
-
-    echo "Generating new debug keystore..."
-    keytool -genkey -v \
-      -keystore "$DEBUG_KEYSTORE_PATH" \
-      -storepass android \
-      -alias androiddebugkey \
-      -keypass android \
-      -dname "CN=Android Debug,O=Android,C=US" \
-      -keyalg RSA \
-      -keysize 2048 \
-      -validity 10000
-
-    echo "Debug keystore generated at $DEBUG_KEYSTORE_PATH"
-
-static-analysis:
+pr-lint:
   stage: lint
   script:
     - ./gradlew lint --stacktrace
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-firebase-rules-lint:
-  stage: lint
-  image: node:lts
-  script:
-    - npx -y firebase-tools deploy --only firestore:rules --dry-run
-
-unit-test:
+pr-unit-test:
   stage: test
   script:
     - ./gradlew test --stacktrace
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-device-test:
+pr-smoke-ui-test:
   stage: test
-  needs: ["unit-test"]
-  # NOTE: Performance will be slow due to lack of KVM on standard runners
+  needs: ["pr-unit-test"]
   script:
-    - ./gradlew :app:pixel2Api34DebugAndroidTest --stacktrace
-  artifacts:
-    paths:
-      - app/build/outputs/androidTest-results/
-    when: always
+    - ./gradlew :app:pixel2Api34ProdDebugAndroidTest --stacktrace
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-build-apk:
-  stage: build
-  needs: ["unit-test", "device-test"]
+# ------------------------------------------------------------------------------
+# ⚓ MAIN BRANCH (Comprehensive Verification)
+# ------------------------------------------------------------------------------
+
+main-full-test:
+  stage: test
   script:
-    - ./gradlew assembleRelease --stacktrace
+    - ./gradlew test --stacktrace
+    - |
+      ./gradlew :app:pixel2Api34ProdDebugAndroidTest \
+                :app:pixel6Api31ProdDebugAndroidTest \
+                :app:mediumPhoneApi33ProdDebugAndroidTest \
+                :app:pixelTabletApi34ProdDebugAndroidTest \
+                --stacktrace
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+main-build-release:
+  stage: build
+  needs: ["main-full-test"]
+  script:
+    # Assuming signing secrets are in GitLab CI/CD Variables
+    - ./gradlew assembleProdRelease -PsigningStoreFile=$RELEASE_KEYSTORE --stacktrace
   artifacts:
     paths:
-      - app/build/outputs/apk/release/
+      - app/build/outputs/apk/prod/release/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ------------------------------------------------------------------------------
+# 🔨 NIGHTLY (Stress & Optimization)
+# ------------------------------------------------------------------------------
+
+nightly-chaos-tests:
+  stage: test
+  script:
+    - ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+nightly-baseline-profile:
+  stage: optimize
+  script:
+    - ./gradlew :app:generateProdBaselineProfile
+    # Note: Automated committing back to GitLab requires a Project Access Token
+    - |
+      git config --global user.name "Estatia CI"
+      git config --global user.email "ci@estatia.com"
+      git add .
+      git commit -m "Update baseline profiles (Nightly)" || echo "No changes"
+      git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:${CI_COMMIT_REF_NAME}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+nightly-benchmarks:
+  stage: optimize
+  script:
+    - ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest
+  artifacts:
+    paths:
+      - benchmark/build/outputs/connected_android_test_additional_output/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"

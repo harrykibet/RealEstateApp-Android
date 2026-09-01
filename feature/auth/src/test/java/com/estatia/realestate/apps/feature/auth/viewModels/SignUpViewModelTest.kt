@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.feature.auth.viewModels
 import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
 import com.estatia.realestate.apps.core.testing.fixtures.AuthFixtures
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
@@ -50,13 +50,13 @@ class SignUpViewModelTest {
     @Test
     fun `UserNameChanged action updates state`() = runTest {
         viewModel.onAction(SignUpAction.UserNameChanged("Harry"))
-        viewModel.state.assertProperty("Harry") { userName }
+        viewModel.state.assertCurrentProperty("Harry") { userName }
     }
 
     @Test
     fun `Submit with missing fields shows error`() = runTest {
         viewModel.onAction(SignUpAction.Submit)
-        viewModel.state.assertProperty("Please fill all required fields") { error }
+        viewModel.state.assertCurrentProperty("Please fill all required fields") { error }
     }
 
     @Test

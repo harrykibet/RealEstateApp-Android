@@ -56,6 +56,7 @@ internal class ConfigProvider @Inject constructor(
     @Volatile
     private var paymentsRegex: Regex = Regex("^[0-9A-Za-z]{40}$")
 
+    @Volatile
     override var isInitialized: Boolean = false
         private set
 

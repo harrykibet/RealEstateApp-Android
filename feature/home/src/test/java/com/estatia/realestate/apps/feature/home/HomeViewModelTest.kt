@@ -8,8 +8,8 @@ import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
 import com.estatia.realestate.apps.core.model.property.PropertyPage
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.core.testing.fixtures.PropertyFixtures
 import com.estatia.realestate.apps.feature.home.ui.viewModels.HomeViewModel
 import io.mockk.coEvery
@@ -74,8 +74,8 @@ class HomeViewModelTest {
             assertEquals(properties, finalState.properties)
             
             // Using new platform assertions
-            viewModel.uiState.assertProperty(false) { isLoading }
-            viewModel.uiState.assertState { properties.size == 3 }
+            viewModel.uiState.assertCurrentProperty(false) { isLoading }
+            viewModel.uiState.assertCurrentState { properties.size == 3 }
         }
     }
 

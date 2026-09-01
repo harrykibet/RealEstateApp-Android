@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.core.testing.fixtures.SearchFixtures
 import com.estatia.realestate.apps.feature.search.ui.SearchUiState
 import io.mockk.coEvery
@@ -58,7 +58,7 @@ class SearchViewModelTest {
         viewModel.loadSearchHistory()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.uiState.assertState {
+        viewModel.uiState.assertCurrentState {
             this is SearchUiState.History && this.history == history
         }
     }
@@ -71,7 +71,7 @@ class SearchViewModelTest {
         viewModel.searchProperties(query)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.uiState.assertState {
+        viewModel.uiState.assertCurrentState {
             this is SearchUiState.Success && this.query == query
         }
     }
@@ -86,7 +86,7 @@ class SearchViewModelTest {
         viewModel.searchProperties(query)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.uiState.assertState {
+        viewModel.uiState.assertCurrentState {
             this is SearchUiState.Error && message.contains("database")
         }
     }
@@ -115,6 +115,6 @@ class SearchViewModelTest {
         viewModel.searchProperties(query)
         testDispatcher.scheduler.advanceUntilIdle()
         
-        viewModel.uiState.assertState { this is SearchUiState.Success && this.query == query }
+        viewModel.uiState.assertCurrentState { this is SearchUiState.Success && this.query == query }
     }
 }

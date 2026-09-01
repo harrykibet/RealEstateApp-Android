@@ -4,8 +4,8 @@ import app.cash.turbine.test
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.events.CommentsEvent
 import io.mockk.coEvery
@@ -46,7 +46,7 @@ class CommentsViewModelTest {
     @Test
     fun `InputChanged updates input state`() = runTest {
         viewModel.onAction(CommentsAction.InputChanged("Nice place!"))
-        viewModel.state.assertProperty("Nice place!") { input }
+        viewModel.state.assertCurrentProperty("Nice place!") { input }
     }
 
     @Test
@@ -57,7 +57,7 @@ class CommentsViewModelTest {
         viewModel.onAction(CommentsAction.Load(propertyId))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.assertState { 
+        viewModel.state.assertCurrentState { 
             comments.isEmpty() && !isLoading
         }
     }
@@ -71,7 +71,7 @@ class CommentsViewModelTest {
         viewModel.onAction(CommentsAction.Load(propertyId))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.assertState { 
+        viewModel.state.assertCurrentState { 
             error == "No internet connection" && !isLoading
         }
     }
@@ -93,7 +93,7 @@ class CommentsViewModelTest {
 
             val event = awaitItem()
             assert(event is CommentsEvent.ShowMessage)
-            viewModel.state.assertProperty("") { input }
+            viewModel.state.assertCurrentProperty("") { input }
         }
     }
 }

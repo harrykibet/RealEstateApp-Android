@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinator
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.feature.home.ui.viewModels.playback.HomeVideoPlaybackViewModel
 import io.mockk.every
 import io.mockk.mockk
@@ -80,13 +80,13 @@ class HomeVideoPlaybackResilienceTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then: Initial state is Buffering
-        viewModel.uiState.assertState { this == PlayerUiState.Buffering }
+        viewModel.uiState.assertCurrentState { this == PlayerUiState.Buffering }
 
         // When: Chaos Injection - Sustained Low Bandwidth
         envFlow.value = envFlow.value.copy(isSustainedLowBandwidth = true)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then: UI surfaces informative LowBandwidth state
-        viewModel.uiState.assertState { this == PlayerUiState.LowBandwidth }
+        viewModel.uiState.assertCurrentState { this == PlayerUiState.LowBandwidth }
     }
 }

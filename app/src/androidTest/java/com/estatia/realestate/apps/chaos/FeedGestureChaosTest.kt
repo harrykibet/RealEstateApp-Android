@@ -16,9 +16,17 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+import kotlin.random.Random
+
 @UnstableApi
 @HiltAndroidTest
 class FeedGestureChaosTest {
+
+    private companion object {
+        const val CHAOS_SEED = 0x5EED
+        const val FAST_FLICK_OPERATIONS = 50
+        const val REVERSAL_SCROLL_OPERATIONS = 30
+    }
 
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
@@ -33,11 +41,13 @@ class FeedGestureChaosTest {
     lateinit var playerManager: PlayerManager
 
     private lateinit var device: UiDevice
+    private lateinit var random: Random
 
     @Before
     fun setup() {
         hiltRule.inject()
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        random = Random(CHAOS_SEED)
     }
 
     @Test
@@ -48,18 +58,22 @@ class FeedGestureChaosTest {
         val startY = (height * 0.8).toInt()
         val endY = (height * 0.2).toInt()
 
-        repeat(50) {
-            device.swipe(centerX, startY, centerX, endY, (Math.random() * 5 + 5).toInt())
+        repeat(FAST_FLICK_OPERATIONS) {
+            // Use seeded random for deterministic step count
+            val steps = random.nextInt(5, 11)
+            device.swipe(centerX, startY, centerX, endY, steps)
         }
 
-        Thread.sleep(2000)
+        // Use explicit synchronization instead of Thread.sleep
+        device.waitForIdle()
+        composeTestRule.waitForIdle()
 
         val settledId = playerManager.debugActiveMediaId
         if (settledId != null) {
-            assertTrue("Visible video $settledId was evicted during chaos!", pool.debugIsIdActive(settledId))
+            assertTrue("Visible video $settledId was evicted during chaos! (Seed=$CHAOS_SEED)", pool.debugIsIdActive(settledId))
         }
 
-        assertPoolInvariant()
+        assertPoolInvariant(opIndex = FAST_FLICK_OPERATIONS)
     }
 
     @Test
@@ -70,24 +84,29 @@ class FeedGestureChaosTest {
         val startY = (height * 0.8).toInt()
         val endY = (height * 0.2).toInt()
 
-        val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < 10000) {
+        repeat(REVERSAL_SCROLL_OPERATIONS) { i ->
             // Swipe Up
             device.swipe(centerX, startY, centerX, endY, 10)
-            Thread.sleep(80)
             // Swipe Down
             device.swipe(centerX, endY, centerX, startY, 10)
-            Thread.sleep(80)
+            
+            // Check invariant periodically during stress
+            if (i % 5 == 0) {
+                assertPoolInvariant(opIndex = i)
+            }
         }
 
-        Thread.sleep(2000)
-        assertPoolInvariant()
+        device.waitForIdle()
+        composeTestRule.waitForIdle()
+        assertPoolInvariant(opIndex = REVERSAL_SCROLL_OPERATIONS)
     }
 
-    private fun assertPoolInvariant() {
+    private fun assertPoolInvariant(opIndex: Int) {
         val currentCount = pool.debugPlayerCount
         val maxAllowed = pool.debugMaxPoolSize + 2 
-        assertTrue("Pool size ($currentCount) exceeded max allowed ($maxAllowed)", currentCount <= maxAllowed)
-        assertFalse("Duplicate player instances detected in pool", pool.debugHasDuplicateInstances())
+        val context = "Seed=$CHAOS_SEED, Op=$opIndex"
+        
+        assertTrue("Pool size ($currentCount) exceeded max allowed ($maxAllowed) - $context", currentCount <= maxAllowed)
+        assertFalse("Duplicate player instances detected in pool - $context", pool.debugHasDuplicateInstances())
     }
 }

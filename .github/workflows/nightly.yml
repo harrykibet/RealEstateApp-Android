@@ -1,0 +1,85 @@
+name: Nightly Stress & Optimization
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at midnight every day
+  workflow_dispatch:      # Allow manual trigger
+
+env:
+  CI: true
+
+jobs:
+  chaos-tests:
+    name: Deterministic Chaos Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set Executable Permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Feed Chaos Tests
+        # Chaos tests are expensive, running them in Nightly
+        run: ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
+
+  baseline-profiles:
+    name: Generate Baseline Profiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set Executable Permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Generate Baseline Profile
+        run: ./gradlew :app:generateBaselineProfile --no-configuration-cache
+
+      - name: Commit Baseline Profiles
+        run: |
+          git config --global user.name 'Estatia CI'
+          git config --global user.email 'ci@estatia.com'
+          git add .
+          git commit -m "Update baseline profiles (Nightly)" || echo "No changes to commit"
+          git push
+
+  benchmarks:
+    name: Performance Macrobenchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set Executable Permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Startup & Scroll Benchmarks
+        run: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-configuration-cache --info
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark/build/outputs/connected_android_test_additional_output/

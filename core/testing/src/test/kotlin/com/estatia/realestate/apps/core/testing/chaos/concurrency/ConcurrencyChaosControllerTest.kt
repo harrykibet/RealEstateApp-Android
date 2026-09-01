@@ -18,7 +18,7 @@ class ConcurrencyChaosControllerTest {
 
     @Test
     fun `ConcurrentMutation injects delay`() = runTest {
-        controller.setNextBehavior(ConcurrencyBehavior.ConcurrentMutation)
+        controller.setNextBehavior(ConcurrencyBehavior.ConcurrentMutation())
         val startTime = testScheduler.currentTime
         controller.checkChaos("test")
         val endTime = testScheduler.currentTime
@@ -67,7 +67,7 @@ class ConcurrencyChaosControllerTest {
 
     @Test
     fun `MultipleRefreshOperations injects delay`() = runTest {
-        controller.setNextBehavior(ConcurrencyBehavior.MultipleRefreshOperations)
+        controller.setNextBehavior(ConcurrencyBehavior.MultipleRefreshOperations())
         val startTime = testScheduler.currentTime
         controller.checkChaos("test")
         val endTime = testScheduler.currentTime

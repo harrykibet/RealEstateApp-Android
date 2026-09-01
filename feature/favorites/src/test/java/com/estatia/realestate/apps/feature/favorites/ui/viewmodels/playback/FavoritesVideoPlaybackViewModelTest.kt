@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -70,7 +70,7 @@ class FavoritesVideoPlaybackViewModelTest {
 
     @Test
     fun `uiState initially Idle`() = runTest {
-        viewModel.uiState.assertState { this == PlayerUiState.Idle }
+        viewModel.uiState.assertCurrentState { this == PlayerUiState.Idle }
     }
 
     @Test
@@ -93,7 +93,7 @@ class FavoritesVideoPlaybackViewModelTest {
             awaitItem()
             
             // UI state should NOT show error because it's suppressed by auto-advance
-            viewModel.uiState.assertState { this !is PlayerUiState.Error }
+            viewModel.uiState.assertCurrentState { this !is PlayerUiState.Error }
         }
     }
 

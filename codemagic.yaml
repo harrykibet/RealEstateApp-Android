@@ -1,132 +1,95 @@
 workflows:
-  native-android:
-    name: Native Android
-    max_build_duration: 120
-    instance_type: mac_mini_m2
 
+  # ------------------------------------------------------------------------------
+  # 🛡️ PR CHECK (Fast Feedback)
+  # ------------------------------------------------------------------------------
+  pr-check:
+    name: Estatia PR Check
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    triggering:
+      events:
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
     environment:
-      xcode: latest
+      vars:
+        CI: "true"
+    scripts:
+      - name: Set Permissions
+        script: chmod +x ./gradlew
+      - name: Lint
+        script: ./gradlew lint --no-daemon
+      - name: Unit Tests
+        script: ./gradlew test --no-daemon
+      - name: Smoke UI Test
+        script: ./gradlew :app:pixel2Api34ProdDebugAndroidTest --no-daemon
+
+  # ------------------------------------------------------------------------------
+  # ⚓ MAIN BRANCH (Comprehensive Verification)
+  # ------------------------------------------------------------------------------
+  main-verification:
+    name: Estatia Main Verification
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    environment:
       vars:
         CI: "true"
       groups:
-        - signing_debug
         - signing_release
-        - signing_play_store
-        - firebase
-        - api_keys
-
     scripts:
-
-      # 1 Generate local.properties with secrets
-      - name: Generate local.properties
+      - name: Set Permissions
+        script: chmod +x ./gradlew
+      - name: Full Test Suite (All GMDs)
         script: |
-          cat > "$CM_BUILD_DIR/local.properties" << EOF
-          sdk.dir=$ANDROID_SDK_ROOT
-
-          GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
-
-          DEBUG_STORE_PASSWORD=$DEBUG_STORE_PASSWORD
-          DEBUG_KEY_ALIAS=$DEBUG_KEY_ALIAS
-          DEBUG_KEY_PASSWORD=$DEBUG_KEY_PASSWORD
-
-          RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
-          RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
-          RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
-          EOF
-
-          echo "local.properties generated"
-
-      # 2 Restore secret files (keystores and google-services.json)
-      - name: Restore secret files
-        script: |
-          # Create AppKeyStore folder if missing
-          mkdir -p "$CM_BUILD_DIR/AppKeyStore"
-
-          # Decode keystores from Base64
-          echo "$DEBUG_KEYSTORE_FILE_B64"  | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/debug.keystore"
-          echo "$RELEASE_KEYSTORE_FILE_B64" | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/keystore.jks"
-          echo "$PRIVATE_KEY_PEPK_FILE_B64"  | base64 --decode > "$CM_BUILD_DIR/AppKeyStore/private_key.pepk"
-
-          # Write google-services.json to existing app module
-          echo "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > "$CM_BUILD_DIR/app/google-services.json"
-
-          echo "Secret files restored successfully"
-
-      # 3 Verify restored files
-      - name: Verify secret files
-        script: |
-          test -f "$CM_BUILD_DIR/AppKeyStore/debug.keystore"
-          test -f "$CM_BUILD_DIR/AppKeyStore/keystore.jks"
-          test -f "$CM_BUILD_DIR/AppKeyStore/private_key.pepk"
-          test -f "$CM_BUILD_DIR/app/google-services.json"
-
-          echo "All secret files verified"
-
-      # 4 Ensure Gradle wrapper executable
-      - name: Set Gradlew Permissions
-        script: |
-          chmod +x ./gradlew
-
-      # 5 Bootstrap virtual display (if needed for Compose/UI tests)
-      - name: Bootstrap virtual display
-        script: |
-          echo "Initializing CI display environment..."
-          chmod +x scripts/ci-display-bootstrap.sh
-          ./scripts/ci-display-bootstrap.sh
-
-      # 6 Static Analysis (Lint)
-      - name: Static Analysis (Lint)
-        script: |
-          ./gradlew lint --no-daemon
-
-      # 7 Run unit tests
-      - name: Run Unit Tests
-        script: |
-          ./gradlew test --no-daemon
-
-      # 7.5 Run instrumented tests
-      - name: Run Instrumented Tests
-        script: |
-          ./gradlew :app:pixel2Api34DebugAndroidTest --no-daemon
-
-      # 8 Build release APK or AAB (Gradle handles signing)
-      - name: Build Android Release
-        script: |
-          ./gradlew bundleRelease \
-            -PversionCode=1 \
-            -PversionName=1.0.2 \
-            --build-cache \
-            --no-daemon
-
-      # 9 Deploy Firebase Rules
-      - name: Deploy Firebase Rules
-        script: |
-          if [ -z "$FIREBASE_TOKEN" ]; then
-            echo "FIREBASE_TOKEN is not set. Skipping rules deployment."
-          else
-            npx -y firebase-tools deploy --only firestore:rules --token "$FIREBASE_TOKEN"
-          fi
-
-      # 10 Verify Output
-      - name: Verify build output
-        script: |
-          ARTIFACT_DIR="app/build/outputs/bundle/release"
-          ARTIFACT_FILE=$(find "$ARTIFACT_DIR" -name "*.aab" | head -n 1)
-
-          if [ -f "$ARTIFACT_FILE" ]; then
-            echo "Release artifact found: $ARTIFACT_FILE"
-          else
-            echo "ERROR: Release artifact not found!"
-            exit 1
-          fi
-
+          ./gradlew :app:pixel2Api34ProdDebugAndroidTest \
+                    :app:pixel6Api31ProdDebugAndroidTest \
+                    :app:mediumPhoneApi33ProdDebugAndroidTest \
+                    :app:pixelTabletApi34ProdDebugAndroidTest \
+                    --no-daemon
+      - name: Build Release APK
+        script: ./gradlew assembleProdRelease --no-daemon
     artifacts:
-      - app/build/outputs/**/*.aab
+      - app/build/outputs/apk/prod/release/*.apk
 
-    publishing:
-      email:
-        recipients:
-          - trmnjames@gmail.com
-        notify:
-          success: true
-          failure: true
+  # ------------------------------------------------------------------------------
+  # 🔨 NIGHTLY (Stress & Optimization)
+  # ------------------------------------------------------------------------------
+  nightly-optimization:
+    name: Estatia Nightly Optimization
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    triggering:
+      schedule:
+        - cron: "0 0 * * *"
+          branch: main
+    environment:
+      vars:
+        CI: "true"
+    scripts:
+      - name: Set Permissions
+        script: chmod +x ./gradlew
+      - name: Chaos Tests
+        script: ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
+      - name: Generate Baseline Profiles
+        script: ./gradlew :app:generateProdBaselineProfile --no-daemon
+      - name: Commit Profiles
+        script: |
+          git config --global user.name "Estatia CI"
+          git config --global user.email "ci@estatia.com"
+          git add .
+          git commit -m "Update baseline profiles (Nightly)" || echo "No changes"
+          git push
+      - name: Run Benchmarks
+        script: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-daemon
+    artifacts:
+      - benchmark/build/outputs/connected_android_test_additional_output/*

@@ -8,27 +8,27 @@ class StateAssertionsTest {
     data class TestState(val count: Int, val name: String)
 
     @Test
-    fun `assertState success`() {
+    fun `assertCurrentState success`() {
         val state = MutableStateFlow(TestState(1, "Test"))
-        state.assertState { count == 1 && name == "Test" }
+        state.assertCurrentState { count == 1 && name == "Test" }
     }
 
     @Test(expected = AssertionError::class)
-    fun `assertState failure`() {
+    fun `assertCurrentState failure`() {
         val state = MutableStateFlow(TestState(1, "Test"))
-        state.assertState { count == 2 }
+        state.assertCurrentState { count == 2 }
     }
 
     @Test
-    fun `assertProperty success`() {
+    fun `assertCurrentProperty success`() {
         val state = MutableStateFlow(TestState(1, "Test"))
-        state.assertProperty(1) { count }
-        state.assertProperty("Test") { name }
+        state.assertCurrentProperty(1) { count }
+        state.assertCurrentProperty("Test") { name }
     }
 
     @Test(expected = AssertionError::class)
-    fun `assertProperty failure`() {
+    fun `assertCurrentProperty failure`() {
         val state = MutableStateFlow(TestState(1, "Test"))
-        state.assertProperty(2) { count }
+        state.assertCurrentProperty(2) { count }
     }
 }

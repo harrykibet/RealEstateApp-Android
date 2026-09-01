@@ -38,9 +38,10 @@ The standard defines requirements for state ownership, concurrency, lifecycle sa
 ## CI/CD & Build
 
 * Gradle convention plugins + version catalogs for centralized build logic.
-* Feature module isolation enforced via architecture linting.
-* Automated security scanning with Dependabot.
-* Build variants: `demo` (mocked data) and `prod` (AWS-connected).
+* **Tiered Pipeline**: Follows a PR $\rightarrow$ Main $\rightarrow$ Nightly funnel based on Google best practices.
+* **Multi-Platform**: Automated consistency across GitHub Actions, GitLab CI, and Codemagic.
+* **Hardware Validation**: Standardized fleet of Gradle Managed Devices (GMD) for all UI tests.
+* See [CICD.md](./CICD.md) for full architecture and operational details.
 
 ## Developer Guidelines
 

@@ -95,7 +95,7 @@ class PlayerPoolDeadlockTest {
     @Test
     fun `urgent request promotes in-flight non-urgent request and prevents deadlock chaos`() = runTest {
         // 🧪 Chaos Scenario: Concurrent Mutation using real harness
-        concurrencyChaos.setNextBehavior(ConcurrencyBehavior.ConcurrentMutation)
+        concurrencyChaos.setNextBehavior(ConcurrencyBehavior.ConcurrentMutation())
         
         val mediaId = "race_id"
         val uri = MediaReference("http://test.com")

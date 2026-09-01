@@ -10,6 +10,7 @@ Instead of testing "happy paths," this platform provides tools to inject product
 - **`ChaosFileSystem`**: Simulate `FileSystemBehavior.DiskFull`, `FileSystemBehavior.FileMissing`, or `FileSystemBehavior.PermissionDenied` errors to test persistence resilience.
 - **`ChaosStreamingPipeline`**: Inject segment-level failures in the media engine to test buffer stalls and watchdog recovery.
 - **`ChaosEnvironmentController`**: Force extreme hardware states like **High Thermal Throttling** or **Low Battery** to verify adaptive UI scaling.
+- **`ConcurrencyChaosController`**: Model race conditions, deadlocks, and stale state. Supports both **Deterministic Chaos** (reproducible for CI) and **Probabilistic Stress** (fuzzing).
 
 ### 2. Deterministic Synchronization
 Eliminate brittle `Thread.sleep()` and flaky timing with naming synchronization.
@@ -20,8 +21,8 @@ Eliminate brittle `Thread.sleep()` and flaky timing with naming synchronization.
 
 ### 3. Expressive Platform DSLs
 Standardized assertions that provide high-fidelity failure diagnostics.
-- **State DSL**: Use `viewModel.uiState.assertState { this is Success && data.isNotEmpty() }` for readable, contract-aware Flow verification.
-- **Property DSL**: Use `viewModel.draft.assertProperty("Expected") { title }` for surgical verification of specific state fields.
+- **State DSL**: Use `viewModel.uiState.assertCurrentState { this is Success && data.isNotEmpty() }` for readable, contract-aware Flow verification.
+- **Property DSL**: Use `viewModel.draft.assertCurrentProperty("Expected") { title }` for surgical verification of specific state fields.
 - **Result DSL**: Use `result.assertSuccess()` or `result.assertError()` to cleanly unwrap `AppResult` types with built-in type inference.
 
 ### 4. High-Performance Fakes (`Witness` Pattern)
@@ -63,11 +64,11 @@ fun `handles transient network failure`() = runTest {
     viewModel.refresh()
     
     // 3. Verify state via DSL
-    viewModel.uiState.assertState { this is Error && type == PlayerErrorType.NETWORK }
+    viewModel.uiState.assertCurrentState { this is Error && type == PlayerErrorType.NETWORK }
     
     // 4. Advance time and verify recovery
     testClock.advanceBy(retryDelay)
-    viewModel.uiState.assertState { this is Success }
+    viewModel.uiState.assertCurrentState { this is Success }
 }
 ```
 
@@ -75,7 +76,7 @@ fun `handles transient network failure`() = runTest {
 
 ```text
 src/testFixtures/kotlin/
-├── assertions/    # assertState, assertSuccess, assertProperty
+├── assertions/    # assertCurrentState, assertSuccess, assertCurrentProperty
 ├── chaos/         # Specialized failure behaviors and controllers
 ├── clock/         # TestClock and TestTicker (Virtual Time)
 ├── coroutine/     # TestScheduler and runConcurrent (Synchronization)

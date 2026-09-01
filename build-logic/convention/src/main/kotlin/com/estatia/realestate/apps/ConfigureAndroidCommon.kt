@@ -50,10 +50,27 @@ private fun ApplicationExtension.applyCommon(
 
     testOptions {
         managedDevices {
-            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
-                device = "Pixel 2"
-                apiLevel = 34
-                systemImageSource = "aosp"
+            allDevices {
+                register<ManagedVirtualDevice>("pixel2Api34") {
+                    device = "Pixel 2"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixel6Api31") {
+                    device = "Pixel 6"
+                    apiLevel = 31
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("mediumPhoneApi33") {
+                    device = "Medium Phone"
+                    apiLevel = 33
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixelTabletApi34") {
+                    device = "Pixel Tablet"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
             }
         }
     }
@@ -106,10 +123,27 @@ private fun LibraryExtension.applyCommon(
 
     testOptions {
         managedDevices {
-            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
-                device = "Pixel 2"
-                apiLevel = 34
-                systemImageSource = "aosp"
+            allDevices {
+                register<ManagedVirtualDevice>("pixel2Api34") {
+                    device = "Pixel 2"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixel6Api31") {
+                    device = "Pixel 6"
+                    apiLevel = 31
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("mediumPhoneApi33") {
+                    device = "Medium Phone"
+                    apiLevel = 33
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixelTabletApi34") {
+                    device = "Pixel Tablet"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
             }
         }
     }
@@ -162,10 +196,27 @@ private fun DynamicFeatureExtension.applyCommon(
 
     testOptions {
         managedDevices {
-            allDevices.register<ManagedVirtualDevice>("pixel2Api34") {
-                device = "Pixel 2"
-                apiLevel = 34
-                systemImageSource = "aosp"
+            allDevices {
+                register<ManagedVirtualDevice>("pixel2Api34") {
+                    device = "Pixel 2"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixel6Api31") {
+                    device = "Pixel 6"
+                    apiLevel = 31
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("mediumPhoneApi33") {
+                    device = "Medium Phone"
+                    apiLevel = 33
+                    systemImageSource = "aosp"
+                }
+                register<ManagedVirtualDevice>("pixelTabletApi34") {
+                    device = "Pixel Tablet"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
             }
         }
     }

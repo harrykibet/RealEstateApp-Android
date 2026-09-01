@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -14,12 +15,12 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class ConcurrencyChaosController {
 
-    private var nextBehavior: ConcurrencyBehavior = ConcurrencyBehavior.Success
+    private val nextBehavior = AtomicReference<ConcurrencyBehavior>(ConcurrencyBehavior.Success)
     private val requestCounts = ConcurrentHashMap<String, AtomicInteger>()
     private val barriers = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
 
     fun setNextBehavior(behavior: ConcurrencyBehavior) {
-        nextBehavior = behavior
+        nextBehavior.set(behavior)
     }
 
     /**
@@ -27,15 +28,21 @@ class ConcurrencyChaosController {
      * @param point A unique identifier for the interception point (e.g., "fetch_user").
      */
     suspend fun checkChaos(point: String) {
-        val behavior = nextBehavior
+        val behavior = nextBehavior.get()
         when (behavior) {
-            ConcurrencyBehavior.ConcurrentMutation -> {
+            is ConcurrencyBehavior.ConcurrentMutation -> {
                 // Widen the race window
-                delay(100.milliseconds)
+                delay(behavior.delayMillis.milliseconds)
             }
-            ConcurrencyBehavior.OutOfOrderResponse -> {
-                // Intermittent delay to shuffle response order
-                if (Math.random() > 0.5) delay(200.milliseconds)
+            is ConcurrencyBehavior.OutOfOrderResponse -> {
+                // Deterministic delay to shuffle response order
+                delay(behavior.delayMillis.milliseconds)
+            }
+            is ConcurrencyBehavior.RandomInterleaving -> {
+                // Probabilistic stress: non-deterministic delay
+                if (Math.random() < behavior.probability) {
+                    delay(behavior.delayMillis.milliseconds)
+                }
             }
             ConcurrencyBehavior.CancellationRace -> {
                 yield()
@@ -46,15 +53,16 @@ class ConcurrencyChaosController {
             ConcurrencyBehavior.OperationAfterDisposal -> {
                 val count = requestCounts.getOrPut(point) { AtomicInteger(0) }
                 if (count.incrementAndGet() > 1) {
-                    throw IllegalStateException("${behavior} detected at $point (Chaos)")
+                    throw IllegalStateException("${behavior::class.simpleName} detected at $point (Chaos)")
                 }
             }
-            ConcurrencyBehavior.MultipleRefreshOperations -> {
-                 delay(50.milliseconds)
+            is ConcurrencyBehavior.MultipleRefreshOperations -> {
+                 delay(behavior.delayMillis.milliseconds)
             }
-            ConcurrencyBehavior.StaleResult,
+            is ConcurrencyBehavior.StaleResult -> {
+                delay(behavior.delayMillis.milliseconds)
+            }
             ConcurrencyBehavior.CallbackRace -> {
-                // Intermittent long delay to force stale state
                 delay(500.milliseconds)
             }
             ConcurrencyBehavior.Success -> Unit
@@ -83,7 +91,7 @@ class ConcurrencyChaosController {
      * Clears all state and pending barriers.
      */
     fun reset() {
-        nextBehavior = ConcurrencyBehavior.Success
+        nextBehavior.set(ConcurrencyBehavior.Success)
         requestCounts.clear()
         barriers.values.forEach { it.complete(Unit) }
         barriers.clear()

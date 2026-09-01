@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.common.exceptions.PropertyException
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
 import com.estatia.realestate.apps.feature.property.utils.PropertyData
@@ -82,7 +82,7 @@ class AddPropertyViewModelTest {
         viewModel.updateTitle("Villa")
         advanceUntilIdle()
         
-        viewModel.draft.assertProperty("Villa") { title }
+        viewModel.draft.assertCurrentProperty("Villa") { title }
         
         advanceTimeBy(11.seconds)
         runCurrent()

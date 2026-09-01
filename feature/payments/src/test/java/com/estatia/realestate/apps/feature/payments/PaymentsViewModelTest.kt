@@ -6,8 +6,8 @@ import com.estatia.realestate.apps.core.domain.usecase.ProcessPaymentUseCase
 import com.estatia.realestate.apps.core.model.feature.PaymentContext
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
 import com.estatia.realestate.apps.core.navigation.routes.PaymentRoute
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -58,8 +58,8 @@ class PaymentsViewModelTest {
 
     @Test
     fun `initial state should have args from savedStateHandle`() {
-        viewModel.state.assertProperty("ref_123") { referenceId }
-        viewModel.state.assertProperty("USD") { currency }
+        viewModel.state.assertCurrentProperty("ref_123") { referenceId }
+        viewModel.state.assertCurrentProperty("USD") { currency }
     }
 
     @Test
@@ -70,6 +70,6 @@ class PaymentsViewModelTest {
 
         viewModel.processPayment()
 
-        viewModel.state.assertState { uiState is PaymentsUiState.Success }
+        viewModel.state.assertCurrentState { uiState is PaymentsUiState.Success }
     }
 }

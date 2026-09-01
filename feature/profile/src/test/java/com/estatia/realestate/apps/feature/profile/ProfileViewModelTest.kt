@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
-import com.estatia.realestate.apps.core.testing.assertions.assertProperty
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentProperty
 import com.estatia.realestate.apps.core.testing.fixtures.UserFixtures
 import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel
 import io.mockk.coEvery
@@ -50,8 +50,8 @@ class ProfileViewModelTest {
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
 
-        viewModel.uiState.assertProperty(false) { isLoading }
-        viewModel.uiState.assertProperty("John Doe") { name }
+        viewModel.uiState.assertCurrentProperty(false) { isLoading }
+        viewModel.uiState.assertCurrentProperty("John Doe") { name }
     }
 
     @Test
@@ -64,7 +64,7 @@ class ProfileViewModelTest {
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
 
-        viewModel.uiState.assertProperty("Connection timed out") { error }
+        viewModel.uiState.assertCurrentProperty("Connection timed out") { error }
     }
 
     @Test
@@ -74,6 +74,6 @@ class ProfileViewModelTest {
         val metricsTracker = mockk<com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker>(relaxed = true)
         viewModel = ProfileViewModel(authRepository, userRepository, metricsTracker)
 
-        viewModel.uiState.assertProperty("User not authenticated") { error }
+        viewModel.uiState.assertCurrentProperty("User not authenticated") { error }
     }
 }

@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.data.repositories.SearchRepository
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.domain.repository.ISearchRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
-import com.estatia.realestate.apps.core.testing.assertions.assertState
+import com.estatia.realestate.apps.core.testing.assertions.assertCurrentState
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 import com.estatia.realestate.apps.core.testing.fake.analytics.FakeEngagementRepository
@@ -110,7 +110,7 @@ class SearchResilienceTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then: Error state is shown (after all retries exhausted)
-        viewModel.uiState.assertState { 
+        viewModel.uiState.assertCurrentState { 
             this is SearchUiState.Error && this.message.contains("Connection failed") 
         }
 
@@ -127,7 +127,7 @@ class SearchResilienceTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then: Success state is shown with matching results
-        viewModel.uiState.assertState { 
+        viewModel.uiState.assertCurrentState { 
             this is SearchUiState.Success && this.results.size == 2 
         }
     }
