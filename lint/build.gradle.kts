@@ -11,7 +11,10 @@ dependencies {
     compileOnly(libs.android.lint.api)
     compileOnly(libs.android.lint.checks)
 
+    testImplementation(libs.android.lint.api)
+    testImplementation(libs.android.lint.checks)
     testImplementation(libs.android.lint.tests)
+    testImplementation(libs.junit.junit)
 }
 
 tasks.withType<org.gradle.jvm.tasks.Jar> {
