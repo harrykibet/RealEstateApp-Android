@@ -9,6 +9,8 @@ import com.estatia.realestate.apps.core.common.system.BatteryState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.testing.chaos.resources.ChaosResourceController
 import com.estatia.realestate.apps.core.testing.chaos.resources.ChaosResourcesMonitor
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
+import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleBehavior
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -75,6 +77,21 @@ class EnvironmentCoordinatorChaosTest {
         
         // 🧪 Chaos Scenario: App backgrounded via controller
         resourceController.isAppVisible = false
+        
+        val state = coordinator.environment.first { !it.isAppVisible }
+        assertEquals(false, state.isAppVisible)
+    }
+
+    @Test
+    fun `coordinator reflects visibility changes from lifecycle chaos`() = runTest {
+        val chaosMonitor = ChaosResourcesMonitor(resourceController, backgroundScope)
+        val lifecycleController = LifecycleChaosController(resourceController)
+        val coordinator = createCoordinator(chaosMonitor)
+        coordinator.start(backgroundScope)
+        
+        // 🧪 Chaos Scenario: App backgrounded via lifecycle controller
+        lifecycleController.setNextBehavior(LifecycleBehavior.AppBackgrounded)
+        lifecycleController.checkChaos()
         
         val state = coordinator.environment.first { !it.isAppVisible }
         assertEquals(false, state.isAppVisible)

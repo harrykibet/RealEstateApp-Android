@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.core.testing.chaos.resources
 
 import com.estatia.realestate.apps.core.common.system.ISystemResourcesMonitor
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 @Suppress("OPT_IN_USAGE")
 class ChaosResourcesMonitor(
     controller: ChaosResourceController,
-    scope: CoroutineScope = GlobalScope
+    scope: CoroutineScope
 ) : ISystemResourcesMonitor {
 
     override val memoryTrimLevel: StateFlow<Int> = controller.memoryPressureFlow

@@ -88,19 +88,17 @@ class NetworkChaosController {
             NetworkBehavior.DnsFailure -> throw IOException("DNS resolution failed (Chaos)")
             is NetworkBehavior.Delay -> delay(behavior.duration)
             is NetworkBehavior.HttpError -> throw HttpStatusException(behavior.statusCode)
-            NetworkBehavior.MalformedResponse -> throw IOException("Malformed response data (Chaos)")
-            NetworkBehavior.EmptyResponse -> throw IOException("Empty response body (Chaos)")
-            NetworkBehavior.UnexpectedSchema -> throw IOException("Unexpected response schema (Chaos)")
-            NetworkBehavior.OversizedResponse -> throw IOException("Response exceeds buffer size (Chaos)")
             
-            // --- Semantic Chaos (Handled by the Client) ---
+            // --- Semantic Chaos (Handled by the Client after apiCall) ---
+            NetworkBehavior.MalformedResponse,
+            NetworkBehavior.EmptyResponse,
+            NetworkBehavior.UnexpectedSchema,
+            NetworkBehavior.OversizedResponse,
             NetworkBehavior.PartialResponse,
             NetworkBehavior.DuplicateResponse,
-            NetworkBehavior.OutOfOrderResponse -> Unit 
+            NetworkBehavior.OutOfOrderResponse,
+            NetworkBehavior.ServerSuccessClientTimeout -> Unit 
             
-            NetworkBehavior.ServerSuccessClientTimeout -> {
-                throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
-            }
             is NetworkBehavior.InvalidBody -> throw HttpStatusException(400)
         }
     }

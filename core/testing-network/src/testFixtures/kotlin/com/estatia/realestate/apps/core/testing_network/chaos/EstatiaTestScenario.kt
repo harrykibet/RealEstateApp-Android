@@ -4,6 +4,8 @@ import com.estatia.realestate.apps.core.testing.chaos.auth.AuthBehavior
 import com.estatia.realestate.apps.core.testing.chaos.database.DatabaseBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
+import com.estatia.realestate.apps.core.testing.chaos.resources.ChaosResourceController
+import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakeAuthRemoteDataSource
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakePropertyRemoteDataSource
 import com.estatia.realestate.apps.core.testing_network.fake.source.FakeSearchRemoteDataSource
@@ -15,10 +17,29 @@ import javax.inject.Inject
  */
 class EstatiaTestScenario @Inject constructor(
     private val networkChaos: NetworkChaosController,
+    private val networkClient: INetworkClient,
+    private val resourceController: ChaosResourceController,
     private val authFake: FakeAuthRemoteDataSource,
     private val propertyFake: FakePropertyRemoteDataSource,
     private val searchFake: FakeSearchRemoteDataSource
 ) {
+
+    /**
+     * Resets all chaos controllers and fakes to their initial success state.
+     * Prevents cross-test contamination in integration tests.
+     */
+    fun reset() {
+        networkChaos.reset()
+        (networkClient as? ChaosNetworkClient)?.reset()
+        authFake.setNextBehavior(AuthBehavior.Authenticated)
+        propertyFake.setNextBehavior(DatabaseBehavior.Success)
+        searchFake.setNextBehavior(DatabaseBehavior.Success)
+        
+        // Reset resource states
+        resourceController.isAppVisible = true
+        resourceController.isInteractive = true
+        resourceController.memoryPressure = ChaosResourceController.MemoryPressure.Normal
+    }
 
     /**
      * Simulates a total network blackout.

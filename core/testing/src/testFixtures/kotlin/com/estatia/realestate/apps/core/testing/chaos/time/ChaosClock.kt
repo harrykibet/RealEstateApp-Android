@@ -43,8 +43,8 @@ class ChaosClock(private val delegate: TestClock) : IClock {
             TimeBehavior.ClockSkipForward -> base + 1_000_000L
             TimeBehavior.ClockSkipBackward -> base - 1_000_000L
             TimeBehavior.FrozenClock -> base
-            TimeBehavior.HighJitter -> base + (Math.random() * 500).toLong()
-            TimeBehavior.ExtremeDrift -> base + (System.currentTimeMillis() % 10000)
+            is TimeBehavior.HighJitter -> base + behavior.offsetMillis
+            is TimeBehavior.ExtremeDrift -> base + behavior.driftMillis
             TimeBehavior.Expiration -> base + 100_000_000L
             TimeBehavior.RetryDeadlineExceeded -> base + 60_000L
             TimeBehavior.BoundaryAtExpiration -> base

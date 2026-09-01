@@ -20,10 +20,13 @@ abstract class ChaosContract<T, B> {
     abstract suspend fun performOperation(subject: T): Any?
 
     /**
-     * Verifies that the subject propagates cancellation correctly.
+     * Verifies that the operation fails and maps correctly under chaos.
+     *
+     * This test MUST be implemented with a real assertion to prove that the component
+     * correctly surfaces the chaos behavior (e.g., via exception or AppResult.Error).
      */
     @Test
-    abstract fun cancellationPropagates()
+    abstract fun failureMapsCorrectly()
 
     /**
      * Verifies that the operation succeeds under normal conditions.
@@ -35,23 +38,23 @@ abstract class ChaosContract<T, B> {
     }
 
     /**
-     * Verifies that the operation fails and maps correctly under chaos.
+     * Helper to verify that an operation either throws an Exception or returns an AppResult.Error
+     * when the configured [failureBehavior] is active.
      */
-    @Test
-    open fun failureMapsCorrectly() = runTest {
+    protected suspend fun assertFailureBehavior() {
         val subject = createSubject(failureBehavior)
         val result = try {
             performOperation(subject)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            // Success if it throws
-            return@runTest
+            // Success if it throws (e.g. IOException)
+            return
         }
 
         if (result is AppResult.Error) {
-            // Success if it returns error
-            return@runTest
+            // Success if it returns an error result
+            return
         }
 
         throw AssertionError("Operation should have failed with $failureBehavior")

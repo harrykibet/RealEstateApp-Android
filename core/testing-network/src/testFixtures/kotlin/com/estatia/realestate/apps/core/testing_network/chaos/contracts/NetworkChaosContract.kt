@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.testing_network.chaos.contracts
 
-import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+import com.estatia.realestate.apps.core.testing.chaos.contracts.CancellableChaosContract
 import com.estatia.realestate.apps.core.testing.witness.Witness
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
@@ -9,7 +9,7 @@ import org.junit.Test
 /**
  * Specialized contract for Network operations.
  */
-abstract class NetworkChaosContract<T, B> : ChaosContract<T, B>() {
+abstract class NetworkChaosContract<T, B> : CancellableChaosContract<T, B>() {
 
     abstract val timeoutBehavior: B
 
@@ -17,6 +17,11 @@ abstract class NetworkChaosContract<T, B> : ChaosContract<T, B>() {
      * Optional witness to verify retries or other side effects.
      */
     open val retryWitness: Witness<*>? = null
+
+    @Test
+    override fun failureMapsCorrectly() = runTest {
+        assertFailureBehavior()
+    }
 
     @Test
     fun timeoutBehaviorWorks() = runTest {

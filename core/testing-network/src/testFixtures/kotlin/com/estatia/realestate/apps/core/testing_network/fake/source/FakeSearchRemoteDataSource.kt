@@ -63,9 +63,23 @@ class FakeSearchRemoteDataSource(
         
         return when (behavior) {
             DatabaseBehavior.Unavailable -> AppResult.Error(DatabaseException.Unavailable)
-            DatabaseBehavior.Locked -> AppResult.Error(DatabaseException.Unknown(java.io.IOException("Database locked (Chaos)")))
+            DatabaseBehavior.Corrupted -> AppResult.Error(DatabaseException.CorruptedDatabase(java.lang.RuntimeException("Chaos")))
+            DatabaseBehavior.Locked -> AppResult.Error(DatabaseException.Unknown(java.io.IOException("Database is locked (Chaos)")))
+            DatabaseBehavior.ConstraintViolation -> AppResult.Error(DatabaseException.ConstraintViolation(java.lang.IllegalArgumentException("Chaos")))
+            DatabaseBehavior.DiskFull -> AppResult.Error(DatabaseException.StorageFull(java.io.IOException("Chaos")))
+            DatabaseBehavior.MigrationFailure -> AppResult.Error(DatabaseException.Unknown(java.lang.IllegalStateException("Migration failed (Chaos)")))
+            DatabaseBehavior.SchemaMismatch -> AppResult.Error(DatabaseException.Unknown(java.lang.IllegalStateException("Schema mismatch (Chaos)")))
+            DatabaseBehavior.DuplicateData -> AppResult.Error(DatabaseException.AlreadyExists)
+            DatabaseBehavior.ConcurrentWrites -> AppResult.Error(DatabaseException.Unknown(java.util.ConcurrentModificationException("Concurrent write detected (Chaos)")))
+            DatabaseBehavior.TransactionFailure -> AppResult.Error(DatabaseException.TransactionFailed)
+            DatabaseBehavior.PartialTransaction -> AppResult.Error(DatabaseException.TransactionFailed)
+            DatabaseBehavior.ProcessDeathDuringTransaction -> AppResult.Error(DatabaseException.Unknown(java.lang.RuntimeException("Process died during transaction (Chaos)")))
+            DatabaseBehavior.VeryLargeDataset -> null
+            DatabaseBehavior.EmptyDataset -> {
+                properties.clear()
+                null
+            }
             DatabaseBehavior.Success -> null
-            else -> null // Other behaviors can be added as needed
         }
     }
 }

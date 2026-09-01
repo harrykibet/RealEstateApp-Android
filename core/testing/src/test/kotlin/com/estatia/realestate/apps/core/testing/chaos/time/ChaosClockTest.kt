@@ -63,18 +63,15 @@ class ChaosClockTest {
     }
 
     @Test
-    fun `HighJitter adds random noise`() {
-        chaosClock.setNextBehavior(TimeBehavior.HighJitter)
-        val time = chaosClock.currentTimeMillis()
-        assertTrue(time in 1000L..1500L)
+    fun `HighJitter adds deterministic noise`() {
+        chaosClock.setNextBehavior(TimeBehavior.HighJitter(200L))
+        assertEquals(1000L + 200L, chaosClock.currentTimeMillis())
     }
 
     @Test
-    fun `ExtremeDrift adds drift`() {
-        chaosClock.setNextBehavior(TimeBehavior.ExtremeDrift)
-        val time = chaosClock.currentTimeMillis()
-        // Drift is based on System.currentTimeMillis() % 10000 in ChaosClock implementation
-        assertTrue(time >= 1000L)
+    fun `ExtremeDrift adds deterministic drift`() {
+        chaosClock.setNextBehavior(TimeBehavior.ExtremeDrift(5000L))
+        assertEquals(1000L + 5000L, chaosClock.currentTimeMillis())
     }
 
     @Test

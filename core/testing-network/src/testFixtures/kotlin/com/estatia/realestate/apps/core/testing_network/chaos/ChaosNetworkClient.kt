@@ -9,6 +9,8 @@ import com.estatia.realestate.apps.core.testing.chaos.concurrency.ConcurrencyCha
 import com.estatia.realestate.apps.core.testing.chaos.lifecycle.LifecycleChaosController
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
+import java.io.IOException
+import java.net.SocketTimeoutException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
@@ -62,16 +64,36 @@ class ChaosNetworkClient(
                 // 5. Execute actual call
                 var result = apiCall()
 
-                // 6. SEMANTIC CHAOS: PartialResponse
+                // 6. SEMANTIC CHAOS: DuplicateResponse
+                // Simulates a network-level replay by executing the side-effect (apiCall) twice.
+                if (behavior == NetworkBehavior.DuplicateResponse) {
+                    apiCall()
+                }
+
+                // 7. SEMANTIC CHAOS: Exception after success
+                // These simulate scenarios where the server side-effect completes, 
+                // but the response phase fails (transmission error, malformed body, timeout).
+                when (behavior) {
+                    NetworkBehavior.MalformedResponse -> throw IOException("Malformed response data (Chaos)")
+                    NetworkBehavior.EmptyResponse -> throw IOException("Empty response body (Chaos)")
+                    NetworkBehavior.UnexpectedSchema -> throw IOException("Unexpected response schema (Chaos)")
+                    NetworkBehavior.OversizedResponse -> throw IOException("Response exceeds buffer size (Chaos)")
+                    NetworkBehavior.ServerSuccessClientTimeout -> {
+                        throw SocketTimeoutException("Read timeout after server side-effect (Chaos)")
+                    }
+                    else -> Unit
+                }
+
+                // 8. SEMANTIC CHAOS: PartialResponse
                 // Truncates data if the type is known (List, String).
                 if (behavior == NetworkBehavior.PartialResponse) {
                     result = applyPartialTruncation(result)
                 }
 
-                // 7. Post-execution checks
+                // 9. Post-execution checks
                 concurrencyChaos.checkChaos("network_post_execute")
                 
-                // 8. Release held requests (Simulates out-of-order delivery)
+                // 10. Release held requests (Simulates out-of-order delivery)
                 if (behavior != NetworkBehavior.OutOfOrderResponse) {
                     heldRequests.tryReceive().getOrNull()?.complete(Unit)
                 }
@@ -98,6 +120,16 @@ class ChaosNetworkClient(
                 if (data.length > 1) data.take(data.length / 2) as T else data
             }
             else -> data // Cannot safely truncate generic type
+        }
+    }
+
+    /**
+     * Clears all internal mutable state, such as held requests from OutOfOrderResponse.
+     * Essential for preventing cross-test contamination in integration tests.
+     */
+    fun reset() {
+        while (true) {
+            heldRequests.tryReceive().getOrNull()?.complete(Unit) ?: break
         }
     }
 }

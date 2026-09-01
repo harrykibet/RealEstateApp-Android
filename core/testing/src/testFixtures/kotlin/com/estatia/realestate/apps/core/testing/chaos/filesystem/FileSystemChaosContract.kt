@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.testing.chaos.filesystem
 
 import com.estatia.realestate.apps.core.common.interfaces.IFileSystem
-import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+import com.estatia.realestate.apps.core.testing.chaos.contracts.CancellableChaosContract
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.io.IOException
@@ -9,10 +9,15 @@ import java.io.IOException
 /**
  * Specialized contract for File System operations.
  */
-abstract class FileSystemChaosContract : ChaosContract<IFileSystem, FileSystemBehavior>() {
+abstract class FileSystemChaosContract : CancellableChaosContract<IFileSystem, FileSystemBehavior>() {
 
     override val successBehavior = FileSystemBehavior.Success
     override val failureBehavior = FileSystemBehavior.IoFailure
+
+    @Test
+    override fun failureMapsCorrectly() = runTest {
+        assertFailureBehavior()
+    }
 
     @Test(expected = IOException::class)
     fun diskFullThrowsIOException() = runTest {

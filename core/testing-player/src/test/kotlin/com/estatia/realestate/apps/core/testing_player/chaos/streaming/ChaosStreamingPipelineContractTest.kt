@@ -65,18 +65,18 @@ class ChaosStreamingPipelineContractTest : PlayerChaosContract<ChaosStreamingPip
         return Unit
     }
 
-    override fun cancellationPropagates() {
-        // ChaosStreamingPipeline is synchronous/delegating; 
-        // cancellation is handled by the calling scope or the delegate.
-    }
-
     /**
-     * Overridden because ChaosStreamingPipeline failure manifests as a stall (silent skip)
-     * rather than an exception or Error result from the warm() call.
+     * Verifies that when segments are failing, the pipeline skips warming,
+     * which will eventually cause a buffering stall in the player.
      */
     @Test
-    override fun failureMapsCorrectly() {
-        // Handled by bufferingStall()
+    override fun failureMapsCorrectly() = runTest(testDispatcher) {
+        val delegate = mockk<IStreamingPipeline>(relaxed = true)
+        val subject = ChaosStreamingPipeline(delegate).apply { setFailSegments(true) }
+
+        subject.warm("test-id", MediaReference("test-uri"), WarmPriority.VISIBLE)
+
+        verify(exactly = 0) { delegate.warm(any(), any(), any(), any()) }
     }
 
     @Test

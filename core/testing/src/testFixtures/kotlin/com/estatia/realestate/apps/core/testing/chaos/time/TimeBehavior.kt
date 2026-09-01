@@ -8,8 +8,8 @@ sealed interface TimeBehavior {
     data object ClockSkipForward : TimeBehavior
     data object ClockSkipBackward : TimeBehavior
     data object FrozenClock : TimeBehavior
-    data object HighJitter : TimeBehavior
-    data object ExtremeDrift : TimeBehavior
+    data class HighJitter(val offsetMillis: Long = 500) : TimeBehavior
+    data class ExtremeDrift(val driftMillis: Long = 10000) : TimeBehavior
     data object Expiration : TimeBehavior
     data object RetryDeadlineExceeded : TimeBehavior
     data object BoundaryAtExpiration : TimeBehavior
