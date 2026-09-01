@@ -5,13 +5,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.ITokenLocalDataSource
 import com.estatia.realestate.apps.core.security.models.EncryptedPayload
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -23,7 +26,7 @@ import javax.inject.Singleton
  * 🏗️ OPERATIONAL CONTRACT:
  * - Responsibility: Manage the secure persistence of identity tokens using hardware-backed encryption.
  * - Security: Every token is encrypted with AES-GCM before being saved to Disk (DataStore).
- * - Concurrency: Thread-safe via [withContext] Dispatchers.IO.
+ * - Concurrency: Thread-safe via [withContext] dispatcher.
  * - Resilience: Implements a one-way migration path from legacy plain-text storage to encrypted storage.
  * - Observability: Tracks token encryption and decryption failure rates.
  */
@@ -31,7 +34,8 @@ import javax.inject.Singleton
 class TokenLocalDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val cryptoEngine: IAesGcmCryptoEngine,
-    private val metricsTracker: IMetricsTracker
+    private val metricsTracker: IMetricsTracker,
+    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ITokenLocalDataSource {
 
     private companion object {
@@ -42,7 +46,7 @@ class TokenLocalDataSource @Inject constructor(
         const val DELIMITER = "|"
     }
 
-    override suspend fun saveToken(token: String): AppResult<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun saveToken(token: String): AppResult<Unit> = withContext(ioDispatcher) {
         try {
             val encodedValue = encryptToken(token)
             dataStore.edit { preferences ->
@@ -52,13 +56,15 @@ class TokenLocalDataSource @Inject constructor(
             }
             metricsTracker.incrementCounter("security.token.save_success")
             AppResult.Success(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             metricsTracker.incrementCounter("security.token.save_failure")
             AppResult.Error(com.estatia.realestate.apps.core.common.exceptions.SecurityException.EncryptionFailed(e))
         }
     }
 
-    override suspend fun getToken(): AppResult<String?> = withContext(Dispatchers.IO) {
+    override suspend fun getToken(): AppResult<String?> = withContext(ioDispatcher) {
         try {
             val preferences = dataStore.data.firstOrNull() ?: return@withContext AppResult.Success(null)
             
@@ -79,13 +85,15 @@ class TokenLocalDataSource @Inject constructor(
             }
 
             AppResult.Success(null)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             metricsTracker.incrementCounter("security.token.get_failure")
             AppResult.Error(com.estatia.realestate.apps.core.common.exceptions.SecurityException.DecryptionFailed(e))
         }
     }
 
-    override suspend fun clearToken(): AppResult<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun clearToken(): AppResult<Unit> = withContext(ioDispatcher) {
         dataStore.edit { preferences ->
             preferences.remove(KEY_SECURE_AUTH_TOKEN)
             preferences.remove(KEY_MIGRATED_TOKEN)

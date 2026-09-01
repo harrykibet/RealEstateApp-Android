@@ -2,10 +2,10 @@ package com.estatia.realestate.apps.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -82,7 +82,7 @@ class EstatiaAppState(
         @Composable get() {
             // Collect the currentBackStackEntryFlow as a state
             val currentEntry = navController.currentBackStackEntryFlow
-                .collectAsState(initial = null)
+                .collectAsStateWithLifecycle(initialValue = null)
 
             // Fallback to previousDestination if currentEntry is null
             return currentEntry.value?.destination.also { destination ->

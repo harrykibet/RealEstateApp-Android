@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.core.config.provider
 
+import com.estatia.realestate.apps.core.common.interfaces.IClock
+import com.estatia.realestate.apps.core.common.system.Dispatcher
+import com.estatia.realestate.apps.core.common.system.EstatiaDispatchers
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
@@ -13,8 +16,8 @@ import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -29,7 +32,9 @@ internal class ConfigProvider @Inject constructor(
     private val dataRepository: IConfigDataRepository,
     private val parser: ConfigParser,
     private val stateHolder: ConfigStateHolder,
-    private val metricsTracker: IMetricsTracker
+    private val metricsTracker: IMetricsTracker,
+    private val clock: IClock,
+    @Dispatcher(EstatiaDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : IConfigProvider {
 
     override val configVersion = stateHolder.configVersion
@@ -71,8 +76,8 @@ internal class ConfigProvider @Inject constructor(
 
         if (isInitialized) return
 
-        withContext(Dispatchers.IO) {
-            val startTime = System.currentTimeMillis()
+        withContext(ioDispatcher) {
+            val startTime = clock.currentTimeMillis()
 
             // Load from individual fragments in assets
             val networkJson = assetSource.loadNetworkConfig()
@@ -87,14 +92,14 @@ internal class ConfigProvider @Inject constructor(
 
             applyConfig(combined)
 
-            val duration = System.currentTimeMillis() - startTime
+            val duration = clock.currentTimeMillis() - startTime
             metricsTracker.trackDuration("config.initialize.duration", duration.milliseconds)
 
             isInitialized = true
             _isReady.value = true
 
             // Trigger remote refresh asynchronously to avoid blocking startup on network
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(ioDispatcher).launch {
                 refresh()
             }
         }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed class BatteryState {
     abstract val level: Int
@@ -187,7 +188,10 @@ class BatteryOptimizationManager @Inject constructor(
     override fun cleanup() {
         try {
             context.unregisterReceiver(batteryStatusReceiver)
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        }
+        catch (e: Exception) {
             // Already unregistered
         }
     }

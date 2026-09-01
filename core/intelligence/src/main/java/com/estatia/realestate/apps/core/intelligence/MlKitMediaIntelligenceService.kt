@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.intelligence
 import android.content.Context
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.label.ImageLabeling
@@ -26,14 +27,15 @@ import javax.inject.Singleton
 @Singleton
 class MlKitMediaIntelligenceService @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val metricsTracker: IMetricsTracker
+    private val metricsTracker: IMetricsTracker,
+    private val clock: IClock
 ) : IMediaIntelligenceService {
 
     private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
     private val faceDetector = FaceDetection.getClient()
 
     override suspend fun extractAmenities(imageUri: MediaReference): List<String> {
-        val startTime = System.currentTimeMillis()
+        val startTime = clock.currentTimeMillis()
         val image = InputImage.fromFilePath(context, imageUri.value.toUri())
         val labels = labeler.process(image).await()
         
@@ -43,7 +45,7 @@ class MlKitMediaIntelligenceService @Inject constructor(
             .map { it.text.lowercase() }
             .filter { isRelevantAmenity(it) }
 
-        val duration = System.currentTimeMillis() - startTime
+        val duration = clock.currentTimeMillis() - startTime
         metricsTracker.trackDuration("intelligence.media.extraction_latency", duration.milliseconds)
         
         return amenities

@@ -2,8 +2,8 @@ package com.estatia.realestate.apps.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.estatia.realestate.apps.core.navigation.routes.AuthBaseRoute
@@ -78,7 +78,7 @@ fun EstatiaNavHost(
                 LaunchedEffect(propertyId) {
                     commentsViewModel.onAction(CommentsAction.Load(propertyId))
                 }
-                val commentsState by commentsViewModel.state.collectAsState()
+                val commentsState by commentsViewModel.state.collectAsStateWithLifecycle()
                 CommentSheetContent(
                     state = commentsState,
                     onAction = commentsViewModel::onAction,
@@ -100,7 +100,7 @@ fun EstatiaNavHost(
                 LaunchedEffect(propertyId) {
                     commentsViewModel.onAction(CommentsAction.Load(propertyId))
                 }
-                val commentsState by commentsViewModel.state.collectAsState()
+                val commentsState by commentsViewModel.state.collectAsStateWithLifecycle()
                 CommentSheetContent(
                     state = commentsState,
                     onAction = commentsViewModel::onAction,

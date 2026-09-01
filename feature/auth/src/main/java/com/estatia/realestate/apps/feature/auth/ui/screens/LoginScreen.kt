@@ -143,7 +143,7 @@ fun LoginScreen(
                     color = Color.White,
                 )
             } else {
-                EstatiaText("Login")
+                EstatiaText(stringResource(R.string.login))
             }
         }
 

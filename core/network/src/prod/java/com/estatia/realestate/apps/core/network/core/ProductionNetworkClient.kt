@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.network.core
 
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IRetryPolicy
@@ -24,6 +25,7 @@ class ProductionNetworkClient @Inject constructor(
     private val retryPolicy: IRetryPolicy,
     private val exceptionMapper: IExceptionMapper,
     private val metricsTracker: IMetricsTracker,
+    private val clock: IClock,
     private val logger: ILogger
 ) : INetworkClient {
 
@@ -33,7 +35,7 @@ class ProductionNetworkClient @Inject constructor(
         apiCall: suspend () -> T
     ): AppResult<T> {
 
-        val startTime = System.currentTimeMillis()
+        val startTime = clock.currentTimeMillis()
 
         return try {
 
@@ -42,7 +44,7 @@ class ProductionNetworkClient @Inject constructor(
                 apiCall
             )
 
-            metricsTracker.trackDuration("network.client.latency", (System.currentTimeMillis() - startTime).milliseconds)
+            metricsTracker.trackDuration("network.client.latency", (clock.currentTimeMillis() - startTime).milliseconds)
             metricsTracker.incrementCounter("network.client.success")
 
             AppResult.Success(data)
@@ -53,7 +55,7 @@ class ProductionNetworkClient @Inject constructor(
         } catch (
             throwable: Throwable
         ) {
-            val duration = System.currentTimeMillis() - startTime
+            val duration = clock.currentTimeMillis() - startTime
             metricsTracker.trackDuration("network.client.latency", duration.milliseconds)
             metricsTracker.incrementCounter("network.client.failure")
 

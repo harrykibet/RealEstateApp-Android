@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,6 +15,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.feature.auth.R
 import com.estatia.realestate.apps.feature.auth.state.AuthState
@@ -23,6 +23,7 @@ import com.estatia.realestate.apps.feature.auth.ui.screens.LoginScreen
 import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 
@@ -45,7 +46,7 @@ fun LoginRoute(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    val authState by viewModel.authState.collectAsState()
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
 
     /* -----------------------------------------
      * React to AuthState (single source of truth)
@@ -142,6 +143,8 @@ suspend fun signInWithGoogleCredentialManager(
         } else {
             onError(IllegalStateException("Unexpected credential type"))
         }
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Exception) {
         onError(e)
     }

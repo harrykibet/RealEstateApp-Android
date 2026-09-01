@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.intelligence
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
@@ -33,13 +34,14 @@ import javax.inject.Singleton
 @Singleton
 class MlKitContentSafetyService @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val metricsTracker: IMetricsTracker
+    private val metricsTracker: IMetricsTracker,
+    private val clock: IClock
 ) : IContentSafetyService {
 
     private val labeler by lazy { ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS) }
 
     override suspend fun validateText(text: String): SafetyResult {
-        val startTime = System.currentTimeMillis()
+        val startTime = clock.currentTimeMillis()
         // ML Kit doesn't have a direct on-device "toxicity" model.
         // We use a high-performance heuristic pattern match for common abusive terms.
         val toxicTerms = setOf("abusive_term1", "abusive_term2") // Placeholder
@@ -51,7 +53,7 @@ class MlKitContentSafetyService @Inject constructor(
             SafetyResult.Safe
         }
 
-        val duration = System.currentTimeMillis() - startTime
+        val duration = clock.currentTimeMillis() - startTime
         metricsTracker.trackDuration("intelligence.safety.text_latency", duration.milliseconds)
         if (result is SafetyResult.Flagged) {
             metricsTracker.incrementCounter("intelligence.safety.flagged_text")

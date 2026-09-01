@@ -2,6 +2,8 @@ package com.estatia.realestate.apps.core.testing_network.chaos.interceptors
 
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkBehavior
 import com.estatia.realestate.apps.core.testing.chaos.network.NetworkChaosController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -29,7 +31,7 @@ class ChaosInterceptor @Inject constructor(
         when (behavior) {
             NetworkBehavior.Offline -> throw IOException("No network (Chaos Interceptor)")
             NetworkBehavior.Timeout -> throw SocketTimeoutException("Connection timed out (Chaos Interceptor)")
-            is NetworkBehavior.Delay -> Thread.sleep(behavior.duration.inWholeMilliseconds)
+            is NetworkBehavior.Delay -> runBlocking { delay(behavior.duration) }
             else -> Unit
         }
 
@@ -86,29 +88,33 @@ private class TruncatedResponseBody(private val delegate: ResponseBody) : Respon
 }
 
 /**
- * Corrupts the response stream by flipping bits or injecting garbage.
+ * Corrupts the response stream by flipping bits in the first segment.
  */
 private class CorruptedResponseBody(private val delegate: ResponseBody) : ResponseBody() {
     override fun contentType(): MediaType? = delegate.contentType()
     override fun contentLength(): Long = delegate.contentLength()
     override fun source(): BufferedSource {
         val originalSource = delegate.source()
-        return object : Source by originalSource {
+        return object : Source {
+            private var isFirstRead = true
+            
             override fun read(sink: Buffer, byteCount: Long): Long {
-                val read = originalSource.read(sink, byteCount)
-                if (read != -1L) {
-                    // Simple corruption: flip first byte of every read in the sink
-                    if (sink.size > 0) {
-                        val firstByte = sink.readByte()
-                        val corrupted = (firstByte.toInt() xor 0xFF).toByte()
-                        // We need to put it back at the beginning. This is inefficient but works for chaos.
-                        val remaining = sink.readByteArray()
-                        sink.writeByte(corrupted.toInt())
-                        sink.write(remaining)
+                val temp = Buffer()
+                val read = originalSource.read(temp, byteCount)
+                if (read > 0) {
+                    if (isFirstRead) {
+                        isFirstRead = false
+                        // Flip the very first byte of the stream
+                        val firstByte = temp.readByte()
+                        sink.writeByte(firstByte.toInt() xor 0xFF)
                     }
+                    sink.writeAll(temp)
                 }
                 return read
             }
+
+            override fun close() = originalSource.close()
+            override fun timeout() = originalSource.timeout()
         }.buffer()
     }
 }

@@ -99,9 +99,10 @@ class EstatiaTestScenario @Inject constructor(
     }
 
     /**
-     * 🏎️ ADVANCED: Simulates two requests attempting to refresh tokens concurrently.
-     * Uses semantic reordering to force a race condition where the first refresh
-     * is overtaken or conflicts with the second.
+     * 🏎️ ADVANCED: Simulates two logical requests attempting to refresh tokens.
+     * Uses sequential semantic reordering (OutOfOrderResponse then Success) to model
+     * the scenario where a subsequent request's completion logic is processed while
+     * the first is still pending, forcing a conflict state.
      */
     fun concurrentTokenRefresh() {
         // Script the network to hold the first request (which will trigger refresh)

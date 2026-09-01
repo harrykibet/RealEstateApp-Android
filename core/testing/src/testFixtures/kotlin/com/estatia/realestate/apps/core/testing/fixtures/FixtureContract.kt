@@ -20,6 +20,9 @@ interface FixtureContract<T> {
 
     /**
      * Returns a list of pre-configured or randomized instances.
+     * 
+     * NOTE: Implementations should prioritize the [default] instance as the first 
+     * element (index 0) to ensure baseline consistency across fixture sets.
      */
     fun list(count: Int = 3): List<T>
 }

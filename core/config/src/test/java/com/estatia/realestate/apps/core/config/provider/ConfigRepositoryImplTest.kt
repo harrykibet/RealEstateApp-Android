@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.config.provider
 
+import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource
@@ -12,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -25,7 +27,9 @@ class ConfigRepositoryImplTest {
     private lateinit var parser: ConfigParser
     private lateinit var stateHolder: ConfigStateHolder
     private lateinit var metricsTracker: IMetricsTracker
+    private lateinit var clock: IClock
     private lateinit var repository: ConfigProvider
+    private val testDispatcher = StandardTestDispatcher()
 
     private val mockConfig = mockk<RemoteConfigModel>(relaxed = true) {
         every { network.baseUrl } returns "https://api.estatia.com"
@@ -40,7 +44,10 @@ class ConfigRepositoryImplTest {
         parser = mockk()
         stateHolder = mockk(relaxed = true)
         metricsTracker = mockk(relaxed = true)
-        repository = ConfigProvider(assetSource, dataRepository, parser, stateHolder, metricsTracker)
+        clock = mockk {
+            every { currentTimeMillis() } returns 1000L
+        }
+        repository = ConfigProvider(assetSource, dataRepository, parser, stateHolder, metricsTracker, clock, testDispatcher)
     }
 
     @Test

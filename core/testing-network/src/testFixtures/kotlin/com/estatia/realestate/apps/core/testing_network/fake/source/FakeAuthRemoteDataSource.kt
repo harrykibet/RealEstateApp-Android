@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Scriptable fake for [IAuthRemoteDataSource] that implements all [AuthBehavior] members.
@@ -26,11 +27,11 @@ class FakeAuthRemoteDataSource(
 ) : IAuthRemoteDataSource {
 
     private val _isAuthenticated = MutableStateFlow(false)
-    private var nextBehavior: AuthBehavior = AuthBehavior.Authenticated
+    private val nextBehavior = AtomicReference<AuthBehavior>(AuthBehavior.Authenticated)
     private var currentUser: NetworkUserEntity? = null
 
     fun setNextBehavior(behavior: AuthBehavior) {
-        nextBehavior = behavior
+        nextBehavior.set(behavior)
     }
 
     override fun isUserAuthenticated(): Flow<Boolean> = _isAuthenticated.asStateFlow()
@@ -121,8 +122,7 @@ class FakeAuthRemoteDataSource(
         // Note: we can't call suspend concurrencyChaos.checkChaos(point) here 
         // as some methods are not suspend or we want to keep logic simple in the fake.
         
-        val behavior = nextBehavior
-        nextBehavior = AuthBehavior.Authenticated
+        val behavior = nextBehavior.getAndSet(AuthBehavior.Authenticated)
 
         when (behavior) {
             AuthBehavior.LoggedOut -> throw AuthException.UserNotFound
