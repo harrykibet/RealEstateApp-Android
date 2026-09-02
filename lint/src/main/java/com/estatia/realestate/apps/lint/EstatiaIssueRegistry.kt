@@ -25,7 +25,8 @@ class EstatiaIssueRegistry : IssueRegistry() {
         HardcodedStringDetector.ISSUE,
         MissingResultWrapperDetector.ISSUE,
         RememberMissingDetector.ISSUE,
-        MockInProductionDetector.ISSUE
+        MockInProductionDetector.ISSUE,
+        ChaosControllerSynchronizationDetector.ISSUE
     )
 
     override val api: Int = CURRENT_API

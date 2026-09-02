@@ -1,7 +1,7 @@
 [versions]
 
-androidGradlePlugin = "9.3.2"
-androidTools = "32.3.2"
+androidGradlePlugin = "9.4.0"
+androidTools = "32.4.0"
 androidx-activity = "1.13.0"
 androidx-appcompat = "1.8.0"
 androidx-arch-core = "2.2.0"

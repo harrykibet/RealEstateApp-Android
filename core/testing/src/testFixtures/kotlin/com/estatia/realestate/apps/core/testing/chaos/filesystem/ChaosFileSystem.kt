@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.testing.chaos.filesystem
 import com.estatia.realestate.apps.core.common.interfaces.IFileSystem
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Adversarial implementation of [IFileSystem] that can be scripted to fail.
@@ -10,13 +11,13 @@ import java.io.IOException
  */
 class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem {
 
-    private var nextBehavior: FileSystemBehavior? = null
+    private val nextBehavior = AtomicReference<FileSystemBehavior?>(null)
 
     /**
      * Script the next operation to fail.
      */
     fun failNext(behavior: FileSystemBehavior) {
-        nextBehavior = behavior
+        nextBehavior.set(behavior)
     }
 
     override suspend fun exists(file: File): Boolean {
@@ -45,8 +46,7 @@ class ChaosFileSystem(private val delegate: IFileSystem) : IFileSystem {
     }
 
     private fun checkFailure() {
-        val behavior = nextBehavior
-        nextBehavior = null
+        val behavior = nextBehavior.getAndSet(null)
         when (behavior) {
             FileSystemBehavior.DiskFull -> throw IOException("No space left on device (Chaos)")
             FileSystemBehavior.PermissionDenied -> throw IOException("Permission denied (Chaos)")

@@ -4,29 +4,31 @@ import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
 import kotlinx.coroutines.delay
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Controller for injecting network chaos into a [INetworkClient] or [IRemoteDataSource].
  */
 class NetworkChaosController {
 
-    private var script: List<NetworkBehavior> = emptyList()
-    private var serverScenario: ServerScenario = ServerScenario.ValidResponse
-    private var currentIndex = 0
+    private val script = AtomicReference<List<NetworkBehavior>>(emptyList())
+    private val serverScenario = AtomicReference<ServerScenario>(ServerScenario.ValidResponse)
+    private val currentIndex = AtomicInteger(0)
 
     /**
      * Scripts a sequence of behaviors for subsequent requests.
      */
     fun script(vararg behaviors: NetworkBehavior) {
-        script = behaviors.toList()
-        currentIndex = 0
+        script.set(behaviors.toList())
+        currentIndex.set(0)
     }
 
     /**
      * Sets the server-side scenario for subsequent requests.
      */
     fun setServerScenario(scenario: ServerScenario) {
-        serverScenario = scenario
+        serverScenario.set(scenario)
     }
 
     /**
@@ -34,8 +36,10 @@ class NetworkChaosController {
      * Used by the client to handle semantic chaos.
      */
     fun popNext(): NetworkBehavior {
-        return if (currentIndex < script.size) {
-            script[currentIndex++]
+        val currentScript = script.get()
+        val index = currentIndex.getAndIncrement()
+        return if (index < currentScript.size) {
+            currentScript[index]
         } else {
             NetworkBehavior.Success
         }
@@ -47,8 +51,9 @@ class NetworkChaosController {
      * for Semantic types. Prefer using [popNext] in semantic-aware clients.
      */
     suspend fun executeNext() {
-        if (serverScenario != ServerScenario.ValidResponse) {
-            applyServerScenario(serverScenario)
+        val scenario = serverScenario.get()
+        if (scenario != ServerScenario.ValidResponse) {
+            applyServerScenario(scenario)
         }
         applyBehavior(popNext())
     }
@@ -57,9 +62,9 @@ class NetworkChaosController {
      * Clears the current script and resets to Success.
      */
     fun reset() {
-        script = emptyList()
-        serverScenario = ServerScenario.ValidResponse
-        currentIndex = 0
+        script.set(emptyList())
+        serverScenario.set(ServerScenario.ValidResponse)
+        currentIndex.set(0)
     }
 
     private fun applyServerScenario(scenario: ServerScenario) {

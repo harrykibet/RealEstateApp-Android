@@ -2,6 +2,8 @@ package com.estatia.realestate.apps.core.testing.chaos.time
 
 import com.estatia.realestate.apps.core.common.interfaces.IClock
 import com.estatia.realestate.apps.core.testing.clock.TestClock
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Adversarial decorator for [TestClock] that can simulate clock anomalies.
@@ -13,15 +15,15 @@ import com.estatia.realestate.apps.core.testing.clock.TestClock
  */
 class ChaosClock(private val delegate: TestClock) : IClock {
 
-    private var script: List<TimeBehavior> = emptyList()
-    private var currentIndex = 0
+    private val script = AtomicReference<List<TimeBehavior>>(emptyList())
+    private val currentIndex = AtomicInteger(0)
 
     /**
      * Scripts a sequence of behaviors for subsequent [currentTimeMillis] calls.
      */
     fun script(vararg behaviors: TimeBehavior) {
-        script = behaviors.toList()
-        currentIndex = 0
+        script.set(behaviors.toList())
+        currentIndex.set(0)
     }
 
     /**
@@ -32,8 +34,11 @@ class ChaosClock(private val delegate: TestClock) : IClock {
     }
 
     override fun currentTimeMillis(): Long {
-        val behavior = if (currentIndex < script.size) {
-            script[currentIndex++]
+        val currentScript = script.get()
+        val index = currentIndex.getAndIncrement()
+        
+        val behavior = if (index < currentScript.size) {
+            currentScript[index]
         } else {
             TimeBehavior.Success
         }
@@ -60,8 +65,8 @@ class ChaosClock(private val delegate: TestClock) : IClock {
      * Clears the current script and resets to Success.
      */
     fun reset() {
-        script = emptyList()
-        currentIndex = 0
+        script.set(emptyList())
+        currentIndex.set(0)
     }
 
     fun advanceBy(millis: Long) = delegate.advanceBy(millis)

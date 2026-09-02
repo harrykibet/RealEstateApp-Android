@@ -4,6 +4,8 @@ import com.estatia.realestate.apps.core.common.system.ISystemResourcesMonitor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Controller for simulating application-level resource pressure signals and visibility states.
@@ -59,6 +61,13 @@ class ChaosResourceController {
         data object HugeMedia : DataScale
     }
 
-    var dataScale: DataScale = DataScale.Normal
-    var tooManySimultaneousOperations: Boolean = false
+    private val _dataScale = AtomicReference<DataScale>(DataScale.Normal)
+    var dataScale: DataScale
+        get() = _dataScale.get()
+        set(value) { _dataScale.set(value) }
+
+    private val _tooManySimultaneousOperations = AtomicBoolean(false)
+    var tooManySimultaneousOperations: Boolean
+        get() = _tooManySimultaneousOperations.get()
+        set(value) { _tooManySimultaneousOperations.set(value) }
 }
