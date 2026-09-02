@@ -4,7 +4,6 @@ import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
 import kotlinx.coroutines.delay
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -12,16 +11,19 @@ import java.util.concurrent.atomic.AtomicReference
  */
 class NetworkChaosController {
 
-    private val script = AtomicReference<List<NetworkBehavior>>(emptyList())
+    private data class ScriptState(
+        val behaviors: List<NetworkBehavior> = emptyList(),
+        val index: Int = 0
+    )
+
+    private val scriptState = AtomicReference(ScriptState())
     private val serverScenario = AtomicReference<ServerScenario>(ServerScenario.ValidResponse)
-    private val currentIndex = AtomicInteger(0)
 
     /**
      * Scripts a sequence of behaviors for subsequent requests.
      */
     fun script(vararg behaviors: NetworkBehavior) {
-        script.set(behaviors.toList())
-        currentIndex.set(0)
+        scriptState.set(ScriptState(behaviors.toList(), 0))
     }
 
     /**
@@ -36,12 +38,24 @@ class NetworkChaosController {
      * Used by the client to handle semantic chaos.
      */
     fun popNext(): NetworkBehavior {
-        val currentScript = script.get()
-        val index = currentIndex.getAndIncrement()
-        return if (index < currentScript.size) {
-            currentScript[index]
-        } else {
-            NetworkBehavior.Success
+        while (true) {
+            val current = scriptState.get()
+            val behavior = if (current.index < current.behaviors.size) {
+                current.behaviors[current.index]
+            } else {
+                NetworkBehavior.Success
+            }
+            
+            // Only increment if we haven't reached the end
+            val next = if (current.index < current.behaviors.size) {
+                current.copy(index = current.index + 1)
+            } else {
+                current
+            }
+
+            if (scriptState.compareAndSet(current, next)) {
+                return behavior
+            }
         }
     }
 
@@ -62,9 +76,8 @@ class NetworkChaosController {
      * Clears the current script and resets to Success.
      */
     fun reset() {
-        script.set(emptyList())
+        scriptState.set(ScriptState())
         serverScenario.set(ServerScenario.ValidResponse)
-        currentIndex.set(0)
     }
 
     private fun applyServerScenario(scenario: ServerScenario) {

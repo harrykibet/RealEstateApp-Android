@@ -1,11 +1,16 @@
 package com.estatia.realestate.apps.core.testing.chaos.time
 
 import com.estatia.realestate.apps.core.testing.clock.TestClock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChaosClockTest {
 
     private val baseClock = TestClock(1000L)
@@ -120,5 +125,27 @@ class ChaosClockTest {
     fun `Success returns base time`() {
         chaosClock.setNextBehavior(TimeBehavior.Success)
         assertEquals(1000L, chaosClock.currentTimeMillis())
+    }
+
+    @Test
+    fun `currentTimeMillis is thread safe under heavy concurrency`() = runTest {
+        val count = 1000
+        val behaviors = List(count) { TimeBehavior.ClockSkipForward }
+        chaosClock.script(*behaviors.toTypedArray())
+        
+        val results = mutableListOf<Long>()
+        val jobs = List(10) {
+            launch {
+                repeat(100) {
+                    val time = chaosClock.currentTimeMillis()
+                    synchronized(results) { results.add(time) }
+                }
+            }
+        }
+        jobs.joinAll()
+        
+        assertEquals(count, results.size)
+        assertTrue(results.all { it == 1000L + 1_000_000L })
+        assertEquals(1000L, chaosClock.currentTimeMillis()) // Exhausted -> Success
     }
 }

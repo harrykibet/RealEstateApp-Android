@@ -2,6 +2,8 @@ package com.estatia.realestate.apps.core.testing.chaos.network
 
 import com.estatia.realestate.apps.core.testing.chaos.server.ServerScenario
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -69,5 +71,27 @@ class NetworkChaosControllerTest {
             assertEquals(404, e.statusCode)
             assertEquals("HTTP 404 (Chaos)", e.message)
         }
+    }
+
+    @Test
+    fun `popNext is thread safe under heavy concurrency`() = runTest {
+        val count = 1000
+        val behaviors = List(count) { NetworkBehavior.Offline }
+        controller.script(*behaviors.toTypedArray())
+        
+        val results = mutableListOf<NetworkBehavior>()
+        val jobs = List(10) {
+            launch {
+                repeat(100) {
+                    val behavior = controller.popNext()
+                    synchronized(results) { results.add(behavior) }
+                }
+            }
+        }
+        jobs.joinAll()
+        
+        assertEquals(count, results.size)
+        assertTrue(results.all { it == NetworkBehavior.Offline })
+        assertEquals(NetworkBehavior.Success, controller.popNext())
     }
 }

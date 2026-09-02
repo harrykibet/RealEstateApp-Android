@@ -2,12 +2,16 @@ package com.estatia.realestate.apps.core.testing.chaos.filesystem
 
 import com.estatia.realestate.apps.core.testing.fake.filesystem.FakeFileSystem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Concrete implementation of [ChaosFileSystemContract].
@@ -43,5 +47,32 @@ class ChaosFileSystemTest : ChaosFileSystemContract() {
         
         // Second call should succeed
         fs.exists(File("test.txt"))
+    }
+
+    @Test
+    fun `failNext is atomic under heavy concurrency`() = runTest {
+        val fs = ChaosFileSystem(FakeFileSystem())
+        val iterations = 100
+        val concurrency = 10
+        val totalFailures = AtomicInteger(0)
+        val totalSuccesses = AtomicInteger(0)
+        
+        repeat(iterations) {
+            fs.failNext(FileSystemBehavior.IoFailure)
+            val jobs = List(concurrency) {
+                launch {
+                    try {
+                        fs.exists(File("test.txt"))
+                        totalSuccesses.incrementAndGet()
+                    } catch (e: IOException) {
+                        totalFailures.incrementAndGet()
+                    }
+                }
+            }
+            jobs.joinAll()
+        }
+        
+        assertEquals("Should have exactly one failure per failNext call", iterations, totalFailures.get())
+        assertEquals("Total successful calls should be iterations * (concurrency - 1)", iterations * (concurrency - 1), totalSuccesses.get())
     }
 }
