@@ -124,8 +124,9 @@ internal class AuthRepository @Inject constructor(
 
     override fun startPhoneNumberVerification(
         phoneNumber: String,
-        activity: Activity,
+        verificationContext: Any,
     ): Flow<PhoneVerificationState> {
+        val activity = verificationContext as? Activity ?: error("Android Activity required for phone verification.")
         return remoteDataSource.startPhoneNumberVerification(phoneNumber, activity)
     }
 
@@ -138,8 +139,9 @@ internal class AuthRepository @Inject constructor(
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
-        activity: Activity,
+        verificationContext: Any,
     ): AppResult<String> {
+        val activity = verificationContext as? Activity ?: error("Android Activity required for phone verification.")
         return remoteDataSource.resendVerificationCode(phoneNumber, activity)
     }
 

@@ -78,28 +78,26 @@ class ComposeArchitectureDetector : Detector(), SourceCodeScanner {
         val ARCHITECTURE_LEAKAGE_ISSUE = EstatiaIssue.create(
             id = "ComposeArchitectureLeakage",
             description = "Architecture component called in Composable",
-            explanation = """
-                Composables should only depend on UI state and event lambdas. Directly calling 
-                Repositories, Services, or UseCases bypasses the ViewModel, making the UI 
-                hard to test and breaking the Unidirectional Data Flow.
-            """,
+            rationale = "Directly calling Repositories in Composables breaks UDF and testability.",
+            badExample = "@Composable fun List() { repository.load() }",
+            goodExample = "@Composable fun List(data: List<Item>) { ... }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-027 (UI/Data Decoupling)",
             implementation = Implementation(ComposeArchitectureDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val MUTABLE_SINGLETON_READ_ISSUE = EstatiaIssue.create(
             id = "ComposeMutableSingletonRead",
             description = "Mutable singleton read in Composable",
-            explanation = """
-                Reading a plain 'var' from a singleton object inside a Composable is dangerous. 
-                Because the property is not observable state, Compose won't recompose when 
-                it changes, leading to stale UI and hard-to-debug state inconsistencies.
-            """,
+            rationale = "Reading 'var' from objects is non-observable and leads to stale UI.",
+            badExample = "object Config { var value = 0 }\n@Composable fun UI() { Text(Config.value.toString()) }",
+            goodExample = "object Config { val value = MutableStateFlow(0) }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-025 (Observable State)",
             implementation = Implementation(ComposeArchitectureDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -71,21 +71,91 @@ class ComplexityBudgetDetector : Detector(), SourceCodeScanner {
         private val IMPLEMENTATION = Implementation(ComplexityBudgetDetector::class.java, Scope.JAVA_FILE_SCOPE)
 
         // Class Size
-        val CLASS_SIZE_FATAL = EstatiaIssue.create("GodObjectFatal", "Class is too massive", "Refactor now.", IssueCategory.ARCHITECTURE, IssueTier.FATAL, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val CLASS_SIZE_ERROR = EstatiaIssue.create("GodObjectError", "Class exceeds line budget", "Extract responsibilities.", IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val CLASS_SIZE_WARNING = EstatiaIssue.create("GodObjectWarning", "Class is growing large", "Monitor scope.", IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
+        val CLASS_SIZE_FATAL = EstatiaIssue.create(
+            "GodObjectFatal", 
+            "Class is too massive", 
+            "Classes exceeding 1000 lines are unmaintainable God Objects.",
+            "class Massive : ViewModel() { ... 1001 lines ... }",
+            "Refactor into smaller, focused components.",
+            IssueCategory.ARCHITECTURE, IssueTier.FATAL, RuleOwner.ARCHITECTURE, "LAW-029", IMPLEMENTATION
+        )
+        val CLASS_SIZE_ERROR = EstatiaIssue.create(
+            "GodObjectError", 
+            "Class exceeds line budget", 
+            "Classes exceeding 600 lines must be refactored.",
+            "class Large : ViewModel() { ... 601 lines ... }",
+            "Extract responsibilities into separate classes.",
+            IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, "LAW-029", IMPLEMENTATION
+        )
+        val CLASS_SIZE_WARNING = EstatiaIssue.create(
+            "GodObjectWarning", 
+            "Class is growing large", 
+            "Classes over 300 lines are nearing the complexity limit.",
+            "class Medium : ViewModel() { ... 301 lines ... }",
+            "Monitor scope and consider extracting private logic.",
+            IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, "LAW-029", IMPLEMENTATION
+        )
 
         // Method Size
-        val METHOD_SIZE_FATAL = EstatiaIssue.create("SpaghettiMethodFatal", "Method is too massive", "Refactor now.", IssueCategory.ARCHITECTURE, IssueTier.FATAL, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val METHOD_SIZE_ERROR = EstatiaIssue.create("SpaghettiMethodError", "Method exceeds line budget", "Extract helpers.", IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val METHOD_SIZE_WARNING = EstatiaIssue.create("SpaghettiMethodWarning", "Method is growing long", "Improve readability.", IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
+        val METHOD_SIZE_FATAL = EstatiaIssue.create(
+            "SpaghettiMethodFatal", 
+            "Method is too massive", 
+            "Methods exceeding 300 lines are impossible to reason about.",
+            "fun massive() { ... 301 lines ... }",
+            "Extract private helper functions.",
+            IssueCategory.ARCHITECTURE, IssueTier.FATAL, RuleOwner.ARCHITECTURE, "LAW-028", IMPLEMENTATION
+        )
+        val METHOD_SIZE_ERROR = EstatiaIssue.create(
+            "SpaghettiMethodError", 
+            "Method exceeds line budget", 
+            "Methods exceeding 120 lines must be broken down.",
+            "fun large() { ... 121 lines ... }",
+            "Identify sub-tasks and extract them.",
+            IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, "LAW-028", IMPLEMENTATION
+        )
+        val METHOD_SIZE_WARNING = EstatiaIssue.create(
+            "SpaghettiMethodWarning", 
+            "Method is growing long", 
+            "Methods over 60 lines should be checked for readability.",
+            "fun medium() { ... 61 lines ... }",
+            "Improve readability by extracting helpers.",
+            IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, "LAW-028", IMPLEMENTATION
+        )
 
         // Parameters
-        val PARAMETER_COUNT_ERROR = EstatiaIssue.create("TooManyParametersError", "Too many parameters", "Use data classes.", IssueCategory.API_DESIGN, IssueTier.ERROR, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val PARAMETER_COUNT_WARNING = EstatiaIssue.create("TooManyParametersWarning", "High parameter count", "Monitor complexity.", IssueCategory.API_DESIGN, IssueTier.WARNING, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
+        val PARAMETER_COUNT_ERROR = EstatiaIssue.create(
+            "TooManyParametersError", 
+            "Too many parameters", 
+            "Methods with 12+ parameters are highly error-prone.",
+            "fun do(p1, p2, ... p13)",
+            "Group parameters into a data class.",
+            IssueCategory.API_DESIGN, IssueTier.ERROR, RuleOwner.ARCHITECTURE, "LAW-028", IMPLEMENTATION
+        )
+        val PARAMETER_COUNT_WARNING = EstatiaIssue.create(
+            "TooManyParametersWarning", 
+            "High parameter count", 
+            "Methods with 7+ parameters indicate missing abstractions.",
+            "fun do(p1, p2, ... p8)",
+            "Consider grouping related parameters.",
+            IssueCategory.API_DESIGN, IssueTier.WARNING, RuleOwner.ARCHITECTURE, "LAW-028", IMPLEMENTATION
+        )
 
         // Constructor Dependencies (LAW-030)
-        val CONSTRUCTOR_DEPENDENCY_ERROR = EstatiaIssue.create("OrchestrationMonsterError", "Constructor has too many dependencies", "Refactor orchestration.", IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
-        val CONSTRUCTOR_DEPENDENCY_WARNING = EstatiaIssue.create("OrchestrationMonsterWarning", "High dependency count in constructor", "Monitor complexity.", IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, IMPLEMENTATION)
+        val CONSTRUCTOR_DEPENDENCY_ERROR = EstatiaIssue.create(
+            "OrchestrationMonsterError", 
+            "Constructor has too many dependencies", 
+            "Classes with 9+ dependencies indicate too many responsibilities.",
+            "class Monster(d1, d2, ... d9)",
+            "Decompose into smaller service components.",
+            IssueCategory.ARCHITECTURE, IssueTier.ERROR, RuleOwner.ARCHITECTURE, "LAW-030", IMPLEMENTATION
+        )
+        val CONSTRUCTOR_DEPENDENCY_WARNING = EstatiaIssue.create(
+            "OrchestrationMonsterWarning", 
+            "High dependency count in constructor", 
+            "Classes with 6+ dependencies are becoming hard to test.",
+            "class Orchestrator(d1, d2, ... d6)",
+            "Monitor component growth.",
+            IssueCategory.ARCHITECTURE, IssueTier.WARNING, RuleOwner.ARCHITECTURE, "LAW-030", IMPLEMENTATION
+        )
     }
 }

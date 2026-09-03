@@ -87,17 +87,16 @@ class LifecycleLeakDetector : Detector(), SourceCodeScanner {
         val LEAK_ISSUE = EstatiaIssue.create(
             id = "LifecycleLeak",
             description = "Lifecycle-bound object stored in long-lived component",
-            explanation = """
-                Storing references to Activities, Fragments, or Views in long-lived classes 
-                (like ViewModels, Repositories, or Singletons) prevents the UI components 
-                from being garbage collected when they are destroyed. 
-                
-                This causes memory leaks and can lead to 'IllegalStateException' when 
-                trying to interact with a destroyed component.
+            rationale = """
+                Storing references to Activities or Views in long-lived classes 
+                (ViewModels, Repositories) prevents garbage collection and causes leaks.
             """,
+            badExample = "class MyViewModel(val activity: Activity) : ViewModel()",
+            goodExample = "class MyViewModel(val application: Application) : ViewModel()",
             category = IssueCategory.PERFORMANCE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-023 (Memory Leak Protection)",
             implementation = Implementation(LifecycleLeakDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

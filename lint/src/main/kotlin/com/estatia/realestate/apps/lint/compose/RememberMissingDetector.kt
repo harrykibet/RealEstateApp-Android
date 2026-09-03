@@ -41,14 +41,13 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "RememberMissing",
             description = "State creation not wrapped in remember",
-            explanation = """
-                In Compose, state must be remembered across recompositions. Creating state 
-                directly in a Composable without 'remember' will lead to bugs where 
-                the state is lost when the UI refreshes.
-            """,
+            rationale = "State must be cached across recompositions to maintain UI consistency.",
+            badExample = "val count = mutableStateOf(0)",
+            goodExample = "val count = remember { mutableStateOf(0) }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-002 (Immutable State Boundaries)",
             implementation = Implementation(RememberMissingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

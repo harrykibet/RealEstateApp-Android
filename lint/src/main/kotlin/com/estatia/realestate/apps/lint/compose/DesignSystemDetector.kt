@@ -36,15 +36,15 @@ class DesignSystemDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "DesignSystemViolation",
             description = "Standard Material component usage detected",
-            explanation = """
-                Developers should use Estatia-prefixed design system components instead 
-                of raw Material 3 components to maintain visual consistency and support 
-                global theme changes.
-            """,
+            rationale = "Use Estatia-prefixed components to maintain visual consistency.",
+            badExample = "Button(onClick = { ... }) { ... }",
+            goodExample = "EstatiaButton(onClick = { ... }) { ... }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
-            implementation = Implementation(DesignSystemDetector::class.java, Scope.JAVA_FILE_SCOPE)
+            architectureLaw = "LAW-022 (Design System)",
+            implementation = Implementation(DesignSystemDetector::class.java, Scope.JAVA_FILE_SCOPE),
+            autofixAvailable = true
         )
     }
 }

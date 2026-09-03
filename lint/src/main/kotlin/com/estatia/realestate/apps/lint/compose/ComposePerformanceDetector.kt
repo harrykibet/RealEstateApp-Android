@@ -68,14 +68,13 @@ class ComposePerformanceDetector : Detector(), SourceCodeScanner {
         val EXPENSIVE_RECOMPOSITION_ISSUE = EstatiaIssue.create(
             id = "ExpensiveRecomposition",
             description = "Expensive object created on recomposition",
-            explanation = """
-                Composables are executed frequently. Creating expensive objects like Bitmaps, 
-                Regex patterns, or formatters directly in the function body causes 
-                jank and high memory pressure. Use 'remember { ... }' to cache these objects.
-            """,
+            rationale = "Creating heavy objects like Bitmaps or Regex in Composables causes jank.",
+            badExample = "@Composable fun UI() { val regex = Regex(\"...\") }",
+            goodExample = "@Composable fun UI() { val regex = remember { Regex(\"...\") } }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-026 (Recomposition Safety)",
             implementation = Implementation(ComposePerformanceDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

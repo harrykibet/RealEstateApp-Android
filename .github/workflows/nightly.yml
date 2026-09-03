@@ -117,3 +117,24 @@ jobs:
           path: |
             **/build/reports/jacoco/**
             **/build/test-results/**
+
+  security-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: Estatia
+          path: "."
+          format: "HTML"
+          out: "security-reports"
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-reports

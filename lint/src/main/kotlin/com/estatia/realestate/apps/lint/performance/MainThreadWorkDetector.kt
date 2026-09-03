@@ -77,17 +77,16 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "BlockingMainThreadWork",
             description = "Blocking operation detected on main thread or coroutine",
-            explanation = """
-                Blocking the main thread leads to Application Not Responding (ANR) errors 
-                and jank. Blocking a coroutine thread causes thread starvation in your 
-                dispatcher. 
-                
-                Always use non-blocking suspend functions or move blocking I/O / Thread.sleep 
-                to 'Dispatchers.IO' using 'withContext'.
+            rationale = """
+                Blocking the main thread leads to ANRs. Blocking a coroutine thread 
+                causes starvation. Move blocking work to 'Dispatchers.IO'.
             """,
+            badExample = "suspend fun fetch() { Thread.sleep(1000) }",
+            goodExample = "suspend fun fetch() = withContext(dispatchers.io) { Thread.sleep(1000) }",
             category = IssueCategory.PERFORMANCE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-011 (Main Thread Isolation)",
             implementation = Implementation(MainThreadWorkDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -44,14 +44,13 @@ class UnboundedBufferDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "UnboundedBuffer",
             description = "Unbounded or large buffer detected",
-            explanation = """
-                Unbounded buffers in streams (like Flow.buffer()) or large replay values 
-                in SharedFlow can cause memory spikes and OutOfMemoryError under load. 
-                Always define explicit bounds for data containers.
-            """,
+            rationale = "Unbounded buffers cause memory spikes and OOM under load.",
+            badExample = "flow.buffer()",
+            goodExample = "flow.buffer(capacity = 16)",
             category = IssueCategory.PERFORMANCE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-011 (Memory Safety)",
             implementation = Implementation(UnboundedBufferDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

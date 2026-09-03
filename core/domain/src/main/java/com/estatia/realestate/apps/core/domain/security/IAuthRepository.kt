@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.core.domain.security
 
-import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
@@ -69,10 +68,11 @@ interface IAuthRepository {
 
     /**
      * Starts the phone verification flow.
+     * [verificationContext] is expected to be a platform-specific context (e.g. Activity on Android).
      */
     fun startPhoneNumberVerification(
         phoneNumber: String,
-        activity: Activity
+        verificationContext: Any
     ): Flow<PhoneVerificationState>
 
     /**
@@ -88,7 +88,7 @@ interface IAuthRepository {
      */
     suspend fun resendVerificationCode(
         phoneNumber: String,
-        activity: Activity
+        verificationContext: Any
     ): AppResult<String>
 
     /**

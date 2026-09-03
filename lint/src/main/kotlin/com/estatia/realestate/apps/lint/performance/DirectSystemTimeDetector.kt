@@ -69,16 +69,16 @@ class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "DirectSystemTimeUsage",
             description = "Direct usage of system time detected",
-            explanation = """
-                Relying on system wall-clock time (System.currentTimeMillis, Instant.now, etc.) 
-                makes code non-deterministic and hard to test.
-                
-                - Production (LAW-007): Inject 'TimeProvider' to allow deterministic testing.
-                - Tests (LAW-014): Use 'TestClock' to control time instead of relying on the real clock.
+            rationale = """
+                Relying on system time makes code non-deterministic and hard to test. 
+                Time must be injectable via TimeProvider.
             """,
+            badExample = "val now = System.currentTimeMillis()",
+            goodExample = "val now = timeProvider.now()",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.ERROR, // Default to ERROR for production
+            tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-007 (Deterministic Time)",
             implementation = Implementation(DirectSystemTimeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

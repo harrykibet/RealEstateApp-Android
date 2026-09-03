@@ -32,13 +32,13 @@ class HardcodedColorDimensionDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "HardcodedDesignValue",
             description = "Hardcoded Color or Dimension detected",
-            explanation = """
-                Hardcoding design values (Colors, Dp, Sp) makes the app harder to theme 
-                and maintain. Always use the provided design system tokens through EstatiaTheme.
-            """,
+            rationale = "Hardcoding design values makes the app harder to theme and maintain.",
+            badExample = "Modifier.padding(16.dp)",
+            goodExample = "Modifier.padding(EstatiaTheme.spacing.medium)",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-022 (Design System)",
             implementation = Implementation(HardcodedColorDimensionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

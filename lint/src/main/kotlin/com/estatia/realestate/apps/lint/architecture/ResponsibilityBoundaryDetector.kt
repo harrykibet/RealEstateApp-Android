@@ -111,15 +111,16 @@ class ResponsibilityBoundaryDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "LayerMixingViolation",
             description = "Suspicious mixing of layers or responsibilities",
-            explanation = """
+            rationale = """
                 To maintain a clean architecture, components must have pure responsibilities. 
-                ViewModels shouldn't know about databases, and Repositories shouldn't 
-                know about the UI. Mixing these signals makes the code hard to test 
-                and maintain.
+                Mixing signals (like Repositories knowing about UI) makes code hard to test.
             """,
+            badExample = "class UserRepo { fun showToast() { ... } }",
+            goodExample = "class UserRepo { fun load() { ... } }",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-031 (Single Responsibility)",
             implementation = Implementation(ResponsibilityBoundaryDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

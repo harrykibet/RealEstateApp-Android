@@ -45,16 +45,16 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "HardcodedDispatcher",
             description = "Hardcoded Coroutine Dispatcher detected",
-            explanation = """
-                Hardcoding dispatchers makes it impossible to swap them during unit testing, 
-                leading to flaky tests and slow build verification.
-                
-                Estatia requires all dispatchers to be provided via the 'AppDispatchers' 
-                abstraction or injected using specific Hilt qualifiers.
+            rationale = """
+                Hardcoding dispatchers prevents swapping them during testing, 
+                leading to flaky or non-deterministic test results.
             """,
+            badExample = "withContext(Dispatchers.IO) { ... }",
+            goodExample = "withContext(dispatchers.io) { ... }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-006 (Dispatcher Injection)",
             implementation = Implementation(DispatcherInjectionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

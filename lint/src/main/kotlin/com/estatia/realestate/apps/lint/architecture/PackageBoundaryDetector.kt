@@ -60,14 +60,17 @@ class PackageBoundaryDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "PackageBoundaryViolation",
             description = "Package name must match module location",
-            explanation = """
+            rationale = """
                 Estatia follows a strict one-to-one mapping between module paths and package names.
-                A file in ':core:network' must have a package starting with 'com.estatia.realestate.apps.core.network'.
-                This ensures predictability and prevents naming collisions.
+                This ensures predictability, prevents naming collisions, and allows tools 
+                to reason about module ownership.
             """,
+            badExample = "// File in :core:network\npackage com.something.else",
+            goodExample = "// File in :core:network\npackage com.estatia.realestate.apps.core.network",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-004 (Feature Isolation)",
             implementation = Implementation(PackageBoundaryDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

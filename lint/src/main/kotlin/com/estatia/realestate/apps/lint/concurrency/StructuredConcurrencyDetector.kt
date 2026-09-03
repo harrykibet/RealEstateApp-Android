@@ -96,30 +96,39 @@ class StructuredConcurrencyDetector : Detector(), SourceCodeScanner {
         val SECRET_CONCURRENCY_ISSUE = EstatiaIssue.create(
             id = "SecretConcurrency",
             description = "Suspend function launches fire-and-forget work",
-            explanation = "Suspend functions must follow structured concurrency. They should be sequential.",
+            rationale = "Suspend functions should be sequential and follow structured concurrency.",
+            badExample = "suspend fun doWork() { scope.launch { ... } }",
+            goodExample = "suspend fun doWork() = coroutineScope { launch { ... } }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-018 (Structured Concurrency)",
             implementation = Implementation(StructuredConcurrencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val UNUSED_ASYNC_ISSUE = EstatiaIssue.create(
             id = "UnusedAsync",
             description = "Async result is ignored",
-            explanation = "Ignoring the Deferred result of 'async' is usually a bug. Use 'launch' for fire-and-forget.",
+            rationale = "Ignoring a Deferred result of 'async' is usually a bug or a leak.",
+            badExample = "coroutineScope { async { ... } }",
+            goodExample = "coroutineScope { val deferred = async { ... } }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-019 (Explicit Join)",
             implementation = Implementation(StructuredConcurrencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val MISPLACED_HANDLER_ISSUE = EstatiaIssue.create(
             id = "MisplacedCoroutineExceptionHandler",
             description = "CoroutineExceptionHandler used in withContext",
-            explanation = "CEH only works on root coroutines.",
+            rationale = "CEH only works on root coroutines and is ignored in withContext.",
+            badExample = "withContext(Dispatchers.IO + ceh) { ... }",
+            goodExample = "CoroutineScope(Dispatchers.Main + ceh).launch { ... }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-021 (Exception Handling)",
             implementation = Implementation(StructuredConcurrencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

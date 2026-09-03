@@ -57,14 +57,16 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
         val FORBIDDEN_SCOPE_ISSUE = EstatiaIssue.create(
             id = "ForbiddenCoroutineScope",
             description = "Unmanaged CoroutineScope detected",
-            explanation = """
-                Arbitrary creation of CoroutineScopes leads to resource leaks and non-deterministic 
-                lifecycles. Estatia requires all scopes to be either lifecycle-managed 
-                (e.g., viewModelScope) or injected via Hilt from a central Concurrency module.
+            rationale = """
+                Arbitrary CoroutineScopes lead to leaks and non-deterministic lifecycles.
+                Scopes must be lifecycle-managed (viewModelScope) or injected.
             """,
+            badExample = "val myScope = CoroutineScope(Dispatchers.IO)",
+            goodExample = "class MyRepo @Inject constructor(val scope: CoroutineScope)",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-005 (Managed Scopes)",
             implementation = Implementation(ForbiddenScopeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
         

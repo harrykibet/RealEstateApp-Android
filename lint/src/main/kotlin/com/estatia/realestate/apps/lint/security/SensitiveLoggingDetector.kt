@@ -38,14 +38,13 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "SensitiveLogging",
             description = "Sensitive data found in logs",
-            explanation = """
-                Logging sensitive information (passwords, tokens, personal data) is a 
-                security risk. These logs can be intercepted or extracted from the device. 
-                Always scrub or mask sensitive data before logging.
-            """,
+            rationale = "Logging sensitive info (passwords, tokens) is a security risk.",
+            badExample = "Log.d(\"Auth\", \"Token: \$token\")",
+            goodExample = "Log.d(\"Auth\", \"Token received\")",
             category = IssueCategory.SECURITY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.SECURITY,
+            architectureLaw = "LAW-010 (Data Privacy)",
             implementation = Implementation(SensitiveLoggingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -84,28 +84,33 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
         val FEATURE_COUPLING_ISSUE = EstatiaIssue.create(
             id = "FeatureCouplingViolation",
             description = "Feature-to-Feature dependency detected",
-            explanation = """
-                To maintain scalability and allow for dynamic delivery, features must be 
-                isolated. They cannot depend on each other directly. Shared logic must 
-                be extracted to a core module.
+            rationale = """
+                To maintain scalability and build speeds, features must be isolated. 
+                They cannot depend on each other directly. Shared logic must be 
+                extracted to a core module or communicated via events.
             """,
+            badExample = "// In :feature:profile\nimport com.estatia.feature.home.HomeActivity",
+            goodExample = "// In :feature:profile\nimport com.estatia.core.navigation.HomeNavigator",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-004 (Feature Isolation)",
             implementation = Implementation(ModuleDependencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val IMPLEMENTATION_LEAKAGE_ISSUE = EstatiaIssue.create(
             id = "LayerViolation",
             description = "Feature depends on implementation detail",
-            explanation = """
+            rationale = """
                 Features must interact with the Data layer through Domain abstractions. 
-                Direct dependencies on Database (Room) or SDKs (Firebase/AWS) are forbidden 
-                to ensure the UI remains testable and agnostic of infrastructure.
+                Direct dependencies on Database (Room) or SDKs (Firebase) are forbidden.
             """,
+            badExample = "class UserViewModel(val db: RoomDatabase)",
+            goodExample = "class UserViewModel(val repository: UserRepository)",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-003 (Infrastructure Isolation)",
             implementation = Implementation(ModuleDependencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
         

@@ -34,14 +34,13 @@ class MockInProductionDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "MockInProduction",
             description = "Testing mocks found in production code",
-            explanation = """
-                Using mocking libraries in production increases APK size and can lead 
-                to performance issues or runtime crashes. Mocks should strictly remain 
-                in test source sets.
-            """,
+            rationale = "Mocks increase APK size and should strictly remain in test source sets.",
+            badExample = "val user = mockk<User>() // In main source set",
+            goodExample = "val user = User(id = \"1\")",
             category = IssueCategory.TESTING,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-016 (Source Separation)",
             implementation = Implementation(MockInProductionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

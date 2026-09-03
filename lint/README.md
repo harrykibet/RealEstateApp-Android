@@ -58,6 +58,7 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-030** | Constructors must have a limited dependency budget. | `ERROR` | `OrchestrationMonsterError` |
 | **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `LayerMixingViolation` |
 | **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `LayerDependencyViolation` |
+| **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `SuppressionPolicyViolation` |
 
 ---
 
@@ -86,6 +87,44 @@ To prevent technical debt, we enforce tiered thresholds for code complexity.
 
 ---
 
+## 🛡️ Multi-Layered Enforcement
+
+Estatia uses the "Right Tool for the Job" for enforcement:
+
+| Layer | Responsibility | Tool |
+| :--- | :--- | :--- |
+| **Build Configuration** | Module Isolation (LAW-004) | Gradle (Convention Plugins) |
+| **Architectural Scope** | Package Purity (LAW-032) | Konsist (Architecture Tests) |
+| **Implementation Guard** | Complex Android/Compose Semantic Patterns | Android Lint (Custom Detectors) |
+| **Code Style** | Formatting & Basic Smells | Ktlint / Detekt |
+| **Policy Authority** | PR Gating & Suppression Governance | GitHub Actions |
+
+---
+
+## ⚙️ The Ratchet Policy (Continuous Improvement)
+
+To prevent technical debt from accumulating while allowing work on the existing codebase, Estatia uses a **Lint Ratchet**.
+
+### 1. Grandfathering (Baseline)
+Existing violations are stored in `lint-baseline.xml`. These are "grandfathered" and do not fail the build.
+
+### 2. No New Violations
+Any **new** code that introduces a lint violation will fail the build immediately. The build state must always be "Same or Better" than the baseline.
+
+### 3. Tightening the Ratchet
+As you fix existing issues, the baseline should be updated. Our goal is to reach a zero-violation state.
+- **Weekly Goal**: Reduce baseline issue count by ~10%.
+- **PR Requirement**: If you touch a file with existing violations, you are encouraged to fix at least one and update the baseline.
+
+### 4. Updating the Baseline
+To update the baseline after fixing issues:
+```bash
+./gradlew lint -Dlint.update.baseline=true
+```
+Submit the updated `lint-baseline.xml` as part of your PR.
+
+---
+
 ## 🏗️ System Architecture
 
 The engine is structured into specialized layers:
@@ -100,18 +139,26 @@ The engine is structured into specialized layers:
 
 ---
 
-## 🛠️ Usage for Developers
+## 🏗️ The CI Authority Model
 
-### Running Locally
-To verify your changes before pushing:
-```bash
-# Run all engineering checks
-./gradlew lint
-```
+The Estatia CI pipeline is the final word on engineering quality. It is structured to provide fast feedback for developers while maintaining high-rigor checks nightly.
 
-### Viewing Reports
-Detailed reports with failure explanations and fix suggestions:
-`[module-root]/build/reports/lint-results.html`
+### 1. PR Gate (Fast Feedback)
+Every Pull Request must pass the following sequence:
+- **Architecture & Policy**: Enforces all 33+ Lint Laws and the Ratchet.
+- **Logic Verification**: Runs all unit tests and verifies the coverage ratchet.
+- **Smoke Instrumentation**: Fast UI tests on a small set of virtual devices (GMD).
+
+### 2. Main Branch (Independence)
+The `main` branch is independently verified. No code enters `main` without passing release-grade verification.
+
+### 3. Nightly Run (Stress & Optimization)
+Comprehensive checks run every 24 hours:
+- **Chaos Testing**: Gesture and network chaos to find non-deterministic crashes.
+- **Macrobenchmarks**: Verifies app startup and scrolling performance.
+- **Baseline Profiles**: Automated optimization of release artifacts.
+- **Full Coverage**: Detailed Jacoco reports for entire modules.
+- **Security Scan**: OWASP Dependency Check for CVEs in the dependency tree.
 
 ---
 

@@ -51,17 +51,13 @@ class StateOwnershipDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "MutableStateParameter",
             description = "Mutable state passed to Composable",
-            explanation = """
-                Passing mutable state containers to Composables violates Unidirectional Data Flow. 
-                It makes state ownership ambiguous and testing difficult. 
-                
-                Standard Pattern:
-                - Pass a read-only state object (e.g. UserUiState).
-                - Pass lambda callbacks for events (e.g. onUserClick: () -> Unit).
-            """,
+            rationale = "Passing mutable containers to Composables violates UDF and makes state ownership ambiguous.",
+            badExample = "@Composable fun User(state: MutableStateFlow<User>)",
+            goodExample = "@Composable fun User(user: User, onUpdate: () -> Unit)",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-018 (UI Data Flow)",
             implementation = Implementation(StateOwnershipDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

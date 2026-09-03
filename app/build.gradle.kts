@@ -38,10 +38,6 @@ dependencies {
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.appcheck.playintegrity)
 
-    implementation(libs.bundles.play)
-
-    implementation(libs.eventbus)
-
     implementation(libs.bundles.bouncy)
 
     implementation(libs.bundles.navigation)

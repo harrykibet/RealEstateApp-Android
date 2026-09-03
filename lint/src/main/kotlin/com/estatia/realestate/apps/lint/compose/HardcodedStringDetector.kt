@@ -38,14 +38,13 @@ class HardcodedStringDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "HardcodedStringInCompose",
             description = "Hardcoded string in Composable",
-            explanation = """
-                All user-facing strings must be localized using Android string resources. 
-                Hardcoding strings in Composables prevents localization and makes 
-                accessibility support difficult.
-            """,
+            rationale = "Hardcoded strings prevent localization and accessibility support.",
+            badExample = "Text(\"Hello\")",
+            goodExample = "Text(stringResource(R.string.hello))",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-022 (Localization)",
             implementation = Implementation(HardcodedStringDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

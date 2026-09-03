@@ -40,13 +40,13 @@ class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "UnsynchronizedChaosState",
             description = "Unsynchronized Chaos Controller State",
-            explanation = """
-                Chaos controllers must be thread-safe to ensure "Deterministic Chaos" even when 
-                exercised by concurrent tests. Plain 'var' properties are not thread-safe.
-            """,
+            rationale = "Chaos controllers must be thread-safe for deterministic testing.",
+            badExample = "var state = false",
+            goodExample = "val state = AtomicBoolean(false)",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-012 (State Synchronization)",
             implementation = Implementation(ChaosSynchronizationDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

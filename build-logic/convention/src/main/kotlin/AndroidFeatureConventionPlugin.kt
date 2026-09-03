@@ -15,7 +15,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
         pluginManager.apply("com.estatia.realestate.apps.android.jacoco")
 
-
         dependencies {
             "implementation"(project(":core:ui"))
             "implementation"(project(":core:common"))

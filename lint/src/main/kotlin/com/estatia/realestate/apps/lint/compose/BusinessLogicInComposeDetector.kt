@@ -39,14 +39,13 @@ class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "BusinessLogicInCompose",
             description = "Business logic detected in Composable",
-            explanation = """
-                Composables should be pure UI projections. Complex side-effects, 
-                stream collection, or coroutine launching should be managed by a ViewModel 
-                to ensure proper lifecycle management and testability.
-            """,
+            rationale = "Composables should be pure UI projections to remain testable.",
+            badExample = "@Composable fun List() { repo.load().collect { ... } }",
+            goodExample = "@Composable fun List(state: State) { ... }",
             category = IssueCategory.COMPOSE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
+            architectureLaw = "LAW-001 (Presentation Purity)",
             implementation = Implementation(BusinessLogicInComposeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

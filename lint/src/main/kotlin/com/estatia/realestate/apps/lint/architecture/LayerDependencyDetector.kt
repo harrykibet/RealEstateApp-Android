@@ -93,16 +93,13 @@ class LayerDependencyDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "LayerDependencyViolation",
             description = "Forbidden framework dependency in architectural layer",
-            explanation = """
-                To ensure testability and modularity, Estatia enforces strict rules on 
-                which frameworks can be used in each layer. 
-                
-                - Domain/Model: Must be pure Kotlin (No Android/Infrastructure).
-                - Presentation: No direct Infrastructure (Firebase/Database).
-            """,
+            rationale = "Ensures layers like 'domain' remain pure logic and decoupled from infrastructure.",
+            badExample = "package com.estatia.core.domain\nimport android.os.Bundle",
+            goodExample = "package com.estatia.core.domain\nimport com.estatia.core.model.User",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-032 (Layer Purity)",
             implementation = Implementation(LayerDependencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.lint.compose.*
 import com.estatia.realestate.apps.lint.security.*
 import com.estatia.realestate.apps.lint.performance.*
 import com.estatia.realestate.apps.lint.testing.*
+import com.estatia.realestate.apps.lint.policy.*
 
 class EstatiaIssueRegistry : IssueRegistry() {
     override val issues = listOf(
@@ -20,6 +21,7 @@ class EstatiaIssueRegistry : IssueRegistry() {
         ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
         ResponsibilityBoundaryDetector.ISSUE,
         LayerDependencyDetector.ISSUE,
+        SuppressionPolicyDetector.ISSUE,
         ComplexityBudgetDetector.CLASS_SIZE_FATAL,
         ComplexityBudgetDetector.CLASS_SIZE_ERROR,
         ComplexityBudgetDetector.CLASS_SIZE_WARNING,

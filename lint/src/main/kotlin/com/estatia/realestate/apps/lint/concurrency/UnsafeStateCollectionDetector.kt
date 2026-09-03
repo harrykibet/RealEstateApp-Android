@@ -34,13 +34,13 @@ class UnsafeStateCollectionDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "UnsafeStateCollection",
             description = "State containers inside standard collections",
-            explanation = """
-                Wrapping StateFlows inside standard Lists or Maps makes it difficult to 
-                observe changes correctly and can lead to memory leaks or missed updates.
-            """,
+            rationale = "Wrapping StateFlows in collections makes observation difficult.",
+            badExample = "val states = listOf(MutableStateFlow(0))",
+            goodExample = "val state = mutableStateListOf<Int>()",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-012 (Observable State)",
             implementation = Implementation(UnsafeStateCollectionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

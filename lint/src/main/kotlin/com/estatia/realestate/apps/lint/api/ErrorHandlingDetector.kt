@@ -100,43 +100,45 @@ class ErrorHandlingDetector : Detector(), SourceCodeScanner {
         val MISSING_WRAPPER_ISSUE = EstatiaIssue.create(
             id = "MissingResultWrapper",
             description = "Unwrapped return type in Repository/Service",
-            explanation = """
-                To prevent silent failures and ensure consistent error handling, 
-                all public methods in the Repository and Service layers must return their 
-                data wrapped in a Result container or a reactive stream (Flow).
-            """,
+            rationale = "Prevents silent failures by mandating a Result container.",
+            badExample = "fun load(): User",
+            goodExample = "fun load(): AppResult<User>",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-009 (Error Management)",
             implementation = Implementation(ErrorHandlingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val FAILURE_SMUGGLING_ISSUE = EstatiaIssue.create(
             id = "FailureSmuggling",
             description = "Catch block silently discards or hides failure",
-            explanation = """
-                Returning null or empty collections inside a catch block hides the failure 
-                from the caller, making it impossible to diagnose issues in production. 
-                Always propagate errors using 'AppResult.Error' or map them to domain-specific failures.
+            rationale = """
+                Returning null or empty collections inside a catch block hides 
+                the failure from the caller.
             """,
+            badExample = "catch (e: Exception) { return emptyList() }",
+            goodExample = "catch (e: Exception) { return AppResult.Error(e) }",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-009 (Error Management)",
             implementation = Implementation(ErrorHandlingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val DANGEROUS_FALLBACK_ISSUE = EstatiaIssue.create(
             id = "DangerousFallback",
             description = "Elvis operator uses dangerous default value",
-            explanation = """
-                Using '?: emptyList()' or similar fallbacks around Repository or Service 
-                calls hides potential infrastructure failures. It converts a 'SYSTEM ERROR' 
-                into a 'SUCCESS WITH NO DATA' state, which is a semantic bug. 
-                Use 'AppResult' to distinguish between success, empty data, and failure.
+            rationale = """
+                Using '?: emptyList()' converts a system failure into a valid 
+                empty state, which is a semantic bug.
             """,
+            badExample = "repository.load() ?: emptyList()",
+            goodExample = "repository.load() // which returns Result and requires handling",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-009 (Error Management)",
             implementation = Implementation(ErrorHandlingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

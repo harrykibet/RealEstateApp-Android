@@ -51,13 +51,13 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "MissingConcurrencyCheck",
             description = "Missing thread-confinement check in critical component",
-            explanation = """
-                Infrastructure components managing sensitive state must enforce thread 
-                confinement to prevent non-deterministic data races.
-            """,
+            rationale = "Sensitive infrastructure must enforce thread confinement to prevent races.",
+            badExample = "fun play() { /* no check */ }",
+            goodExample = "fun play() { checkConfinement(); ... }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-014 (Thread Confinement)",
             implementation = Implementation(ConfinementDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

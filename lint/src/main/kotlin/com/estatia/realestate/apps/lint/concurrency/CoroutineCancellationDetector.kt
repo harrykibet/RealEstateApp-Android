@@ -54,14 +54,13 @@ class CoroutineCancellationDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "MissingCoroutineCancellation",
             description = "Coroutine loop missing cancellation check",
-            explanation = """
-                Coroutine cancellation is cooperative. Long-running loops in suspend functions 
-                must check for cancellation state to avoid leaking resources when their scope 
-                is cancelled.
-            """,
+            rationale = "Long-running loops must be cooperative with cancellation to prevent leaks.",
+            badExample = "suspend fun loop() { while(true) { ... } }",
+            goodExample = "suspend fun loop() { while(isActive) { ... } }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-013 (Cooperative Cancellation)",
             implementation = Implementation(CoroutineCancellationDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

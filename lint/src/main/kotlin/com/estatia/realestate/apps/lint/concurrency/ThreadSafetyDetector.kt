@@ -50,14 +50,13 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "ThreadSafetyViolation",
             description = "Non-thread-safe state in multi-threaded component",
-            explanation = """
-                Singletons and Platform components are often accessed from multiple threads. 
-                Using standard collections (ArrayList, HashMap) without synchronization 
-                will lead to ConcurrentModificationException or silent data corruption.
-            """,
+            rationale = "Standard collections used in Singletons lead to data races and crashes.",
+            badExample = "val map = HashMap<String, String>()",
+            goodExample = "val map = ConcurrentHashMap<String, String>()",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-012 (State Synchronization)",
             implementation = Implementation(ThreadSafetyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

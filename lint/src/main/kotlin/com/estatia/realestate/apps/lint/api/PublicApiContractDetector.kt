@@ -120,42 +120,45 @@ class PublicApiContractDetector : Detector(), SourceCodeScanner {
         val MUTABLE_STATE_ISSUE = EstatiaIssue.create(
             id = "ExposedMutableState",
             description = "Mutable state or container exposed in public API",
-            explanation = """
-                Exposing mutable containers (MutableStateFlow, MutableList, etc.) allows 
-                external components to modify internal state, breaking encapsulation. 
-                Always expose read-only interfaces (StateFlow, List).
+            rationale = """
+                Exposing mutable containers allows external components to modify 
+                internal state, breaking encapsulation and UDF.
             """,
+            badExample = "val state = MutableStateFlow(0)",
+            goodExample = "private val _state = MutableStateFlow(0)\nval state: StateFlow<Int> = _state",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-016 (State Ownership)",
             implementation = Implementation(PublicApiContractDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val BACKING_PROPERTY_CONVENTION_ISSUE = EstatiaIssue.create(
             id = "BackingPropertyConvention",
             description = "Mutable state does not follow '_' prefix convention",
-            explanation = """
-                To clearly distinguish between mutable internal state and public read-only 
-                state, Estatia uses the '_' prefix for mutable properties (e.g., _uiState).
-            """,
+            rationale = "Differentiates internal mutable state from public read-only state.",
+            badExample = "private val state = MutableStateFlow(0)",
+            goodExample = "private val _state = MutableStateFlow(0)",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PLATFORM,
+            architectureLaw = "LAW-016 (State Ownership)",
             implementation = Implementation(PublicApiContractDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
         val IMPLEMENTATION_LEAK_ISSUE = EstatiaIssue.create(
             id = "ImplementationTypeInPublicApi",
             description = "Implementation type leaked in public API",
-            explanation = """
+            rationale = """
                 Public APIs must remain stable and agnostic of implementation details. 
-                Leaking DTOs, Database Entities, or SDK-specific types (Firebase/Amplify) 
-                creates tight coupling and makes it impossible to swap infrastructure without 
-                breaking the entire app.
+                Leaking DTOs or SDK-specific types creates tight coupling.
             """,
+            badExample = "fun getUser(): FirebaseUser",
+            goodExample = "fun getUser(): User",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-008 (Abstraction Boundaries)",
             implementation = Implementation(PublicApiContractDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

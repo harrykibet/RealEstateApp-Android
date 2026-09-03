@@ -60,14 +60,17 @@ class InfrastructureLeakageDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "InfrastructureLeakage",
             description = "Infrastructure-specific classes leaked into Domain layer",
-            explanation = """
-                The Domain layer must remain pure and agnostic of infrastructure details 
-                like networking (Retrofit/OkHttp), persistence (Room), or backend services (Firebase).
-                This ensures business logic is testable and portable.
+            rationale = """
+                The Domain layer must remain pure and agnostic of infrastructure details.
+                Leaking framework details into Domain logic makes it impossible to test 
+                without heavy mocks and couples business rules to implementation details.
             """,
+            badExample = "class SaveUserUseCase(val db: RoomDatabase)",
+            goodExample = "class SaveUserUseCase(val repository: UserRepository)",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
+            architectureLaw = "LAW-003 (Infrastructure Isolation)",
             implementation = Implementation(InfrastructureLeakageDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }
