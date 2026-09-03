@@ -6,9 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
-import org.jetbrains.uast.UClass
-import org.jetbrains.uast.UField
-import org.jetbrains.uast.getParentOfType
+import org.jetbrains.uast.*
 
 /**
  * Detects usage of non-thread-safe collections or state in multi-threaded environments.
@@ -18,7 +16,7 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     private val unsafeCollections = mapOf(
         "java.util.HashMap" to "ConcurrentHashMap",
         "java.util.ArrayList" to "CopyOnWriteArrayList",
-        "java.util.HashSet" to "ConcurrentHashMap.newKeySet()"
+        "HashMap" to "ConcurrentHashMap"
     )
 
     override fun getApplicableUastTypes() = listOf(UField::class.java)
@@ -29,13 +27,15 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
             if (!isSingleton(containingClass)) return
 
             val type = node.type.canonicalText
+            val typeStr = node.asRenderString()
+            
             unsafeCollections.forEach { (unsafe, safe) ->
-                if (type.startsWith(unsafe)) {
+                if (type.contains(unsafe) || typeStr.contains(unsafe)) {
                     context.report(
                         ISSUE,
                         node,
-                        context.getLocation(node),
-                        "Unsafe collection '$unsafe' used in a Singleton. Use '$safe' or wrap in a mutex to prevent data races."
+                        context.getLocation(node as UElement),
+                        "Unsafe collection '$unsafe' used in a Singleton. Use '$safe' or wrap in a mutex (LAW-012)."
                     )
                 }
             }
@@ -43,7 +43,8 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun isSingleton(node: UClass): Boolean {
-        return node.annotations.any { it.qualifiedName?.contains("Singleton") == true }
+        return node.annotations.any { it.qualifiedName?.contains("Singleton") == true } ||
+               node.asRenderString().contains("@Singleton")
     }
 
     companion object {
@@ -56,7 +57,7 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-012 (State Synchronization)",
+            architectureLaw = "LAW-012",
             implementation = Implementation(ThreadSafetyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

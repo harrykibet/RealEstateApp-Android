@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.api
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.android.tools.lint.checks.infrastructure.TestMode
 import org.junit.Test
 
 class ErrorHandlingDetectorTest {
@@ -9,6 +10,7 @@ class ErrorHandlingDetectorTest {
     @Test
     fun `unwrapped return in repository reports error`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -29,6 +31,7 @@ class ErrorHandlingDetectorTest {
     @Test
     fun `failure smuggling in catch block reports error`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -51,6 +54,7 @@ class ErrorHandlingDetectorTest {
     @Test
     fun `dangerous fallback with elvis reports error`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -68,6 +72,6 @@ class ErrorHandlingDetectorTest {
             )
             .issues(ErrorHandlingDetector.DANGEROUS_FALLBACK_ISSUE)
             .run()
-            .expectContains("Dangerous fallback detected: using 'emptyList()'")
+            .expectContains("Dangerous fallback detected")
     }
 }

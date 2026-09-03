@@ -11,32 +11,28 @@ import org.jetbrains.uast.UReferenceExpression
 
 /**
  * Prevents hardcoding [Dispatchers.IO], [Dispatchers.Main], or [Dispatchers.Default] (LAW-006).
- * Enforces usage of injected AppDispatchers abstraction for testability.
  */
 class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableReferenceNames() = listOf("IO", "Main", "Default", "Unconfined")
 
     override fun visitReference(context: JavaContext, reference: UReferenceExpression, referenced: PsiElement) {
-        if (referenced is PsiField) {
-            val containingClass = referenced.containingClass?.qualifiedName
-            if (containingClass == "kotlinx.coroutines.Dispatchers") {
-                
-                val path = context.file.path.replace("\\", "/")
-                // Allow only in concurrency module or DI configuration
-                val isAllowedLocation = path.contains("/di/") || 
-                                       path.contains("DispatchersModule") ||
-                                       path.contains("/src/test/") ||
-                                       path.contains("/src/androidTest/")
+        val name = reference.asRenderString()
+        val isDispatcher = (referenced is PsiField && referenced.containingClass?.qualifiedName == "kotlinx.coroutines.Dispatchers") ||
+                          name.contains("Dispatchers.")
 
-                if (!isAllowedLocation) {
-                    context.report(
-                        ISSUE,
-                        reference,
-                        context.getLocation(reference),
-                        "Hardcoded Dispatcher '${referenced.name}' is forbidden. Inject 'AppDispatchers' or use Estatia qualifiers instead (LAW-006)."
-                    )
-                }
+        if (isDispatcher) {
+            val path = context.file.path.replace("\\", "/")
+            val isAllowed = path.contains("/di/") || path.contains("DispatchersModule") ||
+                           path.contains("/src/test/") || path.contains("/src/androidTest/")
+
+            if (!isAllowed) {
+                context.report(
+                    ISSUE,
+                    reference,
+                    context.getLocation(reference),
+                    "Hardcoded Dispatcher '$name' is forbidden (LAW-006)."
+                )
             }
         }
     }
@@ -45,16 +41,13 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "HardcodedDispatcher",
             description = "Hardcoded Coroutine Dispatcher detected",
-            rationale = """
-                Hardcoding dispatchers prevents swapping them during testing, 
-                leading to flaky or non-deterministic test results.
-            """,
+            rationale = "Hardcoding dispatchers prevents swapping them during testing.",
             badExample = "withContext(Dispatchers.IO) { ... }",
             goodExample = "withContext(dispatchers.io) { ... }",
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-006 (Dispatcher Injection)",
+            architectureLaw = "LAW-006",
             implementation = Implementation(DispatcherInjectionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }
