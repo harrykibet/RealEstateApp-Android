@@ -31,6 +31,7 @@ pr-unit-test:
   stage: test
   script:
     - ./gradlew test --stacktrace
+    - ./gradlew jacocoProdDebugVerification --stacktrace
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
@@ -46,8 +47,16 @@ pr-smoke-ui-test:
 # ⚓ MAIN BRANCH (Comprehensive Verification)
 # ------------------------------------------------------------------------------
 
+main-lint:
+  stage: lint
+  script:
+    - ./gradlew lint --stacktrace
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
 main-full-test:
   stage: test
+  needs: ["main-lint"]
   script:
     - ./gradlew test --stacktrace
     - |
@@ -86,13 +95,21 @@ nightly-baseline-profile:
   stage: optimize
   script:
     - ./gradlew :app:generateProdBaselineProfile
-    # Note: Automated committing back to GitLab requires a Project Access Token
     - |
       git config --global user.name "Estatia CI"
       git config --global user.email "ci@estatia.com"
+      git checkout -b automation/baseline-profiles
       git add .
-      git commit -m "Update baseline profiles (Nightly)" || echo "No changes"
-      git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:${CI_COMMIT_REF_NAME}
+      if git commit -m "chore: update baseline profiles (nightly)"; then
+        git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" automation/baseline-profiles \
+          -o merge_request.create \
+          -o merge_request.target=main \
+          -o merge_request.title="Update Baseline Profiles (Nightly)" \
+          -o merge_request.remove_source_branch=true \
+          -o merge_request.description="Automated baseline profile generation from nightly run."
+      else
+        echo "No changes to baseline profiles."
+      fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
@@ -103,5 +120,15 @@ nightly-benchmarks:
   artifacts:
     paths:
       - benchmark/build/outputs/connected_android_test_additional_output/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+nightly-quality-metrics:
+  stage: optimize
+  script:
+    - ./gradlew jacocoProdDebugReport
+  artifacts:
+    paths:
+      - "**/build/reports/jacoco/"
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"

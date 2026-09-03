@@ -1,4 +1,4 @@
-     plugins {
+plugins {
     alias(libs.plugins.estatia.android.application)
 }
 

@@ -10,7 +10,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.testing")
         pluginManager.apply("com.estatia.realestate.apps.android.compose")
         pluginManager.apply("com.estatia.realestate.apps.android.flavors")
-        pluginManager.apply("com.estatia.realestate.apps.hilt")
+        pluginManager.apply("com.estatia.realestate.apps.android.hilt")
         pluginManager.apply("androidx.navigation.safeargs.kotlin")
         pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
         pluginManager.apply("com.estatia.realestate.apps.android.jacoco")

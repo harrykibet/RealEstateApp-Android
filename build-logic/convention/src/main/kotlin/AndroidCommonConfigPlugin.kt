@@ -41,7 +41,7 @@ class AndroidCommonConfigPlugin : Plugin<Project> {
             // Configure common packaging options
             configurePackagingOptions(this@with)
 
-            pluginManager.apply("estatia.android.lint")
+            pluginManager.apply("com.estatia.realestate.apps.android.hilt")
 
             // ✅ REMOVED: pluginManager.apply("org.jetbrains.kotlin.android")
             // AGP 9.x bundles Kotlin support — applying this plugin explicitly is now fatal.

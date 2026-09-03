@@ -49,7 +49,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.android.application")
         pluginManager.apply("androidx.baselineprofile")
         pluginManager.apply("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-        pluginManager.apply("com.estatia.realestate.apps.hilt")
+        pluginManager.apply("com.estatia.realestate.apps.android.hilt")
         pluginManager.apply("com.estatia.realestate.apps.android.config")
         pluginManager.apply("com.estatia.realestate.apps.android.protolite")
         pluginManager.apply("com.estatia.realestate.apps.android.flavors")

@@ -130,8 +130,10 @@ androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotli
 com-google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version = "2.0.1" }
 
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+
+
 # Custom plugins defined by this project
-estatia-hilt = { id = "com.estatia.realestate.apps.hilt"}
+estatia-android-hilt = { id = "com.estatia.realestate.apps.android.hilt"}
 estatia-android-room = { id = "com.estatia.realestate.apps.android.room"}
 estatia-firebase = { id = "com.estatia.realestate.apps.android.application.firebase"}
 estatia-android-packaging = { id = "com.estatia.realestate.apps.android.packaging"}
@@ -146,6 +148,7 @@ estatia-android-flavors = { id = "com.estatia.realestate.apps.android.flavors"}
 estatia-android-core = { id = "com.estatia.realestate.apps.android.core"}
 estatia-android-protolite = { id = "com.estatia.realestate.apps.android.protolite"}
 estatia-android-coverage = { id = "com.estatia.realestate.apps.android.jacoco"}
+estatia-android-lint = { id = "com.estatia.realestate.apps.android.lint"}
 
 
 

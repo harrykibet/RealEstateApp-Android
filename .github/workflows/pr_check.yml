@@ -32,6 +32,9 @@ jobs:
       - name: Run All Unit Tests
         run: ./gradlew test --no-configuration-cache --info
 
+      - name: Verify Code Coverage
+        run: ./gradlew jacocoProdDebugVerification --no-configuration-cache --info
+
   smoke-test:
     name: Smoke Instrumented Tests
     runs-on: ubuntu-latest

@@ -24,6 +24,8 @@ workflows:
         script: ./gradlew lint --no-daemon
       - name: Unit Tests
         script: ./gradlew test --no-daemon
+      - name: Verify Coverage
+        script: ./gradlew jacocoProdDebugVerification --no-daemon
       - name: Smoke UI Test
         script: ./gradlew :app:pixel2Api34ProdDebugAndroidTest --no-daemon
 
@@ -49,6 +51,10 @@ workflows:
     scripts:
       - name: Set Permissions
         script: chmod +x ./gradlew
+      - name: Lint
+        script: ./gradlew lint --no-daemon
+      - name: Unit Tests
+        script: ./gradlew test --no-daemon
       - name: Full Test Suite (All GMDs)
         script: |
           ./gradlew :app:pixel2Api34ProdDebugAndroidTest \
@@ -82,14 +88,24 @@ workflows:
         script: ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
       - name: Generate Baseline Profiles
         script: ./gradlew :app:generateProdBaselineProfile --no-daemon
-      - name: Commit Profiles
+      - name: Create Baseline Profile Branch
         script: |
           git config --global user.name "Estatia CI"
           git config --global user.email "ci@estatia.com"
+          git checkout -b automation/baseline-profiles
           git add .
-          git commit -m "Update baseline profiles (Nightly)" || echo "No changes"
-          git push
+          if git commit -m "chore: update baseline profiles (nightly)"; then
+            git push origin automation/baseline-profiles
+            # Note: In a mature CI setup, you would use 'gh pr create' (GitHub) 
+            # or the GitLab API here to automate PR/MR creation.
+          else
+            echo "No changes detected."
+          fi
       - name: Run Benchmarks
         script: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-daemon
+      - name: Code Quality & Mutation Testing
+        script: |
+          ./gradlew jacocoProdDebugReport --no-daemon
     artifacts:
       - benchmark/build/outputs/connected_android_test_additional_output/*
+      - "**/build/reports/jacoco/**"

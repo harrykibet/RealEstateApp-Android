@@ -43,7 +43,7 @@ tasks {
 gradlePlugin {
     plugins {
         register("hilt") {
-            id = libs.plugins.estatia.hilt.get().pluginId
+            id = libs.plugins.estatia.android.hilt.get().pluginId
             implementationClass = "HiltConventionPlugin"
         }
         register("androidRoom") {
@@ -99,7 +99,7 @@ gradlePlugin {
             implementationClass = "JacocoConventionPlugin"
         }
         register("androidLint") {
-            id = "estatia.android.lint"
+            id = libs.plugins.estatia.android.lint.get().pluginId
             implementationClass = "LintConventionPlugin"
         }
     }
