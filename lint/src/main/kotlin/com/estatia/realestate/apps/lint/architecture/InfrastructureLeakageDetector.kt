@@ -7,9 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiClass
-import org.jetbrains.uast.UCallExpression
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UQualifiedReferenceExpression
+import org.jetbrains.uast.*
 
 /**
  * Prevents infrastructure-specific classes (Retrofit, Room, Firebase) from leaking
@@ -25,11 +23,18 @@ class InfrastructureLeakageDetector : Detector(), SourceCodeScanner {
         "com.amplifyframework"
     )
 
-    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UCallExpression::class.java, UQualifiedReferenceExpression::class.java)
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = 
+        listOf(UCallExpression::class.java, UQualifiedReferenceExpression::class.java, UImportStatement::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
+        override fun visitImportStatement(node: UImportStatement) {
+            val path = node.importReference?.asRenderString() ?: return
+            checkStringLeakage(context, node, path)
+        }
+
         override fun visitCallExpression(node: UCallExpression) {
-            checkLeakage(context, node, node.resolve()?.containingClass)
+            val clazz = node.resolve()?.containingClass
+            checkLeakage(context, node, clazz)
         }
 
         override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
@@ -42,7 +47,10 @@ class InfrastructureLeakageDetector : Detector(), SourceCodeScanner {
 
     private fun checkLeakage(context: JavaContext, node: UElement, clazz: PsiClass?) {
         val qualifiedName = clazz?.qualifiedName ?: return
-        
+        checkStringLeakage(context, node, qualifiedName)
+    }
+
+    private fun checkStringLeakage(context: JavaContext, node: UElement, qualifiedName: String) {
         val path = context.file.path.replace("\\", "/")
         if (!path.contains("/domain/")) return
 
@@ -51,7 +59,7 @@ class InfrastructureLeakageDetector : Detector(), SourceCodeScanner {
                 ISSUE,
                 node,
                 context.getLocation(node),
-                "Infrastructure leak: Class '$qualifiedName' is forbidden in the Domain layer."
+                "Infrastructure leak: Class '$qualifiedName' is forbidden in the Domain layer (LAW-003)."
             )
         }
     }

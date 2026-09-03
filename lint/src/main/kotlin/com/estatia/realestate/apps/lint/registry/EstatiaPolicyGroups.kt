@@ -52,6 +52,7 @@ object ApiIssues {
         ErrorHandlingDetector.MISSING_WRAPPER_ISSUE,
         ErrorHandlingDetector.FAILURE_SMUGGLING_ISSUE,
         ErrorHandlingDetector.DANGEROUS_FALLBACK_ISSUE,
+        VisibilityModifierDetector.ISSUE,
         ComplexityBudgetDetector.PARAMETER_COUNT_ERROR,
         ComplexityBudgetDetector.PARAMETER_COUNT_WARNING
     )
@@ -73,7 +74,8 @@ object ComposeIssues {
 
 object SecurityIssues {
     val all = listOf(
-        SensitiveLoggingDetector.ISSUE
+        SensitiveLoggingDetector.ISSUE,
+        HardcodedSecretsDetector.ISSUE
     )
 }
 
@@ -89,5 +91,11 @@ object PerformanceIssues {
 object TestingIssues {
     val all = listOf(
         MockInProductionDetector.ISSUE
+    )
+}
+
+object CodeHealthIssues {
+    val all = listOf(
+        MagicNumberDetector.ISSUE
     )
 }

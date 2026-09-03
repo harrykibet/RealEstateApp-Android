@@ -14,11 +14,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
             val name = node.qualifiedName ?: ""
-            val text = node.sourcePsi?.text ?: node.asRenderString()
-            
-            if (name.contains("SuppressLint") || name.contains("Suppress") || 
-                text.contains("SuppressLint") || text.contains("Suppress")) {
-                
+            if (name.contains("SuppressLint") || name.contains("Suppress")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
             }
@@ -39,33 +35,27 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         
         addValue(value)
         
-        // Fallback to text parsing if UAST resolution is weak (common in tests)
+        // Fallback for cases where UAST doesn't resolve 'value' easily in tests
         if (list.isEmpty()) {
-            val text = node.asRenderString()
-            val regex = "\"([^\"]+)\"".toRegex()
-            regex.findAll(text).forEach { list.add(it.groupValues[1]) }
+            val src = node.asSourceString()
+            "\"([^\"]+)\"".toRegex().findAll(src).forEach { list.add(it.groupValues[1]) }
         }
         
         return list
     }
 
     private fun checkSuppressedIssues(context: JavaContext, node: UAnnotation, suppressed: List<String>) {
-        val severityMap = mapOf(
-            "InfrastructureLeakage" to Severity.FATAL,
-            "ExposedMutableState" to Severity.ERROR
-        )
+        val fatalIssues = setOf("InfrastructureLeakage", "PackageBoundaryViolation", "FeatureCouplingViolation", "LayerViolation")
+        val errorIssues = setOf("ExposedMutableState", "MissingResultWrapper", "FailureSmuggling", "DangerousFallback")
 
         suppressed.forEach { id ->
             if (id == "all") {
-                context.report(ISSUE, node, context.getLocation(node), "Blind suppression using 'all' is forbidden in Estatia. Explicitly list the rules you are suppressing (LAW-033).")
-            } else {
-                val severity = severityMap[id]
-                if (severity == Severity.FATAL) {
-                    context.report(ISSUE, node, context.getLocation(node), "Architectural Law violation '$id' (FATAL) cannot be suppressed. You must fix the underlying design issue (LAW-033).")
-                } else if (severity == Severity.ERROR) {
-                    if (!checkJustification(context, node)) {
-                        context.report(ISSUE, node, context.getLocation(node), "Suppression of ERROR-level rule '$id' requires a preceding justification comment (e.g., '// Justification: ...') (LAW-033).")
-                    }
+                context.report(ISSUE, node, context.getLocation(node), "Blind suppression using 'all' is forbidden in Estatia (LAW-033).")
+            } else if (fatalIssues.contains(id)) {
+                context.report(ISSUE, node, context.getLocation(node), "Architectural Law violation '$id' (FATAL) cannot be suppressed (LAW-033).")
+            } else if (errorIssues.contains(id)) {
+                if (!checkJustification(context, node)) {
+                    context.report(ISSUE, node, context.getLocation(node), "Suppression of ERROR-level rule '$id' requires a preceding justification comment (LAW-033).")
                 }
             }
         }

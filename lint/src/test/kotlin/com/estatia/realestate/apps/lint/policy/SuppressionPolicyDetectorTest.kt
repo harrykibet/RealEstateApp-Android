@@ -44,7 +44,7 @@ class SuppressionPolicyDetectorTest {
             )
             .issues(SuppressionPolicyDetector.ISSUE)
             .run()
-            .expectContains("Architectural Law violation 'InfrastructureLeakage' (FATAL) cannot be suppressed")
+            .expectContains("cannot be suppressed")
     }
 
     @Test

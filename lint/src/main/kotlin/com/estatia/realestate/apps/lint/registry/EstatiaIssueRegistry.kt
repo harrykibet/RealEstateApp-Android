@@ -19,6 +19,7 @@ class EstatiaIssueRegistry : IssueRegistry() {
         addAll(SecurityIssues.all)
         addAll(PerformanceIssues.all)
         addAll(TestingIssues.all)
+        addAll(CodeHealthIssues.all)
     }
 
     override val api: Int = CURRENT_API
