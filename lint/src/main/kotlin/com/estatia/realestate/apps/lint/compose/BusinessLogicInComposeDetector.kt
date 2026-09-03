@@ -1,0 +1,53 @@
+package com.estatia.realestate.apps.lint.compose
+
+import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.lint.policy.EstatiaIssue
+import com.estatia.realestate.apps.lint.policy.IssueCategory
+import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.intellij.psi.PsiMethod
+import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.getParentOfType
+
+/**
+ * Detects complex business logic (e.g., repository calls) inside Composable functions.
+ */
+class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
+
+    override fun getApplicableMethodNames() = listOf("launch", "async", "collect", "execute")
+
+    override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
+        val containingMethod = node.getParentOfType<UMethod>()
+        val hasComposableAnnotation = containingMethod?.javaPsi?.annotations?.any { it.qualifiedName?.contains("Composable") == true } == true
+
+        if (hasComposableAnnotation) {
+            val methodName = node.methodName ?: return
+            
+            if (methodName == "collect" || methodName == "launch") {
+                context.report(
+                    ISSUE,
+                    node,
+                    context.getLocation(node),
+                    "Avoid complex logic or side-effects like '$methodName' directly in a Composable. Move this logic to a ViewModel."
+                )
+            }
+        }
+    }
+
+    companion object {
+        val ISSUE = EstatiaIssue.create(
+            id = "BusinessLogicInCompose",
+            description = "Business logic detected in Composable",
+            explanation = """
+                Composables should be pure UI projections. Complex side-effects, 
+                stream collection, or coroutine launching should be managed by a ViewModel 
+                to ensure proper lifecycle management and testability.
+            """,
+            category = IssueCategory.COMPOSE,
+            tier = IssueTier.WARNING,
+            owner = RuleOwner.PRODUCT,
+            implementation = Implementation(BusinessLogicInComposeDetector::class.java, Scope.JAVA_FILE_SCOPE)
+        )
+    }
+}

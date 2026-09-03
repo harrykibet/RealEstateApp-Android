@@ -19,6 +19,6 @@ dependencies {
 
 tasks.withType<org.gradle.jvm.tasks.Jar> {
     manifest {
-        attributes("Lint-Registry-v2" to "com.estatia.realestate.apps.lint.EstatiaIssueRegistry")
+        attributes("Lint-Registry-v2" to "com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry")
     }
 }

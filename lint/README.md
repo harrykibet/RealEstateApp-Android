@@ -1,60 +1,61 @@
-# Estatia Quality Engine (`:lint`)
+# Estatia Engineering Guard (`:lint`)
 
-This module houses the custom Android Lint suite that enforces the **Estatia Production-Grade Class Standard**. It transforms our engineering documentation into automated build-time safety gates.
+This module houses the **Estatia Engineering Rules Engine**. Its job is to make bad architecture, unsafe concurrency, leaky abstractions, and production-hostile implementation patterns hard or impossible to merge.
 
 ## 🏗️ Core Philosophy
-In Estatia, we don't just "trust" developers to follow architectural patterns—we verify them with the compiler. Every custom rule in this module is set to `Severity.ERROR`. 
-
-> [!IMPORTANT]
-> **A violation of any rule below will fail the build.** This ensures that our high engineering bar is maintained automatically as the team scales.
+In Estatia, we treat architectural principles as **Compiler-Enforced Laws**, not optional style advice. This system acts as a non-bypassable gate in our CI/CD pipeline.
 
 ---
 
-## 🛡️ Enforced Standards (The 20 Gates)
+## 🚦 Enforcement Levels (Severity Model)
 
-### 1. State Ownership & Invariants
-| Rule ID | Description | How to Fix |
-| :--- | :--- | :--- |
-| `ExposedMutableState` | Prevents exposing `MutableStateFlow` or mutable collections publicly. | Expose as `StateFlow` or `List` instead. Use `_state` for private mutation. |
-| `ModulePackageMismatch` | Ensures class packages match their module folder structure. | Move the file to the correct package path defined in documentation. |
-| `NonThreadSafeCollection` | Blocks unsafe collections in Singletons without synchronization. | Use `ConcurrentHashMap` or protect access with a `Mutex`. |
+We use a tiered severity model based on production risk to ensure that developers focus on critical issues without being overwhelmed by minor suggestions.
 
-### 2. Structured Concurrency & Lifecycle
-| Rule ID | Description | How to Fix |
+| Tier | Severity | Policy |
 | :--- | :--- | :--- |
-| `SwallowedCancellationException` | Prevents broad catch blocks from swallowing coroutine cancellation. | Add `catch (e: CancellationException) { throw e }` before your broad catch. |
-| `ForbiddenCoroutineScope`| Blocks `GlobalScope` or unmanaged `CoroutineScope` in ViewModels/Repos. | Use `viewModelScope` or inject a managed scope via Hilt. |
-| `UnsafeStateCollection` | Prevents using `collectAsState()` in Compose. | Use `collectAsStateWithLifecycle()` to prevent background resource leaks. |
-| `RememberMissing` | Flags state creation in Compose without `remember`. | Wrap `mutableStateOf` or `mutableListOf` in a `remember { ... }` block. |
+| **FATAL** | `FATAL` | Architectural violations or security risks that **must never enter main**. CI will fail and blocks merge. |
+| **ERROR** | `ERROR` | Production correctness, concurrency, or lifecycle defects. Must be fixed before release. |
+| **WARNING** | `WARNING` | Strong design smells or localized best-practice violations. Requires justification if suppressed. |
+| **INFO** | `INFORMATIONAL` | Optimization or maintainability guidance. Recommended but optional. |
 
-### 3. Dependency Inversion & Testability
-| Rule ID | Description | How to Fix |
-| :--- | :--- | :--- |
-| `InfrastructureLeakage` | Blocks SDK types (Firebase/AWS) in domain interfaces. | Map SDK types to domain models or `AppResult` at the data layer boundary. |
-| `ServiceLocatorUsage` | Blocks static `getInstance()` calls (e.g., `FirebaseAuth.getInstance()`). | Provide the dependency via a Hilt module and use constructor injection. |
-| `HardcodedDispatcher` | Blocks direct usage of `Dispatchers.IO` or `Dispatchers.Main`. | Inject a `CoroutineDispatcher` (e.g., using `@IODispatcher` qualifier). |
-| `DirectSystemTimeAccess` | Blocks `System.currentTimeMillis()`. | Inject a `Clock` or `Instant` provider for deterministic testing. |
+---
 
-### 4. Security & Performance
-| Rule ID | Description | How to Fix |
-| :--- | :--- | :--- |
-| `SensitiveLogging` | Prevents logging of tokens, passwords, or PII. | Sanitize logs. Use identifiers or hashes instead of raw sensitive data. |
-| `UnboundedInternalBuffer`| Blocks `Channel.UNLIMITED` or massive buffer sizes. | Use a bounded capacity (e.g., `Channel(64)`) to handle backpressure safely. |
-| `MissingResultWrapper` | Mandates `AppResult` for all repository suspend functions. | Wrap return types in `AppResult<T>` to enforce explicit failure handling. |
-| `MissingConcurrencyCheck`| Ensures critical infrastructure enforces thread confinement. | Add `checkConfinement()` at the start of public infrastructure methods. |
+## ⚖️ The Laws of the Codebase
 
-### 5. Global Scalability & Design
-| Rule ID | Description | How to Fix |
-| :--- | :--- | :--- |
-| `HardcodedString` | Blocks string literals in UI components. | Move the text to `strings.xml` and use `stringResource(R.string.id)`. |
-| `HardcodedColorDimension` | Blocks Hex colors (`#FFF`) and DP values (`16.dp`) in UI. | Use `MaterialTheme.colorScheme` or `DesignSystem` tokens. |
-| `DesignSystemUsage` | Prevents raw Material 3 usage outside the Design System module. | Use `EstatiaText`, `EstatiaButton`, etc., from `:core:design-system`. |
-| `BusinessLogicInCompose` | Blocks complex logic/repository calls inside `@Composable`. | Move logic to the ViewModel and expose result via state. |
+Every detector in this module exists to enforce one of the following fundamental engineering laws:
 
-### 6. Test Integrity
-| Rule ID | Description | How to Fix |
-| :--- | :--- | :--- |
-| `MockInProduction` | Blocks MockK/Mockito imports in production source sets. | Ensure mocking libraries are only present in `src/test` or `src/androidTest`. |
+| Law ID | Law Description | Level | Enforcing Rule |
+| :--- | :--- | :--- | :--- |
+| **LAW-001** | Presentation owns UI state. | `WARNING` | `BusinessLogicInCompose` |
+| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState` |
+| **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `InfrastructureLeakage` |
+| **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `FeatureCouplingViolation` |
+| **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `ForbiddenGlobalScope` |
+| **LAW-006** | Production code does not choose dispatchers directly. | `ERROR` | `HardcodedDispatcher` |
+| **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `DirectSystemTimeUsage` |
+| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `ImplementationTypeInPublicApi` |
+| **LAW-009** | Production functions do not silently discard failures. | `ERROR` | `MissingResultWrapper` |
+| **LAW-010** | Sensitive data never enters application logs. | `FATAL` | `SensitiveLogging` |
+| **LAW-011** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation` |
+| **LAW-012** | Lifecycle-owned work must be cancellable. | `ERROR` | `MissingCoroutineCancellation` |
+| **LAW-013** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `MissingConcurrencyCheck` |
+| **LAW-014** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
+| **LAW-015** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
+| **LAW-016** | Mutable state must follow the backing-property convention. | `WARNING` | `BackingPropertyConvention` |
+| **LAW-017** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
+
+---
+
+## 🏗️ System Architecture
+
+The engine is structured into specialized layers:
+
+1.  **Architecture Layer**: Enforces module boundaries and dependency direction.
+2.  **Concurrency Layer**: Validates thread safety, cancellation, and dispatcher usage.
+3.  **API Layer**: Ensures public contracts are safe, immutable, and handle errors explicitly.
+4.  **Compose Layer**: Protects the UI layer from business logic leakage and state bugs.
+5.  **Security Layer**: Prevents PII leakage and insecure patterns.
+6.  **Testing Layer**: Guarantees test infrastructure doesn't leak into production.
 
 ---
 
@@ -63,28 +64,19 @@ In Estatia, we don't just "trust" developers to follow architectural patterns—
 ### Running Locally
 To verify your changes before pushing:
 ```bash
-# Run lint for the entire project
+# Run all engineering checks
 ./gradlew lint
-
-# Run lint for a specific module
-./gradlew :feature:home:lint
 ```
 
 ### Viewing Reports
-Detailed HTML reports are generated at:
+Detailed reports with failure explanations and fix suggestions:
 `[module-root]/build/reports/lint-results.html`
-
-### Suppressing Rules (The "Break-Glass" Procedure)
-If a specific case justifies bypassing a rule (rare), use the `@SuppressLint` annotation with the specific Rule ID:
-```kotlin
-@SuppressLint("ExposedMutableState")
-val legacyPublicState = MutableStateFlow(...) // Document WHY this is needed
-```
 
 ---
 
-## 🧪 Development
-To add a new rule to the Estatia standard:
-1. Create a new `Detector` in `src/main/java`.
-2. Register it in `EstatiaIssueRegistry`.
-3. **Mandatory**: Add unit tests in `src/test/java` using `LintDetectorTest` to verify both happy and failure paths.
+## 🧪 Engine Development
+To add a new engineering law or detector:
+1.  Define the law in this README.
+2.  Add the detector to the appropriate package in `src/main/kotlin/com/estatia/realestate/apps/lint/`.
+3.  Register the issue in `EstatiaIssueRegistry`.
+4.  **Mandatory**: Add unit tests in `src/test/kotlin/...` to verify the law is correctly enforced.
