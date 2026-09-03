@@ -30,8 +30,8 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState` |
 | **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `InfrastructureLeakage` |
 | **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `FeatureCouplingViolation` |
-| **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `ForbiddenGlobalScope` |
-| **LAW-006** | Production code does not choose dispatchers directly. | `ERROR` | `HardcodedDispatcher` |
+| **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `ForbiddenCoroutineScope` |
+| **LAW-006** | Production code does not choose dispatchers directly. | `FATAL` | `HardcodedDispatcher` |
 | **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `DirectSystemTimeUsage` |
 | **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `ImplementationTypeInPublicApi` |
 | **LAW-009** | Production functions do not silently discard failures. | `ERROR` | `MissingResultWrapper` |
@@ -39,10 +39,14 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-011** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation` |
 | **LAW-012** | Lifecycle-owned work must be cancellable. | `ERROR` | `MissingCoroutineCancellation` |
 | **LAW-013** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `MissingConcurrencyCheck` |
-| **LAW-014** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
+| **LAW-014** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsage` |
 | **LAW-015** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
 | **LAW-016** | Mutable state must follow the backing-property convention. | `WARNING` | `BackingPropertyConvention` |
 | **LAW-017** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
+| **LAW-018** | Suspend functions must not secretly launch independent work. | `FATAL` | `SecretConcurrency` |
+| **LAW-019** | Async results (Deferred) must be joined or returned. | `ERROR` | `UnusedAsync` |
+| **LAW-020** | Exception handlers must be placed on root scopes. | `WARNING` | `MisplacedCoroutineExceptionHandler` |
+| **LAW-021** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
 
 ---
 

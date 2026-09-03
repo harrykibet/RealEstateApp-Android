@@ -21,8 +21,7 @@ class EstatiaIssueRegistry : IssueRegistry() {
         
         // Concurrency
         CoroutineCancellationDetector.ISSUE,
-        ForbiddenScopeDetector.GLOBAL_SCOPE_ISSUE,
-        ForbiddenScopeDetector.NON_CANCELLABLE_ISSUE,
+        ForbiddenScopeDetector.FORBIDDEN_SCOPE_ISSUE,
         DispatcherInjectionDetector.ISSUE,
         PublicApiContractDetector.MUTABLE_STATE_ISSUE,
         PublicApiContractDetector.BACKING_PROPERTY_CONVENTION_ISSUE,
@@ -31,6 +30,9 @@ class EstatiaIssueRegistry : IssueRegistry() {
         ChaosSynchronizationDetector.ISSUE,
         ConfinementDetector.ISSUE,
         UnsafeStateCollectionDetector.ISSUE,
+        StructuredConcurrencyDetector.SECRET_CONCURRENCY_ISSUE,
+        StructuredConcurrencyDetector.UNUSED_ASYNC_ISSUE,
+        StructuredConcurrencyDetector.MISPLACED_HANDLER_ISSUE,
         
         // API Design
         MissingResultWrapperDetector.ISSUE,

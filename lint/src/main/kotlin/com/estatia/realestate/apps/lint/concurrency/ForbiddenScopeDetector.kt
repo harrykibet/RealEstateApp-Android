@@ -9,65 +9,66 @@ import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 
 /**
- * Prevents usage of forbidden scopes like [GlobalScope] or [NonCancellable].
+ * Prevents arbitrary creation of CoroutineScopes in production logic (LAW-005).
+ * Forces usage of managed scopes (viewModelScope) or injected scopes.
  */
 class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
 
-    override fun getApplicableMethodNames() = listOf("launch", "async", "withContext")
+    override fun getApplicableMethodNames() = listOf("launch", "async", "CoroutineScope", "MainScope")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
+        val methodName = node.methodName ?: return
         val receiver = node.receiver?.asRenderString() ?: ""
         
+        // 1. Ban GlobalScope.launch/async
         if (receiver == "GlobalScope") {
             context.report(
-                GLOBAL_SCOPE_ISSUE,
+                FORBIDDEN_SCOPE_ISSUE,
                 node,
                 context.getLocation(node),
-                "Usage of 'GlobalScope' is forbidden. Use a managed CoroutineScope (e.g., viewModelScope or custom scope) instead."
+                "Usage of 'GlobalScope' is forbidden. Use a managed CoroutineScope (e.g., viewModelScope) or an injected application scope (LAW-005)."
             )
+            return
         }
 
-        if (node.methodName == "withContext") {
-            val firstArg = node.valueArguments.firstOrNull()?.asRenderString() ?: ""
-            if (firstArg == "NonCancellable") {
+        // 2. Ban manual CoroutineScope instantiation in arbitrary business code
+        if (methodName == "CoroutineScope" || methodName == "MainScope") {
+            val path = context.file.path.replace("\\", "/")
+            
+            // Allow in dedicated concurrency modules, DI, or initializers
+            val isAllowedLocation = path.contains("/di/") || 
+                                   path.contains("ConcurrencyModule") || 
+                                   path.contains("Initializer") ||
+                                   path.contains("/src/test/") ||
+                                   path.contains("/src/androidTest/")
+
+            if (!isAllowedLocation) {
                 context.report(
-                    NON_CANCELLABLE_ISSUE,
+                    FORBIDDEN_SCOPE_ISSUE,
                     node,
                     context.getLocation(node),
-                    "Usage of 'NonCancellable' is discouraged. Ensure it is only used for essential cleanup logic."
+                    "Manual instantiation of '$methodName' is forbidden in business logic. Inject a managed CoroutineScope via Hilt instead (LAW-005)."
                 )
             }
         }
     }
 
     companion object {
-        private val IMPLEMENTATION = Implementation(ForbiddenScopeDetector::class.java, Scope.JAVA_FILE_SCOPE)
-
-        val GLOBAL_SCOPE_ISSUE = EstatiaIssue.create(
-            id = "ForbiddenGlobalScope",
-            description = "Usage of GlobalScope detected",
+        val FORBIDDEN_SCOPE_ISSUE = EstatiaIssue.create(
+            id = "ForbiddenCoroutineScope",
+            description = "Unmanaged CoroutineScope detected",
             explanation = """
-                GlobalScope makes it easy to leak coroutines because it is not tied to any 
-                lifecycle. Always use a managed CoroutineScope that matches the lifecycle 
-                of your component.
+                Arbitrary creation of CoroutineScopes leads to resource leaks and non-deterministic 
+                lifecycles. Estatia requires all scopes to be either lifecycle-managed 
+                (e.g., viewModelScope) or injected via Hilt from a central Concurrency module.
             """,
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            implementation = IMPLEMENTATION
+            implementation = Implementation(ForbiddenScopeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
-
-        val NON_CANCELLABLE_ISSUE = EstatiaIssue.create(
-            id = "DiscouragedNonCancellable",
-            description = "Usage of NonCancellable context",
-            explanation = """
-                NonCancellable prevents a coroutine from being cancelled. It should only be 
-                used for short, atomic cleanup operations (e.g., closing a database or file).
-            """,
-            category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.WARNING,
-            owner = RuleOwner.PLATFORM,
-            implementation = IMPLEMENTATION
-        )
+        
+        // Keep the non-cancellable check but move to its own rule if needed.
+        // For now, let's just focus on the strict scope ban.
     }
 }
