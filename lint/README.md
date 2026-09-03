@@ -34,19 +34,55 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-006** | Production code does not choose dispatchers directly. | `FATAL` | `HardcodedDispatcher` |
 | **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `DirectSystemTimeUsage` |
 | **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `ImplementationTypeInPublicApi` |
-| **LAW-009** | Production functions do not silently discard failures. | `ERROR` | `MissingResultWrapper` |
+| **LAW-009** | Production functions do not silently discard failures. | `ERROR` | `MissingResultWrapper`, `FailureSmuggling`, `DangerousFallback` |
 | **LAW-010** | Sensitive data never enters application logs. | `FATAL` | `SensitiveLogging` |
-| **LAW-011** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation` |
-| **LAW-012** | Lifecycle-owned work must be cancellable. | `ERROR` | `MissingCoroutineCancellation` |
-| **LAW-013** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `MissingConcurrencyCheck` |
-| **LAW-014** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsage` |
-| **LAW-015** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
-| **LAW-016** | Mutable state must follow the backing-property convention. | `WARNING` | `BackingPropertyConvention` |
-| **LAW-017** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
-| **LAW-018** | Suspend functions must not secretly launch independent work. | `FATAL` | `SecretConcurrency` |
-| **LAW-019** | Async results (Deferred) must be joined or returned. | `ERROR` | `UnusedAsync` |
-| **LAW-020** | Exception handlers must be placed on root scopes. | `WARNING` | `MisplacedCoroutineExceptionHandler` |
-| **LAW-021** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
+| **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `BlockingMainThreadWork` |
+| **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation` |
+| **LAW-013** | Lifecycle-owned work must be cancellable. | `ERROR` | `MissingCoroutineCancellation` |
+| **LAW-014** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `MissingConcurrencyCheck` |
+| **LAW-015** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsage` |
+| **LAW-016** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
+| **LAW-017** | Mutable state must follow the backing-property convention. | `WARNING` | `BackingPropertyConvention` |
+| **LAW-018** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
+| **LAW-019** | Suspend functions must not secretly launch independent work. | `FATAL` | `SecretConcurrency` |
+| **LAW-020** | Async results (Deferred) must be joined or returned. | `ERROR` | `UnusedAsync` |
+| **LAW-021** | Exception handlers must be placed on root scopes. | `WARNING` | `MisplacedCoroutineExceptionHandler` |
+| **LAW-022** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
+| **LAW-023** | Lifecycle-bound objects (Activity/View) must not be stored in long-lived components. | `FATAL` | `LifecycleLeak` |
+| **LAW-024** | Long-lived components must not hold direct references to UI Context. | `FATAL` | `LifecycleLeak` |
+| **LAW-025** | Composables must not read from mutable singletons directly. | `ERROR` | `ComposeMutableSingletonRead` |
+| **LAW-026** | Expensive object creation must be cached via remember. | `WARNING` | `ExpensiveRecomposition` |
+| **LAW-027** | Composables must not directly call domain or data layer components. | `ERROR` | `ComposeArchitectureLeakage` |
+| **LAW-028** | Methods must be concise and focused (Complexity Budget). | `FATAL` | `SpaghettiMethodFatal` |
+| **LAW-029** | Classes must have a single responsibility (Size Limit). | `FATAL` | `GodObjectFatal` |
+| **LAW-030** | Constructors must have a limited dependency budget. | `ERROR` | `OrchestrationMonsterError` |
+| **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `LayerMixingViolation` |
+| **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `LayerDependencyViolation` |
+
+---
+
+## 📈 Complexity Budgets
+
+To prevent technical debt, we enforce tiered thresholds for code complexity.
+
+### Class Size (LAW-029)
+- **> 300 lines**: `WARNING` (Design smell)
+- **> 600 lines**: `ERROR` (Must refactor)
+- **> 1000 lines**: `FATAL` (Merge blocked)
+
+### Method Size (LAW-028)
+- **> 60 lines**: `WARNING` (Lengthy function)
+- **> 120 lines**: `ERROR` (Complex logic)
+- **> 300 lines**: `FATAL` (Merge blocked)
+
+### Parameters
+- **> 7 params**: `WARNING`
+- **> 12 params**: `ERROR`
+
+### Constructor Dependencies (LAW-030)
+- **1–5 dependencies**: Normal (Healthy decoupling)
+- **6–8 dependencies**: `WARNING` (Design smell: Orchestration monster)
+- **9+ dependencies**: `ERROR` (Refactor now: Too many responsibilities)
 
 ---
 
@@ -59,7 +95,8 @@ The engine is structured into specialized layers:
 3.  **API Layer**: Ensures public contracts are safe, immutable, and handle errors explicitly.
 4.  **Compose Layer**: Protects the UI layer from business logic leakage and state bugs.
 5.  **Security Layer**: Prevents PII leakage and insecure patterns.
-6.  **Testing Layer**: Guarantees test infrastructure doesn't leak into production.
+6.  **Performance Layer**: Blocks main-thread work and unbounded memory growth.
+7.  **Testing Layer**: Guarantees test infrastructure doesn't leak into production.
 
 ---
 

@@ -18,6 +18,18 @@ class EstatiaIssueRegistry : IssueRegistry() {
         InfrastructureLeakageDetector.ISSUE,
         ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
         ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
+        ResponsibilityBoundaryDetector.ISSUE,
+        LayerDependencyDetector.ISSUE,
+        ComplexityBudgetDetector.CLASS_SIZE_FATAL,
+        ComplexityBudgetDetector.CLASS_SIZE_ERROR,
+        ComplexityBudgetDetector.CLASS_SIZE_WARNING,
+        ComplexityBudgetDetector.METHOD_SIZE_FATAL,
+        ComplexityBudgetDetector.METHOD_SIZE_ERROR,
+        ComplexityBudgetDetector.METHOD_SIZE_WARNING,
+        ComplexityBudgetDetector.PARAMETER_COUNT_ERROR,
+        ComplexityBudgetDetector.PARAMETER_COUNT_WARNING,
+        ComplexityBudgetDetector.CONSTRUCTOR_DEPENDENCY_ERROR,
+        ComplexityBudgetDetector.CONSTRUCTOR_DEPENDENCY_WARNING,
         
         // Concurrency
         CoroutineCancellationDetector.ISSUE,
@@ -35,12 +47,17 @@ class EstatiaIssueRegistry : IssueRegistry() {
         StructuredConcurrencyDetector.MISPLACED_HANDLER_ISSUE,
         
         // API Design
-        MissingResultWrapperDetector.ISSUE,
+        ErrorHandlingDetector.MISSING_WRAPPER_ISSUE,
+        ErrorHandlingDetector.FAILURE_SMUGGLING_ISSUE,
+        ErrorHandlingDetector.DANGEROUS_FALLBACK_ISSUE,
         
         // Compose
         BusinessLogicInComposeDetector.ISSUE,
         RememberMissingDetector.ISSUE,
         StateOwnershipDetector.ISSUE,
+        ComposeArchitectureDetector.ARCHITECTURE_LEAKAGE_ISSUE,
+        ComposeArchitectureDetector.MUTABLE_SINGLETON_READ_ISSUE,
+        ComposePerformanceDetector.EXPENSIVE_RECOMPOSITION_ISSUE,
         HardcodedColorDimensionDetector.ISSUE,
         HardcodedStringDetector.ISSUE,
         DesignSystemDetector.ISSUE,
@@ -51,6 +68,8 @@ class EstatiaIssueRegistry : IssueRegistry() {
         // Performance
         UnboundedBufferDetector.ISSUE,
         DirectSystemTimeDetector.ISSUE,
+        MainThreadWorkDetector.ISSUE,
+        LifecycleLeakDetector.LEAK_ISSUE,
         
         // Testing
         MockInProductionDetector.ISSUE
