@@ -75,7 +75,9 @@ class ArchitectureProcessor(
             // Check function parameters and returns
             clazz.getDeclaredFunctions().forEach { func ->
                 if (isPublic(func)) {
-                    checkForbiddenType(func.returnType?.resolve(), func, "return type", clazz.simpleName.asString())
+                    if (func.simpleName.asString() != "<init>") {
+                        checkForbiddenType(func.returnType?.resolve(), func, "return type", clazz.simpleName.asString())
+                    }
                     func.parameters.forEach { param ->
                         checkForbiddenType(param.type.resolve(), param, "parameter", clazz.simpleName.asString())
                     }
@@ -127,7 +129,9 @@ class ArchitectureProcessor(
     }
 
     private fun isPublic(node: KSModifierListOwner): Boolean {
-        return node.modifiers.contains(Modifier.PUBLIC) || node.modifiers.isEmpty()
+        return !node.modifiers.contains(Modifier.PRIVATE) &&
+               !node.modifiers.contains(Modifier.INTERNAL) &&
+               !node.modifiers.contains(Modifier.PROTECTED)
     }
 }
 

@@ -30,6 +30,23 @@ class ArchitectureProcessorTest {
         """.trimIndent()
     )
 
+    private val firebaseStub = SourceFile.kotlin(
+        "FirebaseStubs.kt",
+        """
+        package com.google.firebase.auth
+        class FirebaseUser
+        """.trimIndent()
+    )
+
+    private val coroutineStubs = SourceFile.kotlin(
+        "CoroutineStubs.kt",
+        """
+        package kotlinx.coroutines.flow
+        interface Flow<out T>
+        interface MutableStateFlow<T> : Flow<T>
+        """.trimIndent()
+    )
+
     @Test
     fun `LAW-009 Result wrapping violation fails compilation`() {
         val source = SourceFile.kotlin(
@@ -58,16 +75,18 @@ class ArchitectureProcessorTest {
             package com.estatia.realestate.apps.core.data.repository
             import com.estatia.realestate.apps.core.common.annotations.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
+            import kotlinx.coroutines.flow.Flow
             
             @Repository
             class TestRepository {
                 fun loadData(): AppResult<String> = TODO()
+                fun streamData(): Flow<String> = TODO()
                 fun doWork() {}
             }
             """.trimIndent()
         )
 
-        val result = compile(annotationsSource, resultSource, source)
+        val result = compile(annotationsSource, resultSource, coroutineStubs, source)
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
     }
 
@@ -79,15 +98,16 @@ class ArchitectureProcessorTest {
             package com.estatia.realestate.apps.core.data.repository
             import com.estatia.realestate.apps.core.common.annotations.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
+            import com.google.firebase.auth.FirebaseUser
             
             @Repository
             class TestRepository {
-                fun getUser(): AppResult<com.google.firebase.auth.FirebaseUser> = TODO()
+                fun getUser(): AppResult<FirebaseUser> = TODO()
             }
             """.trimIndent()
         )
 
-        val result = compile(annotationsSource, resultSource, source)
+        val result = compile(annotationsSource, resultSource, firebaseStub, source)
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("Architecture Violation (LAW-008)"))
     }
@@ -99,17 +119,16 @@ class ArchitectureProcessorTest {
             """
             package com.estatia.realestate.apps.feature.test
             import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
-            
-            class MutableStateFlow<T>(val value: T)
+            import kotlinx.coroutines.flow.MutableStateFlow
             
             @ViewModelMarker
             class TestViewModel {
-                val state = MutableStateFlow(0)
+                val state: MutableStateFlow<Int> = TODO()
             }
             """.trimIndent()
         )
 
-        val result = compile(annotationsSource, resultSource, source)
+        val result = compile(annotationsSource, coroutineStubs, source)
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("Architecture Violation (LAW-016)"))
     }
