@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.lint.policy
 
+import com.android.tools.lint.checks.infrastructure.LintDetectorTest.java
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
@@ -14,20 +15,13 @@ class SuppressionPolicyDetectorTest {
     fun `blind suppression of all reports fatal`() {
         lint()
             .testModes(TestMode.DEFAULT)
-            .allowCompilationErrors()
             .allowMissingSdk()
             .files(
-                Stubs.COROUTINES,
-                Stubs.RESULT,
-                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    import android.annotation.SuppressLint
-                    class Bad {
-                        @SuppressLint("all")
-                        fun foo() {}
-                    }
+                    @Suppress("all")
+                    class Bad
                     """.trimIndent()
                 )
             )

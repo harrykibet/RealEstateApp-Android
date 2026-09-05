@@ -42,12 +42,11 @@ class MockInProductionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import io.mockk.mockk
-                    
                     class MyTest {
                         val mock = mockk<String>()
                     }
                     """.trimIndent()
-                ).to("src/test/java/com/estatia/realestate/apps/MyTest.kt")
+                ).to("src/test/kotlin/com/estatia/realestate/apps/MyTest.kt")
             )
             .issues(MockInProductionDetector.ISSUE)
             .run()

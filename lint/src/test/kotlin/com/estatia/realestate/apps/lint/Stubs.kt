@@ -163,6 +163,9 @@ object Stubs {
     val MOCKK = kotlin(
         """
         package io.mockk
+        object MockK {
+            fun <T> mockk(): T = TODO()
+        }
         fun <T> mockk(): T = TODO()
         """.trimIndent()
     )

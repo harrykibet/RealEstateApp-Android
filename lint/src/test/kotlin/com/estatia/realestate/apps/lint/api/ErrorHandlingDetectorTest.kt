@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.lint.api
 
+import com.android.tools.lint.checks.infrastructure.LintDetectorTest.java
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
@@ -65,21 +66,17 @@ class ErrorHandlingDetectorTest {
     fun `dangerous fallback with elvis reports error`() {
         lint()
             .testModes(TestMode.DEFAULT)
-            .allowCompilationErrors()
             .allowMissingSdk()
             .files(
-                Stubs.RESULT,
-                Stubs.FLOW,
-                Stubs.COLLECTIONS,
-                Stubs.ANDROID_LOG,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    import kotlin.collections.emptyList
+                    fun <T> emptyList(): List<T> = TODO()
+                    interface List<out T>
                     class MyRepository { fun load(): List<String>? = null }
                     class Test(val repo: MyRepository) {
                         fun check() {
-                            val data = repo.load() ?: emptyList()
+                            val data = repo.load() ?: emptyList<String>()
                         }
                     }
                     """.trimIndent()
