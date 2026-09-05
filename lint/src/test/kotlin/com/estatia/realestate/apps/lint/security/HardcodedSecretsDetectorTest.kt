@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.lint.security
 
+import com.android.tools.lint.checks.infrastructure.LintDetectorTest.java
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.estatia.realestate.apps.lint.Stubs
@@ -16,11 +17,11 @@ class HardcodedSecretsDetectorTest {
                 Stubs.COROUTINES,
                 Stubs.ANDROID_APP,
                 Stubs.VIEWMODEL,
-                kotlin(
+                java(
                     """
-                    package com.estatia.realestate.apps
-                    class Config {
-                        private val apiKey = "12345-ABCDE"
+                    package com.estatia.realestate.apps;
+                    public class Config {
+                        public String apiKey = "12345-ABCDE";
                     }
                     """.trimIndent()
                 )

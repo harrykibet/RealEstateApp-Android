@@ -131,6 +131,13 @@ object Stubs {
         """.trimIndent()
     )
 
+    val ANDROID_ANNOTATION = kotlin(
+        """
+        package android.annotation
+        annotation class SuppressLint(vararg val value: String)
+        """.trimIndent()
+    )
+
     val ANDROID_CONTENT = kotlin(
         """
         package android.content

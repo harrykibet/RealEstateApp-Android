@@ -19,12 +19,15 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
+                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import android.annotation.SuppressLint
-                    @SuppressLint("all")
-                    class Bad
+                    class Bad {
+                        @SuppressLint("all")
+                        fun foo() {}
+                    }
                     """.trimIndent()
                 )
             )
@@ -42,6 +45,7 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
+                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -64,6 +68,7 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
+                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -86,6 +91,7 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
+                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

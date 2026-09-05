@@ -47,7 +47,7 @@ class MockInProductionDetectorTest {
                         val mock = mockk<String>()
                     }
                     """.trimIndent()
-                ).to("test/com/estatia/realestate/apps/MyTest.kt")
+                ).to("src/test/java/com/estatia/realestate/apps/MyTest.kt")
             )
             .issues(MockInProductionDetector.ISSUE)
             .run()

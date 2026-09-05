@@ -75,12 +75,11 @@ class ErrorHandlingDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    import kotlin.collections.List
                     import kotlin.collections.emptyList
                     class MyRepository { fun load(): List<String>? = null }
                     class Test(val repo: MyRepository) {
                         fun check() {
-                            val data: Any? = repo.load() ?: kotlin.collections.emptyList<String>()
+                            val data = repo.load() ?: emptyList()
                         }
                     }
                     """.trimIndent()

@@ -24,7 +24,7 @@ class HardcodedColorDimensionDetectorTest {
                     import androidx.compose.ui.graphics.Color
                     
                     fun test() {
-                        val x = 16.dp
+                        val x = 16.dp()
                     }
                     """.trimIndent()
                 ).to("src/com/estatia/realestate/apps/feature/home/Test.kt")
@@ -50,7 +50,7 @@ class HardcodedColorDimensionDetectorTest {
                     import androidx.compose.ui.unit.dp
                     
                     fun test() {
-                        val x = 16.dp
+                        val x = 16.dp()
                     }
                     """.trimIndent()
                 ).to("src/com/estatia/realestate/apps/core/designsystem/Test.kt")
