@@ -42,7 +42,7 @@ class ArchitectureProcessor(
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.getDeclaredFunctions().forEach { function ->
-                if (isPublic(function)) {
+                if (function.simpleName.asString() != "<init>" && isPublic(function)) {
                     val returnType = function.returnType?.resolve()
                     val qualifiedName = returnType?.declaration?.qualifiedName?.asString() ?: ""
                     
