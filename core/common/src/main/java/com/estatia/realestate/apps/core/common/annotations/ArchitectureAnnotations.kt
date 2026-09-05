@@ -34,3 +34,11 @@ annotation class UseCase
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class ViewModelMarker
+
+/**
+ * Marks a data class or sealed class as a formal UI State container.
+ * Enforced by KSP to ensure ViewModels follow the Single Source of Truth pattern (LAW-018).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+annotation class UiState

@@ -15,24 +15,37 @@ While the `:lint` module provides broad, real-time feedback in the IDE, `:core:k
 
 ## ⚖️ Enforced Laws
 
-### LAW-009: Mandatory Result Wrapping
-**Problem**: Public methods in repositories or services returning raw implementation types (e.g., `User`, `List<Property>`) allow failures to be discarded silently.
-**Enforcement**: 
-- Any class annotated with `@Repository`, `@Service`, or `@UseCase` is inspected.
-- All public methods **must** return a wrapped type: `AppResult<T>`, `Flow<T>`, or `Unit`.
-- **Compile Error**: "Architecture Violation (LAW-009): Public method ... must return a wrapped Result type."
+### 1. Mandatory Result Wrapping (LAW-009)
+- **Problem**: Public methods in repositories or services returning raw implementation types allow failures to be discarded silently.
+- **Enforcement**: Classes annotated with `@Repository`, `@Service`, or `@UseCase` must return `AppResult<T>`, `Flow<T>`, or `Unit`.
+- **Processor**: `ResultWrappingProcessor`
 
-### LAW-008: Abstraction Boundaries
-**Problem**: Domain components leaking infrastructure types (e.g., Firebase classes, Room Entities, OkHttp types).
-**Enforcement**: 
-- Verifies that return types and parameters of `@UseCase` and `@Repository` components do not expose types from `com.google.firebase`, `androidx.room`, `okhttp3`, or `retrofit2`.
-- **Compile Error**: "Architecture Violation (LAW-008): Leakage detected in ... Public parameter/return type exposes infrastructure type."
+### 2. Contractual Consistency (LAW-008)
+- **Problem**: Direct implementation leakage.
+- **Enforcement**: Every class annotated with `@Repository` or `@UseCase` **must** implement an interface.
+- **Processor**: `ContractProcessor`
 
-### LAW-016: ViewModel State Ownership
-**Problem**: Exposing `MutableStateFlow` or `MutableState` from ViewModels, which allows the View to mutate state directly.
-**Enforcement**: 
-- Ensures all public properties in classes marked with `@ViewModelMarker` are read-only abstractions.
-- **Compile Error**: "Architecture Violation (LAW-016): ViewModel ... exposes mutable state ... Expose as StateFlow instead."
+### 3. Abstraction Boundaries (LAW-008)
+- **Problem**: Domain components leaking infrastructure types (e.g., Firebase, Room, OkHttp).
+- **Enforcement**: Verifies that public APIs of `@UseCase` and `@Repository` do not expose infrastructure types.
+- **Processor**: `AbstractionBoundaryProcessor`
+
+### 4. Constructor Purity (LAW-030)
+- **Problem**: Injecting concrete implementations instead of abstractions.
+- **Enforcement**: Primary constructors of architectural components must only accept interfaces (starting with 'I') or pure Data Models.
+- **Processor**: `ConstructorAbstractionProcessor`
+
+### 5. ViewModel Integrity (LAW-018 & LAW-016)
+- **Problem**: "Property soup" (multiple StateFlows) and mutable state leakage.
+- **Enforcement**:
+    - Exactly one public `StateFlow` allowed per `@ViewModelMarker` (Single Source of Truth).
+    - Zero public mutable containers allowed (`MutableStateFlow`, `MutableState`).
+- **Processor**: `ViewModelProcessor`
+
+### 6. Domain Expressiveness (LAW-008)
+- **Problem**: Returning raw `Boolean` or `Int` in `AppResult` obscures business meaning.
+- **Enforcement**: Warns when UseCases return primitives, encouraging enums or sealed classes.
+- **Processor**: `ContractProcessor`
 
 ---
 
@@ -45,7 +58,7 @@ Mark your class with the appropriate architectural annotation from `:core:common
 import com.estatia.realestate.apps.core.common.annotations.Repository
 
 @Repository
-class PropertyRepositoryImpl(...) : PropertyRepository {
+class PropertyRepositoryImpl(...) : IPropertyRepository {
     // KSP will verify every public function here
 }
 ```
@@ -64,4 +77,5 @@ dependencies {
 ## 🧪 Development
 To add a new architectural rule:
 1. Define a marker annotation in `:core:common`.
-2. Update `ArchitectureProcessor.kt` in this module with the new validation logic.
+2. Create a new `SymbolProcessor` class in `src/main/kotlin`.
+3. Register the `SymbolProcessorProvider` in `META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider`.

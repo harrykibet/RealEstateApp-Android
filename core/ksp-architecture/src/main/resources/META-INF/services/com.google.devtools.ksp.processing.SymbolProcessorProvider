@@ -1,1 +1,5 @@
-com.estatia.realestate.apps.core.ksp.ArchitectureProcessorProvider
+com.estatia.realestate.apps.core.ksp.ResultWrappingProcessorProvider
+com.estatia.realestate.apps.core.ksp.ContractProcessorProvider
+com.estatia.realestate.apps.core.ksp.AbstractionBoundaryProcessorProvider
+com.estatia.realestate.apps.core.ksp.ConstructorAbstractionProcessorProvider
+com.estatia.realestate.apps.core.ksp.ViewModelProcessorProvider
