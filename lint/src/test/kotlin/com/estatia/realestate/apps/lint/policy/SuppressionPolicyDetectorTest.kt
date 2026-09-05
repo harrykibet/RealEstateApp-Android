@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.lint.policy
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
+import com.estatia.realestate.apps.lint.api.ErrorHandlingDetector
+import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
 import org.junit.Test
 
 class SuppressionPolicyDetectorTest {
@@ -37,12 +39,12 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    @Suppress("InfrastructureLeakage")
+                    @Suppress("ForbiddenCoroutineScope")
                     class Bad
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, ForbiddenScopeDetector.FORBIDDEN_SCOPE_ISSUE)
             .run()
             .expectContains("cannot be suppressed")
     }
@@ -57,12 +59,12 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    @Suppress("ExposedMutableState")
+                    @Suppress("MissingResultWrapper")
                     class Bad
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, ErrorHandlingDetector.MISSING_WRAPPER_ISSUE)
             .run()
             .expectContains("requires a preceding justification comment")
     }
@@ -77,13 +79,13 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    // Justification: reason
-                    @Suppress("ExposedMutableState")
+                    // Justification: necessary for legacy interop
+                    @Suppress("MissingResultWrapper")
                     class Good
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, ErrorHandlingDetector.MISSING_WRAPPER_ISSUE)
             .run()
             .expectClean()
     }

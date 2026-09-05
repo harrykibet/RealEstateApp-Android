@@ -6,6 +6,14 @@ import org.jetbrains.uast.*
 
 /**
  * Enforces LAW-033: "Suppression Policy Enforcement".
+ * 
+ * Rules:
+ * 1. Blind suppression using "all" is forbidden.
+ * 2. FATAL rules cannot be suppressed.
+ * 3. ERROR rules require a preceding "Justification:" comment.
+ * 
+ * This detector dynamically reads rule severity from the active registry 
+ * to ensure policy consistency without hardcoded drift.
  */
 class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
@@ -35,7 +43,6 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         
         addValue(value)
         
-        // Fallback for cases where UAST doesn't resolve 'value' easily in tests
         if (list.isEmpty()) {
             val src = node.asSourceString()
             "\"([^\"]+)\"".toRegex().findAll(src).forEach { list.add(it.groupValues[1]) }
@@ -45,18 +52,37 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun checkSuppressedIssues(context: JavaContext, node: UAnnotation, suppressed: List<String>) {
-        val fatalIssues = setOf("InfrastructureLeakage", "PackageBoundaryViolation", "FeatureCouplingViolation", "LayerViolation")
-        val errorIssues = setOf("ExposedMutableState", "MissingResultWrapper", "FailureSmuggling", "DangerousFallback")
-
+        val registry = context.driver.registry
         suppressed.forEach { id ->
             if (id == "all") {
                 context.report(ISSUE, node, context.getLocation(node), "Blind suppression using 'all' is forbidden in Estatia (LAW-033).")
-            } else if (fatalIssues.contains(id)) {
-                context.report(ISSUE, node, context.getLocation(node), "Architectural Law violation '$id' (FATAL) cannot be suppressed (LAW-033).")
-            } else if (errorIssues.contains(id)) {
-                if (!checkJustification(context, node)) {
-                    context.report(ISSUE, node, context.getLocation(node), "Suppression of ERROR-level rule '$id' requires a preceding justification comment (LAW-033).")
+                return@forEach
+            }
+
+            val issue = registry.getIssue(id) ?: return@forEach
+            
+            when (issue.defaultSeverity) {
+                Severity.FATAL -> {
+                    if (id != ISSUE.id) { // Prevent recursion on itself
+                        context.report(
+                            ISSUE, 
+                            node, 
+                            context.getLocation(node), 
+                            "Architectural Law violation '$id' (FATAL) cannot be suppressed (LAW-033)."
+                        )
+                    }
                 }
+                Severity.ERROR -> {
+                    if (!checkJustification(context, node)) {
+                        context.report(
+                            ISSUE, 
+                            node, 
+                            context.getLocation(node), 
+                            "Suppression of ERROR-level rule '$id' requires a preceding justification comment (LAW-033)."
+                        )
+                    }
+                }
+                else -> { /* WARNING and below allowed without justification */ }
             }
         }
     }
