@@ -20,17 +20,17 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
         val methodName = method.name
-        val className = method.containingClass?.qualifiedName ?: return
+        val evaluator = context.evaluator
 
         val isBlocking = when {
-            className == "java.lang.Thread" && methodName == "sleep" -> true
-            className.contains("BuildersKt") && methodName == "runBlocking" -> true
-            className == "java.util.concurrent.Future" && methodName == "get" -> true
-            className == "java.util.concurrent.CompletableFuture" && (methodName == "get" || methodName == "join") -> true
-            className.startsWith("java.io.InputStream") && methodName == "read" -> true
-            className.startsWith("java.io.OutputStream") && methodName == "write" -> true
-            className == "java.nio.file.Files" && (methodName.startsWith("read") || methodName.startsWith("write")) -> true
-            className == "java.net.URL" && methodName == "openStream" -> true
+            evaluator.isMemberInClass(method, "java.lang.Thread") && methodName == "sleep" -> true
+            methodName == "runBlocking" && isMemberInPackage(method, "kotlinx.coroutines") -> true
+            evaluator.inheritsFrom(method.containingClass, "java.util.concurrent.Future", false) && methodName == "get" -> true
+            evaluator.inheritsFrom(method.containingClass, "java.util.concurrent.CompletableFuture", false) && (methodName == "get" || methodName == "join") -> true
+            evaluator.inheritsFrom(method.containingClass, "java.io.InputStream", false) && methodName == "read" -> true
+            evaluator.inheritsFrom(method.containingClass, "java.io.OutputStream", false) && methodName == "write" -> true
+            evaluator.isMemberInClass(method, "java.nio.file.Files") && (methodName.startsWith("read") || methodName.startsWith("write")) -> true
+            evaluator.isMemberInClass(method, "java.net.URL") && methodName == "openStream" -> true
             else -> false
         }
 
@@ -38,7 +38,7 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
             val containingMethod = node.getParentOfType<UMethod>()
             val containingClass = node.getParentOfType<UClass>()
             
-            val isUIContext = isInsideUIContext(containingClass, containingMethod)
+            val isUIContext = isInsideUIContext(context, containingClass, containingMethod)
             val isSuspend = containingMethod?.let { context.evaluator.isSuspend(it) } ?: false
 
             if (isUIContext || isSuspend) {
@@ -58,17 +58,22 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isInsideUIContext(uClass: UClass?, uMethod: UMethod?): Boolean {
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
+    }
+
+    private fun isInsideUIContext(context: JavaContext, uClass: UClass?, uMethod: UMethod?): Boolean {
         if (uClass == null) return false
         
-        val className = uClass.qualifiedName ?: ""
-        val isLifecycleComponent = className.contains("ViewModel") || 
-                                   className.contains("Activity") || 
-                                   className.contains("Fragment")
+        val evaluator = context.evaluator
+        val isLifecycleComponent = evaluator.inheritsFrom(uClass, "androidx.lifecycle.ViewModel", false) || 
+                                   evaluator.inheritsFrom(uClass, "android.app.Activity", false) || 
+                                   evaluator.inheritsFrom(uClass, "androidx.fragment.app.Fragment", false)
         
-        val isComposable = uMethod?.javaPsi?.annotations?.any { 
-            it.qualifiedName?.contains("Composable") == true 
-        } == true
+        val isComposable = uMethod?.let { 
+            evaluator.getAnnotations(it.javaPsi, false).any { ann -> ann.qualifiedName == "androidx.compose.runtime.Composable" }
+        } ?: false
 
         return isLifecycleComponent || isComposable
     }

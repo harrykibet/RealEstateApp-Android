@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.lint.policy
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
+import com.estatia.realestate.apps.lint.Stubs
 import com.estatia.realestate.apps.lint.api.ErrorHandlingDetector
 import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
 import org.junit.Test
@@ -16,10 +17,13 @@ class SuppressionPolicyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    @Suppress("all")
+                    import android.annotation.SuppressLint
+                    @SuppressLint("all")
                     class Bad
                     """.trimIndent()
                 )
@@ -36,6 +40,8 @@ class SuppressionPolicyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -56,6 +62,8 @@ class SuppressionPolicyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -76,6 +84,8 @@ class SuppressionPolicyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

@@ -24,13 +24,12 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
             val containingClass = node.getParentOfType<UClass>() ?: return
-            if (!isSingleton(containingClass)) return
+            if (!isSingleton(context, containingClass)) return
 
-            val type = node.type.canonicalText
-            val typeStr = node.asRenderString()
+            val type = node.type
             
             unsafeCollections.forEach { (unsafe, safe) ->
-                if (type.contains(unsafe) || typeStr.contains(unsafe)) {
+                if (context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), unsafe, false)) {
                     context.report(
                         ISSUE,
                         node,
@@ -42,9 +41,9 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isSingleton(node: UClass): Boolean {
-        return node.annotations.any { it.qualifiedName?.contains("Singleton") == true } ||
-               node.asRenderString().contains("@Singleton")
+    private fun isSingleton(context: JavaContext, node: UClass): Boolean {
+        return context.evaluator.getAnnotations(node.javaPsi, false)
+            .any { it.qualifiedName?.contains("Singleton") == true }
     }
 
     companion object {

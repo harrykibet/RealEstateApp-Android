@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.lint.api
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class ErrorHandlingDetectorTest {
@@ -14,6 +15,10 @@ class ErrorHandlingDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.RESULT,
+                Stubs.FLOW,
+                Stubs.COLLECTIONS,
+                Stubs.ANDROID_LOG,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.data
@@ -35,6 +40,10 @@ class ErrorHandlingDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.RESULT,
+                Stubs.FLOW,
+                Stubs.COLLECTIONS,
+                Stubs.ANDROID_LOG,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -42,6 +51,7 @@ class ErrorHandlingDetectorTest {
                         fun doWork() {
                             try { work() } catch (e: Exception) { return emptyList() }
                         }
+                        fun work() {}
                     }
                     """.trimIndent()
                 )
@@ -58,13 +68,19 @@ class ErrorHandlingDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.RESULT,
+                Stubs.FLOW,
+                Stubs.COLLECTIONS,
+                Stubs.ANDROID_LOG,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
+                    import kotlin.collections.List
+                    import kotlin.collections.emptyList
                     class MyRepository { fun load(): List<String>? = null }
                     class Test(val repo: MyRepository) {
                         fun check() {
-                            val data = repo.load() ?: emptyList()
+                            val data: Any? = repo.load() ?: kotlin.collections.emptyList<String>()
                         }
                     }
                     """.trimIndent()

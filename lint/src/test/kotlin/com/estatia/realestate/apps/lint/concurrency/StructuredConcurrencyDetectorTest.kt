@@ -2,23 +2,10 @@ package com.estatia.realestate.apps.lint.concurrency
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class StructuredConcurrencyDetectorTest {
-
-    private val coroutineStubs = kotlin(
-        """
-        package kotlinx.coroutines
-        interface CoroutineScope
-        fun CoroutineScope.launch(block: suspend () -> Unit) {}
-        fun <T> CoroutineScope.async(block: suspend () -> T): Deferred<T> = TODO()
-        interface Deferred<out T> { suspend fun await(): T }
-        fun CoroutineExceptionHandler(handler: (Any, Throwable) -> Unit): CoroutineExceptionHandler = TODO()
-        interface CoroutineExceptionHandler
-        object Dispatchers { val IO: Any = TODO() }
-        suspend fun <T> withContext(context: Any, block: suspend () -> T): T = TODO()
-        """.trimIndent()
-    )
 
     @Test
     fun `suspend function launching on external scope reports fatal`() {
@@ -26,7 +13,7 @@ class StructuredConcurrencyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
-                coroutineStubs,
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.data
@@ -54,7 +41,7 @@ class StructuredConcurrencyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
-                coroutineStubs,
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.feature.home

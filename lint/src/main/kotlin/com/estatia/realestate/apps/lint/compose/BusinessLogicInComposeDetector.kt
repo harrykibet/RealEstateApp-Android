@@ -19,12 +19,20 @@ class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
         val containingMethod = node.getParentOfType<UMethod>()
-        val hasComposableAnnotation = containingMethod?.javaPsi?.annotations?.any { it.qualifiedName?.contains("Composable") == true } == true
+        val hasComposableAnnotation = containingMethod?.let { 
+            context.evaluator.getAnnotations(it.javaPsi, false).any { ann -> ann.qualifiedName == "androidx.compose.runtime.Composable" }
+        } ?: false
 
         if (hasComposableAnnotation) {
             val methodName = node.methodName ?: return
             
-            if (methodName == "collect" || methodName == "launch") {
+            val isForbidden = when (methodName) {
+                "launch" -> isMemberInPackage(method, "kotlinx.coroutines")
+                "collect" -> isMemberInPackage(method, "kotlinx.coroutines.flow")
+                else -> false
+            }
+
+            if (isForbidden) {
                 context.report(
                     ISSUE,
                     node,
@@ -33,6 +41,11 @@ class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
     companion object {

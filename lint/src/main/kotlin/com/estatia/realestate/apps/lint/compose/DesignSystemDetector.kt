@@ -18,16 +18,17 @@ class DesignSystemDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitImportStatement(node: UImportStatement) {
             val path = node.importReference?.asRenderString() ?: ""
-            if (path.contains("androidx.compose.material3") && (path.endsWith(".Text") || path.endsWith(".Button"))) {
+            if (path == "androidx.compose.material3.Text" || path == "androidx.compose.material3.Button") {
                 report(context, node, path.split(".").last())
             }
         }
 
         override fun visitCallExpression(node: UCallExpression) {
-            val name = node.methodName ?: ""
+            val method = node.resolve() ?: return
+            val name = method.name
             if (name == "Text" || name == "Button") {
-                val clazz = node.resolve()?.containingClass?.qualifiedName ?: ""
-                if (clazz.contains("androidx.compose.material3") || node.asRenderString().contains("androidx.compose.material3")) {
+                val qualifiedName = method.containingClass?.qualifiedName ?: ""
+                if (qualifiedName.startsWith("androidx.compose.material3.")) {
                     report(context, node, name)
                 }
             }

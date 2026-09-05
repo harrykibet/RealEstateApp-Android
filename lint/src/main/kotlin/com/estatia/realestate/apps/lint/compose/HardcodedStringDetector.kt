@@ -20,8 +20,9 @@ class HardcodedStringDetector : Detector(), SourceCodeScanner {
             val value = node.value as? String ?: return
             if (value.isBlank()) return
 
-            val containingMethod = node.getParentOfType<UMethod>()
-            val isComposable = containingMethod?.javaPsi?.annotations?.any { it.qualifiedName?.contains("Composable") == true } == true
+            val containingMethod = node.getParentOfType(UMethod::class.java) ?: return
+            val isComposable = context.evaluator.getAnnotations(containingMethod.javaPsi)
+                .any { it.qualifiedName?.endsWith("Composable") == true }
 
             if (isComposable) {
                 context.report(

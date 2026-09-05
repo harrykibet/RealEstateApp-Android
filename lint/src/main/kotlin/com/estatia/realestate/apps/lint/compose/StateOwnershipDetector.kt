@@ -27,19 +27,22 @@ class StateOwnershipDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitMethod(node: UMethod) {
-            val isComposable = node.javaPsi.annotations.any { it.qualifiedName?.contains("Composable") == true }
+            val isComposable = context.evaluator.getAnnotations(node.javaPsi, false)
+                .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
             if (!isComposable) return
 
             node.uastParameters.forEach { parameter ->
-                val type = parameter.type.canonicalText
-                val shortName = type.split("<").first()
+                val type = parameter.type
+                val isMutable = mutableContainers.any { containerFqn ->
+                    context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), containerFqn, false)
+                }
 
-                if (mutableContainers.contains(shortName)) {
+                if (isMutable) {
                     context.report(
                         ISSUE,
                         parameter as UElement,
                         context.getLocation(parameter as UElement),
-                        "Composable parameter '${parameter.name}' is a mutable container ('$shortName'). " +
+                        "Composable parameter '${parameter.name}' is a mutable container. " +
                                 "Pass a read-only State or a simple data class and use lambda callbacks for events (UDF)."
                     )
                 }

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.concurrency
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class CoroutineCancellationDetectorTest {
@@ -12,6 +13,7 @@ class CoroutineCancellationDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -36,13 +38,15 @@ class CoroutineCancellationDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    import kotlinx.coroutines.isActive
+                    import kotlinx.coroutines.*
                     class Test {
                         suspend fun loop() {
                             while(isActive) {
+                                yield()
                                 // work
                             }
                         }

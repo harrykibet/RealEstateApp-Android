@@ -7,8 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
-import com.intellij.psi.PsiField
-import com.intellij.psi.PsiModifier
+import com.intellij.psi.*
 
 /**
  * Enforces LAW-025 and LAW-027: Semantic architecture rules for Compose.
@@ -24,15 +23,17 @@ class ComposeArchitectureDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         
         override fun visitCallExpression(node: UCallExpression) {
-            if (!isInsideComposable(node)) return
+            if (!isInsideComposable(context, node)) return
             
             val method = node.resolve() ?: return
             val containingClass = method.containingClass?.qualifiedName ?: ""
             
             // 1. Detect Direct Architecture Leakage (LAW-027)
-            if (containingClass.contains("Repository") || 
-                containingClass.contains("Service") || 
-                containingClass.contains("UseCase")) {
+            // Use Evaluator to check for typical architecture component suffixes if we don't have a base class
+            // or better, check if it's in a specific package.
+            if (containingClass.endsWith("Repository") || 
+                containingClass.endsWith("Service") || 
+                containingClass.endsWith("UseCase")) {
                 
                 context.report(
                     ARCHITECTURE_LEAKAGE_ISSUE,
@@ -45,23 +46,28 @@ class ComposeArchitectureDetector : Detector(), SourceCodeScanner {
         }
 
         override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
-            if (!isInsideComposable(node)) return
+            if (!isInsideComposable(context, node)) return
 
             val resolved = node.resolve()
-            if (resolved is PsiField && !resolved.hasModifierProperty(PsiModifier.FINAL)) {
-                val containingClass = resolved.containingClass ?: return
-                
-                // 2. Detect Mutable Singleton Reads (LAW-025)
-                // We target members of 'object' declarations (which are static in bytecode)
-                val isEstatiaComponent = containingClass.qualifiedName?.contains("com.estatia") == true
-                val isStatic = resolved.hasModifierProperty(PsiModifier.STATIC)
+            val containingClass = (resolved as? PsiMember)?.containingClass ?: return
+            val isEstatiaComponent = containingClass.qualifiedName?.startsWith("com.estatia") == true
+            if (!isEstatiaComponent) return
 
-                if (isEstatiaComponent && isStatic) {
+            val modifierOwner = resolved as? PsiModifierListOwner ?: return
+            val isFinal = modifierOwner.hasModifierProperty(PsiModifier.FINAL)
+            
+            // In Kotlin, a 'var' in an object appears as a non-final field or a getter/setter
+            if (!isFinal) {
+                val isStatic = modifierOwner.hasModifierProperty(PsiModifier.STATIC)
+                // Also check if the containing class itself is an 'object' (Singleton)
+                val isObject = containingClass.fields.any { it.name == "INSTANCE" }
+
+                if (isStatic || isObject) {
                     context.report(
                         MUTABLE_SINGLETON_READ_ISSUE,
                         node,
                         context.getLocation(node),
-                        "Reading mutable singleton state '${resolved.name}' inside Composable. " +
+                        "Reading mutable singleton state '${(resolved as? PsiNamedElement)?.name}' inside Composable. " +
                                 "Compose cannot observe changes to plain 'var' properties. Use StateFlow or MutableState (LAW-025)."
                     )
                 }
@@ -69,9 +75,10 @@ class ComposeArchitectureDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isInsideComposable(node: UElement): Boolean {
-        val method = node.getParentOfType<UMethod>() ?: return false
-        return method.javaPsi.annotations.any { it.qualifiedName?.contains("Composable") == true }
+    private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
+        val method = node.getParentOfType<UMethod>()?.javaPsi ?: return false
+        return context.evaluator.getAnnotations(method, false)
+            .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
     }
 
     companion object {

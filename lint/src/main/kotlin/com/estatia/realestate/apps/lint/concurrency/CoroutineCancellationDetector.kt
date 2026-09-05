@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * Ensures that long-running coroutine loops check for cancellation using [yield()] or [isActive].
@@ -31,12 +32,23 @@ class CoroutineCancellationDetector : Detector(), SourceCodeScanner {
             val method = node.getParentOfType<UMethod>() ?: return
             if (!context.evaluator.isSuspend(method)) return
 
-            val body = node.body
-            val bodyString = body.asRenderString()
-            
-            val hasCancellationCheck = bodyString.contains("yield()") || 
-                                      bodyString.contains("isActive") ||
-                                      bodyString.contains("ensureActive()")
+            var hasCancellationCheck = false
+            node.body.accept(object : AbstractUastVisitor() {
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    val name = node.methodName
+                    if (name == "yield" || name == "ensureActive") {
+                        hasCancellationCheck = true
+                    }
+                    return super.visitCallExpression(node)
+                }
+
+                override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression): Boolean {
+                    if (node.identifier == "isActive") {
+                        hasCancellationCheck = true
+                    }
+                    return super.visitSimpleNameReferenceExpression(node)
+                }
+            })
 
             if (!hasCancellationCheck) {
                 context.report(

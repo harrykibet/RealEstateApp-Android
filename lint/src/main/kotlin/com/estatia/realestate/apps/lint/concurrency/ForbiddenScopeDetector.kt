@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
-import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.*
 
 /**
  * Prevents arbitrary creation of CoroutineScopes in production logic (LAW-005).
@@ -17,22 +17,31 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
         val methodName = node.methodName ?: return
-        val receiver = node.receiver?.asRenderString() ?: ""
         
-        if (receiver == "GlobalScope" || node.asRenderString().contains("GlobalScope")) {
-            context.report(
-                FORBIDDEN_SCOPE_ISSUE,
-                node,
-                context.getLocation(node),
-                "Usage of 'GlobalScope' is forbidden (LAW-005)."
-            )
-            return
+        // Check for GlobalScope
+        val receiver = node.receiver
+        if (receiver != null) {
+            val receiverType = receiver.getExpressionType()
+            val receiverClass = context.evaluator.getTypeClass(receiverType)
+            if (receiverClass?.qualifiedName == "kotlinx.coroutines.GlobalScope") {
+                context.report(
+                    FORBIDDEN_SCOPE_ISSUE,
+                    node,
+                    context.getLocation(node),
+                    "Usage of 'GlobalScope' is forbidden (LAW-005)."
+                )
+                return
+            }
         }
 
         if (methodName == "CoroutineScope" || methodName == "MainScope") {
-            val path = context.file.path.replace("\\", "/")
-            val isAllowed = path.contains("/di/") || path.contains("Module") || 
-                           path.contains("/test/") || path.contains("Initializer")
+            val containingClass = node.getParentOfType(UClass::class.java)
+            val isAllowed = containingClass?.let { 
+                context.evaluator.inheritsFrom(it, "dagger.Module", false) 
+            } ?: false ||
+            context.file.path.contains("/test/") || 
+            context.file.path.contains("/androidTest/") ||
+            context.file.path.contains("Initializer")
 
             if (!isAllowed) {
                 context.report(

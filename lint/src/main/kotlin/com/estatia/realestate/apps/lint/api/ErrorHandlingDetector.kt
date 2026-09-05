@@ -6,7 +6,9 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.intellij.psi.PsiType
 import org.jetbrains.uast.*
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * Enforces LAW-009: "Production functions do not silently discard failures."
@@ -14,22 +16,19 @@ import org.jetbrains.uast.*
 class ErrorHandlingDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = 
-        listOf(UMethod::class.java, UCatchClause::class.java, UBinaryExpression::class.java)
+        listOf(UMethod::class.java, UCatchClause::class.java, UBinaryExpression::class.java, UIfExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         
         override fun visitMethod(node: UMethod) {
-            val text = node.asRenderString()
-            if (text.contains("Repository") || text.contains("Service")) {
-                if (node.isConstructor) return
-                
-                val returnType = node.returnType?.canonicalText ?: ""
-                val isWrapped = returnType.contains("Result") || 
-                               returnType.contains("Flow") || 
-                               returnType == "void" || returnType == "Unit" ||
-                               text.contains("Result") || text.contains("Flow")
-
-                if (!isWrapped) {
+            if (node.isConstructor || !context.evaluator.isPublic(node)) return
+            
+            val containingClass = node.containingClass ?: return
+            val className = containingClass.name ?: ""
+            
+            if (className.endsWith("Repository") || className.endsWith("Service")) {
+                val returnType = node.returnType ?: return
+                if (!isWrapped(returnType, context)) {
                     context.report(
                         MISSING_WRAPPER_ISSUE,
                         node,
@@ -41,33 +40,110 @@ class ErrorHandlingDetector : Detector(), SourceCodeScanner {
         }
 
         override fun visitCatchClause(node: UCatchClause) {
-            val body = node.body.asRenderString()
-            val smuggledValues = listOf("null", "emptyList", "emptyMap", "emptySet", "\"\"", "default")
-            
-            if (smuggledValues.any { body.contains(it) } && !body.contains("Log.") && !body.contains("Timber.")) {
-                context.report(
-                    FAILURE_SMUGGLING_ISSUE,
-                    node,
-                    context.getLocation(node as UElement),
-                    "Potential 'failure smuggling' detected in catch block (LAW-009)."
-                )
-            }
+            val visitor = smuggledValueVisitor(context, node)
+            node.body.accept(visitor)
         }
 
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            val text = node.asRenderString()
-            if (text.contains("?:")) {
-                val dangerous = setOf("emptyList()", "emptyMap()", "0", "\"\"", "false", "null")
-                if (dangerous.any { text.contains(it) }) {
-                    context.report(
-                        DANGEROUS_FALLBACK_ISSUE,
-                        node,
-                        context.getLocation(node as UElement),
-                        "Dangerous fallback detected (LAW-009)."
-                    )
+            if (node.operator.text == "?:" || node.asRenderString().contains("?:")) {
+                checkFallback(node.rightOperand, node)
+            }
+        }
+
+        override fun visitIfExpression(node: UIfExpression) {
+            // Some Kotlin versions represent Elvis as an If expression
+            val source = node.asRenderString()
+            if (source.contains("?:")) {
+                val elseExpr = node.elseExpression
+                if (elseExpr != null) {
+                    checkFallback(elseExpr, node)
                 }
             }
         }
+
+        private fun checkFallback(expression: UExpression, node: UElement) {
+            if (isDangerousFallback(expression)) {
+                context.report(
+                    DANGEROUS_FALLBACK_ISSUE,
+                    node,
+                    context.getLocation(node),
+                    "Dangerous fallback detected (LAW-009)."
+                )
+            }
+        }
+    }
+
+    private fun isWrapped(type: PsiType, context: JavaContext): Boolean {
+        val canonical = type.canonicalText
+        if (canonical == "unit" || canonical == "void" || canonical == "java.lang.Void") return true
+        
+        val psiClass = context.evaluator.getTypeClass(type) ?: return false
+        val qualifiedName = psiClass.qualifiedName ?: ""
+        
+        return qualifiedName.endsWith("Result") || 
+               qualifiedName.endsWith("Flow") || 
+               context.evaluator.inheritsFrom(psiClass, "kotlinx.coroutines.flow.Flow", false)
+    }
+
+    private fun smuggledValueVisitor(context: JavaContext, catchClause: UCatchClause) = object : AbstractUastVisitor() {
+        override fun visitReturnExpression(node: UReturnExpression): Boolean {
+            val jumpValue = node.returnExpression
+            if (isSmuggledValue(jumpValue)) {
+                if (!hasLogged(catchClause)) {
+                    context.report(
+                        FAILURE_SMUGGLING_ISSUE,
+                        node,
+                        context.getLocation(node as UElement),
+                        "Potential 'failure smuggling' detected in catch block (LAW-009)."
+                    )
+                }
+            }
+            return super.visitReturnExpression(node)
+        }
+
+        private fun isSmuggledValue(expression: UExpression?): Boolean {
+            if (expression == null) return false
+            if (expression is ULiteralExpression) {
+                val value = expression.value
+                return value == null || value == "" || value == 0 || value == false
+            }
+            
+            if (expression is UCallExpression) {
+                val name = expression.methodName
+                return name == "emptyList" || name == "emptyMap" || name == "emptySet"
+            }
+            return false
+        }
+
+        private fun hasLogged(catchClause: UCatchClause): Boolean {
+            var logged = false
+            catchClause.body.accept(object : AbstractUastVisitor() {
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    val resolved = node.resolve()
+                    val clazz = resolved?.containingClass?.qualifiedName ?: ""
+                    if (clazz.contains("Log") || clazz.contains("Timber")) {
+                        logged = true
+                    }
+                    return super.visitCallExpression(node)
+                }
+            })
+            return logged
+        }
+    }
+
+    private fun isDangerousFallback(expression: UExpression): Boolean {
+        if (expression is ULiteralExpression) {
+            val value = expression.value
+            return value == null || value == "" || value == 0 || value == false
+        }
+        if (expression is UCallExpression) {
+            val name = expression.methodName
+            return name == "emptyList" || name == "emptyMap" || name == "emptySet"
+        }
+        if (expression is UQualifiedReferenceExpression) {
+            return isDangerousFallback(expression.selector)
+        }
+        return false
     }
 
     companion object {

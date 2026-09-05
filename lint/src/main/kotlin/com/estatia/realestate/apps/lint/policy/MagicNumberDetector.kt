@@ -2,9 +2,8 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.ULiteralExpression
-import org.jetbrains.uast.UVariable
+import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.uast.*
 
 /**
  * Detects usage of "Magic Numbers" in business logic.
@@ -22,7 +21,16 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             if (value is Number) {
                 if (!allowedNumbers.contains(value.toInt())) {
                     val parent = node.uastParent
-                    if (parent !is UVariable) { // Allow initialization of constants
+                    // Check if it's an assignment to a constant
+                    val isConstant = when (parent) {
+                        is UVariable -> {
+                            val psi = parent.javaPsi as? PsiModifierListOwner
+                            context.evaluator.isStatic(psi) || context.evaluator.isFinal(psi)
+                        }
+                        else -> false
+                    }
+                    
+                    if (!isConstant) {
                         context.report(
                             ISSUE,
                             node,

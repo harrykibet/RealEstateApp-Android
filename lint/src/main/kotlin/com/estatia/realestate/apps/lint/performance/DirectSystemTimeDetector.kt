@@ -20,13 +20,12 @@ class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
     override fun getApplicableConstructorTypes() = listOf("java.util.Date")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val className = method.containingClass?.qualifiedName ?: return
+        val evaluator = context.evaluator
         
-        val isForbidden = when (className) {
-            "java.lang.System" -> method.name == "currentTimeMillis" || method.name == "nanoTime"
-            "java.time.Instant" -> method.name == "now"
-            "kotlinx.datetime.Clock.System" -> method.name == "now"
-            "kotlinx.datetime.Clock" -> method.name == "now" // For Clock.System.now()
+        val isForbidden = when {
+            evaluator.isMemberInClass(method, "java.lang.System") && (method.name == "currentTimeMillis" || method.name == "nanoTime") -> true
+            evaluator.isMemberInClass(method, "java.time.Instant") && method.name == "now" -> true
+            isMemberInPackage(method, "kotlinx.datetime") && method.name == "now" -> true
             else -> false
         }
 
@@ -36,9 +35,14 @@ class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
     }
 
     override fun visitConstructor(context: JavaContext, node: UCallExpression, constructor: PsiMethod) {
-        if (constructor.containingClass?.qualifiedName == "java.util.Date") {
+        if (context.evaluator.isMemberInClass(constructor, "java.util.Date")) {
             reportIssue(context, node)
         }
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
     private fun reportIssue(context: JavaContext, node: UCallExpression) {

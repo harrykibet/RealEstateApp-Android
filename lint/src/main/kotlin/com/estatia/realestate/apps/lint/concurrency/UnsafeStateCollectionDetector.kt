@@ -18,14 +18,23 @@ class UnsafeStateCollectionDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
-            val type = node.type.canonicalText
-            if ((type.contains("List") || type.contains("Map")) && type.contains("MutableStateFlow")) {
-                context.report(
-                    ISSUE,
-                    node,
-                    context.getLocation(node),
-                    "State containers inside collections detected. Use 'mutableStateListOf()' or a dedicated State holder instead."
-                )
+            val type = node.type
+            val typeClass = context.evaluator.getTypeClass(type) ?: return
+            
+            val isCollection = context.evaluator.inheritsFrom(typeClass, "java.util.Collection", false) ||
+                               context.evaluator.inheritsFrom(typeClass, "java.util.Map", false)
+            
+            if (isCollection) {
+                // Check generic arguments for MutableStateFlow
+                val typeString = type.canonicalText
+                if (typeString.contains("MutableStateFlow") || typeString.contains("MutableState")) {
+                     context.report(
+                        ISSUE,
+                        node,
+                        context.getLocation(node),
+                        "State containers inside collections detected. Use 'mutableStateListOf()' or a dedicated State holder instead."
+                    )
+                }
             }
         }
     }

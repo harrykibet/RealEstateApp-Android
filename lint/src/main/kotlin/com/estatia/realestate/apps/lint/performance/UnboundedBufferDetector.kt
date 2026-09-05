@@ -16,7 +16,7 @@ class UnboundedBufferDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("buffer", "cache", "MutableSharedFlow")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        if (node.methodName == "MutableSharedFlow") {
+        if (node.methodName == "MutableSharedFlow" && isMemberInPackage(method, "kotlinx.coroutines.flow")) {
             val replayArg = node.valueArguments.firstOrNull()?.asRenderString() ?: "0"
             if (replayArg.toIntOrNull() ?: 0 > 100) {
                 context.report(
@@ -28,7 +28,7 @@ class UnboundedBufferDetector : Detector(), SourceCodeScanner {
             }
         }
         
-        if (node.methodName == "buffer") {
+        if (node.methodName == "buffer" && isMemberInPackage(method, "kotlinx.coroutines.flow")) {
             if (node.valueArguments.isEmpty()) {
                 context.report(
                     ISSUE,
@@ -38,6 +38,11 @@ class UnboundedBufferDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
     companion object {

@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.concurrency
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class ChaosSynchronizationDetectorTest {
@@ -11,6 +12,7 @@ class ChaosSynchronizationDetectorTest {
         lint()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.testing.chaos.network
@@ -38,6 +40,7 @@ class ChaosSynchronizationDetectorTest {
         lint()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.testing.chaos.network

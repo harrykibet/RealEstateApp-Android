@@ -20,13 +20,21 @@ class LifecycleLeakDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
             val containingClass = node.getParentOfType<UClass>() ?: return
-            val className = containingClass.name ?: ""
-            val isLongLived = className.endsWith("ViewModel") || className.endsWith("Repository") || className.endsWith("Service") ||
-                             containingClass.annotations.any { it.qualifiedName?.contains("Singleton") == true }
+            
+            val isLongLived = context.evaluator.inheritsFrom(containingClass, "androidx.lifecycle.ViewModel", false) ||
+                             context.evaluator.inheritsFrom(containingClass, "android.app.Service", false) ||
+                             containingClass.name?.endsWith("Repository") == true ||
+                             context.evaluator.getAnnotations(containingClass.javaPsi, false).any { it.qualifiedName?.contains("Singleton") == true }
 
             if (isLongLived) {
-                val type = node.type.canonicalText
-                if (lifecycleTypes.any { type.contains(it) } || node.asRenderString().contains("Activity")) {
+                val type = node.type
+                val typeClass = context.evaluator.getTypeClass(type)
+                
+                val isLifecycleType = lifecycleTypes.any { lifecycleType ->
+                    context.evaluator.inheritsFrom(typeClass, lifecycleType, false)
+                }
+
+                if (isLifecycleType) {
                     context.report(
                         LEAK_ISSUE,
                         node,
@@ -38,9 +46,13 @@ class LifecycleLeakDetector : Detector(), SourceCodeScanner {
         }
         
         override fun visitClass(node: UClass) {
-            if (node.annotations.any { it.qualifiedName?.contains("Singleton") == true } || node.asRenderString().contains("@Singleton")) {
+            val isSingleton = context.evaluator.getAnnotations(node.javaPsi, false)
+                .any { it.qualifiedName?.contains("Singleton") == true }
+            
+            if (isSingleton) {
                 node.fields.forEach { field ->
-                    if (field.type.canonicalText.contains("Context") || field.asRenderString().contains("Context")) {
+                    val typeClass = context.evaluator.getTypeClass(field.type)
+                    if (context.evaluator.inheritsFrom(typeClass, "android.content.Context", false)) {
                         context.report(
                             LEAK_ISSUE,
                             field,

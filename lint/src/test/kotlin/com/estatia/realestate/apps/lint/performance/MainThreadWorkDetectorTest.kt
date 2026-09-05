@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.performance
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class MainThreadWorkDetectorTest {
@@ -12,10 +13,13 @@ class MainThreadWorkDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.VIEWMODEL,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class HomeViewModel {
+                    import androidx.lifecycle.ViewModel
+                    class HomeViewModel : ViewModel() {
                         fun wait() {
                             Thread.sleep(1000)
                         }
@@ -34,6 +38,7 @@ class MainThreadWorkDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

@@ -16,8 +16,7 @@ class MockInProductionDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("mockk", "mock", "spy", "every", "verify")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val path = context.file.path.replace("\\", "/")
-        if (path.contains("/src/test/") || path.contains("/src/androidTest/")) return
+        if (context.isTestSource) return
 
         val className = method.containingClass?.qualifiedName ?: ""
         if (className.startsWith("io.mockk") || className.startsWith("org.mockito")) {

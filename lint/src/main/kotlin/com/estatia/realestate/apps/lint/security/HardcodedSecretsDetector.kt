@@ -27,6 +27,8 @@ class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
                 if (initializer is ULiteralExpression && initializer.isString) {
                     val value = initializer.value as? String ?: ""
                     if (value.isNotBlank() && value.length > 5) {
+                        // Check if it's a constant that's being initialized with a literal
+                        // (which is usually what we want to catch if it's a secret)
                         context.report(
                             ISSUE,
                             node,

@@ -1,38 +1,44 @@
 package com.estatia.realestate.apps.lint.concurrency
 
+import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiField
-import org.jetbrains.uast.UReferenceExpression
+import org.jetbrains.uast.*
 
 /**
  * Prevents hardcoding [Dispatchers.IO], [Dispatchers.Main], or [Dispatchers.Default] (LAW-006).
  */
 class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
 
-    override fun getApplicableReferenceNames() = listOf("IO", "Main", "Default", "Unconfined")
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(USimpleNameReferenceExpression::class.java)
 
-    override fun visitReference(context: JavaContext, reference: UReferenceExpression, referenced: PsiElement) {
-        val name = reference.asRenderString()
-        val isDispatcher = (referenced is PsiField && referenced.containingClass?.qualifiedName == "kotlinx.coroutines.Dispatchers") ||
-                          name.contains("Dispatchers.")
+    override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
+        override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
+            val name = node.identifier
+            if (name == "IO" || name == "Main" || name == "Default" || name == "Unconfined") {
+                val resolved = node.resolve()
+                val isDispatcher = (resolved is PsiField &&
+                                   resolved.containingClass?.qualifiedName == "kotlinx.coroutines.Dispatchers") ||
+                                   node.asRenderString().contains("Dispatchers.")
 
-        if (isDispatcher) {
-            val path = context.file.path.replace("\\", "/")
-            val isAllowed = path.contains("/di/") || path.contains("DispatchersModule") ||
-                           path.contains("/src/test/") || path.contains("/src/androidTest/")
+                if (isDispatcher) {
+                    val path = context.file.path.replace("\\", "/")
+                    val isAllowed = path.contains("/di/") || path.contains("Module") ||
+                                   path.contains("/test/") || path.contains("/androidTest/")
 
-            if (!isAllowed) {
-                context.report(
-                    ISSUE,
-                    reference,
-                    context.getLocation(reference),
-                    "Hardcoded Dispatcher '$name' is forbidden (LAW-006)."
-                )
+                    if (!isAllowed) {
+                        context.report(
+                            ISSUE,
+                            node,
+                            context.getLocation(node),
+                            "Hardcoded Dispatcher '$name' is forbidden (LAW-006)."
+                        )
+                    }
+                }
             }
         }
     }

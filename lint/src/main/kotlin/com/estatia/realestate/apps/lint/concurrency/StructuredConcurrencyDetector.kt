@@ -20,6 +20,8 @@ class StructuredConcurrencyDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("launch", "async", "withContext")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
+        if (!isMemberInPackage(method, "kotlinx.coroutines")) return
+        
         val methodName = method.name
         
         when (methodName) {
@@ -31,15 +33,21 @@ class StructuredConcurrencyDetector : Detector(), SourceCodeScanner {
         }
     }
 
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
+    }
+
     /**
      * LAW-018: Suspend functions must not secretly launch independent work.
      */
     private fun checkSecretConcurrency(context: JavaContext, node: UCallExpression) {
         val containingMethod = node.getParentOfType<UMethod>() ?: return
         if (context.evaluator.isSuspend(containingMethod)) {
-            val receiver = node.receiver
-            if (receiver != null) {
-                context.report(
+            // Check if launch/async has a receiver that is a CoroutineScope
+            val receiverType = node.receiverType
+            if (receiverType != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(receiverType), "kotlinx.coroutines.CoroutineScope", false)) {
+                 context.report(
                     SECRET_CONCURRENCY_ISSUE,
                     node,
                     context.getLocation(node),
@@ -80,8 +88,9 @@ class StructuredConcurrencyDetector : Detector(), SourceCodeScanner {
     private fun checkMisplacedExceptionHandler(context: JavaContext, node: UCallExpression) {
         val arguments = node.valueArguments
         if (arguments.isNotEmpty()) {
-            val contextArg = arguments[0].asRenderString()
-            if (contextArg.contains("CoroutineExceptionHandler")) {
+            val contextArg = arguments[0]
+            val type = contextArg.getExpressionType()
+            if (type != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), "kotlinx.coroutines.CoroutineExceptionHandler", false)) {
                 context.report(
                     MISPLACED_HANDLER_ISSUE,
                     node,

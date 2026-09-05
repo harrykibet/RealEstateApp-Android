@@ -17,11 +17,12 @@ class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitClass(node: UClass) {
-            val className = node.name ?: return
-            val qualifiedName = node.qualifiedName ?: ""
+            val name = node.name ?: return
             
-            val isChaosController = className.contains("Chaos") || qualifiedName.contains(".chaos.")
-            if (!isChaosController) return
+            val isChaosComponent = name.endsWith("ChaosController") || 
+                    context.evaluator.inheritsFrom(node, "com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract", false)
+            
+            if (!isChaosComponent) return
 
             node.fields.forEach { field ->
                 if (!field.isFinal) {

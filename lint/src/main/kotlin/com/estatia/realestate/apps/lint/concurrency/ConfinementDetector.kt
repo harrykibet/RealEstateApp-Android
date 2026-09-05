@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * Ensures critical infrastructure classes implement thread-confinement checks.
@@ -20,7 +21,7 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
             val qualifiedName = node.qualifiedName ?: return
             val isCritical = qualifiedName.contains(".player_engine") || qualifiedName.contains(".security")
 
-            if (isCritical && !node.isInterface && hasSingletonAnnotation(node)) {
+            if (isCritical && !node.isInterface && hasSingletonAnnotation(context, node)) {
                 node.methods.forEach { method ->
                     if (context.evaluator.isPublic(method) && !method.isConstructor) {
                         checkConfinement(context, method)
@@ -30,14 +31,25 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun hasSingletonAnnotation(node: UClass) = node.annotations.any { 
-        it.qualifiedName?.contains("Singleton") == true 
-    }
+    private fun hasSingletonAnnotation(context: JavaContext, node: UClass) = 
+        context.evaluator.getAnnotations(node.javaPsi, false)
+            .any { it.qualifiedName?.contains("Singleton") == true }
 
     private fun checkConfinement(context: JavaContext, method: UMethod) {
         val body = method.uastBody ?: return
-        val render = body.asRenderString()
-        if (!render.contains("checkConfinement") && !render.contains("assertMainThread")) {
+        
+        var foundCheck = false
+        body.accept(object : AbstractUastVisitor() {
+            override fun visitCallExpression(node: UCallExpression): Boolean {
+                val name = node.methodName
+                if (name == "checkConfinement" || name == "assertMainThread") {
+                    foundCheck = true
+                }
+                return super.visitCallExpression(node)
+            }
+        })
+
+        if (!foundCheck) {
             context.report(
                 ISSUE,
                 method,

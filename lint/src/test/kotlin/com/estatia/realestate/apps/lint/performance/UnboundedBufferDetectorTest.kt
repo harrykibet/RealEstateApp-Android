@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.performance
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class UnboundedBufferDetectorTest {
@@ -12,6 +13,8 @@ class UnboundedBufferDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.FLOW,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -35,6 +38,8 @@ class UnboundedBufferDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.FLOW,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

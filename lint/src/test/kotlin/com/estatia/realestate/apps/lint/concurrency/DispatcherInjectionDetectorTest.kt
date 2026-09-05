@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.concurrency
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class DispatcherInjectionDetectorTest {
@@ -12,6 +13,8 @@ class DispatcherInjectionDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.DAGGER,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -35,6 +38,8 @@ class DispatcherInjectionDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COROUTINES,
+                Stubs.DAGGER,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

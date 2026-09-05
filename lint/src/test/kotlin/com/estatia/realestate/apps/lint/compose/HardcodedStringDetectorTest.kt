@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.compose
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class HardcodedStringDetectorTest {
@@ -12,6 +13,7 @@ class HardcodedStringDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COMPOSE,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -35,6 +37,7 @@ class HardcodedStringDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COMPOSE,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

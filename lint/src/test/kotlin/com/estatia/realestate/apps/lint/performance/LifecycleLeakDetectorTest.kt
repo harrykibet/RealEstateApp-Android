@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.performance
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class LifecycleLeakDetectorTest {
@@ -12,6 +13,8 @@ class LifecycleLeakDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.ANDROID_APP,
+                Stubs.VIEWMODEL,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -33,11 +36,15 @@ class LifecycleLeakDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.ANDROID_CONTENT,
+                Stubs.DAGGER_HILT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import android.content.Context
+                    import javax.inject.Singleton
                     
+                    @Singleton
                     object Analytics {
                         var context: Context? = null
                     }

@@ -19,34 +19,43 @@ class VisibilityModifierDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitClass(node: UClass) {
-            val source = node.sourcePsi?.text ?: ""
-            if (!hasVisibilityModifier(source) && !node.isInterface && node.name != null) {
-                val element = node as UElement
-                context.report(
-                    ISSUE,
-                    element,
-                    context.getLocation(element),
-                    "Explicit visibility modifier (public, internal, private) is required for class '${node.name}' (LAW-008)."
-                )
+            if (node.isInterface || node.name == null) return
+            
+            if (node.sourcePsi?.language?.id == "kotlin") {
+                if (!hasExplicitVisibility(node)) {
+                    context.report(
+                        ISSUE,
+                        node,
+                        context.getLocation(node as UElement),
+                        "Explicit visibility modifier (public, internal, private) is required for class '${node.name}' (LAW-008)."
+                    )
+                }
             }
         }
 
         override fun visitMethod(node: UMethod) {
             if (node.isConstructor || node.containingClass?.isInterface == true) return
             
-            val source = node.sourcePsi?.text ?: ""
             if (node.sourcePsi?.language?.id == "kotlin") {
-                if (!hasVisibilityModifier(source)) {
-                    val element = node as UElement
+                if (!hasExplicitVisibility(node)) {
                     context.report(
                         ISSUE,
-                        element,
-                        context.getLocation(element),
+                        node,
+                        context.getLocation(node as UElement),
                         "Explicit visibility modifier is required for method '${node.name}'."
                     )
                 }
             }
         }
+    }
+
+    private fun hasExplicitVisibility(element: UElement): Boolean {
+        val source = element.sourcePsi?.text ?: return true
+        val header = source.substringBefore("{").substringBefore("=")
+        return header.contains("public ") || header.contains("private ") || 
+               header.contains("internal ") || header.contains("protected ") ||
+               header.trim().startsWith("public ") || header.trim().startsWith("private ") ||
+               header.trim().startsWith("internal ") || header.trim().startsWith("protected ")
     }
 
     private fun hasVisibilityModifier(source: String): Boolean {

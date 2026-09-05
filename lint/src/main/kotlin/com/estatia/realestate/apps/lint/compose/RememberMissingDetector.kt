@@ -6,9 +6,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
-import org.jetbrains.uast.UCallExpression
-import org.jetbrains.uast.UMethod
-import org.jetbrains.uast.getParentOfType
+import org.jetbrains.uast.*
 
 /**
  * Ensures that state-holding objects (like MutableState) are wrapped in 'remember' 
@@ -19,12 +17,27 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("mutableStateOf", "mutableStateListOf", "mutableStateMapOf")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
+        if (!isMemberInPackage(method, "androidx.compose.runtime")) return
+        
         val containingMethod = node.getParentOfType<UMethod>()
-        val isComposable = containingMethod?.javaPsi?.annotations?.any { it.qualifiedName?.contains("Composable") == true } == true
+        val isComposable = containingMethod?.let { 
+            context.evaluator.getAnnotations(it.javaPsi, false).any { ann -> ann.qualifiedName == "androidx.compose.runtime.Composable" }
+        } ?: false
 
         if (isComposable) {
-            val parentCall = node.uastParent as? UCallExpression
-            val isRemembered = parentCall?.methodName?.startsWith("remember") == true
+            var isRemembered = false
+            var current: UElement? = node.uastParent
+            while (current != null && current !is UMethod) {
+                if (current is UCallExpression) {
+                    val resolvedMethod = current.resolve()
+                    if (resolvedMethod != null && isMemberInPackage(resolvedMethod, "androidx.compose.runtime") &&
+                        resolvedMethod.name.startsWith("remember")) {
+                        isRemembered = true
+                        break
+                    }
+                }
+                current = current.uastParent
+            }
 
             if (!isRemembered) {
                 context.report(
@@ -35,6 +48,11 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.")
     }
 
     companion object {
