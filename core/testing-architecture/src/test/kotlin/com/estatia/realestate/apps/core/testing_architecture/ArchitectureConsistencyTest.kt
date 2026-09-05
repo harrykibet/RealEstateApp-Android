@@ -2,9 +2,6 @@ package com.estatia.realestate.apps.core.testing_architecture
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.KoModifier
-import com.lemonappdev.konsist.api.ext.list.classes
-import com.lemonappdev.konsist.api.ext.list.functions
-import com.lemonappdev.konsist.api.ext.list.properties
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.Test
 
