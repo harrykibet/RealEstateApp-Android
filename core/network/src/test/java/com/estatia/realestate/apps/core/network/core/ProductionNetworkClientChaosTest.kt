@@ -1,6 +1,6 @@
-/*
 package com.estatia.realestate.apps.core.network.core
 
+/*
 // This test has been moved to src/testProd to avoid compilation errors in the demo variant.
 // ProductionNetworkClient only exists in the prod source set.
 

@@ -44,9 +44,13 @@ extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("mod
     // 1. Core modules must never depend on Features (No upward dependencies)
     // 2. Features must never depend on each other (No feature coupling)
     //    Exception: :feature:shared-ui is currently a shared provider (Tech Debt)
+    // 3. Infrastructure Isolation (LAW-003):
+    //    Pure layers (Domain, Model) must never depend on Infrastructure.
     restricted = arrayOf(
         ":core.* -X> :feature.*",
-        ":feature.* -X> :feature:(?!shared-ui).*"
+        ":feature.* -X> :feature:(?!shared-ui).*",
+        ":core:domain -X> :core:(network|database|datastore|intelligence|notifications|security)",
+        ":core:model -X> :core:(?!common).*"
     )
 }
 
