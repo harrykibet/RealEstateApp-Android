@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.chats
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.model.feature.Chat
 import com.estatia.realestate.apps.core.model.feature.ChatUser
@@ -19,6 +20,7 @@ import kotlin.time.Duration.Companion.minutes
  * - Concurrency: Thread-safe (stateless mock for now; targets reactive repository in future).
  * - Resilience: Surfaces [ChatUiState.Loading] while data is being prepared.
  */
+@ViewModelMarker
 @HiltViewModel
 class ChatViewModel @Inject constructor() : ViewModel() {
 

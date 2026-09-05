@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.comments.ui.viewmodels
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
@@ -31,6 +32,7 @@ import javax.inject.Inject
  * - Lifecycle: Automatically cancels observation jobs [observeJob] on property switch.
  * - Observability: Tracks comment submission and observation health.
  */
+@ViewModelMarker
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
     private val commentsRepository: ICommentsRepository,

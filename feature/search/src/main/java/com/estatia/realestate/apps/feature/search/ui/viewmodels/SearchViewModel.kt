@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.search.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -25,6 +26,7 @@ import javax.inject.Inject
  * - State Restoration: Persists current query [KEY_QUERY] and scroll page [KEY_SCROLL_PAGE].
  * - Performance: Avoids duplicate searches for the same query.
  */
+@ViewModelMarker
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: ISearchRepository,

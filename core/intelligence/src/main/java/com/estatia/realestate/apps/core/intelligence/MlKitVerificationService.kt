@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.intelligence
 
+import com.estatia.realestate.apps.core.common.annotations.Service
 import android.content.Context
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
@@ -27,6 +28,7 @@ import javax.inject.Singleton
  * - Observability: Tracks verification latency and scan success rates.
  */
 @Singleton
+@Service
 class MlKitVerificationService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val metricsTracker: IMetricsTracker

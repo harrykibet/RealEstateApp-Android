@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.intelligence
 
+import com.estatia.realestate.apps.core.common.annotations.Service
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
@@ -32,6 +33,7 @@ import javax.inject.Singleton
  * - Observability: Tracks moderation flags and processing latency.
  */
 @Singleton
+@Service
 class MlKitContentSafetyService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val metricsTracker: IMetricsTracker,

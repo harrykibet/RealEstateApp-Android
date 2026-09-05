@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.domain.security.ISecretRepository
@@ -19,6 +20,7 @@ import javax.inject.Inject
  * - Resilience: Transparent fallback to [localProvider] (keystore/buildConfig) when network is unavailable.
  * - Observability: Tracks secret resolution funnel (Remote hit vs Local fallback).
  */
+@Repository
 internal class SecretRepository @Inject constructor(
     private val remoteDataSource: ISecretRemoteDataSource,
     private val localProvider: SecureKeyProvider,

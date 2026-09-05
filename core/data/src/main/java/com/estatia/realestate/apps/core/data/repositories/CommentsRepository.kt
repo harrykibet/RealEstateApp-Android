@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
@@ -37,7 +38,8 @@ import javax.inject.Inject
  * - Safety: Enforces on-device moderation for all submitted comments.
  * - Observability: Tracks comment submission funnel and observation latency.
  */
-internal class CommentsRepository @Inject constructor(
+internal @Repository
+class CommentsRepository @Inject constructor(
     private val remoteDataSource: ICommentsRemoteDataSource,
     private val localDataSource: IPropertyLocalDataSource,
     private val userRepository: IUserRepository,

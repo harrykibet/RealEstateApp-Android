@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.payments
 
 import androidx.lifecycle.SavedStateHandle
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
+@ViewModelMarker
 @HiltViewModel
 class PaymentsViewModel @Inject constructor(
     private val processPaymentUseCase: ProcessPaymentUseCase,

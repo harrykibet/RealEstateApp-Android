@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
     ksp(libs.androidx.hilt.compiler)
+    ksp(project(":core:ksp-architecture"))
     implementation(projects.core.model)
     api(projects.core.domain)
     implementation(projects.core.datastore)

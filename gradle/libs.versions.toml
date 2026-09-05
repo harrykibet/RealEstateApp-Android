@@ -80,6 +80,7 @@ amplify = "2.40.0"
 aws-sdk-kotlin-appconfigdata = "1.8.36"
 androidDesugarJdkLibs = "2.1.5"
 konsist = "0.17.0"
+kotlin-compile-testing = "1.6.0"
 
 [plugins]
 
@@ -477,7 +478,8 @@ play-services-appset = { group = "com.google.android.gms", name = "play-services
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 leakcanary-android-instrumentation = { group = "com.squareup.leakcanary", name = "leakcanary-android-instrumentation", version.ref = "leakcanary" }
 konsist = { group = "com.lemonappdev", name = "konsist", version.ref = "konsist" }
-
+kotlinCompileTesting = { group = "com.github.tschuchortdev", name = "kotlin-compile-testing-ksp", version.ref = "kotlin-compile-testing" }
+symbol-processing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
 # Dependencies of the included build-logic
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

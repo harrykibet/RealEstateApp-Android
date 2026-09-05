@@ -7,6 +7,7 @@ import com.amplifyframework.auth.cognito.result.AWSCognitoAuthSignOutResult
 import com.amplifyframework.auth.options.AuthSignUpOptions
 import com.amplifyframework.auth.AuthUserAttributeKey
 import com.amplifyframework.core.Amplify
+import com.estatia.realestate.apps.core.common.annotations.Service
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
@@ -30,6 +31,7 @@ import kotlin.coroutines.resume
  * - Resilience: Delegates retry and mapping logic to [INetworkClient].
  * - Security: Does not cache tokens in plain text; delegates to Amplify secure storage.
  */
+@Service
 internal class AwsAuthService @Inject constructor(
     private val networkClient: INetworkClient
 ) : IAuthRemoteDataSource {

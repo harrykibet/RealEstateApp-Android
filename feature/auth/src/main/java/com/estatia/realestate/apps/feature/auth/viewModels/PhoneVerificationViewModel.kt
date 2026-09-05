@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.viewModels
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 
+@ViewModelMarker
 @HiltViewModel
 class PhoneVerificationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,

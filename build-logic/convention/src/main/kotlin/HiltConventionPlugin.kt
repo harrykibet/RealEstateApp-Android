@@ -11,6 +11,7 @@ class HiltConventionPlugin : Plugin<Project> {
 
             dependencies {
                 "ksp"(libs.findLibrary("hilt.compiler").get())
+                "ksp"(project(":core:ksp-architecture"))
             }
 
 

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
@@ -27,6 +28,7 @@ import javax.inject.Inject
  * - Resilience: Transparent fallback to local search cache when remote is unavailable.
  * - Observability: Tracks search latency, cache hit/miss ratio, and failure types.
  */
+@Repository
 class SearchRepository @Inject constructor(
     private val remoteDataSource: ISearchRemoteDataSource,
     private val searchLocalDataSource: ISearchLocalDataSource,

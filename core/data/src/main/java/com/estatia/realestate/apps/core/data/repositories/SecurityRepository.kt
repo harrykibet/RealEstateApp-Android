@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import android.util.Base64
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
@@ -32,6 +33,7 @@ private const val DEFAULT_SIGNING_ALIAS = "estatia_default_signing_key"
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Surfaces domain-specific failures via contract-aware [AppResult]s.
  */
+@Repository
 internal class SecurityRepository @Inject constructor(
     private val aesGcmCryptoEngine: IAesGcmCryptoEngine,
     private val rsaCryptoEngine: IRsaCryptoEngine,

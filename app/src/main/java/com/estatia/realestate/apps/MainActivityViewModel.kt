@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
@@ -25,6 +26,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces a loading state while core infrastructure (Remote Config) initializes.
  * - Lifecycle: Automatically stops reactive flows after 5 seconds of inactivity.
  */
+@ViewModelMarker
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     userDataRepository: IUserRepository,

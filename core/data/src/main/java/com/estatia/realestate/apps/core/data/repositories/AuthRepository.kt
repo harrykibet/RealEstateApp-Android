@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -26,6 +27,7 @@ import javax.inject.Inject
  * - Observability: Tracks success/failure for sign-in and sign-up funnels.
  * - Concurrency: Stateless; thread-safe for concurrent calls.
  */
+@Repository
 internal class AuthRepository @Inject constructor(
     private val remoteDataSource: IAuthRemoteDataSource,
     private val metricsTracker: IMetricsTracker

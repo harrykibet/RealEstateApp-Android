@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.viewModels
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -25,6 +26,7 @@ import javax.inject.Inject
  * - Resilience: Handles both email/password and Social (Google) login failure modes.
  * - Observability: Tracks login success and failure metrics.
  */
+@ViewModelMarker
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: IAuthRepository,

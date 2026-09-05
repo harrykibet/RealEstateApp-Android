@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.property.ui.management.viewmodels
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -22,6 +23,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces error state if retrieval fails.
  * - Observability: Tracks property detail load success and failure rates.
  */
+@ViewModelMarker
 @HiltViewModel
 class PropertyDetailsViewModel @Inject constructor(
     private val repository: IPropertyRepository,

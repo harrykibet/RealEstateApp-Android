@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.events.EventTypes
 import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
@@ -15,6 +16,7 @@ import javax.inject.Singleton
  * - Concurrency: Thread-safe; delegates to the [analyticsTracker] outbox.
  * - Performance: Minimal overhead; avoids heavy serialization on the calling thread.
  */
+@Repository
 @Singleton
 internal class EngagementRepository @Inject constructor(
     private val analyticsTracker: IAnalyticsTracker

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.localization.implementation
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.localization.api.LocaleRepository
 import com.estatia.realestate.apps.core.localization.datastore.LocalePreferences
 import com.estatia.realestate.apps.core.localization.model.Language
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+@Repository
 class LocaleRepositoryImpl @Inject constructor(
     private val localePreferences: LocalePreferences
 ) : LocaleRepository {

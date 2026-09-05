@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.repository.IPaymentsRepository
 import com.estatia.realestate.apps.core.model.feature.PaymentMethod
@@ -20,6 +21,7 @@ import javax.inject.Inject
  * - Resilience: Distinguishes between network timeouts and terminal payment failures.
  * - Observability: Tracks payment funnel completion and processing latency.
  */
+@Repository
 internal class PaymentsRepository @Inject constructor(
     private val remoteDataSource: IPaymentsRemoteDataSource,
     private val metricsTracker: IMetricsTracker

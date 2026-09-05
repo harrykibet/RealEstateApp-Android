@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
@@ -46,6 +47,7 @@ private const val MAX_CACHE_AGE_5_MIN = 5 * 60 * 1000L
  * - Resilience: Implements multi-stage offline fallbacks for liked properties.
  * - Safety: Enforces on-device content moderation for all media uploads.
  */
+@Repository
 class PropertyRepository @Inject constructor(
     private val localDataSource: IPropertyLocalDataSource,
     private val remoteDataSource: IPropertyRemoteDatasource,

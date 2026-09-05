@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.viewModels
 
 import androidx.lifecycle.SavedStateHandle
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.system.Dispatcher
@@ -32,6 +33,7 @@ private const val KEY_EMAIL = "signup_email"
 private const val KEY_PHONE = "signup_phone"
 private const val KEY_USER_TYPE = "signup_user_type"
 
+@ViewModelMarker
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authRepository: IAuthRepository,

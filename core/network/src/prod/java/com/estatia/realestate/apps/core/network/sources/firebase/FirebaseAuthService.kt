@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources.firebase
 
 import android.app.Activity
+import com.estatia.realestate.apps.core.common.annotations.Service
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.exceptions.map
@@ -36,6 +37,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+@Service
 internal class FirebaseAuthService @Inject constructor(
     private val database: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,

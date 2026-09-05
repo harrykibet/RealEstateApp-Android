@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.feature.property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -32,6 +33,7 @@ import javax.inject.Inject
 
 private const val STATE_DRAFT = "property_draft"
 
+@ViewModelMarker
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
     private val repository: IPropertyRepository,

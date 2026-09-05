@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.settings
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Loading
@@ -21,6 +22,7 @@ import kotlin.time.Duration.Companion.seconds
  * - Concurrency: Thread-safe reactive state mapping via [userDataRepository].
  * - Lifecycle: Automatically stops reactive flows after 5 seconds of inactivity.
  */
+@ViewModelMarker
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userDataRepository: IUserRepository,

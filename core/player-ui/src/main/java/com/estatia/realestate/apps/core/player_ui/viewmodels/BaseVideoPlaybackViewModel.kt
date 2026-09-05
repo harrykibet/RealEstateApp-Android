@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.viewmodels
 
 import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
@@ -39,6 +40,7 @@ import kotlinx.coroutines.launch
  * handles per-screen state isolation.
  */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+@ViewModelMarker
 abstract class BaseVideoPlaybackViewModel(
     protected val coordinator: VideoPlaybackCoordinator,
     protected val environmentCoordinator: EnvironmentCoordinator,

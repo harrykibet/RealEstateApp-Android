@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
@@ -26,6 +27,7 @@ import javax.inject.Inject
  * - Resilience: Translates remote exceptions to domain-specific user failures.
  * - Observability: Tracks profile retrieval latency and success/failure.
  */
+@Repository
 internal class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,

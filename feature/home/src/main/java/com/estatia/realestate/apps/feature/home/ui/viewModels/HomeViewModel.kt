@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.feature.home.ui.viewModels
 
 import androidx.lifecycle.SavedStateHandle
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
@@ -29,6 +30,7 @@ import javax.inject.Inject
  * - Observability: Tracks feed latency and pagination funnel.
  * - State Restoration: Persists current scroll position [KEY_SCROLL_PAGE].
  */
+@ViewModelMarker
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val api: IPropertyRepository,

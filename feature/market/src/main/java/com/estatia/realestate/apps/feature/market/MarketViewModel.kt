@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.market
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.model.feature.MarketCategory
 import com.estatia.realestate.apps.core.model.feature.MarketItem
@@ -18,6 +19,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; uses immutable [MarketUiState].
  * - Resilience: Surfaces OOM pressure signals via [MarketUiState.Loading].
  */
+@ViewModelMarker
 @HiltViewModel
 class MarketViewModel @Inject constructor() : ViewModel() {
 

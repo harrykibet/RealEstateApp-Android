@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.feature.profile.ui.viewmodels
 
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -26,6 +27,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces authenticated state errors via [ProfileUiState.error].
  * - Observability: Tracks profile load success and failure rates.
  */
+@ViewModelMarker
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: IAuthRepository,
