@@ -16,7 +16,7 @@ import com.intellij.psi.*
 class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = 
-        listOf(USimpleNameReferenceExpression::class.java, UCallExpression::class.java)
+        listOf(USimpleNameReferenceExpression::class.java, UCallExpression::class.java, UQualifiedReferenceExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
@@ -27,29 +27,37 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
             checkMember(node, node.resolve())
         }
 
+        override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
+            checkMember(node, node.resolve())
+        }
+
         private fun checkMember(node: UElement, resolved: PsiElement?) {
             if (!isInsideComposable(context, node)) return
 
-            // 🏎️ CRASH RESILIENCE: If resolution fails, we attempt to check receiver naming if possible.
             val member = resolved as? PsiMember
-            val containingClass = member?.containingClass
+            val containingClass = member?.containingClass ?: (resolved as? PsiClass)
             
             val className = containingClass?.qualifiedName ?: ""
             val isEstatiaComponent = className.contains("com.estatia")
             
-            // If we can't resolve, but the expression looks like a Singleton access (CamelCase.member)
-            val isLikelySingleton = isEstatiaComponent || (member == null && node.asRenderString().firstOrNull()?.isUpperCase() == true)
+            val receiverString = when (node) {
+                is UQualifiedReferenceExpression -> node.receiver.asRenderString()
+                is USimpleNameReferenceExpression -> (node.uastParent as? UQualifiedReferenceExpression)?.receiver?.asRenderString() ?: ""
+                else -> ""
+            }
+            
+            val isLikelySingleton = isEstatiaComponent || (receiverString.isNotEmpty() && receiverString.firstOrNull()?.isUpperCase() == true)
 
             if (isLikelySingleton) {
                 val isMutable = when (member) {
                     is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
-                    is PsiMethod -> member.name.startsWith("get") && !member.hasModifierProperty(PsiModifier.FINAL)
-                    null -> true // Assume mutable if we can't resolve but it's used as a property
+                    is PsiMethod -> (member.name.startsWith("get") || member.name.startsWith("set")) && !member.hasModifierProperty(PsiModifier.FINAL)
+                    null -> node.asRenderString().firstOrNull()?.isLowerCase() == true
                     else -> false
                 }
                 
                 if (isMutable) {
-                    val isObject = containingClass?.let { isKotlinObject(it) } ?: true
+                    val isObject = containingClass?.let { isKotlinObject(it) } ?: (receiverString.isNotEmpty() && !receiverString.contains("("))
 
                     if (isObject) {
                         context.report(

@@ -3,11 +3,13 @@ package com.estatia.realestate.apps.core.canary_violations
 import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
-import com.estatia.realestate.apps.feature.auth.viewModels.LoginViewModel
+import com.estatia.realestate.apps.core.domain.DomainLeakageCarrier
+import com.estatia.realestate.apps.core.domain.DomainCouplingCarrier
+import com.estatia.realestate.apps.feature.home.HomeCoupling
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -54,12 +56,13 @@ object CanaryConfig {
 
 @Composable
 fun LeakySingletonRead() {
+    // Violation: Reading var from object
     val x = CanaryConfig.mutableValue
 }
 
 // LAW-018: ViewModel SSoT & LAW-016: State Ownership
 @ViewModelMarker
-class BadViewModel : androidx.lifecycle.ViewModel() {
+class BadViewModel : ViewModel() {
     // LAW-018 Violation: Multiple public StateFlows
     val state1: StateFlow<Int> = MutableStateFlow(0)
     val state2: StateFlow<String> = MutableStateFlow("")
@@ -96,9 +99,30 @@ class DispatcherViolation {
     }
 }
 
-// LAW-003: Infrastructure Leakage & LAW-004: Feature Coupling
-// Note: We use the classes directly in properties to trigger the detectors that check imports/types
-class LeakageCarrier {
-    val leakedDataSource: IPropertyLocalDataSource? = null
-    val leakedViewModel: LoginViewModel? = null
+/**
+ * Canary Hub: Wires all classes together to ensure they are present in the compiled artifact
+ * and reachable by the Lint graph.
+ */
+@Composable
+fun CanaryHub(
+    repo: CanaryRepository,
+    viewModel: BadViewModel,
+    logger: LeakyLogger,
+    concurrency: ConcurrencyViolation,
+    dispatcher: DispatcherViolation
+) {
+    // Wire everything
+    LeakyComposable(repo)
+    LeakySingletonRead()
+    
+    // Use properties to ensure they aren't optimized away
+    println(MissingVisibilityClass().toString())
+    println(viewModel.state1.value)
+    
+    // Trigger module coupling detectors via usage
+    println(DomainLeakageCarrier().toString())
+    println(DomainCouplingCarrier().toString())
+    println(HomeCoupling().toString())
+    
+    logger.log("fake_password")
 }

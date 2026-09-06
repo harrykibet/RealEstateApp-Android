@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiField
+import com.intellij.psi.PsiMember
 import org.jetbrains.uast.*
 
 /**
@@ -21,21 +22,26 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
             val name = node.identifier
             if (name == "IO" || name == "Main" || name == "Default" || name == "Unconfined") {
                 val resolved = node.resolve()
-                val isDispatcher = (resolved is PsiField &&
-                                   resolved.containingClass?.qualifiedName == "kotlinx.coroutines.Dispatchers") ||
-                                   node.asRenderString().contains("Dispatchers.")
+                
+                val isDispatcher = when {
+                    resolved is PsiField && resolved.containingClass?.qualifiedName == "kotlinx.coroutines.Dispatchers" -> true
+                    resolved is PsiMember && resolved.containingClass?.qualifiedName?.contains("Dispatchers") == true -> true
+                    node.asRenderString().contains("Dispatchers.") -> true
+                    else -> false
+                }
 
                 if (isDispatcher) {
                     val path = context.file.path.replace("\\", "/")
                     val isAllowed = path.contains("/di/") || path.contains("Module") ||
-                                   path.contains("/test/") || path.contains("/androidTest/")
+                                   path.contains("/test/") || path.contains("/androidTest/") ||
+                                   context.isTestSource
 
                     if (!isAllowed) {
                         context.report(
                             ISSUE,
                             node,
                             context.getLocation(node),
-                            "Hardcoded Dispatcher '$name' is forbidden (LAW-006)."
+                            "Hardcoded Dispatcher '$name' is forbidden (LAW-006). Use injected dispatchers instead."
                         )
                     }
                 }
