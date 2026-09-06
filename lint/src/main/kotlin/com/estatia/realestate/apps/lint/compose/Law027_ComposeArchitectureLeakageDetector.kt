@@ -20,9 +20,12 @@ class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner 
         override fun visitCallExpression(node: UCallExpression) {
             if (!isInsideComposable(context, node)) return
             
-            val method = node.resolve() ?: return
-            val containingClass = method.containingClass?.qualifiedName ?: ""
-            
+            // 🏎️ CRASH RESILIENCE: Handle null resolution by falling back to name analysis.
+            val method = node.resolve()
+            val containingClass = method?.containingClass?.qualifiedName 
+                ?: node.receiverType?.canonicalText 
+                ?: node.asRenderString().substringBefore(".")
+
             if (containingClass.endsWith("Repository") || 
                 containingClass.endsWith("Service") || 
                 containingClass.endsWith("UseCase")) {
@@ -39,9 +42,17 @@ class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner 
     }
 
     private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
-        val method = node.getParentOfType<UMethod>()?.javaPsi ?: return false
-        return context.evaluator.getAnnotations(method, false)
-            .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
+        var current: UElement? = node
+        while (current != null) {
+            if (current is UMethod) {
+                if (context.evaluator.getAnnotations(current.javaPsi, false)
+                    .any { it.qualifiedName == "androidx.compose.runtime.Composable" }) {
+                    return true
+                }
+            }
+            current = current.uastParent
+        }
+        return false
     }
 
     companion object {

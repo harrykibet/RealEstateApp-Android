@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.usecase.TogglePropertyLikeUseCase
@@ -69,7 +70,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             try {
-                val userId = authRepository.getCurrentUserId()
+                val userId = authRepository.getCurrentUserId().getOrNull()
                 val result = api.fetchPropertiesPaginated(userId, cursor, pageSize)
                 val page = result.getOrThrow()
                 

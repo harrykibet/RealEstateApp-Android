@@ -18,17 +18,24 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitClass(node: UClass) {
+            if (node is UAnonymousClass) return
+            
             val qualifiedName = node.qualifiedName ?: return
             val isCritical = qualifiedName.contains(".player_engine") || qualifiedName.contains(".security")
 
             if (isCritical && !node.isInterface && hasSingletonAnnotation(context, node)) {
                 node.methods.forEach { method ->
-                    if (context.evaluator.isPublic(method) && !method.isConstructor) {
+                    if (context.evaluator.isPublic(method) && !method.isConstructor && !isGenerated(method)) {
                         checkConfinement(context, method)
                     }
                 }
             }
         }
+    }
+
+    private fun isGenerated(method: UMethod): Boolean {
+        // Detect synthetic overloads from @JvmOverloads
+        return method.sourcePsi == null || method.javaPsi.annotations.any { it.qualifiedName?.contains("JvmOverloads") == true }
     }
 
     private fun hasSingletonAnnotation(context: JavaContext, node: UClass) = 
@@ -53,7 +60,7 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
             context.report(
                 ISSUE,
                 method,
-                context.getLocation(method),
+                context.getLocation(method as UElement),
                 "Critical infrastructure method '${method.name}' is missing a thread-confinement check."
             )
         }

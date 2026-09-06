@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.intelligence.IMediaIntelligenceService
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyDraft
 import com.estatia.realestate.apps.feature.property.utils.AddPropertyUiState
@@ -297,7 +298,7 @@ class AddPropertyViewModel @Inject constructor(
     private fun analyzeImage(uri: MediaReference) {
         viewModelScope.launch {
             try {
-                val detectedAmenities = intelligenceService.extractAmenities(uri)
+                val detectedAmenities = intelligenceService.extractAmenities(uri).getOrNull() ?: emptyList()
                 updateDraft {
                     copy(amenities = amenities + detectedAmenities)
                 }
@@ -354,7 +355,7 @@ class AddPropertyViewModel @Inject constructor(
     ) {
         if (_uiState.value.isUploading) return // 🛡️ Idempotency: Prevent duplicate uploads
 
-        val userId = authRepository.getCurrentUserId()
+        val userId = authRepository.getCurrentUserId().getOrNull()
         if (userId == null) {
             onFailure(AuthException.UserNotAuthenticated)
             return

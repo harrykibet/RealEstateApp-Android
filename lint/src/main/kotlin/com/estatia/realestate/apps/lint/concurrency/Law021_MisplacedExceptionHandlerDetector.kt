@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.PsiMethod
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * LAW-021: Exception Handling.
@@ -22,8 +23,7 @@ class Law021_MisplacedExceptionHandlerDetector : Detector(), SourceCodeScanner {
         val arguments = node.valueArguments
         if (arguments.isNotEmpty()) {
             val contextArg = arguments[0]
-            val type = contextArg.getExpressionType()
-            if (type != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), "kotlinx.coroutines.CoroutineExceptionHandler", false)) {
+            if (containsExceptionHandler(context, contextArg)) {
                 context.report(
                     ISSUE,
                     node,
@@ -32,6 +32,28 @@ class Law021_MisplacedExceptionHandlerDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun containsExceptionHandler(context: JavaContext, expression: UExpression): Boolean {
+        var found = false
+        expression.accept(object : AbstractUastVisitor() {
+            override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression): Boolean {
+                val type = node.getExpressionType()
+                if (type != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), "kotlinx.coroutines.CoroutineExceptionHandler", false)) {
+                    found = true
+                }
+                return super.visitSimpleNameReferenceExpression(node)
+            }
+            
+            override fun visitCallExpression(node: UCallExpression): Boolean {
+                val type = node.getExpressionType()
+                if (type != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), "kotlinx.coroutines.CoroutineExceptionHandler", false)) {
+                    found = true
+                }
+                return super.visitCallExpression(node)
+            }
+        })
+        return found
     }
 
     private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {

@@ -47,6 +47,8 @@ object Stubs {
             context: CoroutineDispatcher,
             block: suspend CoroutineScope.() -> T
         ): T = TODO()
+
+        interface CoroutineExceptionHandler : CoroutineContext.Element
         """.trimIndent()
     )
 
@@ -61,6 +63,8 @@ object Stubs {
         fun <T> flow(block: suspend () -> T): Flow<T> = TODO()
         fun <T> flowOf(vararg elements: T): Flow<T> = TODO()
         fun <T> Flow<T>.buffer(capacity: Int = -1): Flow<T> = TODO()
+        
+        suspend fun <T> Flow<T>.collect(collector: (T) -> Unit): Unit = TODO()
         """.trimIndent()
     )
 

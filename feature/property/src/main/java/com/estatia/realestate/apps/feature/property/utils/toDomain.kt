@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyId
 import java.util.UUID
 
 fun AddPropertyDraft.toDomain(
-    userId: String
+    userId: String?
 ): PropertyDomainModel {
 
 

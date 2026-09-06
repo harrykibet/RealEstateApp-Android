@@ -16,7 +16,7 @@ class MockInProductionDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("mockk", "mock", "spy", "every", "verify")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        if (context.isTestSource) return
+        if (isTestSource(context)) return
 
         val className = method.containingClass?.qualifiedName ?: ""
         if (className.startsWith("io.mockk") || className.startsWith("org.mockito")) {
@@ -27,6 +27,11 @@ class MockInProductionDetector : Detector(), SourceCodeScanner {
                 "Testing library usage detected in production code. Remove all mocks before merging."
             )
         }
+    }
+
+    private fun isTestSource(context: JavaContext): Boolean {
+        val path = context.file.path.replace("\\", "/")
+        return context.isTestSource || path.contains("/src/test/") || path.contains("/src/androidTest/")
     }
 
     companion object {

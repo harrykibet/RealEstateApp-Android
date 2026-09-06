@@ -15,41 +15,72 @@ import com.intellij.psi.*
  */
 class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner {
 
-    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(USimpleNameReferenceExpression::class.java)
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = 
+        listOf(USimpleNameReferenceExpression::class.java, UCallExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
+            checkMember(node, node.resolve())
+        }
+
+        override fun visitCallExpression(node: UCallExpression) {
+            checkMember(node, node.resolve())
+        }
+
+        private fun checkMember(node: UElement, resolved: PsiElement?) {
             if (!isInsideComposable(context, node)) return
 
-            val resolved = node.resolve()
-            val containingClass = (resolved as? PsiMember)?.containingClass ?: return
-            val isEstatiaComponent = containingClass.qualifiedName?.startsWith("com.estatia") == true
-            if (!isEstatiaComponent) return
-
-            val modifierOwner = resolved as? PsiModifierListOwner ?: return
-            val isFinal = modifierOwner.hasModifierProperty(PsiModifier.FINAL)
+            // 🏎️ CRASH RESILIENCE: If resolution fails, we attempt to check receiver naming if possible.
+            val member = resolved as? PsiMember
+            val containingClass = member?.containingClass
             
-            if (!isFinal) {
-                val isStatic = modifierOwner.hasModifierProperty(PsiModifier.STATIC)
-                val isObject = containingClass.fields.any { it.name == "INSTANCE" }
+            val className = containingClass?.qualifiedName ?: ""
+            val isEstatiaComponent = className.contains("com.estatia")
+            
+            // If we can't resolve, but the expression looks like a Singleton access (CamelCase.member)
+            val isLikelySingleton = isEstatiaComponent || (member == null && node.asRenderString().firstOrNull()?.isUpperCase() == true)
 
-                if (isStatic || isObject) {
-                    context.report(
-                        ISSUE,
-                        node,
-                        context.getLocation(node),
-                        "Reading mutable singleton state '${(resolved as? PsiNamedElement)?.name}' inside Composable. " +
+            if (isLikelySingleton) {
+                val isMutable = when (member) {
+                    is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
+                    is PsiMethod -> member.name.startsWith("get") && !member.hasModifierProperty(PsiModifier.FINAL)
+                    null -> true // Assume mutable if we can't resolve but it's used as a property
+                    else -> false
+                }
+                
+                if (isMutable) {
+                    val isObject = containingClass?.let { isKotlinObject(it) } ?: true
+
+                    if (isObject) {
+                        context.report(
+                            ISSUE,
+                            node,
+                            context.getLocation(node),
+                            "Reading mutable singleton state inside Composable. " +
                                 "Compose cannot observe changes to plain 'var' properties. Use StateFlow or MutableState (LAW-025)."
-                    )
+                        )
+                    }
                 }
             }
         }
     }
 
+    private fun isKotlinObject(clazz: PsiClass): Boolean {
+        return clazz.fields.any { it.name == "INSTANCE" } || clazz.qualifiedName?.endsWith(".Companion") == true
+    }
+
     private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
-        val method = node.getParentOfType<UMethod>()?.javaPsi ?: return false
-        return context.evaluator.getAnnotations(method, false)
-            .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
+        var current: UElement? = node
+        while (current != null) {
+            if (current is UMethod) {
+                if (context.evaluator.getAnnotations(current.javaPsi, false)
+                    .any { it.qualifiedName == "androidx.compose.runtime.Composable" }) {
+                    return true
+                }
+            }
+            current = current.uastParent
+        }
+        return false
     }
 
     companion object {

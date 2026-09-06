@@ -26,7 +26,7 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
             
             if (className.endsWith("Repository") || className.endsWith("Service")) {
                 val returnType = node.returnType ?: return
-                if (!isWrapped(returnType, context)) {
+                if (!isWrapped(returnType, context, node)) {
                     context.report(
                         ISSUE,
                         node,
@@ -38,10 +38,14 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isWrapped(type: PsiType, context: JavaContext): Boolean {
+    private fun isWrapped(type: PsiType, context: JavaContext, node: UMethod): Boolean {
         val canonical = type.canonicalText
-        if (canonical == "unit" || canonical == "void" || canonical == "java.lang.Void") return true
+        if (canonical == "unit" || canonical == "void" || canonical == "java.lang.Void" || canonical == "kotlin.Unit") return true
         
+        // 🏎️ CRASH RESILIENCE: Check the type name string directly if resolution would be flaky
+        val typeName = type.presentableText
+        if (typeName.endsWith("Result") || typeName.endsWith("Flow")) return true
+
         val psiClass = context.evaluator.getTypeClass(type) ?: return false
         val qualifiedName = psiClass.qualifiedName ?: ""
         

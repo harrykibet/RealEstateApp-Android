@@ -59,6 +59,7 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `LayerMixingViolation` |
 | **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `LayerDependencyViolation` |
 | **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `SuppressionPolicyViolation` |
+| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryRegressionTest` |
 
 ---
 
@@ -122,6 +123,24 @@ To update the baseline after fixing issues:
 ./gradlew lint -Dlint.update.baseline=true
 ```
 Submit the updated `lint-baseline.xml` as part of your PR.
+
+### Customizing Thresholds (Per-Module)
+You can override default complexity and logic thresholds by adding a `lint.xml` file to your module:
+
+```xml
+<lint>
+    <!-- Stricter dependency budget for critical engine -->
+    <issue id="OrchestrationMonsterError">
+        <option name="errorThreshold" value="5" />
+        <option name="warningThreshold" value="3" />
+    </issue>
+    
+    <!-- Custom allowed numbers for specific domains -->
+    <issue id="MagicNumber">
+        <option name="allowedNumbers" value="21,42,1337" />
+    </issue>
+</lint>
+```
 
 ---
 

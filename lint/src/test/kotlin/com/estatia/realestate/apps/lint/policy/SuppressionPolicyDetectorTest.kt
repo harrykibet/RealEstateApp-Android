@@ -20,7 +20,7 @@ class SuppressionPolicyDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     @Suppress("all")
-                    class Bad
+                    class Bad1
                     """.trimIndent()
                 )
             )

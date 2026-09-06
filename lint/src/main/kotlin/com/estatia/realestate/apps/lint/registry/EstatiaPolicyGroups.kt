@@ -10,7 +10,13 @@ import com.estatia.realestate.apps.lint.policy.*
 
 object ArchitectureIssues {
     val all = listOf(
-        SuppressionPolicyDetector.ISSUE
+        SuppressionPolicyDetector.ISSUE,
+        ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
+        ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
+        CanaryHeartbeatDetector.ISSUE,
+        Law028_SpaghettiMethodDetector.ISSUE,
+        Law029_GodObjectDetector.ISSUE,
+        Law030_OrchestrationMonsterDetector.ISSUE
     )
 }
 

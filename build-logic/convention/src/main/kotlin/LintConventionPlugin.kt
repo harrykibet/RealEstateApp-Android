@@ -21,6 +21,11 @@ class LintConventionPlugin : Plugin<Project> {
                             // Workaround for GradleDetector crash in some environments
                             disable.add("UseTomlInstead")
                             disable.add("GradlePluginVersion")
+                            disable.add("GradleDependency")
+                            disable.add("GradleDeprecated")
+                            disable.add("GradleDeprecatedConfiguration")
+                            disable.add("OutdatedLibrary")
+                            disable.add("GradleDetector")
                         }
                     }
                 pluginManager.hasPlugin("com.android.library") ->
@@ -40,6 +45,11 @@ class LintConventionPlugin : Plugin<Project> {
                             // Workaround for GradleDetector crash in some environments
                             disable.add("UseTomlInstead")
                             disable.add("GradlePluginVersion")
+                            disable.add("GradleDependency")
+                            disable.add("GradleDeprecated")
+                            disable.add("GradleDeprecatedConfiguration")
+                            disable.add("OutdatedLibrary")
+                            disable.add("GradleDetector")
                         }
                     }
             }

@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IUserRepository
@@ -43,7 +44,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun loadUserProfile() {
-        val userId = authRepository.getCurrentUserId()
+        val userId = authRepository.getCurrentUserId().getOrNull()
         if (userId == null) {
             _uiState.update { it.copy(isLoading = false, error = "User not authenticated") }
             return

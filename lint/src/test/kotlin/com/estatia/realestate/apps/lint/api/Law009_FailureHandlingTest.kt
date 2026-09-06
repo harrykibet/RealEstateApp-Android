@@ -68,8 +68,8 @@ class Law009_FailureHandlingTest {
                     """
                     package com.estatia.realestate.apps
                     class Test {
-                        fun check(value: String?) {
-                            val data = value ?: ""
+                        fun check(value: Boolean?) {
+                            val data = value ?: false
                         }
                     }
                     """.trimIndent()

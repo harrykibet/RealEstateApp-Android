@@ -15,30 +15,23 @@ import org.jetbrains.uast.*
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = 
-        listOf(UBinaryExpression::class.java, UIfExpression::class.java, UPolyadicExpression::class.java)
+        listOf(UBinaryExpression::class.java, UPolyadicExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            checkIfElvis(node.operator.text, node.rightOperand, node)
+            if (node.operator.text == "?:") {
+                checkFallback(node.rightOperand, node)
+            }
         }
 
         override fun visitPolyadicExpression(node: UPolyadicExpression) {
             if (node.operator.text == "?:") {
-                val operands = node.operands
-                if (operands.size > 1) {
-                    checkIfElvis("?:", operands.last(), node)
-                }
+                node.operands.lastOrNull()?.let { checkFallback(it, node) }
             }
         }
 
-        override fun visitIfExpression(node: UIfExpression) {
-            if (node.asRenderString().contains("?:")) {
-                node.elseExpression?.let { checkIfElvis("?:", it, node) }
-            }
-        }
-
-        private fun checkIfElvis(operatorText: String, right: UExpression, node: UElement) {
-            if (operatorText == "?:" && isDangerousFallback(right)) {
+        private fun checkFallback(expression: UExpression, node: UElement) {
+            if (isDangerousFallback(expression)) {
                 context.report(
                     ISSUE,
                     node,
@@ -57,7 +50,8 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         
         if (current is ULiteralExpression) {
             val value = current.value
-            return value == null || value == "" || value == 0 || value == false
+            // Catch empty strings, nulls, false, 0
+            return value == null || (value is String && value.isEmpty()) || value == 0 || value == false
         }
         
         if (current is UCallExpression) {

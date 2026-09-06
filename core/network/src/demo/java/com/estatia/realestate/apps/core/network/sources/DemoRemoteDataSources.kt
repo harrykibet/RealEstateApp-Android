@@ -35,9 +35,20 @@ import javax.inject.Singleton
 @Singleton
 class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
     override fun isUserAuthenticated(): Flow<Boolean> = flowOf(true)
-    override fun getCurrentUserId(): String? = DemoData.demoUser.userId
-    override fun getCurrentUserEmail(): String? = DemoData.demoUser.email
-    override fun getCurrentUser(): NetworkUserEntity? = NetworkUserEntity(
+    override fun getCurrentUserId(): AppResult<String?> = AppResult.Success(DemoData.demoUser.userId)
+    override fun getCurrentUserEmail(): AppResult<String?> = AppResult.Success(DemoData.demoUser.email)
+    override fun getCurrentUser(): AppResult<NetworkUserEntity?> = AppResult.Success(
+        NetworkUserEntity(
+            DemoData.demoUser.userId!!,
+            DemoData.demoUser.name,
+            DemoData.demoUser.email,
+            null,
+            null,
+            true
+        )
+    )
+
+    private fun getNetworkUser() = NetworkUserEntity(
         DemoData.demoUser.userId!!,
         DemoData.demoUser.name,
         DemoData.demoUser.email,
@@ -47,16 +58,16 @@ class DemoAuthRemoteDataSource @Inject constructor() : IAuthRemoteDataSource {
     )
 
     override suspend fun signUpWithEmail(email: String, password: String): AppResult<NetworkUserEntity> = 
-        AppResult.Success(getCurrentUser()!!)
+        AppResult.Success(getNetworkUser())
 
     override suspend fun signInWithEmail(email: String, password: String): AppResult<NetworkUserEntity> = 
-        AppResult.Success(getCurrentUser()!!)
+        AppResult.Success(getNetworkUser())
 
     override suspend fun signInInteractive(activity: Activity): AppResult<NetworkUserEntity> = 
-        AppResult.Success(getCurrentUser()!!)
+        AppResult.Success(getNetworkUser())
 
     override suspend fun signInWithGoogle(idToken: String): AppResult<NetworkUserEntity> = 
-        AppResult.Success(getCurrentUser()!!)
+        AppResult.Success(getNetworkUser())
 
     override suspend fun createOrUpdateUserProfile(userId: String, user: UserEntityModel): AppResult<Unit> = AppResult.Success(Unit)
 

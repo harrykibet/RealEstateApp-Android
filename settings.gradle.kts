@@ -61,6 +61,7 @@ include(":core:testing-network")
 include(":core:testing-player")
 include(":core:datastore-proto")
 include(":core:intelligence")
+include(":core:canary-violations")
 
 include(":feature:home")
 include(":feature:auth")

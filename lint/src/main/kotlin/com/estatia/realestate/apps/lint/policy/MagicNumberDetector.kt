@@ -11,14 +11,13 @@ import org.jetbrains.uast.*
  */
 class MagicNumberDetector : Detector(), SourceCodeScanner {
 
-    private val allowedNumbers = setOf(0, 1, -1, 100, 10, 2, 24, 60, 1000)
-
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(ULiteralExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitLiteralExpression(node: ULiteralExpression) {
             val value = node.value
             if (value is Number) {
+                val allowedNumbers = getAllowedNumbers(context)
                 if (!allowedNumbers.contains(value.toInt())) {
                     val parent = node.uastParent
                     // Check if it's an assignment to a constant
@@ -43,6 +42,12 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
         }
     }
 
+    private fun getAllowedNumbers(context: JavaContext): Set<Int> {
+        val default = setOf(0, 1, -1, 100, 10, 2, 24, 60, 1000)
+        val override = context.configuration.getOption(ISSUE, "allowedNumbers")
+        return override?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.toSet() ?: default
+    }
+
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "MagicNumber",
@@ -50,7 +55,7 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             rationale = "Extract literal numbers to named constants to improve readability.",
             badExample = "if (age > 21) { ... }",
             goodExample = "const val MIN_AGE = 21\nif (age > MIN_AGE) { ... }",
-            category = IssueCategory.ARCHITECTURE, // General health
+            category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
             architectureLaw = "LAW-001",
