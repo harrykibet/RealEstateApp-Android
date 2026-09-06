@@ -1,9 +1,9 @@
-package com.estatia.realestate.apps.core.testing_architecture
+package com.estatia.realestate.apps.core.architecture
 
 /**
  * The single source of truth for Estatia architectural boundaries.
  * 
- * Rules defined here are enforced by Konsist and (where possible) Gradle module graphs.
+ * Rules defined here are enforced by Lint, KSP, and Konsist.
  */
 object ArchitecturalPolicy {
 

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.ArchitecturalPolicy
 import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
@@ -14,12 +15,7 @@ class Law008_AbstractionLeakageProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val forbiddenInfrastructure = listOf(
-        "com.google.firebase",
-        "androidx.room",
-        "okhttp3",
-        "retrofit2"
-    )
+    private val forbiddenInfrastructure = ArchitecturalPolicy.InfrastructurePackages
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase") +

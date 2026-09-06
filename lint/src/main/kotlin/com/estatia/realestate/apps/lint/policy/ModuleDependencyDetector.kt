@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.ArchitecturalPolicy
 import com.estatia.realestate.apps.core.architecture.Law
 import com.intellij.psi.PsiClass
 import org.jetbrains.uast.UFile
@@ -62,12 +63,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun isInfrastructure(path: String): Boolean {
-        return path.contains(".core.database") || 
-               path.contains(".core.network") || 
-               path.contains(".core.datastore") ||
-               path.contains("com.google.firebase") ||
-               path.contains("retrofit2") ||
-               path.contains("okhttp3")
+        return ArchitecturalPolicy.InfrastructurePackages.any { path.contains(it) }
     }
 
     companion object {
