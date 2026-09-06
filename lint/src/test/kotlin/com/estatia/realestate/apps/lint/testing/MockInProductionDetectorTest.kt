@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.lint.testing
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
-import com.android.tools.lint.checks.infrastructure.TestMode
 import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
@@ -24,7 +23,7 @@ class MockInProductionDetectorTest {
                         val mock = mockk<String>()
                     }
                     """.trimIndent()
-                ).to("src/com/estatia/realestate/apps/core/data/MyRepo.kt")
+                ).to("src/main/kotlin/com/estatia/realestate/apps/core/data/MyRepo.kt")
             )
             .issues(MockInProductionDetector.ISSUE)
             .run()
@@ -34,7 +33,7 @@ class MockInProductionDetectorTest {
     @Test
     fun `mockk usage in tests is clean`() {
         lint()
-            .testModes(TestMode.DEFAULT)
+            .allowCompilationErrors()
             .allowMissingSdk()
             .files(
                 Stubs.MOCKK,
@@ -42,8 +41,11 @@ class MockInProductionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import io.mockk.mockk
+                    
                     class MyTest {
-                        val mock = mockk<String>()
+                        fun test() {
+                            val mock = mockk<String>()
+                        }
                     }
                     """.trimIndent()
                 ).to("src/test/kotlin/com/estatia/realestate/apps/MyTest.kt")

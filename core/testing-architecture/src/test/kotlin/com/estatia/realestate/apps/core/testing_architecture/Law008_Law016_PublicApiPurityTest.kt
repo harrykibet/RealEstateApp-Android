@@ -1,0 +1,42 @@
+package com.estatia.realestate.apps.core.testing_architecture
+
+import com.lemonappdev.konsist.api.Konsist
+import com.lemonappdev.konsist.api.KoModifier
+import com.lemonappdev.konsist.api.verify.assertTrue
+import org.junit.Test
+
+class Law008_Law016_PublicApiPurityTest {
+
+    @Test
+    fun `public api must not expose mutable containers or implementation types`() {
+        // LAW-008 and LAW-016
+        val forbiddenTypes = setOf(
+            "MutableList", "MutableMap", "MutableSet", 
+            "ArrayList", "HashMap", "HashSet",
+            "MutableStateFlow", "MutableSharedFlow", "MutableState"
+        )
+
+        Konsist.scopeFromProject()
+            .classes()
+            .assertTrue { clazz ->
+                val publicProps = clazz.properties(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
+                val publicFuncs = clazz.functions(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
+                
+                val propLeak = publicProps.any { prop ->
+                    forbiddenTypes.any { prop.type?.name?.contains(it) == true } ||
+                    ArchitecturalPolicy.InfrastructurePackages.any { prop.type?.name?.startsWith(it) == true }
+                }
+                
+                val funcLeak = publicFuncs.any { func ->
+                    forbiddenTypes.any { func.returnType?.name?.contains(it) == true } ||
+                    ArchitecturalPolicy.InfrastructurePackages.any { func.returnType?.name?.startsWith(it) == true } ||
+                    func.parameters.any { param ->
+                        forbiddenTypes.any { param.type.name.contains(it) } ||
+                        ArchitecturalPolicy.InfrastructurePackages.any { param.type.name.startsWith(it) }
+                    }
+                }
+                
+                !propLeak && !funcLeak
+            }
+    }
+}

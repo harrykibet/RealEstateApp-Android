@@ -23,17 +23,17 @@ object ConcurrencyIssues {
         ChaosSynchronizationDetector.ISSUE,
         ConfinementDetector.ISSUE,
         UnsafeStateCollectionDetector.ISSUE,
-        StructuredConcurrencyDetector.SECRET_CONCURRENCY_ISSUE,
-        StructuredConcurrencyDetector.UNUSED_ASYNC_ISSUE,
-        StructuredConcurrencyDetector.MISPLACED_HANDLER_ISSUE
+        Law019_SecretConcurrencyDetector.ISSUE,
+        Law020_UnusedAsyncDetector.ISSUE,
+        Law021_MisplacedExceptionHandlerDetector.ISSUE
     )
 }
 
 object ApiIssues {
     val all = listOf(
-        ErrorHandlingDetector.MISSING_WRAPPER_ISSUE,
-        ErrorHandlingDetector.FAILURE_SMUGGLING_ISSUE,
-        ErrorHandlingDetector.DANGEROUS_FALLBACK_ISSUE,
+        Law009_ResultWrapperDetector.ISSUE,
+        Law009_FailureSmugglingDetector.ISSUE,
+        Law009_DangerousFallbackDetector.ISSUE,
         VisibilityModifierDetector.ISSUE
     )
 }
@@ -43,8 +43,8 @@ object ComposeIssues {
         BusinessLogicInComposeDetector.ISSUE,
         RememberMissingDetector.ISSUE,
         StateOwnershipDetector.ISSUE,
-        ComposeArchitectureDetector.ARCHITECTURE_LEAKAGE_ISSUE,
-        ComposeArchitectureDetector.MUTABLE_SINGLETON_READ_ISSUE,
+        Law027_ComposeArchitectureLeakageDetector.ISSUE,
+        Law025_ComposeMutableSingletonReadDetector.ISSUE,
         ComposePerformanceDetector.EXPENSIVE_RECOMPOSITION_ISSUE,
         HardcodedColorDimensionDetector.ISSUE,
         HardcodedStringDetector.ISSUE,
@@ -64,7 +64,8 @@ object PerformanceIssues {
         UnboundedBufferDetector.ISSUE,
         DirectSystemTimeDetector.ISSUE,
         MainThreadWorkDetector.ISSUE,
-        LifecycleLeakDetector.LEAK_ISSUE
+        Law023_LifecycleLeakDetector.ISSUE,
+        Law024_ContextLeakDetector.ISSUE
     )
 }
 

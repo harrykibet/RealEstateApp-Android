@@ -5,7 +5,7 @@ import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
 import com.estatia.realestate.apps.lint.Stubs
-import com.estatia.realestate.apps.lint.api.ErrorHandlingDetector
+import com.estatia.realestate.apps.lint.api.Law009_ResultWrapperDetector
 import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
 import org.junit.Test
 
@@ -71,7 +71,7 @@ class SuppressionPolicyDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE, ErrorHandlingDetector.MISSING_WRAPPER_ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
             .run()
             .expectContains("requires a preceding justification comment")
     }
@@ -95,7 +95,7 @@ class SuppressionPolicyDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE, ErrorHandlingDetector.MISSING_WRAPPER_ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
             .run()
             .expectClean()
     }

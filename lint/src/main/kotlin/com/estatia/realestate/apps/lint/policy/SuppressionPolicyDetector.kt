@@ -21,7 +21,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
-            val name = node.qualifiedName ?: ""
+            val name = node.qualifiedName ?: node.asRenderString()
             if (name.contains("SuppressLint") || name.contains("Suppress")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
@@ -31,18 +31,30 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
+        
+        // Try to get values from the standard UAST attribute
         val value = node.findAttributeValue("value")
         
         fun addValue(expr: UExpression?) {
-            if (expr is ULiteralExpression) {
-                expr.value?.toString()?.let { list.add(it) }
-            } else if (expr is UCallExpression) {
-                expr.valueArguments.forEach { addValue(it) }
+            when (expr) {
+                is ULiteralExpression -> {
+                    expr.value?.toString()?.let { list.add(it) }
+                }
+                is UCallExpression -> {
+                    expr.valueArguments.forEach { addValue(it) }
+                }
+                is UPolyadicExpression -> { // Handle "all" + some_var if someone did that
+                    expr.operands.forEach { addValue(it) }
+                }
+                is UVariable -> {
+                    addValue(expr.uastInitializer)
+                }
             }
         }
         
         addValue(value)
         
+        // Fallback for cases where UAST structure is unexpected (e.g. Kotlin-specific)
         if (list.isEmpty()) {
             val src = node.asSourceString()
             "\"([^\"]+)\"".toRegex().findAll(src).forEach { list.add(it.groupValues[1]) }
@@ -54,7 +66,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun checkSuppressedIssues(context: JavaContext, node: UAnnotation, suppressed: List<String>) {
         val registry = context.driver.registry
         suppressed.forEach { id ->
-            if (id == "all") {
+            if (id.lowercase() == "all") {
                 context.report(ISSUE, node, context.getLocation(node), "Blind suppression using 'all' is forbidden in Estatia (LAW-033).")
                 return@forEach
             }

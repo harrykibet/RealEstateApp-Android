@@ -1,5 +1,7 @@
-com.estatia.realestate.apps.core.ksp.ResultWrappingProcessorProvider
-com.estatia.realestate.apps.core.ksp.ContractProcessorProvider
-com.estatia.realestate.apps.core.ksp.AbstractionBoundaryProcessorProvider
-com.estatia.realestate.apps.core.ksp.ConstructorAbstractionProcessorProvider
-com.estatia.realestate.apps.core.ksp.ViewModelProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law009_ResultWrappingProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law008_InterfaceContractProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law008_DomainExpressivenessProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law008_AbstractionLeakageProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law030_ConstructorPurityProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law018_ViewModelSsotProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law016_ViewModelStateOwnershipProcessorProvider
