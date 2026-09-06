@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
@@ -49,7 +50,7 @@ class Law030_OrchestrationMonsterDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-030",
+            architectureLaw = Law.LAW_030,
             implementation = Implementation(Law030_OrchestrationMonsterDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
@@ -27,7 +28,8 @@ class Law008_DomainExpressivenessProcessor(
 
                         if (typeArgQualified == "kotlin.Boolean" || typeArgQualified == "kotlin.Int") {
                             logger.warn(
-                                "Domain Smell: UseCase method '${function.simpleName.asString()}' returns 'AppResult<$typeArgQualified>'. " +
+                                "Architecture Smell (${Law.LAW_008}): ${Law.LAW_008.description} " +
+                                "UseCase method '${function.simpleName.asString()}' returns 'AppResult<$typeArgQualified>'. " +
                                 "Consider using a sealed class or enum to express the domain meaning of this value.",
                                 function
                             )

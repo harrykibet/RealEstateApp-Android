@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import com.intellij.psi.PsiModifierListOwner
 import org.jetbrains.uast.*
 
@@ -58,7 +59,7 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
-            architectureLaw = "LAW-001",
+            architectureLaw = Law.LAW_001,
             implementation = Implementation(MagicNumberDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

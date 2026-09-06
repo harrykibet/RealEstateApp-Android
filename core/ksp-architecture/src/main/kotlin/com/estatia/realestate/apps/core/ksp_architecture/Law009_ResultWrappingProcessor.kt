@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
@@ -34,7 +35,8 @@ class Law009_ResultWrappingProcessor(
                     
                     if (!allowedWrappers.contains(qualifiedName)) {
                         logger.error(
-                            "Architecture Violation (LAW-009): Public method '${function.simpleName.asString()}' in ${clazz.simpleName.asString()} " +
+                            "Architecture Violation (${Law.LAW_009}): ${Law.LAW_009.description} " +
+                            "Public method '${function.simpleName.asString()}' in ${clazz.simpleName.asString()} " +
                             "must return a wrapped Result type (AppResult or Flow). Found: $qualifiedName",
                             function
                         )

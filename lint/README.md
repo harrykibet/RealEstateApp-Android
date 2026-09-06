@@ -26,30 +26,30 @@ Every detector in this module exists to enforce one of the following fundamental
 
 | Law ID | Law Description | Level | Enforcing Rule |
 | :--- | :--- | :--- | :--- |
-| **LAW-001** | Presentation owns UI state. | `WARNING` | `BusinessLogicInCompose` |
-| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState` |
+| **LAW-001** | Presentation owns UI state. | `WARNING` | `BusinessLogicInCompose`, `MagicNumber` |
+| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState`, `BackingPropertyConvention`, `RememberMissing` |
 | **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `InfrastructureLeakage` |
 | **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `FeatureCouplingViolation` |
 | **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `ForbiddenCoroutineScope` |
 | **LAW-006** | Production code does not choose dispatchers directly. | `FATAL` | `HardcodedDispatcher` |
 | **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `DirectSystemTimeUsage` |
-| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `ImplementationTypeInPublicApi` |
+| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `ImplementationTypeInPublicApi`, `MissingVisibilityModifier` |
 | **LAW-009** | Production functions do not silently discard failures. | `ERROR` | `MissingResultWrapper`, `FailureSmuggling`, `DangerousFallback` |
-| **LAW-010** | Sensitive data never enters application logs. | `FATAL` | `SensitiveLogging` |
-| **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `BlockingMainThreadWork` |
-| **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation` |
+| **LAW-010** | Sensitive data never enters application logs. | `FATAL` | `SensitiveLogging`, `HardcodedSecrets` |
+| **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `BlockingMainThreadWork`, `UnboundedBuffer` |
+| **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `UnsynchronizedChaosState`, `ThreadSafetyViolation`, `StateOwnership`, `UnsafeStateCollection` |
 | **LAW-013** | Lifecycle-owned work must be cancellable. | `ERROR` | `MissingCoroutineCancellation` |
 | **LAW-014** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `MissingConcurrencyCheck` |
-| **LAW-015** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsage` |
+| **LAW-015** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsageInTest` |
 | **LAW-016** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
 | **LAW-017** | Mutable state must follow the backing-property convention. | `WARNING` | `BackingPropertyConvention` |
 | **LAW-018** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
 | **LAW-019** | Suspend functions must not secretly launch independent work. | `FATAL` | `SecretConcurrency` |
 | **LAW-020** | Async results (Deferred) must be joined or returned. | `ERROR` | `UnusedAsync` |
 | **LAW-021** | Exception handlers must be placed on root scopes. | `WARNING` | `MisplacedCoroutineExceptionHandler` |
-| **LAW-022** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose` |
+| **LAW-022** | UI must remain localized and accessible. | `WARNING` | `HardcodedStringInCompose`, `DesignSystemViolation`, `HardcodedDesignValue` |
 | **LAW-023** | Lifecycle-bound objects (Activity/View) must not be stored in long-lived components. | `FATAL` | `LifecycleLeak` |
-| **LAW-024** | Long-lived components must not hold direct references to UI Context. | `FATAL` | `LifecycleLeak` |
+| **LAW-024** | Long-lived components must not hold direct references to UI Context. | `FATAL` | `ContextLeak` |
 | **LAW-025** | Composables must not read from mutable singletons directly. | `ERROR` | `ComposeMutableSingletonRead` |
 | **LAW-026** | Expensive object creation must be cached via remember. | `WARNING` | `ExpensiveRecomposition` |
 | **LAW-027** | Composables must not directly call domain or data layer components. | `ERROR` | `ComposeArchitectureLeakage` |
@@ -59,7 +59,7 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `LayerMixingViolation` |
 | **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `LayerDependencyViolation` |
 | **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `SuppressionPolicyViolation` |
-| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryRegressionTest` |
+| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryActive` |
 
 ---
 

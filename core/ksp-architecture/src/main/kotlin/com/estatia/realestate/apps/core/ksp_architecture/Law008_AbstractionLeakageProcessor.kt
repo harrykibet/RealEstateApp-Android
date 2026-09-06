@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.processing.*
@@ -46,7 +47,8 @@ class Law008_AbstractionLeakageProcessor(
         val qualifiedName = type?.declaration?.qualifiedName?.asString() ?: ""
         if (forbiddenInfrastructure.any { qualifiedName.startsWith(it) }) {
             logger.error(
-                "Architecture Violation (LAW-008): Leakage detected in $className. " +
+                "Architecture Violation (${Law.LAW_008}): ${Law.LAW_008.description} " +
+                "Leakage detected in $className. " +
                 "Public $nodeType '${node.toString()}' exposes infrastructure type: $qualifiedName",
                 node
             )

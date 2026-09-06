@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
+import com.estatia.realestate.apps.core.architecture.Law
 
 /**
  * Factory for creating structured Lint issues following Estatia engineering policy.
@@ -16,7 +17,7 @@ object EstatiaIssue {
         category: IssueCategory,
         tier: IssueTier,
         owner: RuleOwner,
-        architectureLaw: String,
+        architectureLaw: Law,
         implementation: Implementation,
         autofixAvailable: Boolean = false
     ): Issue {
@@ -34,7 +35,7 @@ object EstatiaIssue {
             |${goodExample.trimIndent()}
             |```
             |
-            |**Architecture Law**: $architectureLaw
+            |**Architecture Law**: ${architectureLaw.id} (${architectureLaw.description})
             |**Tier**: ${tier.name}
             |**Category**: ${category.name}
             |**Owner**: ${owner.handle}

@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.Test
@@ -10,7 +11,8 @@ class Law031_LayerMixingTest {
     fun `viewmodels must not reference infrastructure libraries`() {
         Konsist.scopeFromProject()
             .files
-            .assertTrue { file ->
+            .filterNot { it.path.contains("canary-violations") }
+            .assertTrue(additionalMessage = "${Law.LAW_031.id}: ${Law.LAW_031.description}") { file ->
                 val hasViewModel = file.classes().any { it.name.endsWith("ViewModel") }
                 if (!hasViewModel) return@assertTrue true
                 
@@ -24,7 +26,8 @@ class Law031_LayerMixingTest {
     fun `business logic components must not reference android view or compose`() {
         Konsist.scopeFromProject()
             .files
-            .assertTrue { file ->
+            .filterNot { it.path.contains("canary-violations") }
+            .assertTrue(additionalMessage = "${Law.LAW_031.id}: ${Law.LAW_031.description}") { file ->
                 val isBusinessLogic = file.classes().any { clazz ->
                     clazz.name.endsWith("Repository") || 
                     clazz.name.endsWith("UseCase") || 

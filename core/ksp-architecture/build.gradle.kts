@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:architecture"))
     implementation(libs.symbol.processing.api)
 
     testImplementation(libs.junit.junit)

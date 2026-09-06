@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.KoModifier
 import com.lemonappdev.konsist.api.verify.assertTrue
@@ -18,7 +19,8 @@ class Law008_Law016_PublicApiPurityTest {
 
         Konsist.scopeFromProject()
             .classes()
-            .assertTrue { clazz ->
+            .filterNot { it.path.contains("canary-violations") }
+            .assertTrue(additionalMessage = "${Law.LAW_008.id}: ${Law.LAW_008.description} AND ${Law.LAW_016.id}: ${Law.LAW_016.description}") { clazz ->
                 val publicProps = clazz.properties(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 val publicFuncs = clazz.functions(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 

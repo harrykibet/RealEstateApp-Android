@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
@@ -23,7 +24,8 @@ class Law008_InterfaceContractProcessor(
 
             if (!hasInterface) {
                 logger.error(
-                    "Architecture Violation (LAW-008): '${clazz.simpleName.asString()}' must implement an interface " +
+                    "Architecture Violation (${Law.LAW_008}): ${Law.LAW_008.description} " +
+                    "'${clazz.simpleName.asString()}' must implement an interface " +
                     "to ensure decoupling from implementation details.",
                     clazz
                 )

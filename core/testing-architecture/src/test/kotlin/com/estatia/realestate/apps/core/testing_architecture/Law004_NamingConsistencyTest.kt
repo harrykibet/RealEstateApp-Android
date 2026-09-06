@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.Test
@@ -10,7 +11,8 @@ class Law004_NamingConsistencyTest {
     fun `package names must match module structure`() {
         Konsist.scopeFromProject()
             .files
-            .assertTrue { file ->
+            .filterNot { it.path.contains("canary-violations") }
+            .assertTrue(additionalMessage = "${Law.LAW_004.id}: ${Law.LAW_004.description}") { file ->
                 val path = file.path.replace("\\", "/")
                 val coreMatch = "/core/([^/]+)/".toRegex().find(path)
                 val featureMatch = "/feature/([^/]+)/".toRegex().find(path)

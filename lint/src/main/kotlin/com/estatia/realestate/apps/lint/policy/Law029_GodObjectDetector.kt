@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UElement
 
@@ -52,7 +53,7 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-029",
+            architectureLaw = Law.LAW_029,
             implementation = Implementation(Law029_GodObjectDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

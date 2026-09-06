@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
@@ -60,7 +61,7 @@ class StateOwnershipDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
-            architectureLaw = "LAW-018 (UI Data Flow)",
+            architectureLaw = Law.LAW_018,
             implementation = Implementation(StateOwnershipDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiType
 import org.jetbrains.uast.*
@@ -64,7 +65,7 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-009",
+            architectureLaw = Law.LAW_009,
             implementation = Implementation(Law009_ResultWrapperDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

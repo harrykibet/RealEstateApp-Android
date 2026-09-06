@@ -4,6 +4,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.PsiMethod
@@ -48,7 +49,7 @@ class Law019_SecretConcurrencyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-019 (Structured Concurrency)",
+            architectureLaw = Law.LAW_019,
             implementation = Implementation(Law019_SecretConcurrencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

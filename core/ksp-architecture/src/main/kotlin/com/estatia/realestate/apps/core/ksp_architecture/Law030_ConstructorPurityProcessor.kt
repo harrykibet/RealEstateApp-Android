@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
@@ -31,7 +32,8 @@ class Law030_ConstructorPurityProcessor(
 
                 if (!isInterface && !isDataModel && !isPrimitive && !isSafeContext && !isSafeInfra) {
                     logger.error(
-                        "Architecture Violation (LAW-030): Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
+                        "Architecture Violation (${Law.LAW_030}): ${Law.LAW_030.description} " +
+                        "Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
                         "must be an interface (usually starting with 'I') or a pure Data Model. Found: $qualifiedName",
                         param
                     )
@@ -39,7 +41,7 @@ class Law030_ConstructorPurityProcessor(
                 
                 if (isInterface && !simpleName.startsWith("I") && !simpleName.contains("Component")) {
                     logger.warn(
-                        "Naming Smell: Interface '$simpleName' used in constructor of ${clazz.simpleName.asString()} " +
+                        "Architecture Smell (${Law.LAW_030}): Interface '$simpleName' used in constructor of ${clazz.simpleName.asString()} " +
                         "should follow the 'I' prefix convention for clear abstraction visibility.",
                         param
                     )

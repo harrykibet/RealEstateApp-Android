@@ -8,6 +8,7 @@ java {
 }
 
 dependencies {
+    implementation(project(":core:architecture"))
     compileOnly(libs.android.lint.api)
     compileOnly(libs.android.lint.checks)
 

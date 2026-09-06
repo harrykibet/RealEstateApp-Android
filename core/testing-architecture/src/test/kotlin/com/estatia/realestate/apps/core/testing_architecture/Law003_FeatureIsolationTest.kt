@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withPackage
 import com.lemonappdev.konsist.api.verify.assertTrue
@@ -12,9 +13,10 @@ class Law003_FeatureIsolationTest {
         Konsist
             .scopeFromProject()
             .files
+            .filterNot { it.path.contains("canary-violations") }
             .withPackage(ArchitecturalPolicy.Layers.Feature.packagePattern)
             .filterNot { ArchitecturalPolicy.TechnicalDebt.FeatureIsolation.contains(it.nameWithExtension) }
-            .assertTrue { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_004.id}: ${Law.LAW_004.description}") { file ->
                 val packageName = file.packagee?.name ?: return@assertTrue true
                 val packageParts = packageName.split(".")
                 val featureIndex = packageParts.indexOf("feature")
@@ -42,7 +44,8 @@ class Law003_FeatureIsolationTest {
     fun `feature modules must not depend on database or network implementation`() {
         Konsist.scopeFromProject()
             .files
-            .assertTrue { file ->
+            .filterNot { it.path.contains("canary-violations") }
+            .assertTrue(additionalMessage = "${Law.LAW_003.id}: ${Law.LAW_003.description}") { file ->
                 val isFeature = (file.packagee?.name ?: "").contains(".feature.")
                 if (!isFeature) return@assertTrue true
 

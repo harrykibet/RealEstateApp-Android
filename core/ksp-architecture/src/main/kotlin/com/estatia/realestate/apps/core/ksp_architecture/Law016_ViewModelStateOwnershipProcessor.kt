@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
@@ -29,7 +30,7 @@ class Law016_ViewModelStateOwnershipProcessor(
                 if (typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
                     typeName == "androidx.compose.runtime.MutableState") {
                     logger.error(
-                        "Architecture Violation (LAW-016): ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
+                        "Architecture Violation (${Law.LAW_016}): ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
                         "Expose as StateFlow or a read-only interface instead.",
                         prop
                     )

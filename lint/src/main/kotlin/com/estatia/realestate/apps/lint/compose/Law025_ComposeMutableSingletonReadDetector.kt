@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.*
@@ -101,7 +102,7 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
-            architectureLaw = "LAW-025 (Observable State)",
+            architectureLaw = Law.LAW_025,
             implementation = Implementation(Law025_ComposeMutableSingletonReadDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

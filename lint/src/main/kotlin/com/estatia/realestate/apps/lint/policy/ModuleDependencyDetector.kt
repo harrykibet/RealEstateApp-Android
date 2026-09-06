@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import com.intellij.psi.PsiClass
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.UImportStatement
@@ -79,7 +80,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-004",
+            architectureLaw = Law.LAW_004,
             implementation = Implementation(ModuleDependencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
 
@@ -92,7 +93,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-003",
+            architectureLaw = Law.LAW_003,
             implementation = Implementation(ModuleDependencyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

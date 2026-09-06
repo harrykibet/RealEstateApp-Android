@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 
@@ -56,7 +57,7 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.CONCURRENCY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-012",
+            architectureLaw = Law.LAW_012,
             implementation = Implementation(ThreadSafetyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

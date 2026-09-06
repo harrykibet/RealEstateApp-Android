@@ -4,6 +4,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
@@ -60,7 +61,7 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.SECURITY,
             tier = IssueTier.FATAL,
             owner = RuleOwner.SECURITY,
-            architectureLaw = "LAW-010 (Data Privacy)",
+            architectureLaw = Law.LAW_010,
             implementation = Implementation(SensitiveLoggingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

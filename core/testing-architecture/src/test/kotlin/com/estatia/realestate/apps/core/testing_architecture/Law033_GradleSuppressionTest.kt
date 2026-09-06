@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -40,7 +41,7 @@ class Law033_GradleSuppressionTest {
         }
 
         assertTrue(
-            "Global suppressions detected in Gradle files (LAW-033). Use @Suppress with justification in source instead:\n" +
+            "${Law.LAW_033.id}: ${Law.LAW_033.description}. Use @Suppress with justification in source instead:\n" +
             violations.joinToString("\n"),
             violations.isEmpty()
         )

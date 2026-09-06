@@ -4,6 +4,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
@@ -91,7 +92,7 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.PERFORMANCE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-011 (Main Thread Isolation)",
+            architectureLaw = Law.LAW_011,
             implementation = Implementation(MainThreadWorkDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

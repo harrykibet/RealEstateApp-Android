@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
+import com.estatia.realestate.apps.core.architecture.Law
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -43,7 +44,7 @@ class Law034_LintCanaryRegressionTest {
         val missingIssues = expectedIssues.filterNot { reportText.contains(it) }
 
         assertTrue(
-            "The following architectural laws were NOT detected in the canary module:\n" +
+            "${Law.LAW_034.id}: ${Law.LAW_034.description}. The following architectural laws were NOT detected in the canary module:\n" +
             missingIssues.joinToString("\n") + 
             "\n\nFull Report Path: ${reportFile.absolutePath}",
             missingIssues.isEmpty()

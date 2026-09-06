@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.*
 
 /**
@@ -91,7 +92,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-033",
+            architectureLaw = Law.LAW_033,
             implementation = Implementation(SuppressionPolicyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

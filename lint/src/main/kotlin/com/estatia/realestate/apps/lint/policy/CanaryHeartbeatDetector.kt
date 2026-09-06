@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.ULiteralExpression
 import org.jetbrains.uast.UElement
 
@@ -35,7 +36,7 @@ class CanaryHeartbeatDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.INFO,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-034",
+            architectureLaw = Law.LAW_034,
             implementation = Implementation(CanaryHeartbeatDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

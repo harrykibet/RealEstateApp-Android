@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 
@@ -54,7 +55,7 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL, // Default is FATAL, but we use thresholds to decide
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-028",
+            architectureLaw = Law.LAW_028,
             implementation = Implementation(Law028_SpaghettiMethodDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 
@@ -15,20 +16,29 @@ import org.jetbrains.uast.*
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = 
-        listOf(UBinaryExpression::class.java, UPolyadicExpression::class.java)
+        listOf(UBinaryExpression::class.java, UPolyadicExpression::class.java, UIfExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            if (node.operator.text == "?:") {
+            if (isElvis(node.operator.text)) {
                 checkFallback(node.rightOperand, node)
             }
         }
 
         override fun visitPolyadicExpression(node: UPolyadicExpression) {
-            if (node.operator.text == "?:") {
+            if (isElvis(node.operator.text)) {
                 node.operands.lastOrNull()?.let { checkFallback(it, node) }
             }
         }
+
+        override fun visitIfExpression(node: UIfExpression) {
+            // Some Kotlin versions represent Elvis as an If expression
+            if (node.asRenderString().contains("?:")) {
+                node.elseExpression?.let { checkFallback(it, node) }
+            }
+        }
+
+        private fun isElvis(text: String) = text == "?:"
 
         private fun checkFallback(expression: UExpression, node: UElement) {
             if (isDangerousFallback(expression)) {
@@ -50,7 +60,6 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         
         if (current is ULiteralExpression) {
             val value = current.value
-            // Catch empty strings, nulls, false, 0
             return value == null || (value is String && value.isEmpty()) || value == 0 || value == false
         }
         
@@ -76,7 +85,7 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-009",
+            architectureLaw = Law.LAW_009,
             implementation = Implementation(Law009_DangerousFallbackDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

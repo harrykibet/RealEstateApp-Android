@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:architecture"))
     implementation(libs.konsist)
     testImplementation(libs.junit.junit)
 }

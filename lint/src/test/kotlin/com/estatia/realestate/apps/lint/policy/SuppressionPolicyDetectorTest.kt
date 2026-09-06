@@ -16,11 +16,15 @@ class SuppressionPolicyDetectorTest {
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
+                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
+                    import android.annotation.SuppressLint
                     @Suppress("all")
                     class Bad1
+                    @SuppressLint("all")
+                    class Bad2
                     """.trimIndent()
                 )
             )

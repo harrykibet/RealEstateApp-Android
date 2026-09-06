@@ -5,6 +5,7 @@ import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 
@@ -70,7 +71,7 @@ class VisibilityModifierDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
-            architectureLaw = "LAW-008",
+            architectureLaw = Law.LAW_008,
             implementation = Implementation(VisibilityModifierDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }
