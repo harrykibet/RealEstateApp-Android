@@ -14,6 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.random.Random
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 class CdnPolicyTest {
 

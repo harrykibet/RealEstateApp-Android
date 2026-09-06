@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.player_engine.streaming.StreamingUriResolver
 import javax.inject.Inject
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class PlayerConfigurationFactory @Inject constructor(
     private val streamingPipeline: IStreamingPipeline,

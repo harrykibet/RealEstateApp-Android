@@ -18,17 +18,17 @@ interface IAuthRepository {
     /**
      * Returns the current user's ID.
      */
-    fun getCurrentUserId(): String?
+    fun getCurrentUserId(): AppResult<String?>
 
     /**
      * Returns the current user's email.
      */
-    fun getCurrentUserEmail(): String?
+    fun getCurrentUserEmail(): AppResult<String?>
 
     /**
      * Returns the current [AuthUserDomainModel].
      */
-    fun getCurrentUser(): AuthUserDomainModel?
+    fun getCurrentUser(): AppResult<AuthUserDomainModel?>
 
     /**
      * Triggers a password reset email.

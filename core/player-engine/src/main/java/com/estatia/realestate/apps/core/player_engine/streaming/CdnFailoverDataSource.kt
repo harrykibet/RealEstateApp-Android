@@ -16,6 +16,7 @@ import java.io.IOException
  * If a request fails, it reports the failure to [CdnHealthMonitor], selects an alternative CDN,
  * and retries the request transparently.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class CdnFailoverDataSource(
     private val baseDataSource: DataSource,
@@ -91,6 +92,7 @@ class CdnFailoverDataSource(
 /**
  * Factory for [CdnFailoverDataSource].
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class CdnFailoverDataSourceFactory(
     private val baseFactory: DataSource.Factory,

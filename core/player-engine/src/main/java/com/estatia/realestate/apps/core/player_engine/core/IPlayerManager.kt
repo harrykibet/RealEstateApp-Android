@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
  * Main entry point for the media playback engine.
  * Responsible for high-level player lifecycle, state observation, and resource management.
  */
+// Justification: Exposes raw Media3 Player and preloading APIs which are currently marked as UnstableApi.
+@UnstableApi
 interface IPlayerManager {
 
     /**
@@ -65,7 +67,6 @@ interface IPlayerManager {
      * @param title Optional title for media session metadata.
      * @param artist Optional artist name for media session metadata.
      */
-    @OptIn(UnstableApi::class)
     suspend fun preload(
         mediaId: String,
         uri: MediaReference,

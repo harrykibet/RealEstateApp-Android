@@ -45,6 +45,7 @@ import javax.inject.Provider
  * 3. Efficient reuse of idle player instances for new requests.
  * 4. Proper media item updates upon reuse.
  */
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerPoolReuseTest {

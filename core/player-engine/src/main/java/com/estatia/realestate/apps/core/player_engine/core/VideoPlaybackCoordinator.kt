@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.player_engine.streaming.IStreamingPipeli
 import com.estatia.realestate.apps.core.player_engine.streaming.WarmPriority
 import com.estatia.realestate.apps.core.common.system.PerformanceMonitor
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
+import androidx.media3.common.util.UnstableApi
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -20,6 +21,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+// Justification: Relies on IPlayerManager which uses Unstable Media3 APIs for preloading and fine-grained state observation.
+@OptIn(UnstableApi::class)
 @ViewModelScoped
 class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,

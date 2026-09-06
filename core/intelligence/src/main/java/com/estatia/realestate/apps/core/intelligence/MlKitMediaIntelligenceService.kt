@@ -1,6 +1,8 @@
 package com.estatia.realestate.apps.core.intelligence
 
 import com.estatia.realestate.apps.core.common.annotations.Service
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import android.content.Context
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
@@ -36,34 +38,46 @@ class MlKitMediaIntelligenceService @Inject constructor(
     private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
     private val faceDetector = FaceDetection.getClient()
 
-    override suspend fun extractAmenities(imageUri: MediaReference): List<String> {
+    override suspend fun extractAmenities(imageUri: MediaReference): AppResult<List<String>> {
         val startTime = clock.currentTimeMillis()
-        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
-        val labels = labeler.process(image).await()
-        
-        // Filter and map labels to Estatia amenities
-        val amenities = labels
-            .filter { it.confidence > 0.7f }
-            .map { it.text.lowercase() }
-            .filter { isRelevantAmenity(it) }
+        return try {
+            val image = InputImage.fromFilePath(context, imageUri.value.toUri())
+            val labels = labeler.process(image).await()
+            
+            // Filter and map labels to Estatia amenities
+            val amenities = labels
+                .filter { it.confidence > 0.7f }
+                .map { it.text.lowercase() }
+                .filter { isRelevantAmenity(it) }
 
-        val duration = clock.currentTimeMillis() - startTime
-        metricsTracker.trackDuration("intelligence.media.extraction_latency", duration.milliseconds)
-        
-        return amenities
+            val duration = clock.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("intelligence.media.extraction_latency", duration.milliseconds)
+            
+            AppResult.Success(amenities)
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
-    override suspend fun detectFaces(imageUri: MediaReference): Int {
-        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
-        val faces = faceDetector.process(image).await()
-        return faces.size
+    override suspend fun detectFaces(imageUri: MediaReference): AppResult<Int> {
+        return try {
+            val image = InputImage.fromFilePath(context, imageUri.value.toUri())
+            val faces = faceDetector.process(image).await()
+            AppResult.Success(faces.size)
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
-    override suspend fun getMediaQualityScore(imageUri: MediaReference): Float {
-        // Simple heuristic: higher confidence labels often mean clearer images
-        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
-        val labels = labeler.process(image).await()
-        return labels.firstOrNull()?.confidence ?: 0.5f
+    override suspend fun getMediaQualityScore(imageUri: MediaReference): AppResult<Float> {
+        return try {
+            // Simple heuristic: higher confidence labels often mean clearer images
+            val image = InputImage.fromFilePath(context, imageUri.value.toUri())
+            val labels = labeler.process(image).await()
+            AppResult.Success(labels.firstOrNull()?.confidence ?: 0.5f)
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
     private fun isRelevantAmenity(label: String): Boolean {

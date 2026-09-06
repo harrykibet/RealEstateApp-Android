@@ -19,17 +19,17 @@ interface IAuthRemoteDataSource {
     /**
      * Returns the unique ID of the currently logged-in user, or null if none.
      */
-    fun getCurrentUserId(): String?
+    fun getCurrentUserId(): AppResult<String?>
 
     /**
      * Returns the email of the currently logged-in user, or null if none.
      */
-    fun getCurrentUserEmail(): String?
+    fun getCurrentUserEmail(): AppResult<String?>
 
     /**
      * Returns the current [NetworkUserEntity] if available.
      */
-    fun getCurrentUser(): NetworkUserEntity?
+    fun getCurrentUser(): AppResult<NetworkUserEntity?>
 
     /**
      * Signs up a new user with email and password.

@@ -25,6 +25,7 @@ import javax.inject.Inject
  *
  * This class is ONLY responsible for analytics tracking.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,

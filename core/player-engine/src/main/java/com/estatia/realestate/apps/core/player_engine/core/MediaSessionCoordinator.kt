@@ -10,6 +10,7 @@ import javax.inject.Singleton
 /**
  * Manages the lifecycle and state of the [MediaSession] for the playback engine.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class MediaSessionCoordinator @Inject constructor(

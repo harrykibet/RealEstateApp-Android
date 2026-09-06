@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.AndroidExternalSurface
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.util.UnstableApi
+import com.estatia.realestate.apps.core.common.annotations.Repository
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -55,6 +58,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param onPause Callback for when the video should pause (e.g., due to lifecycle events).
  * @param isActive Whether this player is currently the active (visible) one in a feed.
  */
+// Justification: Interacts with IPlayerManager which uses Unstable Media3 APIs for deep playback control.
+@OptIn(UnstableApi::class)
 @Composable
 fun EngineVideoPlayer(
     mediaId: String,

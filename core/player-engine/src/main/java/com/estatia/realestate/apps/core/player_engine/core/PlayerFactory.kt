@@ -21,6 +21,7 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 // PlayerFactory.kt — request a fresh listener instance per player via Provider<T>
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class PlayerFactory @Inject constructor(

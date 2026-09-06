@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class MediaSessionProvider @Inject constructor(

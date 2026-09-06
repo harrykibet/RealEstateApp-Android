@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 /**
  * Factory for creating [PlayerConfiguration] instances based on media URI and type.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 interface IPlayerConfigurationFactory {
     /**

@@ -185,9 +185,10 @@ object ProdNetworkModule {
         retryPolicy: IRetryPolicy,
         exceptionMapper: IExceptionMapper,
         metricsTracker: IMetricsTracker,
+        clock: IClock,
         logger: ILogger
     ): INetworkClient {
-        return ProductionNetworkClient(retryPolicy, exceptionMapper, metricsTracker, logger)
+        return ProductionNetworkClient(retryPolicy, exceptionMapper, metricsTracker, clock, logger)
     }
 
     @Provides

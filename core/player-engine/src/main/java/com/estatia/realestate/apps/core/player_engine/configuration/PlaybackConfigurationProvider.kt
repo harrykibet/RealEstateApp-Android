@@ -13,6 +13,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class PlaybackConfigurationProvider @Inject constructor(
     @ApplicationContext private val context: Context,

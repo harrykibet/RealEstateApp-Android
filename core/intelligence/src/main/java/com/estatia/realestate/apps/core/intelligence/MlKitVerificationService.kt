@@ -3,6 +3,8 @@ package com.estatia.realestate.apps.core.intelligence
 import com.estatia.realestate.apps.core.common.annotations.Service
 import android.content.Context
 import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.user.FaceMatchResult
 import com.estatia.realestate.apps.core.model.user.IdDocumentResult
@@ -43,60 +45,68 @@ class MlKitVerificationService @Inject constructor(
             .build()
     )
 
-    override suspend fun scanIdDocument(imageUri: MediaReference): IdDocumentResult {
+    override suspend fun scanIdDocument(imageUri: MediaReference): AppResult<IdDocumentResult> {
         val startTime = System.currentTimeMillis()
-        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
-        val result = textRecognizer.process(image).await()
-        
-        // Advanced OCR Logic: Extract name and ID using patterns
-        val rawText = result.text
-        val name = extractName(rawText)
-        val idNumber = extractIdNumber(rawText)
+        return try {
+            val image = InputImage.fromFilePath(context, imageUri.value.toUri())
+            val result = textRecognizer.process(image).await()
+            
+            // Advanced OCR Logic: Extract name and ID using patterns
+            val rawText = result.text
+            val name = extractName(rawText)
+            val idNumber = extractIdNumber(rawText)
 
-        val duration = System.currentTimeMillis() - startTime
-        metricsTracker.trackDuration("intelligence.verification.scan_latency", duration.milliseconds)
-        metricsTracker.incrementCounter("intelligence.verification.scan_success")
+            val duration = System.currentTimeMillis() - startTime
+            metricsTracker.trackDuration("intelligence.verification.scan_latency", duration.milliseconds)
+            metricsTracker.incrementCounter("intelligence.verification.scan_success")
 
-        return IdDocumentResult(
-            name = name,
-            idNumber = idNumber,
-            dateOfBirth = null,
-            expiryDate = null,
-            rawText = rawText,
-            confidence = 0.9f
-        )
+            AppResult.Success(IdDocumentResult(
+                name = name,
+                idNumber = idNumber,
+                dateOfBirth = null,
+                expiryDate = null,
+                rawText = rawText,
+                confidence = 0.9f
+            ))
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
-    override suspend fun verifyFaceMatch(idPhotoUri: MediaReference, selfieUri: MediaReference): FaceMatchResult {
-        // ML Kit doesn't have a direct "Face Comparison" API (it's in FaceMesh or custom TFLite).
-        // For now, we detect faces in both and return a heuristic match.
-        val idImage = InputImage.fromFilePath(context, idPhotoUri.value.toUri())
-        val selfieImage = InputImage.fromFilePath(context, selfieUri.value.toUri())
-        
-        val idFaces = faceDetector.process(idImage).await()
-        val selfieFaces = faceDetector.process(selfieImage).await()
+    override suspend fun verifyFaceMatch(idPhotoUri: MediaReference, selfieUri: MediaReference): AppResult<FaceMatchResult> {
+        return try {
+            // ML Kit doesn't have a direct "Face Comparison" API (it's in FaceMesh or custom TFLite).
+            // For now, we detect faces in both and return a heuristic match.
+            val idImage = InputImage.fromFilePath(context, idPhotoUri.value.toUri())
+            val selfieImage = InputImage.fromFilePath(context, selfieUri.value.toUri())
+            
+            val idFaces = faceDetector.process(idImage).await()
+            val selfieFaces = faceDetector.process(selfieImage).await()
 
-        val isMatch = idFaces.isNotEmpty() && selfieFaces.isNotEmpty()
-        return FaceMatchResult(
-            confidence = if (isMatch) 0.85f else 0.0f,
-            isMatch = isMatch
-        )
+            val isMatch = idFaces.isNotEmpty() && selfieFaces.isNotEmpty()
+            AppResult.Success(FaceMatchResult(
+                confidence = if (isMatch) 0.85f else 0.0f,
+                isMatch = isMatch
+            ))
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
-    override suspend fun verifyLiveness(videoUri: MediaReference): Boolean {
+    override suspend fun verifyLiveness(videoUri: MediaReference): AppResult<Boolean> {
         // Liveness check would involve processing multiple frames from the video
         // and checking for classification like isLeftEyeOpen, isSmiling, etc.
-        return true // Simplified for MVP
+        return AppResult.Success(true) // Simplified for MVP
     }
 
     override suspend fun verifyPhysicalPresence(
         mediaUri: MediaReference,
         expectedLat: Double,
         expectedLng: Double
-    ): Boolean {
+    ): AppResult<Boolean> {
         // In a real implementation, we would use a library like MetadataExtractor
         // to read EXIF GPS tags from the file.
-        return true 
+        return AppResult.Success(true) 
     }
 
     private fun extractName(text: String): String? {

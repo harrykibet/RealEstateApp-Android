@@ -103,7 +103,7 @@ class PropertyRepository @Inject constructor(
 
         // 🛡️ Proactive On-Device Moderation: Text
         property.description?.let { desc ->
-            val textSafety = contentSafetyService.validateText(desc)
+            val textSafety = contentSafetyService.validateText(desc).getOrNull()
             if (textSafety is SafetyResult.Flagged) {
                 return AppResult.Error(PropertyException.SafetyViolation("Description: ${textSafety.reason}"))
             }
@@ -111,7 +111,7 @@ class PropertyRepository @Inject constructor(
 
         // 🛡️ Proactive On-Device Moderation: Images
         imageUris.forEach { uri ->
-            val imageSafety = contentSafetyService.validateImage(uri)
+            val imageSafety = contentSafetyService.validateImage(uri).getOrNull()
             if (imageSafety is SafetyResult.Flagged) {
                 return AppResult.Error(PropertyException.SafetyViolation("Image: ${imageSafety.reason}"))
             }
@@ -119,7 +119,7 @@ class PropertyRepository @Inject constructor(
 
         // 🛡️ Proactive On-Device Moderation: Videos
         videoUris.forEach { uri ->
-            val videoSafety = contentSafetyService.validateVideo(uri)
+            val videoSafety = contentSafetyService.validateVideo(uri).getOrNull()
             if (videoSafety is SafetyResult.Flagged) {
                 return AppResult.Error(PropertyException.SafetyViolation("Video: ${videoSafety.reason}"))
             }

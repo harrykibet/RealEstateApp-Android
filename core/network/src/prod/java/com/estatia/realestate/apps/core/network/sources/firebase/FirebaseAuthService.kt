@@ -419,16 +419,16 @@ internal class FirebaseAuthService @Inject constructor(
         }
     }
 
-    override fun getCurrentUser(): NetworkUserEntity? {
-        return firebaseAuth.currentUser?.let { FirebaseUserMapper.toEntity(it) }
+    override fun getCurrentUser(): AppResult<NetworkUserEntity?> {
+        return AppResult.Success(firebaseAuth.currentUser?.let { FirebaseUserMapper.toEntity(it) })
     }
 
-    override fun getCurrentUserId(): String? {
-        return firebaseAuth.currentUser?.uid
+    override fun getCurrentUserId(): AppResult<String?> {
+        return AppResult.Success(firebaseAuth.currentUser?.uid)
     }
 
-    override fun getCurrentUserEmail(): String? {
-        return firebaseAuth.currentUser?.email
+    override fun getCurrentUserEmail(): AppResult<String?> {
+        return AppResult.Success(firebaseAuth.currentUser?.email)
     }
 
     override suspend fun signOut(): AppResult<Unit> {

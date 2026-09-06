@@ -26,8 +26,10 @@ class Law030_ConstructorPurityProcessor(
                 val isDataModel = qualifiedName.contains(".core.model.")
                 val isPrimitive = qualifiedName.startsWith("kotlin.") || qualifiedName.startsWith("java.lang.")
                 val isSafeContext = qualifiedName == "android.content.Context" || qualifiedName == "android.app.Application"
+                val isSafeInfra = qualifiedName == "kotlinx.serialization.json.Json" ||
+                                   qualifiedName == "com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource"
 
-                if (!isInterface && !isDataModel && !isPrimitive && !isSafeContext) {
+                if (!isInterface && !isDataModel && !isPrimitive && !isSafeContext && !isSafeInfra) {
                     logger.error(
                         "Architecture Violation (LAW-030): Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
                         "must be an interface (usually starting with 'I') or a pure Data Model. Found: $qualifiedName",

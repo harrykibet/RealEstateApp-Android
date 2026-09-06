@@ -6,15 +6,21 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import javax.inject.Inject
+
+interface IGetLikedPropertiesUseCase {
+    suspend operator fun invoke(): AppResult<List<PropertyDomainModel>>
+}
 
 @UseCase
 class GetLikedPropertiesUseCase @Inject constructor(
     private val propertyRepository: IPropertyRepository,
     private val authRepository: IAuthRepository
-) {
-    suspend operator fun invoke(): AppResult<List<PropertyDomainModel>> {
-        val userId = authRepository.getCurrentUserId() ?: return AppResult.Error(AuthException.UserNotAuthenticated)
+) : IGetLikedPropertiesUseCase {
+    override suspend operator fun invoke(): AppResult<List<PropertyDomainModel>> {
+        val userId = authRepository.getCurrentUserId().getOrNull() 
+            ?: return AppResult.Error(AuthException.UserNotAuthenticated)
         return propertyRepository.fetchLikedProperties(userId)
     }
 }

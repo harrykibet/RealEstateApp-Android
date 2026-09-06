@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.intelligence
 
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.common.MediaReference
 
 /**
@@ -10,15 +11,15 @@ interface IMediaIntelligenceService {
      * Analyzes an image to detect amenities (e.g., pool, balcony, modern kitchen).
      * Returns a list of detected feature labels.
      */
-    suspend fun extractAmenities(imageUri: MediaReference): List<String>
+    suspend fun extractAmenities(imageUri: MediaReference): AppResult<List<String>>
 
     /**
      * Checks if an image contains human faces for privacy protection.
      */
-    suspend fun detectFaces(imageUri: MediaReference): Int
+    suspend fun detectFaces(imageUri: MediaReference): AppResult<Int>
 
     /**
      * High-level quality score for the media (lighting, blur, etc.).
      */
-    suspend fun getMediaQualityScore(imageUri: MediaReference): Float
+    suspend fun getMediaQualityScore(imageUri: MediaReference): AppResult<Float>
 }

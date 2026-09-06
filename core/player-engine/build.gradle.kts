@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    api(libs.media3.common)
     implementation(libs.bundles.media3)
 
     implementation(projects.core.data)

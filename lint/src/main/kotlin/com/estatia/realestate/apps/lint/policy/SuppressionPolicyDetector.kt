@@ -19,7 +19,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
             val name = node.qualifiedName ?: node.asRenderString()
-            if (name.contains("SuppressLint") || name.contains("Suppress")) {
+            if (name.contains("SuppressLint") || name.contains("Suppress") || name.contains("OptIn")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
             }
@@ -29,6 +29,14 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
         
+        // Check for OptIn values (class literals)
+        val name = node.qualifiedName ?: node.asRenderString()
+        if (name.contains("OptIn")) {
+            val value = node.findAttributeValue("markerClass") ?: node.findAttributeValue("value")
+            extractFromExpression(value ?: return emptyList(), list)
+            return list
+        }
+
         // Try value attribute
         node.findAttributeValue("value")?.let { attr ->
             extractFromExpression(attr, list)
@@ -63,6 +71,9 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             is UExpressionList -> {
                 expr.expressions.forEach { extractFromExpression(it, list) }
             }
+            is UClassLiteralExpression -> {
+                expr.type?.canonicalText?.let { list.add(it) }
+            }
         }
     }
 
@@ -74,7 +85,8 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                 return@forEach
             }
 
-            val issue = registry.getIssue(id) ?: return@forEach
+            val issue = registry.getIssue(id) ?: if (id.contains("UnstableApi")) registry.getIssue("UnsafeOptInUsageError") else null
+            if (issue == null) return@forEach
             
             when (issue.defaultSeverity) {
                 Severity.FATAL -> {

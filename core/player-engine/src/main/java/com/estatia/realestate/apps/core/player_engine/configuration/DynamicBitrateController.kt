@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+// Justification: Relies on Unstable Media3 APIs for performance optimization.
 @UnstableApi
 class DynamicBitrateController @Inject constructor(
     private val bitratePolicy: DynamicBitratePolicy

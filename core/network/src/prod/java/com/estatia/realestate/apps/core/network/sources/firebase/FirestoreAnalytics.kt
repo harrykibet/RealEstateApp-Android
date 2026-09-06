@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 
 import android.os.Bundle
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.common.interfaces.ILocationUtils
@@ -59,7 +60,7 @@ internal class FirestoreAnalytics @Inject constructor(
     ): AppResult<Unit> {
 
         val userId =
-            authService.getCurrentUserId()
+            authService.getCurrentUserId().getOrNull()
                 ?: return AppResult.Error(
                     AuthException.UserNotAuthenticated
                 )

@@ -45,6 +45,7 @@ annotation class PlaybackCache
 
 @Module
 @InstallIn(SingletonComponent::class)
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 object StreamingModule {
 

@@ -23,6 +23,7 @@ import javax.inject.Singleton
  * Facade implementation of [IPlayerManager].
  * Composes specialized coordinators to handle specific playback responsibilities.
  */
+// Justification: Implementation of IPlayerManager which exposes Unstable Media3 APIs.
 @UnstableApi
 @Singleton
 class PlayerManager @Inject constructor(

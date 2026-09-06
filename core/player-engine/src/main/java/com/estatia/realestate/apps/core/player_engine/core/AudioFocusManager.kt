@@ -21,6 +21,7 @@ import javax.inject.Singleton
 /**
  * Handles Android audio focus requests and transitions.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class AudioFocusManager @Inject constructor(

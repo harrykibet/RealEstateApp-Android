@@ -4,7 +4,9 @@ import com.estatia.realestate.apps.core.common.annotations.Service
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
+import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.interfaces.IClock
+import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.common.IContentSafetyService
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
@@ -42,7 +44,7 @@ class MlKitContentSafetyService @Inject constructor(
 
     private val labeler by lazy { ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS) }
 
-    override suspend fun validateText(text: String): SafetyResult {
+    override suspend fun validateText(text: String): AppResult<SafetyResult> {
         val startTime = clock.currentTimeMillis()
         // ML Kit doesn't have a direct on-device "toxicity" model.
         // We use a high-performance heuristic pattern match for common abusive terms.
@@ -61,10 +63,10 @@ class MlKitContentSafetyService @Inject constructor(
             metricsTracker.incrementCounter("intelligence.safety.flagged_text")
         }
 
-        return result
+        return AppResult.Success(result)
     }
 
-    override suspend fun detectSensitiveData(text: String): List<SensitiveEntity> {
+    override suspend fun detectSensitiveData(text: String): AppResult<List<SensitiveEntity>> {
         // Pattern match for phone numbers and emails (common bypass methods)
         val entities = mutableListOf<SensitiveEntity>()
         
@@ -79,15 +81,19 @@ class MlKitContentSafetyService @Inject constructor(
             entities.add(SensitiveEntity("EMAIL", it.value, it.range.first, it.range.last))
         }
 
-        return entities
+        return AppResult.Success(entities)
     }
 
-    override suspend fun validateImage(imageUri: MediaReference): SafetyResult {
-        val image = InputImage.fromFilePath(context, imageUri.value.toUri())
-        return runLabelAnalysis(image)
+    override suspend fun validateImage(imageUri: MediaReference): AppResult<SafetyResult> {
+        return try {
+            val image = InputImage.fromFilePath(context, imageUri.value.toUri())
+            AppResult.Success(runLabelAnalysis(image))
+        } catch (e: Exception) {
+            AppResult.Error(AppException.Unknown(e))
+        }
     }
 
-    override suspend fun validateVideo(videoUri: MediaReference): SafetyResult = withContext(Dispatchers.IO) {
+    override suspend fun validateVideo(videoUri: MediaReference): AppResult<SafetyResult> = withContext(Dispatchers.IO) {
         val retriever = MediaMetadataRetriever()
         try {
             retriever.setDataSource(context, videoUri.value.toUri())
@@ -104,15 +110,15 @@ class MlKitContentSafetyService @Inject constructor(
                     val image = InputImage.fromBitmap(frame, 0)
                     val result = runLabelAnalysis(image)
                     if (result is SafetyResult.Flagged) {
-                        return@withContext result
+                        return@withContext AppResult.Success(result)
                     }
                 }
             }
-            SafetyResult.Safe
+            AppResult.Success(SafetyResult.Safe)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            SafetyResult.Safe // Fallback to safe if extraction fails
+            AppResult.Success(SafetyResult.Safe) // Fallback to safe if extraction fails
         } finally {
             retriever.release()
         }

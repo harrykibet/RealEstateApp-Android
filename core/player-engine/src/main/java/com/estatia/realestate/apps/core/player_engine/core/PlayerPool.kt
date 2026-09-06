@@ -48,6 +48,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *   2. Pinned media IDs [pinnedMediaIds] are never evicted.
  *   3. Released players are neutralized (stopped/cleared) before being returned to the idle pool.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class PlayerPool @Inject constructor(

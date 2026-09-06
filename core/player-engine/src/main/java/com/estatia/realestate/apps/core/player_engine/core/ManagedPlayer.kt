@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 /**
  * Container for a pooled player instance and its associated state.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 data class ManagedPlayer(
     val mediaId: String,

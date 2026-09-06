@@ -26,6 +26,7 @@ import javax.inject.Singleton
 /**
  * The core implementation of playback operations, including listener translation and resource allocation.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class PlaybackOrchestrator @Inject constructor(

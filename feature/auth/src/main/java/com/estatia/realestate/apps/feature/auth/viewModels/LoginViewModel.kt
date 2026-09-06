@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
@@ -106,6 +107,6 @@ class LoginViewModel @Inject constructor(
 
     fun checkExistingSession() {
         _authState.value =
-            determineAuthState(authRepository.getCurrentUser())
+            determineAuthState(authRepository.getCurrentUser().getOrNull())
     }
 }

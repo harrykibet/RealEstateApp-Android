@@ -43,6 +43,7 @@ import org.junit.Test
 import java.util.concurrent.Executors
 import javax.inject.Provider
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class PlayerPoolConcurrencyTest {

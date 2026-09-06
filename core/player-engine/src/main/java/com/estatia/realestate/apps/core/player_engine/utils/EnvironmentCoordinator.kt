@@ -30,6 +30,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class EnvironmentCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,

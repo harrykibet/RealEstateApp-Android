@@ -24,6 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class EnvironmentCoordinatorChaosTest {

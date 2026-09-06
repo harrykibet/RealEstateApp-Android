@@ -15,12 +15,8 @@ class LintConventionPlugin : Plugin<Project> {
                             checkTestSources = true
                             warningsAsErrors = true
                             abortOnError = true
-                            disable.add("TrustAllX509TrustManager")
                             disable.add("IconLauncherShape")
-                            disable.add("GradleDependency")
-                            disable.add("UnusedResources")
                             disable.add("IconLocation")
-                            disable.add("UnsafeOptInUsageError") // Suppress noise for initial baseline
                             
                             // Workaround for GradleDetector crash in some environments
                             disable.add("UseTomlInstead")
@@ -38,12 +34,8 @@ class LintConventionPlugin : Plugin<Project> {
                             
                             // Ratchet Policy: Any new issues fail the build. 
                             // Existing issues are grandfathered via baseline.
-                            disable.add("TrustAllX509TrustManager")
                             disable.add("IconLauncherShape")
-                            disable.add("GradleDependency")
-                            disable.add("UnusedResources")
                             disable.add("IconLocation")
-                            disable.add("UnsafeOptInUsageError") // Suppress noise for initial baseline
                             
                             // Workaround for GradleDetector crash in some environments
                             disable.add("UseTomlInstead")

@@ -56,6 +56,7 @@ annotation class EngineScope
 @Retention(AnnotationRetention.BINARY)
 annotation class BackgroundEngineScope
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)

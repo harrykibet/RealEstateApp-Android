@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.LivePlaybackSpeedControl
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.MediaSource
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 data class PlayerConfiguration(
     val mediaItem: MediaItem,

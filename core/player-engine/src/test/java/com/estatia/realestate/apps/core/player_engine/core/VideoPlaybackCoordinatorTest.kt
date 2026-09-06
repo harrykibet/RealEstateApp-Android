@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class VideoPlaybackCoordinatorTest {

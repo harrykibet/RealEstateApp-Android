@@ -30,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import javax.inject.Provider
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class SeekingPersistenceTest {

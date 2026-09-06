@@ -21,6 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.Executors
 
+// Justification: Required for testing Media3 playback components.
 @UnstableApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerManagerTest {

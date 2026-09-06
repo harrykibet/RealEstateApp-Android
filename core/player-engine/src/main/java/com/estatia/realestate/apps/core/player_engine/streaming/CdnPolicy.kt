@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import kotlin.random.Random
 
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class CdnPolicy @Inject constructor(
     private val environmentCoordinator: EnvironmentCoordinator,

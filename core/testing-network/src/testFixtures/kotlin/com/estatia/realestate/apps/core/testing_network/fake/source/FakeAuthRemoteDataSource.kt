@@ -36,11 +36,11 @@ class FakeAuthRemoteDataSource(
 
     override fun isUserAuthenticated(): Flow<Boolean> = _isAuthenticated.asStateFlow()
 
-    override fun getCurrentUserId(): String? = currentUser?.userId
+    override fun getCurrentUserId(): AppResult<String?> = AppResult.Success(currentUser?.userId)
 
-    override fun getCurrentUserEmail(): String? = currentUser?.email
+    override fun getCurrentUserEmail(): AppResult<String?> = AppResult.Success(currentUser?.email)
 
-    override fun getCurrentUser(): NetworkUserEntity? = currentUser
+    override fun getCurrentUser(): AppResult<NetworkUserEntity?> = AppResult.Success(currentUser)
 
     override suspend fun signUpWithEmail(email: String, password: String): AppResult<NetworkUserEntity> {
         checkChaos("sign_up")

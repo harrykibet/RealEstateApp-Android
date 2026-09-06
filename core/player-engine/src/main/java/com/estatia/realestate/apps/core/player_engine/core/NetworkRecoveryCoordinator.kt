@@ -17,6 +17,7 @@ import javax.inject.Singleton
 /**
  * Handles automatic recovery of playback when network connection is restored.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class NetworkRecoveryCoordinator @Inject constructor(

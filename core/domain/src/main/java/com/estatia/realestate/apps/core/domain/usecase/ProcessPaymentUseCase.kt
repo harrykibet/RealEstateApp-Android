@@ -8,11 +8,20 @@ import com.estatia.realestate.apps.core.model.feature.PaymentStatus
 import com.estatia.realestate.apps.core.model.property.Money
 import javax.inject.Inject
 
+interface IProcessPaymentUseCase {
+    suspend operator fun invoke(
+        referenceId: String,
+        amount: Double,
+        currency: String,
+        method: PaymentMethod
+    ): AppResult<PaymentStatus>
+}
+
 @UseCase
 class ProcessPaymentUseCase @Inject constructor(
     private val paymentsRepository: IPaymentsRepository
-) {
-    suspend operator fun invoke(
+) : IProcessPaymentUseCase {
+    override suspend operator fun invoke(
         referenceId: String,
         amount: Double,
         currency: String,

@@ -87,11 +87,11 @@ internal class AuthRepository @Inject constructor(
         }
     }
 
-    override fun getCurrentUser(): AuthUserDomainModel? {
+    override fun getCurrentUser(): AppResult<AuthUserDomainModel?> {
         return remoteDataSource
             .getCurrentUser()
-            ?.let { networkUser ->
-                NetworkUserMapper.fromEntity(networkUser)
+            .map { networkUser ->
+                networkUser?.let { NetworkUserMapper.fromEntity(it) }
             }
     }
 
@@ -116,11 +116,11 @@ internal class AuthRepository @Inject constructor(
         return remoteDataSource.isUserAuthenticated()
     }
 
-    override fun getCurrentUserId(): String? {
+    override fun getCurrentUserId(): AppResult<String?> {
         return remoteDataSource.getCurrentUserId()
     }
 
-    override fun getCurrentUserEmail(): String? {
+    override fun getCurrentUserEmail(): AppResult<String?> {
         return remoteDataSource.getCurrentUserEmail()
     }
 

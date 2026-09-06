@@ -7,6 +7,7 @@ import androidx.media3.session.MediaSession
 /**
  * Provider for creating and managing [MediaSession] instances.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 interface IMediaSessionProvider {
     /**

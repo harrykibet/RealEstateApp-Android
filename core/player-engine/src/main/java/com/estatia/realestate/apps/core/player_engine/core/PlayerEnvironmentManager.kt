@@ -20,6 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Orchestrates player pool adjustments and bitrate strategy based on environment changes.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
 class PlayerEnvironmentManager @Inject constructor(

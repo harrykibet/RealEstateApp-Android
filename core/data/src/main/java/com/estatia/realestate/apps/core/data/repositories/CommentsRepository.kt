@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.domain.repository.ICommentsRepository
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.interfaces.ICommentsRemoteDataSource
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import com.estatia.realestate.apps.core.data.mappers.remote.RemoteCommentMapper
@@ -89,14 +90,14 @@ class CommentsRepository @Inject constructor(
         val startTime = System.currentTimeMillis()
 
         // 🛡️ Proactive On-Device Moderation
-        val safetyResult = contentSafetyService.validateText(message)
+        val safetyResult = contentSafetyService.validateText(message).getOrNull()
         if (safetyResult is SafetyResult.Flagged) {
             metricsTracker.incrementCounter("comments.safety.flagged")
             return AppResult.Error(CommentException.InvalidComment(safetyResult.reason))
         }
 
         val userId =
-            authRepository.getCurrentUserId()
+            authRepository.getCurrentUserId().getOrNull()
                 ?: return AppResult.Error(
                     CommentException.UserNotAuthenticated
                 )

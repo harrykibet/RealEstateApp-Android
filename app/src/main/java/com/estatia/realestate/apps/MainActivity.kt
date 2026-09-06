@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -34,19 +35,24 @@ import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.core.IPlayerManager
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// Justification: Interacts with IPlayerManager which uses Unstable Media3 APIs for preloading.
+@OptIn(UnstableApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var lazyStats: dagger.Lazy<JankStats>
+    lateinit var lazyStats: Lazy<JankStats>
 
     @Inject
     lateinit var networkStateProvider: INetworkStateProvider
@@ -87,8 +93,8 @@ class MainActivity : ComponentActivity() {
                         trace("EstatiaEdgeToEdge") {
                             enableEdgeToEdge(
                                 statusBarStyle = SystemBarStyle.auto(
-                                    lightScrim = android.graphics.Color.TRANSPARENT,
-                                    darkScrim = android.graphics.Color.TRANSPARENT,
+                                    lightScrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT,
                                 ) { darkTheme },
                                 navigationBarStyle = SystemBarStyle.auto(
                                     lightScrim = lightScrim,
@@ -167,5 +173,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+private val lightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val darkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

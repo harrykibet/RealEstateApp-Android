@@ -16,6 +16,7 @@ import javax.inject.Inject
  * Android does not allow apps to force-enable or disable spatial audio.
  * It is controlled by the system and output device (e.g. headphones).
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 class SpatialAudioRenderer @Inject constructor(
     context: Context,

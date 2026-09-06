@@ -131,12 +131,12 @@ internal class AwsAuthService @Inject constructor(
         emit(session)
     }
 
-    override fun getCurrentUserId(): String? = cachedUser?.userId
+    override fun getCurrentUserId(): AppResult<String?> = AppResult.Success(cachedUser?.userId)
 
-    override fun getCurrentUserEmail(): String? = null // Requires fetchUserAttributes
+    override fun getCurrentUserEmail(): AppResult<String?> = AppResult.Success(null) // Requires fetchUserAttributes
 
-    override fun getCurrentUser(): NetworkUserEntity? {
-        return cachedUser?.let { user ->
+    override fun getCurrentUser(): AppResult<NetworkUserEntity?> {
+        return AppResult.Success(cachedUser?.let { user ->
             NetworkUserEntity(
                 userId = user.userId,
                 displayName = user.username,
@@ -145,7 +145,7 @@ internal class AwsAuthService @Inject constructor(
                 photoUrl = null,
                 isEmailVerified = true
             )
-        }
+        })
     }
 
     private suspend fun fetchAndCacheUser(): NetworkUserEntity {

@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
+import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import io.micrometer.core.instrument.MeterRegistry
 import javax.inject.Inject
 
@@ -42,7 +43,7 @@ internal class ObservabilityInitializer @Inject constructor(
         crashReporter.setCustomKey("app_version", deviceInfo.appVersion)
         
         // Track user ID if already logged in
-        authRepository.getCurrentUserId()?.let { userId ->
+        authRepository.getCurrentUserId().getOrNull()?.let { userId ->
             crashReporter.setCustomKey("user_id", userId)
         }
 

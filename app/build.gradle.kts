@@ -42,6 +42,7 @@ dependencies {
 
     implementation(libs.bundles.navigation)
     implementation(libs.androidx.profileinstaller)
+    implementation(libs.media3.common)
 
     baselineProfile(projects.benchmark)
 

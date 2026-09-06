@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 /**
  * Result of a player prewarm operation.
  */
+// Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 sealed interface PrewarmResult {
     /**
