@@ -4,7 +4,7 @@ import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import org.junit.Test
 
-class DirectSystemTimeDetectorTest {
+class Law007_DirectSystemTimeProdTest {
 
     @Test
     fun `currentTimeMillis in production reports error`() {
@@ -19,15 +19,35 @@ class DirectSystemTimeDetectorTest {
                         fun now() = System.currentTimeMillis()
                     }
                     """.trimIndent()
-                ).to("src/com/estatia/realestate/apps/Test.kt")
+                ).to("src/main/kotlin/com/estatia/realestate/apps/Test.kt")
             )
-            .issues(DirectSystemTimeDetector.ISSUE)
+            .issues(Law007_DirectSystemTimeProdDetector.ISSUE)
             .run()
             .expectContains("Direct usage of system time is forbidden in production")
     }
 
     @Test
-    fun `currentTimeMillis in test reports warning`() {
+    fun `usage in TimeProvider is clean`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class RealTimeProvider {
+                        fun now() = System.currentTimeMillis()
+                    }
+                    """.trimIndent()
+                ).to("src/main/kotlin/com/estatia/realestate/apps/RealTimeProvider.kt")
+            )
+            .issues(Law007_DirectSystemTimeProdDetector.ISSUE)
+            .run()
+            .expectClean()
+    }
+
+    @Test
+    fun `usage in test files is ignored by prod detector`() {
         lint()
             .allowCompilationErrors()
             .allowMissingSdk()
@@ -39,10 +59,10 @@ class DirectSystemTimeDetectorTest {
                         fun now() = System.currentTimeMillis()
                     }
                     """.trimIndent()
-                ).to("src/test/com/estatia/realestate/apps/MyTest.kt")
+                ).to("src/test/kotlin/com/estatia/realestate/apps/MyTest.kt")
             )
-            .issues(DirectSystemTimeDetector.ISSUE)
+            .issues(Law007_DirectSystemTimeProdDetector.ISSUE)
             .run()
-            .expectContains("Tests should not depend on real time")
+            .expectClean()
     }
 }

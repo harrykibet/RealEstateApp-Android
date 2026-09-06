@@ -62,7 +62,8 @@ object SecurityIssues {
 object PerformanceIssues {
     val all = listOf(
         UnboundedBufferDetector.ISSUE,
-        DirectSystemTimeDetector.ISSUE,
+        Law007_DirectSystemTimeProdDetector.ISSUE,
+        Law015_DirectSystemTimeTestDetector.ISSUE,
         MainThreadWorkDetector.ISSUE,
         Law023_LifecycleLeakDetector.ISSUE,
         Law024_ContextLeakDetector.ISSUE

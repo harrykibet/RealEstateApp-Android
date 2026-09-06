@@ -1,6 +1,5 @@
 package com.estatia.realestate.apps.lint.policy
 
-import com.android.tools.lint.checks.infrastructure.LintDetectorTest.java
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
@@ -39,7 +38,6 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
-                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -62,7 +60,6 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
-                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
@@ -85,7 +82,6 @@ class SuppressionPolicyDetectorTest {
             .files(
                 Stubs.COROUTINES,
                 Stubs.RESULT,
-                Stubs.ANDROID_ANNOTATION,
                 kotlin(
                     """
                     package com.estatia.realestate.apps

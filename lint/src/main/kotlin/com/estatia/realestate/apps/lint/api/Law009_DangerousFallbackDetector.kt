@@ -15,27 +15,30 @@ import org.jetbrains.uast.*
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = 
-        listOf(UBinaryExpression::class.java, UIfExpression::class.java)
+        listOf(UBinaryExpression::class.java, UIfExpression::class.java, UPolyadicExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            if (node.operator.text == "?:" || node.asRenderString().contains("?:")) {
-                checkFallback(node.rightOperand, node)
-            }
+            checkIfElvis(node.operator.text, node.rightOperand, node)
         }
 
-        override fun visitIfExpression(node: UIfExpression) {
-            val source = node.asRenderString()
-            if (source.contains("?:")) {
-                val elseExpr = node.elseExpression
-                if (elseExpr != null) {
-                    checkFallback(elseExpr, node)
+        override fun visitPolyadicExpression(node: UPolyadicExpression) {
+            if (node.operator.text == "?:") {
+                val operands = node.operands
+                if (operands.size > 1) {
+                    checkIfElvis("?:", operands.last(), node)
                 }
             }
         }
 
-        private fun checkFallback(expression: UExpression, node: UElement) {
-            if (isDangerousFallback(expression)) {
+        override fun visitIfExpression(node: UIfExpression) {
+            if (node.asRenderString().contains("?:")) {
+                node.elseExpression?.let { checkIfElvis("?:", it, node) }
+            }
+        }
+
+        private fun checkIfElvis(operatorText: String, right: UExpression, node: UElement) {
+            if (operatorText == "?:" && isDangerousFallback(right)) {
                 context.report(
                     ISSUE,
                     node,
@@ -47,17 +50,25 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
     }
 
     private fun isDangerousFallback(expression: UExpression): Boolean {
-        if (expression is ULiteralExpression) {
-            val value = expression.value
+        var current = expression
+        while (current is UParenthesizedExpression) {
+            current = current.expression
+        }
+        
+        if (current is ULiteralExpression) {
+            val value = current.value
             return value == null || value == "" || value == 0 || value == false
         }
-        if (expression is UCallExpression) {
-            val name = expression.methodName
+        
+        if (current is UCallExpression) {
+            val name = current.methodName
             return name == "emptyList" || name == "emptyMap" || name == "emptySet"
         }
-        if (expression is UQualifiedReferenceExpression) {
-            return isDangerousFallback(expression.selector)
+        
+        if (current is UQualifiedReferenceExpression) {
+            return isDangerousFallback(current.selector)
         }
+        
         return false
     }
 

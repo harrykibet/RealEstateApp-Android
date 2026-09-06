@@ -23,7 +23,7 @@ class MockInProductionDetectorTest {
                         val mock = mockk<String>()
                     }
                     """.trimIndent()
-                ).to("src/main/kotlin/com/estatia/realestate/apps/core/data/MyRepo.kt")
+                ).to("src/main/java/com/estatia/realestate/apps/core/data/MyRepo.kt")
             )
             .issues(MockInProductionDetector.ISSUE)
             .run()
@@ -48,7 +48,7 @@ class MockInProductionDetectorTest {
                         }
                     }
                     """.trimIndent()
-                ).to("src/test/kotlin/com/estatia/realestate/apps/MyTest.kt")
+                ).to("src/test/java/com/estatia/realestate/apps/MyTest.kt")
             )
             .issues(MockInProductionDetector.ISSUE)
             .run()

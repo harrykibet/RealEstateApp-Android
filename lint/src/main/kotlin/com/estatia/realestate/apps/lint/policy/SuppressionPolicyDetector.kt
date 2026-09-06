@@ -11,9 +11,6 @@ import org.jetbrains.uast.*
  * 1. Blind suppression using "all" is forbidden.
  * 2. FATAL rules cannot be suppressed.
  * 3. ERROR rules require a preceding "Justification:" comment.
- * 
- * This detector dynamically reads rule severity from the active registry 
- * to ensure policy consistency without hardcoded drift.
  */
 class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
@@ -32,35 +29,41 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
         
-        // Try to get values from the standard UAST attribute
-        val value = node.findAttributeValue("value")
-        
-        fun addValue(expr: UExpression?) {
-            when (expr) {
-                is ULiteralExpression -> {
-                    expr.value?.toString()?.let { list.add(it) }
-                }
-                is UCallExpression -> {
-                    expr.valueArguments.forEach { addValue(it) }
-                }
-                is UPolyadicExpression -> { // Handle "all" + some_var if someone did that
-                    expr.operands.forEach { addValue(it) }
-                }
-                is UVariable -> {
-                    addValue(expr.uastInitializer)
-                }
-            }
+        // Try value attribute
+        node.findAttributeValue("value")?.let { attr ->
+            extractFromExpression(attr, list)
         }
         
-        addValue(value)
+        // Fallback for names attribute (SuppressLint sometimes uses it)
+        node.findAttributeValue("names")?.let { attr ->
+            extractFromExpression(attr, list)
+        }
         
-        // Fallback for cases where UAST structure is unexpected (e.g. Kotlin-specific)
+        // Final fallback: Regex on the source
         if (list.isEmpty()) {
             val src = node.asSourceString()
             "\"([^\"]+)\"".toRegex().findAll(src).forEach { list.add(it.groupValues[1]) }
         }
         
         return list
+    }
+
+    private fun extractFromExpression(expr: UExpression, list: MutableList<String>) {
+        when (expr) {
+            is ULiteralExpression -> {
+                expr.value?.toString()?.let { list.add(it) }
+            }
+            is UCallExpression -> {
+                expr.valueArguments.forEach { extractFromExpression(it, list) }
+            }
+            is UPolyadicExpression -> {
+                expr.operands.forEach { extractFromExpression(it, list) }
+            }
+            // Handle array literal in Kotlin
+            is UExpressionList -> {
+                expr.expressions.forEach { extractFromExpression(it, list) }
+            }
+        }
     }
 
     private fun checkSuppressedIssues(context: JavaContext, node: UAnnotation, suppressed: List<String>) {
@@ -75,7 +78,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             
             when (issue.defaultSeverity) {
                 Severity.FATAL -> {
-                    if (id != ISSUE.id) { // Prevent recursion on itself
+                    if (id != ISSUE.id) {
                         context.report(
                             ISSUE, 
                             node, 
@@ -94,7 +97,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                         )
                     }
                 }
-                else -> { /* WARNING and below allowed without justification */ }
+                else -> { }
             }
         }
     }

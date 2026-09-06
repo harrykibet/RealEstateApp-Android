@@ -9,19 +9,19 @@ import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 
 /**
- * Enforces LAW-007 and LAW-014: "Time must be injectable everywhere."
- * Prevents direct usage of System.currentTimeMillis(), Instant.now(), etc., 
- * to ensure deterministic testing via TestClock.
+ * LAW-007: Production code does not use wall-clock time directly.
+ * Time must be injectable via TimeProvider to ensure deterministic testing.
  */
-class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
+class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
 
     override fun getApplicableMethodNames() = listOf("currentTimeMillis", "now", "nanoTime")
 
     override fun getApplicableConstructorTypes() = listOf("java.util.Date")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val evaluator = context.evaluator
+        if (isTestContext(context)) return
         
+        val evaluator = context.evaluator
         val isForbidden = when {
             evaluator.isMemberInClass(method, "java.lang.System") && (method.name == "currentTimeMillis" || method.name == "nanoTime") -> true
             evaluator.isMemberInClass(method, "java.time.Instant") && method.name == "now" -> true
@@ -29,14 +29,26 @@ class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
             else -> false
         }
 
-        if (isForbidden) {
-            reportIssue(context, node)
+        if (isForbidden && !isExempt(context)) {
+            context.report(
+                ISSUE,
+                node,
+                context.getLocation(node),
+                "Direct usage of system time is forbidden in production (LAW-007). Inject and use a 'TimeProvider' instead."
+            )
         }
     }
 
     override fun visitConstructor(context: JavaContext, node: UCallExpression, constructor: PsiMethod) {
-        if (context.evaluator.isMemberInClass(constructor, "java.util.Date")) {
-            reportIssue(context, node)
+        if (isTestContext(context)) return
+        
+        if (context.evaluator.isMemberInClass(constructor, "java.util.Date") && !isExempt(context)) {
+            context.report(
+                ISSUE,
+                node,
+                context.getLocation(node),
+                "Direct usage of system time is forbidden in production (LAW-007). Inject and use a 'TimeProvider' instead."
+            )
         }
     }
 
@@ -45,45 +57,28 @@ class DirectSystemTimeDetector : Detector(), SourceCodeScanner {
         return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
-    private fun reportIssue(context: JavaContext, node: UCallExpression) {
+    private fun isExempt(context: JavaContext): Boolean {
         val path = context.file.path.replace("\\", "/")
-        
-        // 1. Always allow in TimeProvider implementations or DI modules
-        if (context.file.name.contains("TimeProvider") || path.contains("/di/")) return
-        
-        // 2. LAW-014: Encourage TestClock in tests (reported as WARNING)
-        val isTest = path.contains("/src/test/") || path.contains("/src/androidTest/")
+        return context.file.name.contains("TimeProvider") || path.contains("/di/")
+    }
 
-        context.report(
-            ISSUE,
-            node,
-            context.getLocation(node),
-            if (isTest) {
-                "Tests should not depend on real time (LAW-014). Use 'TestClock' or 'TimeProvider' to control time deterministically."
-            } else {
-                "Direct usage of system time is forbidden in production (LAW-007). Inject and use a 'TimeProvider' instead."
-            },
-            // Dynamically override severity for tests if needed, 
-            // but the registry defines default. 
-            // Better to use different issues if severity must differ strictly.
-        )
+    private fun isTestContext(context: JavaContext): Boolean {
+        val path = context.file.path.replace("\\", "/")
+        return context.isTestSource || path.contains("/test/") || path.contains("/androidTest/")
     }
 
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "DirectSystemTimeUsage",
             description = "Direct usage of system time detected",
-            rationale = """
-                Relying on system time makes code non-deterministic and hard to test. 
-                Time must be injectable via TimeProvider.
-            """,
+            rationale = "Relying on system time makes code non-deterministic. Time must be injectable via TimeProvider.",
             badExample = "val now = System.currentTimeMillis()",
             goodExample = "val now = timeProvider.now()",
             category = IssueCategory.PERFORMANCE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PLATFORM,
-            architectureLaw = "LAW-007 (Deterministic Time)",
-            implementation = Implementation(DirectSystemTimeDetector::class.java, Scope.JAVA_FILE_SCOPE)
+            architectureLaw = "LAW-007",
+            implementation = Implementation(Law007_DirectSystemTimeProdDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }
 }
