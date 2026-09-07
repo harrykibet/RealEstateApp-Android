@@ -79,7 +79,7 @@ class Law009_FailureSmugglingDetector : Detector(), SourceCodeScanner {
             badExample = "catch (e: Exception) { return emptyList() }",
             goodExample = "catch (e: Exception) { return AppResult.Error(e) }",
             category = IssueCategory.API_DESIGN,
-            tier = IssueTier.ERROR,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_009,
             implementation = Implementation(Law009_FailureSmugglingDetector::class.java, Scope.JAVA_FILE_SCOPE)

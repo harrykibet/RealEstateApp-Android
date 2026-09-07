@@ -3,29 +3,37 @@ package com.estatia.realestate.apps.lint.policy
 import com.android.tools.lint.detector.api.Severity
 
 /**
- * Defines the enforcement level for a rule based on production risk.
+ * Defines the enforcement level for a rule based on production risk and organizational policy.
  */
 enum class IssueTier(val severity: Severity) {
     /** 
-     * Architectural or safety violations that must never enter main. 
-     * These represent fundamental breakage of the Estatia engineering model.
+     * Non-negotiable architectural or safety violations. Must never enter main.
      */
     FATAL(Severity.FATAL),
     
     /** 
-     * Production correctness, security, or concurrency defects. 
-     * Must be fixed before release.
+     * Core production safety rules. Must be fixed before release.
      */
     ERROR(Severity.ERROR),
     
     /** 
-     * Strong design smells or localized best-practice violations. 
+     * Strong design smells or Estatia conventions that promote consistency. 
      * Requires justification if suppressed.
      */
     WARNING(Severity.WARNING),
+
+    /**
+     * Estatia design patterns or preferred conventions.
+     */
+    CONVENTION(Severity.WARNING),
     
     /** 
-     * Optimization or maintainability guidance.
+     * Syntactic or organizational style preferences.
+     */
+    STYLE(Severity.INFORMATIONAL),
+
+    /**
+     * General guidance or future-proofing advice.
      */
     INFO(Severity.INFORMATIONAL)
 }

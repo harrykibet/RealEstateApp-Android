@@ -31,8 +31,8 @@ class Law018_ViewModelSsotProcessor(
             }
 
             if (stateFlows.toList().size > 1) {
-                logger.error(
-                    "Architecture Violation (${Law.LAW_018}): ${Law.LAW_018.description} " +
+                logger.report(
+                    Law.LAW_018,
                     "ViewModel '${clazz.simpleName.asString()}' has multiple public StateFlows. " +
                     "Use a single 'uiState' property to ensure a Single Source of Truth.",
                     clazz
@@ -40,8 +40,9 @@ class Law018_ViewModelSsotProcessor(
             }
 
             if (stateFlows.toList().isEmpty()) {
-                logger.warn(
-                    "Architecture Smell (${Law.LAW_018}): ViewModel '${clazz.simpleName.asString()}' has no public StateFlow. " +
+                logger.report(
+                    Law.LAW_018,
+                    "ViewModel '${clazz.simpleName.asString()}' has no public StateFlow. " +
                     "Ensure you are exposing UI state via a read-only StateFlow.",
                     clazz
                 )

@@ -59,7 +59,7 @@ class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
             badExample = "@Composable fun List() { repo.load().collect { ... } }",
             goodExample = "@Composable fun List(state: State) { ... }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_001,
             implementation = Implementation(BusinessLogicInComposeDetector::class.java, Scope.JAVA_FILE_SCOPE)

@@ -44,7 +44,7 @@ class HardcodedStringDetector : Detector(), SourceCodeScanner {
             badExample = "Text(\"Hello\")",
             goodExample = "Text(stringResource(R.string.hello))",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_022,
             implementation = Implementation(HardcodedStringDetector::class.java, Scope.JAVA_FILE_SCOPE)

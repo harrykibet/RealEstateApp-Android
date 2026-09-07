@@ -27,8 +27,8 @@ class Law008_DomainExpressivenessProcessor(
                         val typeArgQualified = typeArg?.declaration?.qualifiedName?.asString() ?: ""
 
                         if (typeArgQualified == "kotlin.Boolean" || typeArgQualified == "kotlin.Int") {
-                            logger.warn(
-                                "Architecture Smell (${Law.LAW_008}): ${Law.LAW_008.description} " +
+                            logger.report(
+                                Law.LAW_008,
                                 "UseCase method '${function.simpleName.asString()}' returns 'AppResult<$typeArgQualified>'. " +
                                 "Consider using a sealed class or enum to express the domain meaning of this value.",
                                 function

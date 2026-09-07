@@ -37,7 +37,7 @@ class HardcodedColorDimensionDetector : Detector(), SourceCodeScanner {
             badExample = "Modifier.padding(16.dp)",
             goodExample = "Modifier.padding(EstatiaTheme.spacing.medium)",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_022,
             implementation = Implementation(HardcodedColorDimensionDetector::class.java, Scope.JAVA_FILE_SCOPE)

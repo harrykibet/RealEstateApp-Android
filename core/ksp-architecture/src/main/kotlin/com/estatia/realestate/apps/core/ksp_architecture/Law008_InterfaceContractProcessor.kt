@@ -23,8 +23,8 @@ class Law008_InterfaceContractProcessor(
             }
 
             if (!hasInterface) {
-                logger.error(
-                    "Architecture Violation (${Law.LAW_008}): ${Law.LAW_008.description} " +
+                logger.report(
+                    Law.LAW_008,
                     "'${clazz.simpleName.asString()}' must implement an interface " +
                     "to ensure decoupling from implementation details.",
                     clazz

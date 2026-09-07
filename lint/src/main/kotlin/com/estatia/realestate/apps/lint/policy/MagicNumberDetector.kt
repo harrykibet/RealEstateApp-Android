@@ -57,7 +57,7 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             badExample = "if (age > 21) { ... }",
             goodExample = "const val MIN_AGE = 21\nif (age > MIN_AGE) { ... }",
             category = IssueCategory.CODE_HEALTH,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_001,
             implementation = Implementation(MagicNumberDetector::class.java, Scope.JAVA_FILE_SCOPE)

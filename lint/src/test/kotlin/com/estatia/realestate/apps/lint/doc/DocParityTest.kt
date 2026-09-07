@@ -4,6 +4,7 @@ import com.android.tools.lint.client.api.LintClient
 import com.android.tools.lint.detector.api.TextFormat
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -29,11 +30,15 @@ class DocParityTest {
         }
 
         val readmeContent = readmeFile.readText()
-        val lawIdsInReadme = Regex("""\| \*\*LAW-(\d+)\*\* \|""").findAll(readmeContent)
-            .map { "LAW-${it.groupValues[1]}" }
-            .toSet()
+        
+        // Match: | **LAW-001** | ... | `TYPE` | ... |
+        val rowRegex = Regex("""\| \*\*LAW-(\d+)\*\* \| [^|]+ \| `([^`]+)` \|""")
+        val rowsInReadme = rowRegex.findAll(readmeContent).map { 
+            "LAW-${it.groupValues[1]}" to it.groupValues[2] 
+        }.toMap()
 
         val lawIdsInEnum = Law.entries.map { it.id }.toSet()
+        val lawIdsInReadme = rowsInReadme.keys
 
         val missingInReadme = lawIdsInEnum - lawIdsInReadme
         val missingInEnum = lawIdsInReadme - lawIdsInEnum
@@ -49,6 +54,16 @@ class DocParityTest {
             missingInEnum.joinToString("\n"),
             missingInEnum.isEmpty()
         )
+
+        // Verify Types match
+        Law.entries.forEach { law ->
+            val readmeType = rowsInReadme[law.id]
+            assertEquals(
+                "Type mismatch for ${law.id} in README.md",
+                law.type.name,
+                readmeType
+            )
+        }
     }
 
     @Test
@@ -66,9 +81,9 @@ class DocParityTest {
             val explanation = issue.getExplanation(TextFormat.TEXT)
             if (!explanation.contains("Architecture Law", ignoreCase = true)) return@forEach
 
-            // Verify that the issue ID is mentioned in the "Enforcing Rule" column of the README
+            // Verify that the issue ID is mentioned in the "Enforcement Rule" column of the README
             assertTrue(
-                "Issue '${issue.id}' is registered in EstatiaIssueRegistry but not mentioned in README.md 'Enforcing Rule' column.",
+                "Issue '${issue.id}' is registered in EstatiaIssueRegistry but not mentioned in README.md 'Enforcement Rule' column.",
                 readmeContent.contains("`${issue.id}`") || readmeContent.contains(issue.id)
             )
 
@@ -80,9 +95,17 @@ class DocParityTest {
             )
             
             val lawId = lawMatch!!.groupValues[1].uppercase()
+            val law = Law.entries.find { it.id == lawId }
+            
             assertTrue(
                 "Issue '${issue.id}' references Law '$lawId' which is not in the Law enum.",
-                Law.entries.any { it.id == lawId }
+                law != null
+            )
+
+            // Verify that the explanation contains the correct Type
+            assertTrue(
+                "Issue '${issue.id}' explanation should contain 'Type: ${law!!.type.name}'",
+                explanation.contains("Type: ${law.type.name}")
             )
         }
     }

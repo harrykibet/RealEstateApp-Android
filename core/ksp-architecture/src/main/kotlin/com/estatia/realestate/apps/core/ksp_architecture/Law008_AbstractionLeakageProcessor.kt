@@ -42,8 +42,8 @@ class Law008_AbstractionLeakageProcessor(
     private fun checkForbiddenType(type: KSType?, node: KSNode, nodeType: String, className: String) {
         val qualifiedName = type?.declaration?.qualifiedName?.asString() ?: ""
         if (forbiddenInfrastructure.any { qualifiedName.startsWith(it) }) {
-            logger.error(
-                "Architecture Violation (${Law.LAW_008}): ${Law.LAW_008.description} " +
+            logger.report(
+                Law.LAW_008,
                 "Leakage detected in $className. " +
                 "Public $nodeType '${node.toString()}' exposes infrastructure type: $qualifiedName",
                 node

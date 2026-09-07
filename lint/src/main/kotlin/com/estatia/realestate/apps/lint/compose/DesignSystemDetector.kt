@@ -54,7 +54,7 @@ class DesignSystemDetector : Detector(), SourceCodeScanner {
             badExample = "Button(onClick = { ... }) { ... }",
             goodExample = "EstatiaButton(onClick = { ... }) { ... }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_022,
             implementation = Implementation(DesignSystemDetector::class.java, Scope.JAVA_FILE_SCOPE),

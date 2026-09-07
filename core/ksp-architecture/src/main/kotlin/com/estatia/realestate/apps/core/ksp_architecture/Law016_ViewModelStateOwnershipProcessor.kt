@@ -29,8 +29,9 @@ class Law016_ViewModelStateOwnershipProcessor(
                 val typeName = prop.type.resolve().declaration.qualifiedName?.asString() ?: ""
                 if (typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
                     typeName == "androidx.compose.runtime.MutableState") {
-                    logger.error(
-                        "Architecture Violation (${Law.LAW_016}): ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
+                    logger.report(
+                        Law.LAW_016,
+                        "ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
                         "Expose as StateFlow or a read-only interface instead.",
                         prop
                     )

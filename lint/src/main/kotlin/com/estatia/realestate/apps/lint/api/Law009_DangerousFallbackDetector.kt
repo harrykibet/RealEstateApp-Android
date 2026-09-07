@@ -83,7 +83,7 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
             badExample = "repo.load() ?: emptyList()",
             goodExample = "repo.load() // returns Result",
             category = IssueCategory.API_DESIGN,
-            tier = IssueTier.ERROR,
+            tier = IssueTier.CONVENTION,
             owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_009,
             implementation = Implementation(Law009_DangerousFallbackDetector::class.java, Scope.JAVA_FILE_SCOPE)

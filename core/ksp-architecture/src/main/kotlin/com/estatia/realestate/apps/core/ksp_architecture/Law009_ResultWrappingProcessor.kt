@@ -6,8 +6,10 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
 /**
- * LAW-009: Mandatory Result Wrapping.
- * Enforces that all public methods in @Repository, @Service, and @UseCase return AppResult or Flow.
+ * LAW-009: Mandatory Result Wrapping (Estatia Convention).
+ * 
+ * Enforces that non-trivial public methods in @Repository, @Service, and @UseCase return AppResult or Flow.
+ * Trivial methods (non-suspend returning simple types) are exempt.
  */
 class Law009_ResultWrappingProcessor(
     private val logger: KSPLogger
@@ -19,6 +21,15 @@ class Law009_ResultWrappingProcessor(
         "kotlin.Unit",
         "void",
         "kotlin.Nothing"
+    )
+
+    private val exemptSimpleTypes = listOf(
+        "kotlin.String",
+        "kotlin.Int",
+        "kotlin.Long",
+        "kotlin.Boolean",
+        "kotlin.Double",
+        "kotlin.Float"
     )
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -33,18 +44,21 @@ class Law009_ResultWrappingProcessor(
                     val returnType = function.returnType?.resolve()
                     val qualifiedName = returnType?.declaration?.qualifiedName?.asString() ?: ""
                     
-                    if (!allowedWrappers.contains(qualifiedName)) {
-                        logger.error(
-                            "Architecture Violation (${Law.LAW_009}): ${Law.LAW_009.description} " +
-                            "Public method '${function.simpleName.asString()}' in ${clazz.simpleName.asString()} " +
-                            "must return a wrapped Result type (AppResult or Flow). Found: $qualifiedName",
-                            function
-                        )
+                    if (!isExempt(function, qualifiedName) && !allowedWrappers.contains(qualifiedName)) {
+                        val message = "Public method '${function.simpleName.asString()}' in ${clazz.simpleName.asString()} " +
+                                     "should return a wrapped Result type (AppResult or Flow). Found: $qualifiedName"
+                        
+                        logger.report(Law.LAW_009, message, function)
                     }
                 }
             }
         }
         return emptyList()
+    }
+
+    private fun isExempt(function: KSFunctionDeclaration, qualifiedName: String): Boolean {
+        // Non-suspend functions returning simple types are exempt (likely property getters or simple checks)
+        return !function.modifiers.contains(Modifier.SUSPEND) && exemptSimpleTypes.contains(qualifiedName)
     }
 
     private fun isPublic(node: KSModifierListOwner): Boolean {
