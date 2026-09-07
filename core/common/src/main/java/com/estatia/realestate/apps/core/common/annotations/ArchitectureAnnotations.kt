@@ -42,3 +42,13 @@ annotation class ViewModelMarker
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class UiState
+
+/**
+ * Explicitly allows a concrete type as a dependency in architectural components.
+ * Use this to document and authorize unavoidable infrastructure dependencies.
+ */
+@Target(AnnotationTarget.CLASS, AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.SOURCE)
+annotation class AllowedArchitectureDependency(
+    val reason: String
+)

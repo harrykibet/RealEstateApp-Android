@@ -16,6 +16,7 @@ object KspTestUtils {
         annotation class UseCase
         annotation class ViewModelMarker
         annotation class UiState
+        annotation class AllowedArchitectureDependency(val reason: String)
         """.trimIndent()
     )
 

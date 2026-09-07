@@ -5,6 +5,8 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent
@@ -28,11 +30,14 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * - Performance: Offloads network delivery and local persistence to background workers.
  * - Security: Does not log sensitive fields; callers must sanitize metadata.
  */
+@Repository
 internal class AnalyticsTracker @Inject constructor(
     private val remoteDataSource: IAnalyticsRemoteDataSource,
     private val localDataSource: IAnalyticsLocalDataSource,
     private val logger: ILogger,
+    @AllowedArchitectureDependency(reason = "Required for event serialization in the local outbox")
     private val json: Json,
+    @AllowedArchitectureDependency(reason = "System Context required for WorkManager orchestration")
     @ApplicationContext private val context: Context
 ) : IAnalyticsTracker {
 

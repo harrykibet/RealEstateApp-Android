@@ -33,7 +33,7 @@ class Law030_ConstructorPurityProcessorTest {
             providers = listOf(Law030_ConstructorPurityProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-030)"))
+        assertTrue(result.messages.contains("Architecture Law (LAW-030)"))
     }
 
     @Test
@@ -50,6 +50,34 @@ class Law030_ConstructorPurityProcessorTest {
             @UseCase
             class TestUseCase(val db: IDatabase) : IUseCase {
             }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            source,
+            providers = listOf(Law030_ConstructorPurityProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    @Test
+    fun `LAW-030 Constructor accepts explicitly authorized dependency`() {
+        val source = SourceFile.kotlin(
+            "TestUseCase.kt",
+            """
+            package com.estatia.realestate.apps.core.domain.usecase
+            import com.estatia.realestate.apps.core.common.annotations.UseCase
+            import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
+            
+            interface IUseCase
+            class ConcreteDatabase
+            
+            @UseCase
+            class TestUseCase(
+                @AllowedArchitectureDependency(reason = "Required legacy singleton")
+                val db: ConcreteDatabase
+            ) : IUseCase
             """.trimIndent()
         )
 

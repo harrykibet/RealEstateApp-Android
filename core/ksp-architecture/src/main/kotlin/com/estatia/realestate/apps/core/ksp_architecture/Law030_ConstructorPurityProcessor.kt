@@ -6,11 +6,14 @@ import com.google.devtools.ksp.symbol.*
 
 /**
  * LAW-030: Dependency Budget & Purity.
- * Enforces that constructors of @UseCase and @Repository classes only accept interfaces or pure Data Models.
+ * Enforces that constructors of @UseCase and @Repository classes only accept 
+ * interfaces, pure Data Models, or explicitly authorized dependencies.
  */
 class Law030_ConstructorPurityProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
+
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository") +
@@ -23,22 +26,26 @@ class Law030_ConstructorPurityProcessor(
                 val simpleName = declaration.simpleName.asString()
                 val qualifiedName = declaration.qualifiedName?.asString() ?: ""
 
+                // 1. Core Purity Check
                 val isInterface = declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE
                 val isDataModel = qualifiedName.contains(".core.model.")
                 val isPrimitive = qualifiedName.startsWith("kotlin.") || qualifiedName.startsWith("java.lang.")
-                val isSafeContext = qualifiedName == "android.content.Context" || qualifiedName == "android.app.Application"
-                val isSafeInfra = qualifiedName == "kotlinx.serialization.json.Json" ||
-                                   qualifiedName == "com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource"
+                
+                // 2. Metadata Authorization Check
+                val isExplicitlyAllowed = param.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation } ||
+                                         declaration.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
 
-                if (!isInterface && !isDataModel && !isPrimitive && !isSafeContext && !isSafeInfra) {
+                if (!isInterface && !isDataModel && !isPrimitive && !isExplicitlyAllowed) {
                     logger.report(
                         Law.LAW_030,
                         "Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
-                        "must be an interface (usually starting with 'I') or a pure Data Model. Found: $qualifiedName",
+                        "must be an interface, a pure Data Model, or explicitly authorized via @AllowedArchitectureDependency. " +
+                        "Found: $qualifiedName",
                         param
                     )
                 }
                 
+                // 3. Naming Convention Check
                 if (isInterface && !simpleName.startsWith("I") && !simpleName.contains("Component")) {
                     logger.report(
                         Law.LAW_030,

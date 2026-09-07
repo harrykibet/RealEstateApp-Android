@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.data.repositories
 
 import com.estatia.realestate.apps.core.common.annotations.Repository
 import android.util.Base64
+import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.security.ISecurityRepository
@@ -40,6 +41,7 @@ internal class SecurityRepository @Inject constructor(
     private val signatureManager: ISignatureManager,
     private val hashManager: IHashManager,
     private val tokenDataSource: ITokenLocalDataSource,
+    @AllowedArchitectureDependency(reason = "Required for standard JSON serialization of payloads")
     private val json: Json,
 ) : ISecurityRepository {
 
