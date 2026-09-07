@@ -23,10 +23,16 @@ workflows:
       - name: Architecture Gate
         # 🏗️ AUTHORITATIVE GATE: Runs Lint, KSP, Konsist, and Canary heartbeat.
         script: ./gradlew verifyArchitecture --no-daemon
-      - name: Logic Verification
-        script: ./gradlew test -x :core:testing-architecture:test --no-daemon
-      - name: Verify Coverage
-        script: ./gradlew jacocoProdDebugVerification --no-daemon
+      - name: Calculate Impact (Selective Testing)
+        script: |
+          ./gradlew calculateImpact --no-daemon > impact_output.txt
+          TASKS=$(grep "IMPACT_TASKS=" impact_output.txt | cut -d'=' -f2)
+          if [ -z "$TASKS" ]; then TASKS="test lint"; fi
+          echo "export TASKS_TO_RUN=\"$TASKS\"" >> $CM_ENV
+      - name: Logic Verification (Impacted Modules)
+        script: |
+          ./gradlew $TASKS_TO_RUN --no-daemon
+          ./gradlew jacocoProdDebugVerification --no-daemon
       - name: Smoke UI Test
         script: ./gradlew :app:pixel2Api34ProdDebugAndroidTest --no-daemon
 

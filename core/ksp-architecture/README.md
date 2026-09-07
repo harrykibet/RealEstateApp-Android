@@ -37,17 +37,17 @@ All processors in this module reference the central [`Law`](file:///C:/Users/Adm
 - **Enforcement**: Primary constructors of architectural components must only accept interfaces (starting with 'I') or pure Data Models.
 - **Processor**: `Law030_ConstructorPurityProcessor`
 
-### 5. ViewModel Integrity (LAW-018 & LAW-016)
+### 5. ViewModel Integrity (LAW-018 & LAW-002)
 - **Problem**: "Property soup" (multiple StateFlows) and mutable state leakage.
 - **Enforcement**:
     - Exactly one public `StateFlow` allowed per `@ViewModelMarker` (Single Source of Truth).
     - Zero public mutable containers allowed (`MutableStateFlow`, `MutableState`).
-- **Processors**: `Law018_ViewModelSsotProcessor`, `Law016_ViewModelStateOwnershipProcessor`
+- **Processors**: `Law018_ViewModelSsotProcessor`, `Law002_ExposedMutableStateProcessor`
 
-### 6. Domain Expressiveness (LAW-008)
+### 6. Domain Expressiveness (LAW-036)
 - **Problem**: Returning raw `Boolean` or `Int` in `AppResult` obscures business meaning.
 - **Enforcement**: Warns when UseCases return primitives, encouraging enums or sealed classes.
-- **Processor**: `Law008_DomainExpressivenessProcessor`
+- **Processor**: `Law036_DomainExpressivenessProcessor`
 
 ---
 

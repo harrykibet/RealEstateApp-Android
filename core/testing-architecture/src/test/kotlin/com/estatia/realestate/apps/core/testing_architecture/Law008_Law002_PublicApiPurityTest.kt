@@ -7,11 +7,11 @@ import com.lemonappdev.konsist.api.KoModifier
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.Test
 
-class Law008_Law016_PublicApiPurityTest {
+class Law008_Law002_PublicApiPurityTest {
 
     @Test
     fun `public api must not expose mutable containers or implementation types`() {
-        // LAW-008 and LAW-016
+        // LAW-008 and LAW-002
         val forbiddenTypes = setOf(
             "MutableList", "MutableMap", "MutableSet", 
             "ArrayList", "HashMap", "HashSet",
@@ -21,7 +21,7 @@ class Law008_Law016_PublicApiPurityTest {
         Konsist.scopeFromProject()
             .classes()
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_008.id}: ${Law.LAW_008.description} AND ${Law.LAW_016.id}: ${Law.LAW_016.description}") { clazz ->
+            .assertTrue(additionalMessage = "${Law.LAW_008.id}: ${Law.LAW_008.description} AND ${Law.LAW_002.id}: ${Law.LAW_002.description}") { clazz ->
                 val publicProps = clazz.properties(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 val publicFuncs = clazz.functions(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 

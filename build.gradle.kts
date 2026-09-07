@@ -56,8 +56,6 @@ data class ModuleEdge(val from: String, val to: String, val type: DependencyType
 
 /**
  * Authoritative Architectural Analysis Engine.
- * 
- * Provides utilities for module discovery, dependency extraction, and impact analysis.
  */
 object EstatiaArch {
     fun discoverModules(rootDir: File): Set<String> {
@@ -119,6 +117,30 @@ object EstatiaArch {
         }
         return edges
     }
+    
+    fun findImpactedModules(rootDir: File, changedFiles: List<String>, modules: Set<String>, edges: Set<ModuleEdge>): Set<String> {
+        val directlyAffected = mutableSetOf<String>()
+        changedFiles.forEach { path ->
+            var dir = File(rootDir, path).parentFile
+            while (dir != null && dir != rootDir) {
+                val modulePath = ":" + dir.relativeTo(rootDir).path.replace(File.separator, ":")
+                if (modules.contains(modulePath)) {
+                    directlyAffected.add(modulePath)
+                    break
+                }
+                dir = dir.parentFile
+            }
+        }
+
+        val fullImpact = mutableSetOf<String>()
+        fun addWithConsumers(module: String) {
+            if (fullImpact.add(module)) {
+                edges.filter { it.to == module }.forEach { addWithConsumers(it.from) }
+            }
+        }
+        directlyAffected.forEach { addWithConsumers(it) }
+        return fullImpact
+    }
 }
 
 tasks.register("generateModuleGraphs") {
@@ -175,6 +197,7 @@ tasks.register("generateModuleGraphs") {
         modules.forEach { modulePath ->
             val relativePath = modulePath.removePrefix(":").replace(":", "/")
             val outputFile = File(File(rootDir, relativePath), "module_graph.gv")
+            
             val reachable = mutableSetOf<String>()
             fun collectReachable(current: String) {
                 if (reachable.add(current)) {
@@ -214,34 +237,14 @@ tasks.register("calculateImpact") {
         
         val diffOutput = try {
             ProcessBuilder("git", "diff", "--name-only", "origin/main").start().inputStream.bufferedReader().readText().lines().filter { it.isNotBlank() }
-        } catch (e: Exception) { emptyList<String>() }
+        } catch (_: Exception) { emptyList<String>() }
 
         if (diffOutput.isEmpty()) {
-            println("ALL_MODULES")
+            println("IMPACT_TASKS=test lint") // Fallback to all
             return@doLast
         }
 
-        val affectedModules = mutableSetOf<String>()
-        diffOutput.forEach { path ->
-            var dir = File(rootDir, path).parentFile
-            while (dir != null && dir != rootDir) {
-                val modulePath = ":" + dir.relativeTo(rootDir).path.replace(File.separator, ":")
-                if (modules.contains(modulePath)) {
-                    affectedModules.add(modulePath)
-                    break
-                }
-                dir = dir.parentFile
-            }
-        }
-
-        val fullImpact = mutableSetOf<String>()
-        fun addWithConsumers(module: String) {
-            if (fullImpact.add(module)) {
-                allEdges.filter { it.to == module }.forEach { addWithConsumers(it.from) }
-            }
-        }
-        affectedModules.forEach { addWithConsumers(it) }
-
+        val fullImpact = EstatiaArch.findImpactedModules(rootDir, diffOutput, modules, allEdges)
         val tasks = fullImpact.flatMap { listOf("$it:lintDemoDebug", "$it:testDemoDebugUnitTest") }
         println("IMPACT_TASKS=" + tasks.joinToString(" "))
     }
@@ -250,8 +253,11 @@ tasks.register("calculateImpact") {
 tasks.register("auditBinaryPurity") {
     group = "verification"
     doLast {
-        val mappingFile = File(rootDir, "app/build/outputs/mapping/prodRelease/mapping.txt")
-        if (!mappingFile.exists()) return@doLast
+        val mappingFile = File(project.rootDir, "app/build/outputs/mapping/prodRelease/mapping.txt")
+        if (!mappingFile.exists()) {
+            println("Skip: R8 mapping not found at ${mappingFile.absolutePath}")
+            return@doLast
+        }
         val forbidden = listOf("Secret", "ApiKey", "InternalImpl")
         val content = mappingFile.readText()
         val violations = forbidden.filter { content.contains(it) }

@@ -24,6 +24,10 @@ pr-architecture-gate:
   stage: architecture
   script:
     - ./gradlew verifyArchitecture --stacktrace --info
+    # Selective Testing: Determine impacted tasks
+    - ./gradlew calculateImpact > impact_output.txt
+    - TASKS=$(grep "IMPACT_TASKS=" impact_output.txt | cut -d'=' -f2)
+    - echo "TASKS_TO_RUN=$TASKS" >> build.env
     # Self-Healing Ratchet: Update baselines if violations decreased
     - ./gradlew lint -Dlint.update.baseline=true
     - |
@@ -34,21 +38,29 @@ pr-architecture-gate:
         git commit -m "chore: auto-update lint baselines (ratchet)"
         git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:${CI_COMMIT_REF_NAME}
       fi
+  artifacts:
+    reports:
+      dotenv: build.env
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-pr-logic-verification:
+pr-impacted-verification:
   stage: verification
   needs: ["pr-architecture-gate"]
   script:
-    - ./gradlew test -x :core:testing-architecture:test --stacktrace
+    - |
+      if [ -n "$TASKS_TO_RUN" ]; then
+        ./gradlew $TASKS_TO_RUN --stacktrace
+      else
+        echo "No impacted modules detected. Skipping logic verification."
+      fi
     - ./gradlew jacocoProdDebugVerification --stacktrace
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 pr-smoke-ui-test:
   stage: verification
-  needs: ["pr-logic-verification"]
+  needs: ["pr-impacted-verification"]
   script:
     - ./gradlew :app:pixel2Api34ProdDebugAndroidTest --stacktrace
   rules:

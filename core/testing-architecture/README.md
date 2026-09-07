@@ -23,7 +23,7 @@ The following laws (as defined in the central [`Law`](file:///C:/Users/Administr
 - **LAW-031 (Layer Mixing)**: Ensures that business logic components and ViewModels do not reference UI frameworks like Compose or Android Views.
 
 ### API & State Integrity
-- **LAW-008 / LAW-016 (Public API Purity)**: Scans all public properties and functions to ensure they do not expose mutable containers or implementation-specific types.
+- **LAW-008 / LAW-002 (Public API Purity)**: Scans all public properties and functions to ensure they do not expose mutable containers or implementation-specific types.
 - **LAW-004 (Naming Consistency)**: Validates that package names strictly follow the module structure.
 
 ### CI Governance
