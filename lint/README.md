@@ -60,6 +60,7 @@ Every detector in this module exists to enforce one of the following fundamental
 | **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `LayerDependencyViolation` |
 | **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `SuppressionPolicyViolation` |
 | **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryActive` |
+| **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `FatalBaselineIntegrityTest` |
 
 ---
 

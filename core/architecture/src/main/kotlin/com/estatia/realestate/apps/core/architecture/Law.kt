@@ -40,7 +40,8 @@ enum class Law(val id: String, val description: String) {
     LAW_031("LAW-031", "Components must not mix architectural layers or responsibilities."),
     LAW_032("LAW-032", "Domain and Model layers must remain pure Kotlin (No Frameworks)."),
     LAW_033("LAW-033", "Rule suppressions must follow strict organizational policy."),
-    LAW_034("LAW-034", "Architectural enforcement must be crash-resilient and regression-tested.");
+    LAW_034("LAW-034", "Architectural enforcement must be crash-resilient and regression-tested."),
+    LAW_035("LAW-035", "FATAL architectural rules must never be baselined.");
 
     override fun toString(): String = id
 }

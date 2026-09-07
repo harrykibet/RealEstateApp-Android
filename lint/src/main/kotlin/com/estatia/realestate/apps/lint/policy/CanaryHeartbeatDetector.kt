@@ -34,7 +34,7 @@ class CanaryHeartbeatDetector : Detector(), SourceCodeScanner {
             badExample = "",
             goodExample = "",
             category = IssueCategory.ARCHITECTURE,
-            tier = IssueTier.INFO,
+            tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_034,
             implementation = Implementation(CanaryHeartbeatDetector::class.java, Scope.JAVA_FILE_SCOPE)

@@ -11,7 +11,8 @@ class LintConventionPlugin : Plugin<Project> {
                     extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
                         lint {
                             baseline = file("${project.rootDir}/lint-baseline.xml")
-                            checkDependencies = false
+                            // 🛡️ High-tier builds enforce cross-module dependencies
+                            checkDependencies = true
                             checkTestSources = true
                             warningsAsErrors = true
                             abortOnError = true
@@ -32,7 +33,8 @@ class LintConventionPlugin : Plugin<Project> {
                     extensions.configure<com.android.build.api.dsl.LibraryExtension> {
                         lint {
                             baseline = file("${project.rootDir}/lint-baseline.xml")
-                            checkDependencies = false
+                            // 🛡️ Critical modules require cross-module analysis
+                            checkDependencies = (path == ":core:security" || path == ":core:player-engine")
                             checkTestSources = true
                             warningsAsErrors = true
                             abortOnError = true
