@@ -15,37 +15,39 @@ While the `:lint` module provides broad, real-time feedback in the IDE, `:core:k
 
 ## ⚖️ Enforced Laws
 
+All processors in this module reference the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) enum to ensure error messages are standardized across the entire project.
+
 ### 1. Mandatory Result Wrapping (LAW-009)
 - **Problem**: Public methods in repositories or services returning raw implementation types allow failures to be discarded silently.
 - **Enforcement**: Classes annotated with `@Repository`, `@Service`, or `@UseCase` must return `AppResult<T>`, `Flow<T>`, or `Unit`.
-- **Processor**: `ResultWrappingProcessor`
+- **Processor**: `Law009_ResultWrappingProcessor`
 
 ### 2. Contractual Consistency (LAW-008)
 - **Problem**: Direct implementation leakage.
 - **Enforcement**: Every class annotated with `@Repository` or `@UseCase` **must** implement an interface.
-- **Processor**: `ContractProcessor`
+- **Processor**: `Law008_InterfaceContractProcessor`
 
 ### 3. Abstraction Boundaries (LAW-008)
 - **Problem**: Domain components leaking infrastructure types (e.g., Firebase, Room, OkHttp).
-- **Enforcement**: Verifies that public APIs of `@UseCase` and `@Repository` do not expose infrastructure types.
-- **Processor**: `AbstractionBoundaryProcessor`
+- **Enforcement**: Verifies that public APIs of `@UseCase` and `@Repository` do not expose infrastructure types defined in `ArchitecturalPolicy`.
+- **Processor**: `Law008_AbstractionLeakageProcessor`
 
 ### 4. Constructor Purity (LAW-030)
 - **Problem**: Injecting concrete implementations instead of abstractions.
 - **Enforcement**: Primary constructors of architectural components must only accept interfaces (starting with 'I') or pure Data Models.
-- **Processor**: `ConstructorAbstractionProcessor`
+- **Processor**: `Law030_ConstructorPurityProcessor`
 
 ### 5. ViewModel Integrity (LAW-018 & LAW-016)
 - **Problem**: "Property soup" (multiple StateFlows) and mutable state leakage.
 - **Enforcement**:
     - Exactly one public `StateFlow` allowed per `@ViewModelMarker` (Single Source of Truth).
     - Zero public mutable containers allowed (`MutableStateFlow`, `MutableState`).
-- **Processor**: `ViewModelProcessor`
+- **Processors**: `Law018_ViewModelSsotProcessor`, `Law016_ViewModelStateOwnershipProcessor`
 
 ### 6. Domain Expressiveness (LAW-008)
 - **Problem**: Returning raw `Boolean` or `Int` in `AppResult` obscures business meaning.
 - **Enforcement**: Warns when UseCases return primitives, encouraging enums or sealed classes.
-- **Processor**: `ContractProcessor`
+- **Processor**: `Law008_DomainExpressivenessProcessor`
 
 ---
 

@@ -15,37 +15,34 @@ While Android Lint focuses on local file-level patterns and KSP enforces high-pr
 
 ## ⚖️ Enforced Laws
 
-The following laws (as defined in the root `lint/README.md`) are primary targets for Konsist enforcement:
+The following laws (as defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) enum) are primary targets for Konsist enforcement:
 
 ### Layer Purity & Isolation
-- **LAW-032 (Pure Domain/Model)**: Enforces that `:core:domain` and `:core:model` remain pure Kotlin/Java, strictly forbidding dependencies on Android Frameworks or infrastructure libraries (Firebase, Room, OkHttp).
+- **LAW-032 (Pure Domain/Model)**: Enforces that `:core:domain` and `:core:model` remain pure Kotlin/Java, strictly forbidding dependencies on Android Frameworks or infrastructure libraries.
 - **LAW-003 (Feature Isolation)**: Prevents feature modules from depending on other feature modules (except for shared utilities) or direct infrastructure implementations.
-- **LAW-031 (Layer Mixing)**: Ensures that business logic components (Repositories, UseCases) and ViewModels do not reference UI frameworks like Compose or Android Views.
+- **LAW-031 (Layer Mixing)**: Ensures that business logic components and ViewModels do not reference UI frameworks like Compose or Android Views.
 
 ### API & State Integrity
-- **LAW-008 / LAW-016 (Public API Purity)**: Scans all public properties and functions to ensure they do not expose mutable containers (e.g., `MutableStateFlow`, `ArrayList`) or implementation-specific types.
-- **LAW-004 (Naming Consistency)**: Validates that package names strictly follow the module structure (e.g., code in `:feature:home` must reside in `com.estatia.realestate.apps.feature.home`).
+- **LAW-008 / LAW-016 (Public API Purity)**: Scans all public properties and functions to ensure they do not expose mutable containers or implementation-specific types.
+- **LAW-004 (Naming Consistency)**: Validates that package names strictly follow the module structure.
 
-### Complexity Budgets
-- **LAW-029 (Class Size)**: Blocks classes exceeding 1000 lines (FATAL).
-- **LAW-028 (Method Size)**: Blocks functions exceeding 300 lines (FATAL).
-- **LAW-030 (Dependency Budget)**: Blocks constructors with more than 8 dependencies to prevent "Orchestration Monsters."
+### CI Governance
+- **LAW-034 (Canary Regression)**: Runs against a deliberate "violation module" to ensure the enforcement system hasn't regressed.
+- **LAW-035 (Baseline Integrity)**: Ensures that FATAL violations are never allowed to be grandfathered into `lint-baseline.xml`.
 
 ---
 
 ## 🏗️ System Components
 
-### 1. The Canonical Policy ([`ArchitecturalPolicy.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/testing-architecture/src/test/kotlin/com/estatia/realestate/apps/core/testing_architecture/ArchitecturalPolicy.kt))
-This object is the **Single Source of Truth**. It defines:
-- **Forbidden Packages**: Centralized list of infrastructure/UI libraries.
-- **Layer Definitions**: Package patterns for Domain, Model, Feature, etc.
-- **Technical Debt Baseline**: Explicit list of files currently exempt from certain rules to keep CI green while preventing *new* leaks.
+### 1. The Canonical Policy ([`ArchitecturalPolicy.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/ArchitecturalPolicy.kt))
+This object in `:core:architecture` is the **Single Source of Truth**. It defines forbidden packages, layer patterns, and technical debt baselines used by both Konsist and Lint.
 
-### 2. Consistency Tests ([`ArchitectureConsistencyTest.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/testing-architecture/src/test/kotlin/com/estatia/realestate/apps/core/testing_architecture/ArchitectureConsistencyTest.kt))
-General rules applied across the whole project, including naming conventions and complexity budgets.
-
-### 3. Purity Tests ([`LayerPurityTest.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/testing-architecture/src/test/kotlin/com/estatia/realestate/apps/core/testing_architecture/LayerPurityTest.kt))
-Specific tests for ensuring that architectural layers (especially Domain and Model) remain decoupled from implementation details.
+### 2. Specialized Law Tests
+Tests are organized by law ID in `src/test/kotlin/...`:
+- `Law031_LayerMixingTest.kt`: Enforces separation of concerns.
+- `Law032_DomainPurityTest.kt`: Guarantees pure Kotlin domain logic.
+- `Law034_LintCanaryRegressionTest.kt`: High-fidelity regression verification.
+- ... and more.
 
 ---
 

@@ -1,9 +1,9 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.org.jetbrains.kotlin.jvm)
 }
 
 dependencies {
-    implementation(project(":core:architecture"))
+    implementation(projects.core.architecture)
     implementation(libs.konsist)
     testImplementation(libs.junit.junit)
 }

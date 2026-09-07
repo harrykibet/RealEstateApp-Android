@@ -1,0 +1,36 @@
+digraph {
+  graph [label=":core:testing-network Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
+  ":core:testing-network" [fillcolor="#9BF6FF"];
+  ":core:network" [fillcolor="#9BF6FF"];
+  ":core:common" [fillcolor="#9BF6FF"];
+  ":core:model" [fillcolor="#9BF6FF"];
+  ":core:testing" [fillcolor="#9BF6FF"];
+  ":core:domain" [fillcolor="#9BF6FF"];
+  ":core:database" [fillcolor="#9BF6FF"];
+  ":core:network" -> ":core:common"
+  ":core:network" -> ":core:domain"
+  ":core:network" -> ":core:model"
+  ":core:network" -> ":core:testing-network"
+  ":core:network" -> ":core:testing"
+  ":core:common" -> ":core:model"
+  ":core:common" -> ":core:testing"
+  ":core:domain" -> ":core:model"
+  ":core:domain" -> ":core:common"
+  ":core:domain" -> ":core:testing"
+  ":core:model" -> ":core:testing"
+  ":core:database" -> ":core:model"
+  ":core:database" -> ":core:domain"
+  ":core:database" -> ":core:common"
+  ":core:database" -> ":core:testing"
+  ":core:testing" -> ":core:domain"
+  ":core:testing" -> ":core:model"
+  ":core:testing" -> ":core:common"
+  ":core:testing" -> ":core:database"
+  ":core:testing" -> ":core:testing"
+  ":core:testing-network" -> ":core:network"
+  ":core:testing-network" -> ":core:domain"
+  ":core:testing-network" -> ":core:model"
+  ":core:testing-network" -> ":core:common"
+  ":core:testing-network" -> ":core:testing"
+}

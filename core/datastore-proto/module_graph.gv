@@ -1,0 +1,5 @@
+digraph {
+  graph [label=":core:datastore-proto Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
+  ":core:datastore-proto" [fillcolor="#9BF6FF"];
+}

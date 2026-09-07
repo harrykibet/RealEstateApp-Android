@@ -1,5 +1,5 @@
+import com.jraska.module.graph.assertion.GraphRulesExtension
 import java.io.File
-import org.gradle.api.artifacts.ProjectDependency
 
 buildscript {
     repositories {
@@ -36,7 +36,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)  apply false
 }
 
-extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("moduleGraphAssert") {
+extensions.configure<GraphRulesExtension>("moduleGraphAssert") {
     maxHeight = 10
     configurations = setOf("api", "implementation")
     
@@ -55,102 +55,89 @@ extensions.configure<com.jraska.module.graph.assertion.GraphRulesExtension>("mod
 }
 
 /**
- * Custom task to generate a Graphviz dot file for module dependencies
- * with standard Estatia colors. This replaces the default behavior of the
- * module-graph plugin for visualization purposes.
- */
-/**
  * Custom task to generate Graphviz dot files for module dependencies.
- * If 'modules.graph.of.module' is provided, generates a graph for that module and its dependencies.
- * Otherwise, generates a global graph and per-module graphs in each module's directory.
+ * Uses a manual project discovery logic that works even if subprojects aren't evaluated.
  */
 tasks.register("generateModuleGraphs") {
     group = "reporting"
     description = "Generates Graphviz dot files for module dependency graphs."
 
     doLast {
-        val ofModule = project.findProperty("modules.graph.of.module") as? String
+        val rootDir = project.projectDir
         val dotBinary = "C:/Program Files/Graphviz/bin/dot.exe"
-        val hasDot = project.file(dotBinary).exists()
+        val hasDot = File(dotBinary).exists()
 
-        fun generateGraphForProject(target: Project, outputFile: File) {
-            val modulesToInclude = mutableSetOf<Project>()
-            val edges = mutableSetOf<Pair<String, String>>()
+        // 1. Discover all modules by reading settings.gradle.kts
+        val settingsFile = File(rootDir, "settings.gradle.kts")
+        val modules = mutableSetOf<String>()
+        if (settingsFile.exists()) {
+            val content = settingsFile.readText()
+            Regex("""include\s*\(\s*["']([^"']+)["']\s*\)""").findAll(content).forEach { match ->
+                modules.add(match.groupValues[1])
+            }
+        }
+
+        // 2. Parse dependencies from build files
+        val edges = mutableSetOf<Pair<String, String>>()
+        
+        modules.forEach { modulePath ->
+            val relativePath = modulePath.removePrefix(":").replace(":", "/")
+            val moduleDir = File(rootDir, relativePath)
+            val buildFile = File(moduleDir, "build.gradle.kts")
             
-            fun collectDeps(p: Project) {
-                if (modulesToInclude.add(p)) {
-                    // 1. Implicit feature dependencies
-                    /**
-                     * 💡 ARCHITECTURAL NOTE ON IMPLICIT DEPENDENCIES:
-                     * Many core dependencies (UI, Domain, Navigation, etc.) are injected automatically 
-                     * via the 'estatia.android.feature' convention plugin. 
-                     * 
-                     * Because these are applied in 'build-logic' and not the local build file, 
-                     * Gradle's standard configuration analysis won't see them here. 
-                     * 
-                     * ⚠️ MAINTENANCE WARNING: 
-                     * If you add a new project dependency to 'AndroidFeatureConventionPlugin.kt', 
-                     * you MUST manually update the list below to ensure it appears in the module graphs.
-                     */
-                    val buildFile = File(p.projectDir, "build.gradle.kts")
-                    if (buildFile.exists()) {
-                        val content = buildFile.readText()
-                        // 1.1 Feature Implicit Dependencies
-                        if (content.contains("estatia.android.feature")) {
-                            listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach { depPath ->
-                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
-                                if (depProj != null) {
-                                    edges.add(p.path to depProj.path)
-                                    collectDeps(depProj)
-                                }
-                            }
-                        }
-                        // 1.2 Core & App Implicit Dependencies
-                        if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
-                            listOf(":core:testing").forEach { depPath ->
-                                val depProj = p.rootProject.allprojects.find { it.path == depPath }
-                                if (depProj != null) {
-                                    edges.add(p.path to depProj.path)
-                                    collectDeps(depProj)
-                                }
-                            }
-                        }
-                    }
+            if (buildFile.exists()) {
+                val content = buildFile.readText()
+                
+                // 2.1 Explicit dependencies: projects.core.common or project(":core:common")
+                Regex("""project\s*\(\s*["']([^"']+)["']\s*\)""").findAll(content).forEach { match ->
+                    edges.add(modulePath to match.groupValues[1])
+                }
+                
+                Regex("""projects\.((?:[a-zA-Z0-9]+\.)*[a-zA-Z0-9]+)""").findAll(content).forEach { match ->
+                    val dottedPath = match.groupValues[1]
+                    val path = ":" + dottedPath.replace(".", ":")
+                        .replace(Regex("([a-z])([A-Z])"), "$1-$2") // handle camelCase to kebab-case
+                        .lowercase()
+                    
+                    // Match against discovered modules
+                    val actualPath = modules.find { it.replace("-", "").replace(":", "") == path.replace("-", "").replace(":", "") }
+                        ?: path
+                    edges.add(modulePath to actualPath)
+                }
 
-                    // 2. Explicit dependencies through configurations
-                    p.configurations.forEach { config ->
-                        try {
-                            config.dependencies.forEach { dep ->
-                                if (dep is ProjectDependency) {
-                                    val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                    edges.add(p.path to depProj.path)
-                                    collectDeps(depProj)
-                                }
-                            }
-                        } catch (_: Exception) { }
+                // 2.2 Implicit dependencies from convention plugins
+                if (content.contains("libs.plugins.estatia.android.feature")) {
+                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach {
+                        edges.add(modulePath to it)
                     }
                 }
+                if (content.contains("libs.plugins.estatia.android.core") || content.contains("libs.plugins.estatia.android.application")) {
+                    edges.add(modulePath to ":core:testing")
+                }
             }
-            collectDeps(target)
+        }
 
+        fun writeGraph(targetPath: String, outputFile: File, includeModules: Set<String>) {
             outputFile.parentFile.mkdirs()
             outputFile.printWriter().use { writer ->
                 writer.println("digraph {")
-                writer.println("  graph [label=\"${target.path} Dependencies\", labelloc=t, fontsize=20, ranksep=1.2];")
+                writer.println("  graph [label=\"$targetPath Dependencies\", labelloc=t, fontsize=24, ranksep=1.2];")
                 writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
                 
-                modulesToInclude.forEach { p ->
+                for (module in includeModules) {
                     val color = when {
-                        p.path == ":app" -> "#CAFFBF"
-                        p.path.startsWith(":feature") -> "#FFD6A5"
-                        p.path.startsWith(":core") -> "#9BF6FF"
+                        module == ":app" -> "#CAFFBF"
+                        module.startsWith(":feature") -> "#FFD6A5"
+                        module.startsWith(":core") -> "#9BF6FF"
                         else -> "#BDB2FF"
                     }
-                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
+                    writer.println("  \"$module\" [fillcolor=\"$color\"];")
                 }
 
-                edges.forEach { (from, to) ->
-                    writer.println("  \"$from\" -> \"$to\"")
+                for (edge in edges) {
+                    if (includeModules.contains(edge.first) && modules.contains(edge.second)) {
+                        writer.println("  \"${edge.first}\" -> \"${edge.second}\"")
+                    }
                 }
                 writer.println("}")
             }
@@ -163,88 +150,27 @@ tasks.register("generateModuleGraphs") {
             }
         }
 
-        if (ofModule != null) {
-            val targetProj = project.rootProject.allprojects.find { it.path == ofModule }
-                ?: throw IllegalArgumentException("Module $ofModule not found")
-            val output = project.file("${project.layout.buildDirectory.get()}/reports/graph/${targetProj.name}_graph.gv")
-            generateGraphForProject(targetProj, output)
-            println("Graph generated for $ofModule at ${output.absolutePath}")
-        } else {
-            // 1. Generate Global Graph
-            val globalOutput = project.file("docs/images/graph/global_module_graph.gv")
-            val allModules = project.rootProject.allprojects
-            val globalEdges = mutableSetOf<Pair<String, String>>()
+        // 3. Generate Global Graph
+        val globalOutput = project.file("docs/images/graph/global_module_graph.gv")
+        writeGraph("Estatia Global", globalOutput, modules)
+        println("Global graph generated at ${globalOutput.absolutePath}")
+
+        // 4. Generate Per-Module Graphs
+        modules.forEach { modulePath ->
+            val relativePath = modulePath.removePrefix(":").replace(":", "/")
+            val moduleDir = File(rootDir, relativePath)
+            val outputFile = File(moduleDir, "module_graph.gv")
             
-            allModules.forEach { p ->
-                // Implicit
-                /**
-                 * 💡 NOTE: Synchronize this list with the one in 'generateGraphForProject'
-                 * if 'AndroidFeatureConventionPlugin.kt' is updated.
-                 */
-                val buildFile = File(p.projectDir, "build.gradle.kts")
-                if (buildFile.exists()) {
-                    val content = buildFile.readText()
-                    if (content.contains("estatia.android.feature")) {
-                        listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach {
-                            globalEdges.add(p.path to it)
-                        }
-                    }
-                    if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
-                        listOf(":core:testing").forEach {
-                            globalEdges.add(p.path to it)
-                        }
-                    }
-                }
-                // Explicit
-                p.configurations.forEach { config ->
-                    try {
-                        config.dependencies.forEach { dep ->
-                            if (dep is ProjectDependency) {
-                                val depProj = dep::class.java.getMethod("getDependencyProject").invoke(dep) as Project
-                                globalEdges.add(p.path to depProj.path)
-                            }
-                        }
-                    } catch (_: Exception) { }
+            val reachable = mutableSetOf<String>()
+            fun collectReachable(current: String) {
+                if (reachable.add(current)) {
+                    edges.filter { it.first == current }.forEach { collectReachable(it.second) }
                 }
             }
-
-            globalOutput.parentFile.mkdirs()
-            globalOutput.printWriter().use { writer ->
-                writer.println("digraph {")
-                writer.println("  graph [label=\"Estatia Global Module Graph\", labelloc=t, fontsize=30, ranksep=1.4];")
-                writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
-                
-                allModules.forEach { p ->
-                    val color = when {
-                        p.path == ":app" -> "#CAFFBF"
-                        p.path.startsWith(":feature") -> "#FFD6A5"
-                        p.path.startsWith(":core") -> "#9BF6FF"
-                        else -> "#BDB2FF"
-                    }
-                    writer.println("  \"${p.path}\" [fillcolor=\"$color\"];")
-                }
-
-                globalEdges.forEach { (from, to) ->
-                    writer.println("  \"$from\" -> \"$to\"")
-                }
-                writer.println("}")
-            }
-            if (hasDot) {
-                try {
-                    val pngPath = globalOutput.absolutePath.replace(".gv", ".png")
-                    ProcessBuilder(dotBinary, "-Tpng", globalOutput.absolutePath, "-o", pngPath).start().waitFor()
-                } catch (_: Exception) { }
-            }
-            println("Global graph generated.")
-
-            // 2. Generate Per-Module Graphs
-            allModules.forEach { p ->
-                if (p == project.rootProject) return@forEach
-                val moduleOutput = File(p.projectDir, "module_graph.gv")
-                generateGraphForProject(p, moduleOutput)
-            }
-            println("Per-module graphs generated in each module's root directory.")
+            collectReachable(modulePath)
+            
+            writeGraph(modulePath, outputFile, reachable)
         }
+        println("Per-module graphs generated.")
     }
 }
-

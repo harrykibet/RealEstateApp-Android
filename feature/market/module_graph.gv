@@ -1,0 +1,42 @@
+digraph {
+  graph [label=":feature:market Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
+  ":feature:market" [fillcolor="#FFD6A5"];
+  ":core:ui" [fillcolor="#9BF6FF"];
+  ":core:design-system" [fillcolor="#9BF6FF"];
+  ":core:model" [fillcolor="#9BF6FF"];
+  ":core:testing" [fillcolor="#9BF6FF"];
+  ":core:domain" [fillcolor="#9BF6FF"];
+  ":core:common" [fillcolor="#9BF6FF"];
+  ":core:database" [fillcolor="#9BF6FF"];
+  ":core:navigation" [fillcolor="#9BF6FF"];
+  ":core:ui" -> ":core:design-system"
+  ":core:ui" -> ":core:testing"
+  ":core:common" -> ":core:model"
+  ":core:common" -> ":core:testing"
+  ":core:navigation" -> ":core:model"
+  ":core:navigation" -> ":core:testing"
+  ":core:domain" -> ":core:model"
+  ":core:domain" -> ":core:common"
+  ":core:domain" -> ":core:testing"
+  ":core:model" -> ":core:testing"
+  ":core:database" -> ":core:model"
+  ":core:database" -> ":core:domain"
+  ":core:database" -> ":core:common"
+  ":core:database" -> ":core:testing"
+  ":core:design-system" -> ":core:model"
+  ":core:design-system" -> ":core:domain"
+  ":core:design-system" -> ":core:testing"
+  ":core:testing" -> ":core:domain"
+  ":core:testing" -> ":core:model"
+  ":core:testing" -> ":core:common"
+  ":core:testing" -> ":core:database"
+  ":core:testing" -> ":core:testing"
+  ":feature:market" -> ":core:ui"
+  ":feature:market" -> ":core:common"
+  ":feature:market" -> ":core:domain"
+  ":feature:market" -> ":core:navigation"
+  ":feature:market" -> ":core:model"
+  ":feature:market" -> ":core:design-system"
+  ":feature:market" -> ":core:testing"
+}

@@ -74,6 +74,8 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :benchmark
 :lint
 :core:analytics
+:core:architecture
+:core:canary-violations
 :core:common
 :core:config
 :core:data
@@ -83,6 +85,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :core:design-system
 :core:domain
 :core:intelligence
+:core:ksp-architecture
 :core:localization
 :core:model
 :core:navigation
@@ -92,6 +95,7 @@ Estatia is built with strict modular boundaries and production-grade discipline.
 :core:player-ui
 :core:security
 :core:testing
+:core:testing-architecture
 :core:testing-network
 :core:testing-player
 :core:ui

@@ -1,8 +1,8 @@
-﻿lets fix th# Estatia Media UI â€” Technical Specification
+﻿# Estatia Media UI — Technical Specification
 
 The `player-ui` module provides a high-performance, lifecycle-aware set of Jetpack Compose components designed for immersive, TikTok-style video feeds. It abstracts the complexities of hardware surface management, interaction debouncing, and multi-window adaptability.
 
-## ðŸ–¼ï¸ 1. Surface & Hardware Lifecycle
+## 🖼️ 1. Surface & Hardware Lifecycle
 
 ### Native Compose External Surfaces
 To achieve TikTok-caliber transition smoothness and correct z-ordering, this module uses the modern `AndroidExternalSurface` API.
@@ -10,7 +10,7 @@ To achieve TikTok-caliber transition smoothness and correct z-ordering, this mod
 -   **Z-Order Management**: Configured with `zOrder = AndroidExternalSurfaceZOrder.Behind` to ensure the video stays below UI overlays (like the heart icon and progress bar) while avoiding the "black flash" timing issues common with legacy interop.
 -   **10-bit HDR Support**: Automatically detects and leverages 10-bit color formats for HDR10 and Dolby Vision playback on capable hardware.
 
-## ðŸ–±ï¸ 2. Interaction & Navigation Safety
+## 🖱️ 2. Interaction & Navigation Safety
 
 ### Playback Interaction Hardening
 The UI maintains strict synchronization with the underlying hardware state:
@@ -22,7 +22,7 @@ The UI proactively manages resources based on its position in the Navigation Bac
 -   **Visibility Tracking**: ViewModels use an `isScreenVisible` signal. If a screen is moved to the backstack (e.g., navigating from Home to Search), the UI state is forced to `Idle/Paused`.
 -   **Resource Reclamation**: The `EngineVideoPlayer` explicitly pauses playback and yields hardware resources as soon as its Composable is disposed, ensuring backgrounded screens never "steal" the global active player.
 
-## ðŸš¦ 3. Advanced UX & State Machine
+## 🚦 3. Advanced UX & State Machine
 
 ### Fault-Tolerant UI States
 Beyond standard Play/Pause, the UI handles complex real-world conditions:
@@ -30,7 +30,7 @@ Beyond standard Play/Pause, the UI handles complex real-world conditions:
 -   **`LowBandwidth`**: A non-intrusive warning overlay shown when sustained congestion (<500kbps) is detected, managing user expectations for quality drops.
 -   **`INVALID_URI`**: Catches "Content Errors" (broken database links) at the ViewModel layer. Surfaces an "Unavailable" message immediately, bypassing technical timeout intervals.
 
-## ðŸ“± 4. Immersive Integrations
+## 📱 4. Immersive Integrations
 
 ### Picture-in-Picture (PiP)
 -   **Automatic Transition**: MainActivity automatically triggers PiP when backgrounded during active playback on supported hardware.
@@ -42,7 +42,7 @@ Beyond standard Play/Pause, the UI handles complex real-world conditions:
 
 ---
 
-## ðŸ—ï¸ Architecture
+## 🏗️ Architecture
 
 -   **`EngineVideoFeed`**: The primary orchestrator for vertical feeds. Handles prefetch coordination and settlement heuristics.
 -   **`EngineVideoPlayer`**: Low-level surface management and ExoPlayer binding.
@@ -51,4 +51,3 @@ Beyond standard Play/Pause, the UI handles complex real-world conditions:
 
 ## Dependency Graph
 ![Module Graph](module_graph.png)
-

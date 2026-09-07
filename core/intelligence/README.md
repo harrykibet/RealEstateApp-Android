@@ -30,10 +30,10 @@ The module implements a "Layered Defense" safety system via **`IContentSafetySer
 
 ### On-Device Proactive Moderation (UX Layer)
 Uses ML Kit to block unsafe content *before* it leaves the device:
-- **Text Toxicity**: Scans descriptions and comments for abusive language using heuristic patterns.
-- **Visual Guardrails**: Scans photos for violence or explicit material.
-- **Video Keyframe Analysis**: Extracts strategic keyframes from videos (e.g., 5 frames spread across duration) and runs visual moderation on each.
-- **Integrity Checks**: Detects phone numbers/emails in descriptions to prevent platform bypass.
+- **Text Toxicity**: Scans descriptions and comments for abusive language using high-performance heuristic patterns.
+- **Visual Guardrails**: Scans photos for violence, weapons, or explicit material using image labeling.
+- **Video Keyframe Analysis**: Extracts strategic keyframes from videos (e.g., 5 frames spread across duration) and runs visual moderation on each to prevent unsafe uploads.
+- **Integrity Checks**: Detects phone numbers and emails in descriptions via regex to prevent platform fee bypassing.
 
 ### Redundancy Strategy
 > [!IMPORTANT]
@@ -43,9 +43,9 @@ Uses ML Kit to block unsafe content *before* it leaves the device:
 
 Used to verify the authenticity of agents and property listings via **`IVerificationService`**.
 
-- **Identity Verification**: On-device OCR extracts Government ID data, which is then compared against a real-time selfie using face-mesh matching.
-- **Active Liveness**: Infrastructure for checking human liveness (blinks/head turns) in video verification.
-- **Proof of Physical Presence**: Verifies signed media metadata (GPS/Timestamp) to prove an agent was physically at the property during recording.
+- **Identity Verification**: On-device OCR extracts Government ID data (Name, ID number) which is then compared against a real-time selfie using on-device face detection.
+- **Active Liveness**: (Planned) Infrastructure for checking human liveness (blinks/head turns) in video verification.
+- **Proof of Physical Presence**: (Planned) Verifies signed media metadata (GPS/Timestamp) to prove an agent was physically at the property during recording.
 
 ## 📊 4. The Feedback Loop (Telemetry)
 
@@ -57,6 +57,7 @@ Captured via **`IEngagementRepository`**, this loop feeds the server-side ML mod
 ## 🛠️ 5. Implementation Stack
 - **ML Engine**: Google ML Kit (On-Device).
 - **Video Analysis**: `MediaMetadataRetriever` for keyframe extraction.
+- **Error Handling**: All service interfaces return `AppResult` to ensure explicit failure handling at architectural boundaries.
 - **Dependency Injection**: Hilt `@Singleton` provision via `IntelligenceModule`.
 
 ## Dependency Graph

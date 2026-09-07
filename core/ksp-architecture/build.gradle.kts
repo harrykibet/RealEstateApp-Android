@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.org.jetbrains.kotlin.jvm)
 }
 
 dependencies {
-    implementation(project(":core:architecture"))
+    implementation(projects.core.architecture)
     implementation(libs.symbol.processing.api)
 
     testImplementation(libs.junit.junit)

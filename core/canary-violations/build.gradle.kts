@@ -14,7 +14,7 @@ android {
 }
 
 dependencies {
-    lintChecks(project(":lint"))
+    lintChecks(projects.lint)
     implementation(projects.core.common)
     implementation(projects.core.domain)
     implementation(projects.core.model)
