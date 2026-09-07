@@ -15,7 +15,7 @@ class Law008_InterfaceContractProcessorTest {
         val source = SourceFile.kotlin(
             "TestRepository.kt",
             """
-            package com.estatia.realestate.apps.core.data.repository
+            package com.estatia.realestate.apps.core.data.repositories
             import com.estatia.realestate.apps.core.common.annotations.Repository
             
             @Repository
@@ -31,6 +31,6 @@ class Law008_InterfaceContractProcessorTest {
             providers = listOf(Law008_InterfaceContractProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-008)"))
+        assertTrue(result.messages.contains("Architecture Law (LAW-008)"))
     }
 }

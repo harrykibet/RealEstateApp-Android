@@ -13,8 +13,10 @@ import com.estatia.realestate.apps.feature.home.HomeCoupling
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 /**
@@ -33,8 +35,10 @@ class MissingVisibilityClass {
 class CanaryRepository : Runnable { // LAW-008: Must implement interface
     override fun run() {}
 
-    // Violation: Returns raw String
-    fun getRawData(): String = "Data"
+    // Violation: Returns raw String (non-suspend, but we want to catch complex logic)
+    // Actually, LAW-009 is now a CONVENTION and exempts trivial simple types.
+    // Let's use a non-trivial type to trigger it.
+    fun getRawData(): List<String> = emptyList()
 }
 
 // LAW-027: Compose Architecture Leakage
@@ -60,15 +64,18 @@ fun LeakySingletonRead() {
     val x = CanaryConfig.mutableValue
 }
 
-// LAW-018: ViewModel SSoT & LAW-016: State Ownership
+// LAW-018: ViewModel SSoT & LAW-002: State Ownership
 @ViewModelMarker
 class BadViewModel : ViewModel() {
-    // LAW-018 Violation: Multiple public StateFlows
+    // LAW-018 Violation: Multiple public StateFlows (Multiple Authorities)
     val state1: StateFlow<Int> = MutableStateFlow(0)
     val state2: StateFlow<String> = MutableStateFlow("")
     
-    // LAW-016 Violation: Exposing mutable state
+    // LAW-002 Violation: Exposing mutable state container
     val mutableState = MutableStateFlow(0)
+
+    // ✅ VALID: Other Flows for events/navigation are permitted under refined LAW-018
+    val navigationEvents: Flow<String> = flow { }
     
     // LAW-023: Lifecycle Leak
     var leakedActivity: Activity? = null

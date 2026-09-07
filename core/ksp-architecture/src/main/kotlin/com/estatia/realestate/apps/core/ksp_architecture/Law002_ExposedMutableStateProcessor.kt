@@ -6,10 +6,12 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
 /**
- * LAW-016: ViewModel State Ownership.
- * Enforces that ViewModels do not expose mutable state containers.
+ * LAW-002: Mutable state never crosses an ownership boundary.
+ * 
+ * Enforces that ViewModels and other architectural components do not expose 
+ * mutable state containers (MutableStateFlow, MutableState) to external callers.
  */
-class Law016_ViewModelStateOwnershipProcessor(
+class Law002_ExposedMutableStateProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
@@ -30,9 +32,9 @@ class Law016_ViewModelStateOwnershipProcessor(
                 if (typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
                     typeName == "androidx.compose.runtime.MutableState") {
                     logger.report(
-                        Law.LAW_016,
+                        Law.LAW_002,
                         "ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
-                        "Expose as StateFlow or a read-only interface instead.",
+                        "Mutable state must remain private. Expose as a read-only StateFlow instead (LAW-002).",
                         prop
                     )
                 }
@@ -42,8 +44,8 @@ class Law016_ViewModelStateOwnershipProcessor(
     }
 }
 
-class Law016_ViewModelStateOwnershipProcessorProvider : SymbolProcessorProvider {
+class Law002_ExposedMutableStateProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return Law016_ViewModelStateOwnershipProcessor(environment.logger)
+        return Law002_ExposedMutableStateProcessor(environment.logger)
     }
 }

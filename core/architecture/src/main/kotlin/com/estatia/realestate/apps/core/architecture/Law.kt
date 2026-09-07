@@ -44,7 +44,7 @@ enum class Law(val id: String, val description: String, val type: LawType) {
     LAW_015("LAW-015", "Tests must not depend on real time.", LawType.WARNING),
     LAW_016("LAW-016", "Tests must strictly remain in test source sets.", LawType.FATAL),
     LAW_017("LAW-017", "Mutable state must follow the backing-property convention.", LawType.STYLE),
-    LAW_018("LAW-018", "UI components do not own mutable state sources (UDF).", LawType.ERROR),
+    LAW_018("LAW-018", "ViewModels must expose a single canonical persistent UI-state owner.", LawType.ERROR),
     LAW_019("LAW-019", "Suspend functions must not secretly launch independent work.", LawType.FATAL),
     LAW_020("LAW-020", "Async results (Deferred) must be joined or returned.", LawType.ERROR),
     LAW_021("LAW-021", "Exception handlers must be placed on root scopes.", LawType.WARNING),
@@ -61,7 +61,8 @@ enum class Law(val id: String, val description: String, val type: LawType) {
     LAW_032("LAW-032", "Domain and Model layers must remain pure Kotlin (No Frameworks).", LawType.FATAL),
     LAW_033("LAW-033", "Rule suppressions must follow strict organizational policy.", LawType.FATAL),
     LAW_034("LAW-034", "Architectural enforcement must be crash-resilient and regression-tested.", LawType.FATAL),
-    LAW_035("LAW-035", "FATAL architectural rules must never be baselined.", LawType.FATAL);
+    LAW_035("LAW-035", "FATAL architectural rules must never be baselined.", LawType.FATAL),
+    LAW_036("LAW-036", "Domain results should express business meaning via types.", LawType.CONVENTION);
 
     override fun toString(): String = id
 }

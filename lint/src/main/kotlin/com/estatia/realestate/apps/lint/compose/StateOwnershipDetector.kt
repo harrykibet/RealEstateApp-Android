@@ -11,6 +11,8 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 
 /**
+ * LAW-002: Mutable state never crosses an ownership boundary.
+ * 
  * Enforces Unidirectional Data Flow (UDF) by preventing Composables from accepting 
  * mutable state containers as parameters.
  */
@@ -44,7 +46,7 @@ class StateOwnershipDetector : Detector(), SourceCodeScanner {
                         parameter as UElement,
                         context.getLocation(parameter as UElement),
                         "Composable parameter '${parameter.name}' is a mutable container. " +
-                                "Pass a read-only State or a simple data class and use lambda callbacks for events (UDF)."
+                                "Pass a read-only State or a simple data class and use lambda callbacks for events (LAW-002)."
                     )
                 }
             }
@@ -61,7 +63,7 @@ class StateOwnershipDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.COMPOSE,
             tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
-            architectureLaw = Law.LAW_018,
+            architectureLaw = Law.LAW_002,
             implementation = Implementation(StateOwnershipDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

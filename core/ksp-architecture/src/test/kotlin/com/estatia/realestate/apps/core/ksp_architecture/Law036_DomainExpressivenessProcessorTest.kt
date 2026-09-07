@@ -8,10 +8,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @OptIn(ExperimentalCompilerApi::class)
-class Law008_DomainExpressivenessProcessorTest {
+class Law036_DomainExpressivenessProcessorTest {
 
     @Test
-    fun `LAW-008 UseCase returns primitive Result issues warning`() {
+    fun `LAW-036 UseCase returns primitive Result issues warning`() {
         val source = SourceFile.kotlin(
             "TestUseCase.kt",
             """
@@ -32,11 +32,11 @@ class Law008_DomainExpressivenessProcessorTest {
             KspTestUtils.annotationsSource, 
             KspTestUtils.resultSource, 
             source,
-            providers = listOf(Law008_DomainExpressivenessProcessorProvider())
+            providers = listOf(Law036_DomainExpressivenessProcessorProvider())
         )
-        // Warnings don't fail compilation
+        // Rule is now a CONVENTION (Warning), so compilation should pass
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        assertTrue(result.messages.contains("Domain Smell"))
-        assertTrue(result.messages.contains("returns 'AppResult<kotlin.Boolean>'"))
+        assertTrue(result.messages.contains("Architecture Convention (LAW-036)"))
+        assertTrue(result.messages.contains("Consider using a sealed class or enum"))
     }
 }

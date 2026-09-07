@@ -8,18 +8,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @OptIn(ExperimentalCompilerApi::class)
-class Law016_ViewModelStateOwnershipProcessorTest {
+class Law002_ExposedMutableStateProcessorTest {
 
     @Test
-    fun `LAW-016 ViewModel mutable state fails compilation`() {
-        val mutableStateFlowStub = SourceFile.kotlin(
-            "MutableStateFlow.kt",
-            """
-            package kotlinx.coroutines.flow
-            class MutableStateFlow<T>(val value: T)
-            """.trimIndent()
-        )
-
+    fun `LAW-002 ViewModel exposing MutableStateFlow fails compilation`() {
         val source = SourceFile.kotlin(
             "TestViewModel.kt",
             """
@@ -29,18 +21,20 @@ class Law016_ViewModelStateOwnershipProcessorTest {
             
             @ViewModelMarker
             class TestViewModel {
-                val state: MutableStateFlow<Int> = TODO()
+                // Explicit type to ensure KSP can resolve it even if the initializer is invalid in stub
+                val mutableState: MutableStateFlow<Int> = TODO()
             }
             """.trimIndent()
         )
 
         val result = KspTestUtils.compile(
             KspTestUtils.annotationsSource, 
-            mutableStateFlowStub,
+            KspTestUtils.coroutineStubs, 
             source,
-            providers = listOf(Law016_ViewModelStateOwnershipProcessorProvider())
+            providers = listOf(Law002_ExposedMutableStateProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-016)"))
+        assertTrue(result.messages.contains("Architecture Law (LAW-002)"))
+        assertTrue(result.messages.contains("exposes mutable state"))
     }
 }

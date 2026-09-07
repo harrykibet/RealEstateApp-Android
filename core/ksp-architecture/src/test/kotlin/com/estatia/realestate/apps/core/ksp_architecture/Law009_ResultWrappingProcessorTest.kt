@@ -11,18 +11,20 @@ import org.junit.Test
 class Law009_ResultWrappingProcessorTest {
 
     @Test
-    fun `LAW-009 Result wrapping violation fails compilation`() {
+    fun `LAW-009 Result wrapping violation issues warning`() {
         val source = SourceFile.kotlin(
             "TestRepository.kt",
             """
-            package com.estatia.realestate.apps.core.data.repository
+            package com.estatia.realestate.apps.core.data.repositories
             import com.estatia.realestate.apps.core.common.annotations.Repository
+            import java.util.List
             
             interface ITestRepository
             
             @Repository
             class TestRepository : ITestRepository {
-                fun getData(): String = "Data"
+                // Non-trivial complex type requires wrapping
+                fun getData(): List<String> = TODO()
             }
             """.trimIndent()
         )
@@ -30,19 +32,51 @@ class Law009_ResultWrappingProcessorTest {
         val result = KspTestUtils.compile(
             KspTestUtils.annotationsSource, 
             KspTestUtils.resultSource, 
+            KspTestUtils.coroutineStubs, 
             source,
             providers = listOf(Law009_ResultWrappingProcessorProvider())
         )
-        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-009)"))
+        // Rule is now a CONVENTION (Warning), so compilation should pass
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertTrue(result.messages.contains("Architecture Convention (LAW-009)"))
     }
 
     @Test
-    fun `LAW-009 Result wrapping success passes compilation`() {
+    fun `LAW-009 Trivial getter returning simple type is exempt`() {
         val source = SourceFile.kotlin(
             "TestRepository.kt",
             """
-            package com.estatia.realestate.apps.core.data.repository
+            package com.estatia.realestate.apps.core.data.repositories
+            import com.estatia.realestate.apps.core.common.annotations.Repository
+            
+            interface ITestRepository
+            
+            @Repository
+            class TestRepository : ITestRepository {
+                fun getId(): String = "123"
+                fun isActive(): Boolean = true
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.resultSource, 
+            KspTestUtils.coroutineStubs, 
+            source,
+            providers = listOf(Law009_ResultWrappingProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        // Should NOT contain warning because they are exempt simple types
+        assertTrue(!result.messages.contains("Architecture Convention (LAW-009)"))
+    }
+
+    @Test
+    fun `LAW-009 Standard wrappers pass`() {
+        val source = SourceFile.kotlin(
+            "TestRepository.kt",
+            """
+            package com.estatia.realestate.apps.core.data.repositories
             import com.estatia.realestate.apps.core.common.annotations.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
             import kotlinx.coroutines.flow.Flow
@@ -53,7 +87,7 @@ class Law009_ResultWrappingProcessorTest {
             class TestRepository : ITestRepository {
                 fun loadData(): AppResult<String> = TODO()
                 fun streamData(): Flow<String> = TODO()
-                fun doWork() {}
+                fun doWork() {} // Unit is allowed
             }
             """.trimIndent()
         )

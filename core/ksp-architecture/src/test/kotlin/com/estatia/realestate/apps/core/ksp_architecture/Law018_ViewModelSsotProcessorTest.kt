@@ -34,22 +34,24 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-018)"))
+        assertTrue(result.messages.contains("Architecture Law (LAW-018)"))
     }
 
     @Test
-    fun `LAW-018 ViewModel with single StateFlow passes`() {
+    fun `LAW-018 ViewModel with single StateFlow and multiple event Flows passes`() {
         val source = SourceFile.kotlin(
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
             import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
             import kotlinx.coroutines.flow.StateFlow
+            import kotlinx.coroutines.flow.Flow
             
             @ViewModelMarker
             class TestViewModel {
                 val uiState: StateFlow<Int> = TODO()
-                private val _internalState: String = ""
+                val navigationEvents: Flow<String> = TODO()
+                val effects: Flow<Unit> = TODO()
             }
             """.trimIndent()
         )
@@ -61,5 +63,31 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    @Test
+    fun `LAW-018 ViewModel with no StateFlow fails`() {
+        val source = SourceFile.kotlin(
+            "TestViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+            import kotlinx.coroutines.flow.Flow
+            
+            @ViewModelMarker
+            class TestViewModel {
+                val events: Flow<String> = TODO()
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.coroutineStubs, 
+            source,
+            providers = listOf(Law018_ViewModelSsotProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        assertTrue(result.messages.contains("has no public StateFlow"))
     }
 }

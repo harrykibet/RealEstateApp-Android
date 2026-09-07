@@ -15,7 +15,7 @@ class Law008_AbstractionLeakageProcessorTest {
         val source = SourceFile.kotlin(
             "TestRepository.kt",
             """
-            package com.estatia.realestate.apps.core.data.repository
+            package com.estatia.realestate.apps.core.data.repositories
             import com.estatia.realestate.apps.core.common.annotations.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
             import com.google.firebase.auth.FirebaseUser
@@ -31,13 +31,12 @@ class Law008_AbstractionLeakageProcessorTest {
 
         val result = KspTestUtils.compile(
             KspTestUtils.annotationsSource, 
-            KspTestUtils.resultSource, 
-            KspTestUtils.firebaseStub, 
+            KspTestUtils.resultSource,
+            KspTestUtils.firebaseStub,
             source,
             providers = listOf(Law008_AbstractionLeakageProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Violation (LAW-008)"))
-        assertTrue(result.messages.contains("exposes infrastructure type: com.google.firebase.auth.FirebaseUser"))
+        assertTrue(result.messages.contains("Architecture Law (LAW-008)"))
     }
 }

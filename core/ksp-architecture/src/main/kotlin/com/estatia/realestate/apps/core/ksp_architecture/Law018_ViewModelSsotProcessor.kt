@@ -6,8 +6,11 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
 /**
- * LAW-018: UDF Consistency (Single Source of Truth).
- * Enforces that every ViewModel has exactly one public StateFlow property.
+ * LAW-018: ViewModel SSoT (Single Source of Truth).
+ * 
+ * Enforces that a ViewModel has exactly one canonical persistent UI-state owner (StateFlow).
+ * ViewModels are permitted to expose multiple transient event streams (Flow/SharedFlow),
+ * but only one authoritative source for persistent UI state.
  */
 class Law018_ViewModelSsotProcessor(
     private val logger: KSPLogger
@@ -28,25 +31,29 @@ class Law018_ViewModelSsotProcessor(
             val stateFlows = publicProperties.filter { prop ->
                 val typeName = prop.type.resolve().declaration.qualifiedName?.asString() ?: ""
                 typeName == "kotlinx.coroutines.flow.StateFlow"
-            }
+            }.toList()
 
-            if (stateFlows.toList().size > 1) {
+            // 1. Enforce a single canonical state owner
+            if (stateFlows.size > 1) {
                 logger.report(
                     Law.LAW_018,
-                    "ViewModel '${clazz.simpleName.asString()}' has multiple public StateFlows. " +
-                    "Use a single 'uiState' property to ensure a Single Source of Truth.",
+                    "ViewModel '${clazz.simpleName.asString()}' has multiple public StateFlows (${stateFlows.joinToString { it.simpleName.asString() }}). " +
+                    "A ViewModel must expose exactly one canonical persistent UI-state owner to ensure a Single Source of Truth.",
                     clazz
                 )
             }
 
-            if (stateFlows.toList().isEmpty()) {
+            // 2. Enforce that at least one state owner is present
+            if (stateFlows.isEmpty()) {
                 logger.report(
                     Law.LAW_018,
                     "ViewModel '${clazz.simpleName.asString()}' has no public StateFlow. " +
-                    "Ensure you are exposing UI state via a read-only StateFlow.",
+                    "ViewModels must expose a canonical persistent UI-state owner (e.g., 'uiState: StateFlow<T>').",
                     clazz
                 )
             }
+            
+            // 💡 Note: Other Flow/SharedFlow properties are permitted for transient events (Navigation, Effects).
         }
         return emptyList()
     }

@@ -29,7 +29,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | Law ID | Law Description | Type | Enforcement Rule |
 | :--- | :--- | :--- | :--- |
 | **LAW-001** | Presentation owns UI state. | `CONVENTION` | `BusinessLogicInCompose`, `MagicNumber` |
-| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState`, `RememberMissing` |
+| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `ExposedMutableState`, `RememberMissing`, `MutableStateParameter` |
 | **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `InfrastructureLeakage` |
 | **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `FeatureCouplingViolation` |
 | **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `ForbiddenCoroutineScope` |
@@ -45,7 +45,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-015** | Tests must not depend on real time. | `WARNING` | `DirectSystemTimeUsageInTest` |
 | **LAW-016** | Tests must strictly remain in test source sets. | `FATAL` | `MockInProduction` |
 | **LAW-017** | Mutable state must follow the backing-property convention. | `STYLE` | `BackingPropertyConvention` |
-| **LAW-018** | UI components do not own mutable state sources (UDF). | `ERROR` | `MutableStateParameter` |
+| **LAW-018** | ViewModels must expose a single canonical persistent UI-state owner. | `ERROR` | `ViewModelSsot` |
 | **LAW-019** | Suspend functions must not secretly launch independent work. | `FATAL` | `SecretConcurrency` |
 | **LAW-020** | Async results (Deferred) must be joined or returned. | `ERROR` | `UnusedAsync` |
 | **LAW-021** | Exception handlers must be placed on root scopes. | `WARNING` | `MisplacedCoroutineExceptionHandler` |
@@ -63,6 +63,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `SuppressionPolicyViolation` |
 | **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryActive` |
 | **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `FatalBaselineIntegrityTest` |
+| **LAW-036** | Domain results should express business meaning via types. | `CONVENTION` | `DomainExpressiveness` |
 
 ---
 
