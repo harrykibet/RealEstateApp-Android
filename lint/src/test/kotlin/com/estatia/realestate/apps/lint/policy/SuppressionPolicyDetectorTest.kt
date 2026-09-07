@@ -74,11 +74,11 @@ class SuppressionPolicyDetectorTest {
             )
             .issues(SuppressionPolicyDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
             .run()
-            .expectContains("requires a preceding justification comment")
+            .expectContains("requires an immediately preceding justification comment")
     }
 
     @Test
-    fun `suppression of ERROR rule with justification is clean`() {
+    fun `suppression of ERROR rule with wrong justification reports fatal`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
@@ -89,7 +89,30 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    // Justification: necessary for legacy interop
+                    // Justification: Unrelated reason
+                    @Suppress("MissingResultWrapper")
+                    class Bad
+                    """.trimIndent()
+                )
+            )
+            .issues(SuppressionPolicyDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
+            .run()
+            .expectContains("requires an immediately preceding justification comment")
+    }
+
+    @Test
+    fun `suppression of ERROR rule with correct justification is clean`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    // Justification: MissingResultWrapper - necessary for legacy interop
                     @Suppress("MissingResultWrapper")
                     class Good
                     """.trimIndent()

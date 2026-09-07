@@ -6,7 +6,13 @@ import com.estatia.realestate.apps.core.architecture.Law
 import org.jetbrains.uast.*
 
 /**
- * Enforces LAW-033: "Suppression Policy Enforcement".
+ * LAW-033: Suppression Policy Enforcement.
+ * 
+ * This detector ensures that architectural laws are not blindly suppressed.
+ * Rules:
+ * 1. Blind suppression using "all" is strictly forbidden.
+ * 2. FATAL rules (Architectural Laws) cannot be suppressed.
+ * 3. ERROR rules require an ADJACENT justification comment with the specific issue ID.
  */
 class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
@@ -25,13 +31,46 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
         
-        // Use the Regex on the source of the whole annotation call as a robust fallback
-        val src = node.sourcePsi?.text ?: node.asSourceString()
-        "\"([^\"]+)\"".toRegex().findAll(src).forEach { 
-            list.add(it.groupValues[1])
+        // 1. Try to extract from the literal values (e.g. @Suppress("all"))
+        node.attributeValues.forEach { attr ->
+            extractFromExpression(attr.expression, list)
+        }
+        
+        // 2. Fallback to regex if UAST didn't catch it
+        if (list.isEmpty()) {
+            val src = node.asSourceString()
+            "\"([^\"]+)\"".toRegex().findAll(src).forEach { 
+                list.add(it.groupValues[1])
+            }
         }
         
         return list.distinct()
+    }
+
+    private fun extractFromExpression(expr: UExpression, list: MutableList<String>) {
+        when (expr) {
+            is ULiteralExpression -> {
+                expr.value?.toString()?.let { list.add(it) }
+            }
+            is UCallExpression -> {
+                expr.valueArguments.forEach { extractFromExpression(it, list) }
+            }
+            is UPolyadicExpression -> {
+                expr.operands.forEach { extractFromExpression(it, list) }
+            }
+            is UExpressionList -> {
+                expr.expressions.forEach { extractFromExpression(it, list) }
+            }
+            is UClassLiteralExpression -> {
+                expr.type?.canonicalText?.let { list.add(it) }
+            }
+            is USimpleNameReferenceExpression -> {
+                list.add(expr.identifier)
+            }
+            is UQualifiedReferenceExpression -> {
+                list.add(expr.asRenderString().removeSuffix("::class"))
+            }
+        }
     }
 
     private fun checkSuppressedIssues(context: JavaContext, node: UAnnotation, suppressed: List<String>) {
@@ -44,6 +83,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                 return@forEach
             }
 
+            // We handle UnstableApi as a special case for OptIn
             val issue = registry.getIssue(cleanId) ?: 
                         if (cleanId.contains("UnstableApi")) registry.getIssue("UnsafeOptInUsageError") else null
             
@@ -51,6 +91,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             
             when (issue.defaultSeverity) {
                 Severity.FATAL -> {
+                    // SuppressionPolicyViolation itself is FATAL, don't recurse
                     if (cleanId != ISSUE.id) {
                         context.report(
                             ISSUE, 
@@ -61,12 +102,13 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                     }
                 }
                 Severity.ERROR -> {
-                    if (!checkJustification(context, node)) {
+                    if (!checkJustification(context, node, cleanId)) {
                         context.report(
                             ISSUE, 
                             node, 
                             context.getLocation(node), 
-                            "Suppression of ERROR-level rule '$cleanId' requires a preceding justification comment (LAW-033)."
+                            "Suppression of ERROR-level rule '$cleanId' requires an immediately preceding justification comment " +
+                            "matching: '// Justification: $cleanId - <reason>' (LAW-033)."
                         )
                     }
                 }
@@ -75,20 +117,27 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun checkJustification(context: JavaContext, node: UAnnotation): Boolean {
+    private fun checkJustification(context: JavaContext, node: UAnnotation, issueId: String): Boolean {
         val source = context.getContents() ?: return false
-        val offset = node.sourcePsi?.textRange?.startOffset ?: return false
-        val preceding = source.substring(0, offset)
-        return preceding.contains("Justification:", ignoreCase = true)
+        val startOffset = node.sourcePsi?.textRange?.startOffset ?: return false
+        
+        // Scan backwards from the annotation to find the preceding line
+        val precedingText = source.substring(0, startOffset).trimEnd()
+        val lastNewline = precedingText.lastIndexOf('\n')
+        val lastLine = if (lastNewline != -1) precedingText.substring(lastNewline + 1) else precedingText
+        
+        // Pattern: // Justification: IssueId - <reason>
+        val pattern = Regex("""//\s*Justification:\s*$issueId\s*-.*""", RegexOption.IGNORE_CASE)
+        return pattern.matches(lastLine)
     }
 
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "SuppressionPolicyViolation",
             description = "Illegal or undocumented rule suppression",
-            rationale = "FATAL rules cannot be suppressed, and ERROR rules require a justification comment.",
-            badExample = "@SuppressLint(\"ExposedMutableState\")",
-            goodExample = "// Justification: reason\n@SuppressLint(\"ExposedMutableState\")",
+            rationale = "FATAL rules cannot be suppressed, and ERROR rules require a specific, adjacent justification comment.",
+            badExample = "@Suppress(\"ExposedMutableState\")",
+            goodExample = "// Justification: ExposedMutableState - Required for legacy data mapping\n@Suppress(\"ExposedMutableState\")",
             category = IssueCategory.ARCHITECTURE,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
