@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 
 /**
+ * LAW-012: State Synchronization.
  * Detects usage of non-thread-safe collections or state in multi-threaded environments.
  */
 class ThreadSafetyDetector : Detector(), SourceCodeScanner {
@@ -17,7 +18,10 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     private val unsafeCollections = mapOf(
         "java.util.HashMap" to "ConcurrentHashMap",
         "java.util.ArrayList" to "CopyOnWriteArrayList",
-        "HashMap" to "ConcurrentHashMap"
+        "java.util.HashSet" to "ConcurrentHashMap.newKeySet()",
+        "HashMap" to "ConcurrentHashMap",
+        "ArrayList" to "CopyOnWriteArrayList",
+        "HashSet" to "ConcurrentHashMap.newKeySet()"
     )
 
     override fun getApplicableUastTypes() = listOf(UField::class.java)
@@ -25,7 +29,9 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
             val containingClass = node.getParentOfType<UClass>() ?: return
-            if (!isSingleton(context, containingClass)) return
+            
+            // 🏎️ Risk Surface: Any class that is shared or manages asynchronous work
+            if (!isAtRiskComponent(context, containingClass)) return
 
             val type = node.type
             
@@ -35,23 +41,43 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
                         ISSUE,
                         node,
                         context.getLocation(node as UElement),
-                        "Unsafe collection '$unsafe' used in a Singleton. Use '$safe' or wrap in a mutex (LAW-012)."
+                        "Unsafe collection '$unsafe' used in a multi-threaded component. " +
+                                "Use '$safe' or wrap in a mutex (LAW-012)."
                     )
                 }
             }
         }
     }
 
-    private fun isSingleton(context: JavaContext, node: UClass): Boolean {
-        return context.evaluator.getAnnotations(node.javaPsi, false)
-            .any { it.qualifiedName?.contains("Singleton") == true }
+    private fun isAtRiskComponent(context: JavaContext, node: UClass): Boolean {
+        val name = node.name ?: ""
+        
+        // 1. Long-lived singletons (Hilt)
+        val hasSingletonAnnotation = context.evaluator.getAnnotations(node.javaPsi, false)
+            .any { 
+                val qn = it.qualifiedName ?: ""
+                qn.contains("Singleton") || qn.contains("Service") || qn.contains("Repository") 
+            }
+            
+        // 2. ViewModels (Implicitly multi-threaded via viewModelScope)
+        val isViewModel = context.evaluator.inheritsFrom(node, "androidx.lifecycle.ViewModel", false) ||
+                          name.endsWith("ViewModel")
+                          
+        // 3. Explicit architectural markers
+        val isArchComponent = name.endsWith("Repository") || 
+                              name.endsWith("Service") || 
+                              name.endsWith("UseCase") ||
+                              name.endsWith("Manager")
+
+        return hasSingletonAnnotation || isViewModel || isArchComponent
     }
 
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "ThreadSafetyViolation",
             description = "Non-thread-safe state in multi-threaded component",
-            rationale = "Standard collections used in Singletons lead to data races and crashes.",
+            rationale = "Standard collections used in shared components (Singletons, Repositories, ViewModels) " +
+                        "lead to data races and crashes when accessed from multiple coroutines.",
             badExample = "val map = HashMap<String, String>()",
             goodExample = "val map = ConcurrentHashMap<String, String>()",
             category = IssueCategory.CONCURRENCY,

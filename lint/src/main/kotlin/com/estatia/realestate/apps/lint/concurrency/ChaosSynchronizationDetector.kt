@@ -7,10 +7,12 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.intellij.psi.PsiModifierListOwner
 import org.jetbrains.uast.*
 
 /**
- * Ensures mutable state in Chaos Controllers is synchronized to maintain test determinism.
+ * LAW-012: State Synchronization.
+ * Ensures mutable state in Chaos Controllers and Fakes is synchronized to maintain test determinism.
  */
 class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
 
@@ -20,29 +22,37 @@ class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
         override fun visitClass(node: UClass) {
             val name = node.name ?: return
             
-            val isChaosComponent = name.endsWith("ChaosController") || 
+            val isChaosComponent = name.contains("Chaos") || 
+                    name.startsWith("Fake") ||
                     context.evaluator.inheritsFrom(node, "com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract", false)
             
             if (!isChaosComponent) return
 
             node.fields.forEach { field ->
-                if (!field.isFinal) {
+                // Ignore final fields or constants
+                if (!field.isFinal && !isConstant(context, field)) {
                     context.report(
                         ISSUE,
                         field,
                         context.getLocation(field),
-                        "Chaos controller state '${field.name}' is a plain 'var'. Use AtomicReference or MutableStateFlow to ensure determinism."
+                        "Chaos/Fake component state '${field.name}' is a plain 'var'. " +
+                                "Test infrastructure MUST use AtomicReference or MutableStateFlow to ensure thread safety (LAW-012)."
                     )
                 }
             }
         }
     }
 
+    private fun isConstant(context: JavaContext, field: UField): Boolean {
+        val psi = field.javaPsi as? PsiModifierListOwner
+        return context.evaluator.isStatic(psi) && context.evaluator.isFinal(psi)
+    }
+
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "UnsynchronizedChaosState",
-            description = "Unsynchronized Chaos Controller State",
-            rationale = "Chaos controllers must be thread-safe for deterministic testing.",
+            description = "Unsynchronized Test Infrastructure State",
+            rationale = "Chaos controllers and Fakes must be thread-safe to ensure tests are deterministic and free of races.",
             badExample = "var state = false",
             goodExample = "val state = AtomicBoolean(false)",
             category = IssueCategory.CONCURRENCY,

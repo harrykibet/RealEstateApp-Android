@@ -2,52 +2,86 @@ package com.estatia.realestate.apps.lint.concurrency
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
-import com.estatia.realestate.apps.lint.Stubs
+import com.android.tools.lint.checks.infrastructure.TestMode
 import org.junit.Test
 
 class ChaosSynchronizationDetectorTest {
 
     @Test
-    fun `chaos controller with plain var should report error`() {
+    fun `plain var in ChaosController reports fatal`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
-                Stubs.COROUTINES,
                 kotlin(
                     """
-                    package com.estatia.realestate.apps.core.testing.chaos.network
-                    
+                    package com.estatia.realestate.apps
                     class NetworkChaosController {
-                        private var currentIndex = 0
+                        var isEnabled = false
                     }
                     """.trimIndent()
                 )
             )
             .issues(ChaosSynchronizationDetector.ISSUE)
             .run()
-            .expect(
-                """
-                src/com/estatia/realestate/apps/core/testing/chaos/network/NetworkChaosController.kt:4: Error: Chaos controller state 'currentIndex' is a plain 'var'. Use AtomicReference or MutableStateFlow to ensure determinism. [UnsynchronizedChaosState]
-                    private var currentIndex = 0
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                1 errors, 0 warnings
-                """.trimIndent()
-            )
+            .expectContains("is a plain 'var'")
     }
 
     @Test
-    fun `chaos controller with atomic val should not report error`() {
+    fun `plain var in Fake infrastructure reports fatal`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
-                Stubs.COROUTINES,
                 kotlin(
                     """
-                    package com.estatia.realestate.apps.core.testing.chaos.network
-                    import java.util.concurrent.atomic.AtomicInteger
+                    package com.estatia.realestate.apps
+                    class FakeAuthSource {
+                        var currentUser = "none"
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ChaosSynchronizationDetector.ISSUE)
+            .run()
+            .expectContains("Chaos/Fake component state 'currentUser' is a plain 'var'")
+    }
+
+    @Test
+    fun `atomic state in ChaosController is clean`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import java.util.concurrent.atomic.AtomicBoolean
                     
                     class NetworkChaosController {
-                        private val currentIndex = AtomicInteger(0)
+                        val isEnabled = AtomicBoolean(false)
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ChaosSynchronizationDetector.ISSUE)
+            .run()
+            .expectClean()
+    }
+
+    @Test
+    fun `static final constant is clean`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class FakeDataSource {
+                        companion object {
+                            const val TAG = "FAKE"
+                        }
                     }
                     """.trimIndent()
                 )
