@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.core.security.TokenLocalDataSource
 import com.estatia.realestate.apps.core.security.crypto.AesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.crypto.RsaCryptoEngine
 import com.estatia.realestate.apps.core.security.crypto.SignatureManager
-import com.estatia.realestate.apps.core.security.interfaces.SecureKeyProvider
+import com.estatia.realestate.apps.core.security.interfaces.ISecureKeyProvider
 import com.estatia.realestate.apps.core.security.interfaces.IAesGcmCryptoEngine
 import com.estatia.realestate.apps.core.security.interfaces.IKeyStoreManager
 import com.estatia.realestate.apps.core.security.interfaces.IRsaCryptoEngine
@@ -47,7 +47,7 @@ abstract class SecurityModule {
     @Binds
     @Singleton
     @Suppress("unused")
-    abstract fun bindSecureKeyProvider(impl: BuildConfigSecureKeyProvider): SecureKeyProvider
+    abstract fun bindSecureKeyProvider(impl: BuildConfigSecureKeyProvider): ISecureKeyProvider
 
     @Binds
     @Singleton

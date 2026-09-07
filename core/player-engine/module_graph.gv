@@ -1,83 +1,80 @@
 digraph {
-  graph [label=":core:player-engine Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  graph [label=":core:player-engine Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
   node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
   ":core:player-engine" [fillcolor="#9BF6FF"];
   ":core:data" [fillcolor="#9BF6FF"];
-  ":core:ksp-architecture" [fillcolor="#9BF6FF"];
-  ":core:architecture" [fillcolor="#9BF6FF"];
+  ":core:domain" [fillcolor="#9BF6FF"];
   ":core:model" [fillcolor="#9BF6FF"];
   ":core:testing" [fillcolor="#9BF6FF"];
-  ":core:domain" [fillcolor="#9BF6FF"];
   ":core:common" [fillcolor="#9BF6FF"];
   ":core:database" [fillcolor="#9BF6FF"];
   ":core:datastore" [fillcolor="#9BF6FF"];
   ":core:network" [fillcolor="#9BF6FF"];
-  ":core:testing-network" [fillcolor="#9BF6FF"];
   ":core:datastore-proto" [fillcolor="#9BF6FF"];
+  ":core:testing-network" [fillcolor="#9BF6FF"];
   ":core:security" [fillcolor="#9BF6FF"];
+  ":core:ksp-architecture" [fillcolor="#9BF6FF"];
+  ":core:architecture" [fillcolor="#9BF6FF"];
   ":core:config" [fillcolor="#9BF6FF"];
-  ":core:testing-player" [fillcolor="#9BF6FF"];
-  ":core:network" -> ":core:common"
-  ":core:network" -> ":core:domain"
-  ":core:network" -> ":core:model"
-  ":core:network" -> ":core:testing-network"
-  ":core:network" -> ":core:testing"
-  ":core:common" -> ":core:model"
-  ":core:common" -> ":core:testing"
-  ":core:config" -> ":core:model"
-  ":core:config" -> ":core:common"
-  ":core:config" -> ":core:domain"
-  ":core:config" -> ":core:testing"
-  ":core:data" -> ":core:ksp-architecture"
-  ":core:data" -> ":core:model"
-  ":core:data" -> ":core:domain"
-  ":core:data" -> ":core:datastore"
-  ":core:data" -> ":core:common"
-  ":core:data" -> ":core:database"
-  ":core:data" -> ":core:security"
-  ":core:data" -> ":core:network"
-  ":core:data" -> ":core:testing-network"
-  ":core:data" -> ":core:testing"
-  ":core:domain" -> ":core:model"
-  ":core:domain" -> ":core:common"
-  ":core:domain" -> ":core:testing"
-  ":core:model" -> ":core:testing"
-  ":core:database" -> ":core:model"
-  ":core:database" -> ":core:domain"
-  ":core:database" -> ":core:common"
-  ":core:database" -> ":core:testing"
-  ":core:security" -> ":core:common"
-  ":core:security" -> ":core:domain"
-  ":core:security" -> ":core:model"
-  ":core:security" -> ":core:testing"
-  ":core:datastore" -> ":core:model"
-  ":core:datastore" -> ":core:domain"
-  ":core:datastore" -> ":core:common"
-  ":core:datastore" -> ":core:network"
-  ":core:datastore" -> ":core:datastore-proto"
-  ":core:datastore" -> ":core:testing"
-  ":core:player-engine" -> ":core:data"
-  ":core:player-engine" -> ":core:domain"
-  ":core:player-engine" -> ":core:config"
-  ":core:player-engine" -> ":core:common"
-  ":core:player-engine" -> ":core:model"
-  ":core:player-engine" -> ":core:network"
-  ":core:player-engine" -> ":core:testing-player"
-  ":core:player-engine" -> ":core:testing"
-  ":core:testing" -> ":core:domain"
-  ":core:testing" -> ":core:model"
-  ":core:testing" -> ":core:common"
-  ":core:testing" -> ":core:database"
-  ":core:testing" -> ":core:testing"
-  ":core:ksp-architecture" -> ":core:architecture"
-  ":core:testing-network" -> ":core:network"
-  ":core:testing-network" -> ":core:domain"
-  ":core:testing-network" -> ":core:model"
-  ":core:testing-network" -> ":core:common"
-  ":core:testing-network" -> ":core:testing"
-  ":core:testing-player" -> ":core:player-engine"
-  ":core:testing-player" -> ":core:domain"
-  ":core:testing-player" -> ":core:model"
-  ":core:testing-player" -> ":core:common"
-  ":core:testing-player" -> ":core:testing"
+  ":core:network" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:common" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:config" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:config" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:config" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:config" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:data" -> ":core:domain" [color="#1A237E", penwidth=2.5, label="api"]
+  ":core:data" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:datastore" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:database" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:security" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:network" [color="#1A237E", style=solid]
+  ":core:data" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:data" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:domain" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:model" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:database" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:security" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:security" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:security" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:security" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:datastore" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:datastore" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:datastore" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:datastore" -> ":core:network" [color="#1A237E", style=solid]
+  ":core:datastore" -> ":core:datastore-proto" [color="#1A237E", style=solid]
+  ":core:datastore" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:player-engine" -> ":core:data" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:config" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:network" [color="#1A237E", style=solid]
+  ":core:player-engine" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:testing" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:ksp-architecture" -> ":core:architecture" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:network" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:network" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:datastore-proto" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:datastore-proto" -> ":core:testing-network" [color="#757575", style=dashed]
 }

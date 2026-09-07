@@ -1,24 +1,24 @@
 digraph {
-  graph [label=":core:domain Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  graph [label=":core:domain Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
   node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
   ":core:domain" [fillcolor="#9BF6FF"];
   ":core:model" [fillcolor="#9BF6FF"];
   ":core:testing" [fillcolor="#9BF6FF"];
   ":core:common" [fillcolor="#9BF6FF"];
   ":core:database" [fillcolor="#9BF6FF"];
-  ":core:common" -> ":core:model"
-  ":core:common" -> ":core:testing"
-  ":core:domain" -> ":core:model"
-  ":core:domain" -> ":core:common"
-  ":core:domain" -> ":core:testing"
-  ":core:model" -> ":core:testing"
-  ":core:database" -> ":core:model"
-  ":core:database" -> ":core:domain"
-  ":core:database" -> ":core:common"
-  ":core:database" -> ":core:testing"
-  ":core:testing" -> ":core:domain"
-  ":core:testing" -> ":core:model"
-  ":core:testing" -> ":core:common"
-  ":core:testing" -> ":core:database"
-  ":core:testing" -> ":core:testing"
+  ":core:common" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:domain" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:model" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:database" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:testing" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
 }

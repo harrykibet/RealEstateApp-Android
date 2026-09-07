@@ -15,12 +15,28 @@ class Law034_LintCanaryRegressionTest {
 
     @Test
     fun `canary module must fire all expected architectural violations`() {
-        // Deterministic path defined in :core:canary-violations build.gradle.kts
-        val reportFile = File("../../core/canary-violations/build/reports/lint-results.txt")
+        // Attempt to find the report file by traversing up from the current directory
+        var currentDir = File(".").absoluteFile
+        var rootDir: File? = null
+        
+        while (currentDir != null) {
+            if (File(currentDir, "settings.gradle.kts").exists()) {
+                rootDir = currentDir
+                break
+            }
+            currentDir = currentDir.parentFile
+        }
+
+        val reportFile = if (rootDir != null) {
+            File(rootDir, "core/canary-violations/build/reports/lint-results.txt")
+        } else {
+            // Fallback to relative path if root not found
+            File("../../core/canary-violations/build/reports/lint-results.txt")
+        }
 
         assertTrue(
-            "Governance Violation (${Law.LAW_034.id}): Canary lint report was not generated. " +
-            "The enforcement infrastructure might be broken. Run './gradlew :core:canary-violations:lint' first.",
+            "Governance Violation (${Law.LAW_034.id}): Canary lint report was not generated at expected path: ${reportFile.absolutePath}. " +
+            "The enforcement infrastructure might be broken. Run './gradlew :core:canary-violations:lintDemoDebug' first.",
             reportFile.exists()
         )
 
@@ -36,7 +52,10 @@ class Law034_LintCanaryRegressionTest {
             "HardcodedDispatcher",
             "FeatureCouplingViolation",
             "InfrastructureLeakage",
-            "MissingVisibilityModifier"
+            "MissingVisibilityModifier",
+            "ThreadSafetyViolation",
+            "BlockingMainThreadWork",
+            "ComposeMutableSingletonRead"
         )
 
         val missingIssues = expectedIssues.filterNot { reportText.contains(it) }

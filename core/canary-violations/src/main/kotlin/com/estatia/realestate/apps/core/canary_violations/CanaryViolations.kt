@@ -65,6 +65,23 @@ fun LeakySingletonRead() {
     val x = CanaryConfig.mutableValue
 }
 
+// LAW-011: Blocking Main Thread Work
+@Composable
+fun BlockingComposable() {
+    // Violation: Thread.sleep on UI
+    Thread.sleep(1000)
+}
+
+// LAW-012: Unsafe collection in ViewModel (Concurrency)
+@ViewModelMarker
+class ConcurrencyViewModel : ViewModel() {
+    // LAW-018 requirement
+    val uiState: StateFlow<Int> = MutableStateFlow(0)
+    
+    // Violation: HashMap in ViewModel
+    private val unsafeMap = HashMap<String, String>()
+}
+
 // LAW-018: ViewModel SSoT & LAW-002: State Ownership
 @ViewModelMarker
 class BadViewModel : ViewModel() {

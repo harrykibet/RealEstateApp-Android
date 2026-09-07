@@ -1,5 +1,5 @@
 digraph {
-  graph [label=":feature:profile Dependencies", labelloc=t, fontsize=24, ranksep=1.2];
+  graph [label=":feature:profile Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
   node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
   ":feature:profile" [fillcolor="#FFD6A5"];
   ":core:localization" [fillcolor="#9BF6FF"];
@@ -11,36 +11,35 @@ digraph {
   ":core:ui" [fillcolor="#9BF6FF"];
   ":core:design-system" [fillcolor="#9BF6FF"];
   ":core:navigation" [fillcolor="#9BF6FF"];
-  ":core:ui" -> ":core:design-system"
-  ":core:ui" -> ":core:testing"
-  ":core:common" -> ":core:model"
-  ":core:common" -> ":core:testing"
-  ":core:navigation" -> ":core:model"
-  ":core:navigation" -> ":core:testing"
-  ":core:localization" -> ":core:common"
-  ":core:localization" -> ":core:testing"
-  ":core:domain" -> ":core:model"
-  ":core:domain" -> ":core:common"
-  ":core:domain" -> ":core:testing"
-  ":core:model" -> ":core:testing"
-  ":core:database" -> ":core:model"
-  ":core:database" -> ":core:domain"
-  ":core:database" -> ":core:common"
-  ":core:database" -> ":core:testing"
-  ":core:design-system" -> ":core:model"
-  ":core:design-system" -> ":core:domain"
-  ":core:design-system" -> ":core:testing"
-  ":core:testing" -> ":core:domain"
-  ":core:testing" -> ":core:model"
-  ":core:testing" -> ":core:common"
-  ":core:testing" -> ":core:database"
-  ":core:testing" -> ":core:testing"
-  ":feature:profile" -> ":core:localization"
-  ":feature:profile" -> ":core:ui"
-  ":feature:profile" -> ":core:common"
-  ":feature:profile" -> ":core:domain"
-  ":feature:profile" -> ":core:navigation"
-  ":feature:profile" -> ":core:model"
-  ":feature:profile" -> ":core:design-system"
-  ":feature:profile" -> ":core:testing"
+  ":core:ui" -> ":core:design-system" [color="#1A237E", style=solid]
+  ":core:ui" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:common" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:navigation" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:navigation" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:localization" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:localization" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:domain" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:model" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:database" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:design-system" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:design-system" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:design-system" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
+  ":core:testing" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":feature:profile" -> ":core:localization" [color="#1A237E", style=solid]
+  ":feature:profile" -> ":core:ui" [color="#4CAF50", style=dotted, label="implicit"]
+  ":feature:profile" -> ":core:common" [color="#4CAF50", style=dotted, label="implicit"]
+  ":feature:profile" -> ":core:domain" [color="#4CAF50", style=dotted, label="implicit"]
+  ":feature:profile" -> ":core:navigation" [color="#4CAF50", style=dotted, label="implicit"]
+  ":feature:profile" -> ":core:model" [color="#4CAF50", style=dotted, label="implicit"]
+  ":feature:profile" -> ":core:design-system" [color="#4CAF50", style=dotted, label="implicit"]
 }

@@ -54,32 +54,37 @@ extensions.configure<GraphRulesExtension>("moduleGraphAssert") {
     )
 }
 
+enum class DependencyType {
+    API, IMPLEMENTATION, TEST, TEST_FIXTURES, KSP, LINT, IMPLICIT
+}
+
+data class ModuleEdge(val from: String, val to: String, val type: DependencyType)
+
 /**
- * Custom task to generate Graphviz dot files for module dependencies.
- * Uses a manual project discovery logic that works even if subprojects aren't evaluated.
+ * Custom task to generate high-fidelity Graphviz dot files for module dependencies.
+ * Uses a hybrid approach: project discovery via settings and dependency extraction via build file analysis.
  */
 tasks.register("generateModuleGraphs") {
     group = "reporting"
-    description = "Generates Graphviz dot files for module dependency graphs."
+    description = "Generates Graphviz dot files with classified and implicit dependency visualization."
 
     doLast {
         val rootDir = project.projectDir
         val dotBinary = "C:/Program Files/Graphviz/bin/dot.exe"
         val hasDot = File(dotBinary).exists()
 
-        // 1. Discover all modules by reading settings.gradle.kts
-        val settingsFile = File(rootDir, "settings.gradle.kts")
+        val allEdges = mutableSetOf<ModuleEdge>()
         val modules = mutableSetOf<String>()
+
+        // 1. Authoritative Module Discovery (from settings.gradle.kts)
+        val settingsFile = File(rootDir, "settings.gradle.kts")
         if (settingsFile.exists()) {
-            val content = settingsFile.readText()
-            Regex("""include\s*\(\s*["']([^"']+)["']\s*\)""").findAll(content).forEach { match ->
+            Regex("""include\s*\(\s*["']([^"']+)["']\s*\)""").findAll(settingsFile.readText()).forEach { match ->
                 modules.add(match.groupValues[1])
             }
         }
 
-        // 2. Parse dependencies from build files
-        val edges = mutableSetOf<Pair<String, String>>()
-        
+        // 2. High-Fidelity Dependency Analysis
         modules.forEach { modulePath ->
             val relativePath = modulePath.removePrefix(":").replace(":", "/")
             val moduleDir = File(rootDir, relativePath)
@@ -88,40 +93,67 @@ tasks.register("generateModuleGraphs") {
             if (buildFile.exists()) {
                 val content = buildFile.readText()
                 
-                // 2.1 Explicit dependencies: projects.core.common or project(":core:common")
-                Regex("""project\s*\(\s*["']([^"']+)["']\s*\)""").findAll(content).forEach { match ->
-                    edges.add(modulePath to match.groupValues[1])
-                }
-                
-                Regex("""projects\.((?:[a-zA-Z0-9]+\.)*[a-zA-Z0-9]+)""").findAll(content).forEach { match ->
-                    val dottedPath = match.groupValues[1]
-                    val path = ":" + dottedPath.replace(".", ":")
-                        .replace(Regex("([a-z])([A-Z])"), "$1-$2") // handle camelCase to kebab-case
-                        .lowercase()
-                    
-                    // Match against discovered modules
-                    val actualPath = modules.find { it.replace("-", "").replace(":", "") == path.replace("-", "").replace(":", "") }
-                        ?: path
-                    edges.add(modulePath to actualPath)
-                }
-
-                // 2.2 Implicit dependencies from convention plugins
-                if (content.contains("libs.plugins.estatia.android.feature")) {
-                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system", ":core:testing").forEach {
-                        edges.add(modulePath to it)
+                fun extract(regex: Regex, type: DependencyType) {
+                    regex.findAll(content).forEach { match ->
+                        var dep = match.groupValues[1]
+                        // Handle projects accessor: core.common -> :core:common
+                        if (!dep.startsWith(":")) {
+                            dep = ":" + dep.replace(".", ":")
+                                .replace(Regex("([a-z])([A-Z])"), "$1-$2") // camelCase to kebab-case
+                                .lowercase()
+                        }
+                        
+                        // Refine match against discovered modules (e.g. handle testFixtures project(":core:testing"))
+                        val actualDep = modules.find { 
+                            it.replace("-", "").replace(":", "") == dep.replace("-", "").replace(":", "") 
+                        } ?: dep
+                        
+                        if (modulePath != actualDep) {
+                            allEdges.add(ModuleEdge(modulePath, actualDep, type))
+                        }
                     }
                 }
-                if (content.contains("libs.plugins.estatia.android.core") || content.contains("libs.plugins.estatia.android.application")) {
-                    edges.add(modulePath to ":core:testing")
+
+                // Explicit patterns classified by configuration
+                extract(Regex("""(?:api|compile)\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.API)
+                extract(Regex("""implementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.IMPLEMENTATION)
+                extract(Regex("""testImplementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.TEST)
+                extract(Regex("""androidTestImplementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.TEST)
+                extract(Regex("""testFixturesApi\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.TEST_FIXTURES)
+                extract(Regex("""ksp\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.KSP)
+                extract(Regex("""lintChecks\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)"""), DependencyType.LINT)
+
+                // 2.2 Implicit Dependency Metadata (Convention Plugins)
+                if (content.contains("estatia.android.feature")) {
+                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
+                        if (modulePath != it) allEdges.add(ModuleEdge(modulePath, it, DependencyType.IMPLICIT))
+                    }
+                }
+                if (content.contains("estatia.android.testing")) {
+                    if (modulePath != ":core:testing") allEdges.add(ModuleEdge(modulePath, ":core:testing", DependencyType.TEST))
+                    if (modulePath != ":core:testing-network") allEdges.add(ModuleEdge(modulePath, ":core:testing-network", DependencyType.TEST))
+                }
+                if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
+                    if (modulePath != ":core:testing") allEdges.add(ModuleEdge(modulePath, ":core:testing", DependencyType.IMPLICIT))
                 }
             }
+        }
+
+        fun getEdgeStyle(type: DependencyType): String = when (type) {
+            DependencyType.API -> "color=\"#1A237E\", penwidth=2.5, label=\"api\""
+            DependencyType.IMPLEMENTATION -> "color=\"#1A237E\", style=solid"
+            DependencyType.TEST -> "color=\"#757575\", style=dashed"
+            DependencyType.TEST_FIXTURES -> "color=\"#FF9800\", style=dashed, label=\"fixtures\""
+            DependencyType.IMPLICIT -> "color=\"#4CAF50\", style=dotted, label=\"implicit\""
+            DependencyType.KSP -> "color=\"#9C27B0\", style=dotted, label=\"ksp\""
+            DependencyType.LINT -> "color=\"#607D8B\", style=dotted, label=\"lint\""
         }
 
         fun writeGraph(targetPath: String, outputFile: File, includeModules: Set<String>) {
             outputFile.parentFile.mkdirs()
             outputFile.printWriter().use { writer ->
                 writer.println("digraph {")
-                writer.println("  graph [label=\"$targetPath Dependencies\", labelloc=t, fontsize=24, ranksep=1.2];")
+                writer.println("  graph [label=\"$targetPath Dependencies\", labelloc=t, fontsize=24, ranksep=1.4];")
                 writer.println("  node [style=filled, fillcolor=\"#bbdefb\", fontname=\"sans-serif\", shape=box, style=\"rounded,filled\"];")
                 
                 for (module in includeModules) {
@@ -134,9 +166,9 @@ tasks.register("generateModuleGraphs") {
                     writer.println("  \"$module\" [fillcolor=\"$color\"];")
                 }
 
-                for (edge in edges) {
-                    if (includeModules.contains(edge.first) && modules.contains(edge.second)) {
-                        writer.println("  \"${edge.first}\" -> \"${edge.second}\"")
+                for (edge in allEdges) {
+                    if (includeModules.contains(edge.from) && modules.contains(edge.to)) {
+                        writer.println("  \"${edge.from}\" -> \"${edge.to}\" [${getEdgeStyle(edge.type)}]")
                     }
                 }
                 writer.println("}")
@@ -151,7 +183,7 @@ tasks.register("generateModuleGraphs") {
         }
 
         // 3. Generate Global Graph
-        val globalOutput = project.file("docs/images/graph/global_module_graph.gv")
+        val globalOutput = File(rootDir, "docs/images/graph/global_module_graph.gv")
         writeGraph("Estatia Global", globalOutput, modules)
         println("Global graph generated at ${globalOutput.absolutePath}")
 
@@ -164,7 +196,7 @@ tasks.register("generateModuleGraphs") {
             val reachable = mutableSetOf<String>()
             fun collectReachable(current: String) {
                 if (reachable.add(current)) {
-                    edges.filter { it.first == current }.forEach { collectReachable(it.second) }
+                    allEdges.filter { it.from == current }.forEach { collectReachable(it.to) }
                 }
             }
             collectReachable(modulePath)
