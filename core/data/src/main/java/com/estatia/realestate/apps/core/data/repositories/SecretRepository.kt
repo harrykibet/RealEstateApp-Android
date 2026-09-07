@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.common.exceptions.SecurityException
 import com.estatia.realestate.apps.core.domain.security.ISecretRepository
 import com.estatia.realestate.apps.core.model.security.SecretId
 import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
-import com.estatia.realestate.apps.core.security.interfaces.SecureKeyProvider
+import com.estatia.realestate.apps.core.security.interfaces.ISecureKeyProvider
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @Repository
 internal class SecretRepository @Inject constructor(
     private val remoteDataSource: ISecretRemoteDataSource,
-    private val localProvider: SecureKeyProvider,
+    private val localProvider: ISecureKeyProvider,
     private val metricsTracker: IMetricsTracker
 ) : ISecretRepository {
 

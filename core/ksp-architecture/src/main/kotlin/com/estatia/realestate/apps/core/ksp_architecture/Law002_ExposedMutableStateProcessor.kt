@@ -15,6 +15,8 @@ class Law002_ExposedMutableStateProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.ViewModelMarker")
 
@@ -29,8 +31,12 @@ class Law002_ExposedMutableStateProcessor(
 
             publicProperties.forEach { prop ->
                 val typeName = prop.type.resolve().declaration.qualifiedName?.asString() ?: ""
-                if (typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
-                    typeName == "androidx.compose.runtime.MutableState") {
+                val isMutable = typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
+                               typeName == "androidx.compose.runtime.MutableState"
+                
+                val isAuthorized = prop.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
+
+                if (isMutable && !isAuthorized) {
                     logger.report(
                         Law.LAW_002,
                         "ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +

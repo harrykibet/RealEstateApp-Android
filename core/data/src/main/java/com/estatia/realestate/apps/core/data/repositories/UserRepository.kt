@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.data.mappers.remote.RemoteUserProfileMapper
 import com.estatia.realestate.apps.core.data.util.translateUserFailures
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
+import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
@@ -30,6 +31,7 @@ import javax.inject.Inject
 @Repository
 internal class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
+    @AllowedArchitectureDependency(reason = "Common local persistence orchestrator for user profiles")
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
     private val metricsTracker: IMetricsTracker,
     private val exceptionTranslator: IExceptionTranslator

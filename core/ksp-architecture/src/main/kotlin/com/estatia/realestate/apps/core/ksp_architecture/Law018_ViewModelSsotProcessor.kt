@@ -9,12 +9,12 @@ import com.google.devtools.ksp.symbol.*
  * LAW-018: ViewModel SSoT (Single Source of Truth).
  * 
  * Enforces that a ViewModel has exactly one canonical persistent UI-state owner (StateFlow).
- * ViewModels are permitted to expose multiple transient event streams (Flow/SharedFlow),
- * but only one authoritative source for persistent UI state.
  */
 class Law018_ViewModelSsotProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
+
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.ViewModelMarker")
@@ -30,7 +30,10 @@ class Law018_ViewModelSsotProcessor(
 
             val stateFlows = publicProperties.filter { prop ->
                 val typeName = prop.type.resolve().declaration.qualifiedName?.asString() ?: ""
-                typeName == "kotlinx.coroutines.flow.StateFlow"
+                val isStateFlow = typeName == "kotlinx.coroutines.flow.StateFlow"
+                val isAuthorized = prop.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
+                
+                isStateFlow && !isAuthorized
             }.toList()
 
             // 1. Enforce a single canonical state owner
@@ -38,13 +41,13 @@ class Law018_ViewModelSsotProcessor(
                 logger.report(
                     Law.LAW_018,
                     "ViewModel '${clazz.simpleName.asString()}' has multiple public StateFlows (${stateFlows.joinToString { it.simpleName.asString() }}). " +
-                    "A ViewModel must expose exactly one canonical persistent UI-state owner to ensure a Single Source of Truth.",
+                    "A ViewModel must expose exactly one canonical persistent UI-state owner.",
                     clazz
                 )
             }
 
             // 2. Enforce that at least one state owner is present
-            if (stateFlows.isEmpty()) {
+            if (stateFlows.isEmpty() && !clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }) {
                 logger.report(
                     Law.LAW_018,
                     "ViewModel '${clazz.simpleName.asString()}' has no public StateFlow. " +
@@ -52,8 +55,6 @@ class Law018_ViewModelSsotProcessor(
                     clazz
                 )
             }
-            
-            // 💡 Note: Other Flow/SharedFlow properties are permitted for transient events (Navigation, Effects).
         }
         return emptyList()
     }

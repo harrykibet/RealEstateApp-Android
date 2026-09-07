@@ -9,23 +9,18 @@ While synthetic unit tests in the `:lint` and `:core:ksp-architecture` modules v
 2.  **Resolution Fidelity**: That a detector correctly identifies a violation when types are resolved through multiple module boundaries (e.g., a Feature ViewModel referencing a Core Repository).
 3.  **Heartbeat Verification**: That the custom Lint JAR is actually being loaded and executed by the Gradle build system.
 
-## ⚖️ How it works
+## ⚖️ Coverage Families
 
-The module contains a single file, [`CanaryViolations.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/canary-violations/src/main/kotlin/com/estatia/realestate/apps/core/canary_violations/CanaryViolations.kt), which is wired to trigger the following laws:
+> [!IMPORTANT]
+> The Canary does not yet cover all 35+ laws. It is focused on **High-Risk Detector Families** that are most prone to regression during classpath changes or AGP updates.
 
--   **LAW-001**: Business Logic in Compose (launch/collect in Composable).
--   **LAW-003**: Infrastructure Leakage (Importing Database/Network implementations in high layers).
--   **LAW-004**: Feature Coupling (Cross-module feature imports).
--   **LAW-006**: Hardcoded Dispatchers (Direct `Dispatchers.IO` usage).
--   **LAW-008**: Missing Visibility Modifiers & Interface Contracts.
--   **LAW-009**: Missing Result Wrappers in Repositories.
--   **LAW-010**: Sensitive Logging (PII leakage).
--   **LAW-016**: Mutable State Ownership.
--   **LAW-018**: ViewModel Single Source of Truth (Multiple StateFlows).
--   **LAW-019**: Secret Concurrency (Launching on external scope in suspend functions).
--   **LAW-023**: Lifecycle Leaks (Storing Activity/Context in long-lived components).
--   **LAW-025**: Mutable Singleton Read in Compose.
--   **LAW-027**: Compose Architecture Leakage (Direct Repository calls).
+### Validated Families:
+1.  **Architecture Layering**: Feature Coupling, Infrastructure Leakage.
+2.  **API Contracts**: Visibility Modifiers, Interface Enforcement, Result Wrapping.
+3.  **Concurrency Safety**: Hardcoded Dispatchers, Secret Concurrency.
+4.  **UI Governance**: Compose Architecture Leakage, Business Logic in Views.
+5.  **Security/Privacy**: PII Logging, Sensitive Data Handling.
+6.  **Resource Management**: Lifecycle Leaks.
 
 ## 🛡️ CI Integration
 

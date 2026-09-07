@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.DomainLeakageCarrier
 import com.estatia.realestate.apps.core.domain.DomainCouplingCarrier
@@ -69,9 +70,12 @@ fun LeakySingletonRead() {
 class BadViewModel : ViewModel() {
     // LAW-018 Violation: Multiple public StateFlows (Multiple Authorities)
     val state1: StateFlow<Int> = MutableStateFlow(0)
+    
+    @AllowedArchitectureDependency(reason = "Deliberate violation for KSP canary testing")
     val state2: StateFlow<String> = MutableStateFlow("")
     
     // LAW-002 Violation: Exposing mutable state container
+    @AllowedArchitectureDependency(reason = "Deliberate violation for KSP canary testing")
     val mutableState = MutableStateFlow(0)
 
     // ✅ VALID: Other Flows for events/navigation are permitted under refined LAW-018

@@ -9,22 +9,20 @@ import java.io.File
  * LAW-034: Lint Canary Regression.
  * 
  * This test runs against the ':core:canary-violations' module which contains 
- * deliberate violations of every architectural law.
+ * deliberate violations of architectural laws.
  */
 class Law034_LintCanaryRegressionTest {
 
     @Test
     fun `canary module must fire all expected architectural violations`() {
-        // Check for reports in both flavor locations
-        val canaryLintReport = File("../../core/canary-violations/build/reports/lint-results-DemoDebug.txt")
-        val fallbackReport = File("../../core/canary-violations/build/reports/lint-results-ProdDebug.txt")
-        
-        val reportFile = if (canaryLintReport.exists()) canaryLintReport else fallbackReport
+        // Deterministic path defined in :core:canary-violations build.gradle.kts
+        val reportFile = File("../../core/canary-violations/build/reports/lint-results.txt")
 
-        if (!reportFile.exists()) {
-            println("Skipping canary check: Lint report not found. Run './gradlew :core:canary-violations:lint' first.")
-            return
-        }
+        assertTrue(
+            "Governance Violation (${Law.LAW_034.id}): Canary lint report was not generated. " +
+            "The enforcement infrastructure might be broken. Run './gradlew :core:canary-violations:lint' first.",
+            reportFile.exists()
+        )
 
         val reportText = reportFile.readText()
         
