@@ -8,11 +8,7 @@ import org.jetbrains.uast.*
 /**
  * LAW-033: Suppression Policy Enforcement.
  * 
- * This detector ensures that architectural laws are not blindly suppressed.
- * Rules:
- * 1. Blind suppression using "all" is strictly forbidden.
- * 2. FATAL rules (Architectural Laws) cannot be suppressed.
- * 3. ERROR rules require an ADJACENT justification comment with the specific issue ID.
+ * authoritatively enforces that architectural laws are not blindly suppressed.
  */
 class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
 
@@ -31,17 +27,15 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
         
-        // 1. Try to extract from the literal values (e.g. @Suppress("all"))
+        // 1. Literal extraction
         node.attributeValues.forEach { attr ->
             extractFromExpression(attr.expression, list)
         }
         
-        // 2. Fallback to regex if UAST didn't catch it
-        if (list.isEmpty()) {
-            val src = node.asSourceString()
-            "\"([^\"]+)\"".toRegex().findAll(src).forEach { 
-                list.add(it.groupValues[1])
-            }
+        // 2. Raw source fallback (Robust for tests)
+        val src = node.asSourceString()
+        Regex("\"([^\"]+)\"").findAll(src).forEach { 
+            list.add(it.groupValues[1])
         }
         
         return list.distinct()
@@ -78,12 +72,17 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         suppressed.forEach { id ->
             val cleanId = id.substringAfterLast(".").removeSuffix("::class")
             
-            if (cleanId.lowercase() == "all") {
-                context.report(ISSUE, node, context.getLocation(node), "Blind suppression using 'all' is forbidden in Estatia (LAW-033).")
+            // FATAL: Blind suppression
+            if (cleanId.equals("all", ignoreCase = true)) {
+                context.report(
+                    ISSUE, 
+                    node, 
+                    context.getLocation(node), 
+                    "Blind suppression using 'all' is forbidden in Estatia (LAW-033)."
+                )
                 return@forEach
             }
 
-            // We handle UnstableApi as a special case for OptIn
             val issue = registry.getIssue(cleanId) ?: 
                         if (cleanId.contains("UnstableApi")) registry.getIssue("UnsafeOptInUsageError") else null
             
@@ -91,7 +90,6 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             
             when (issue.defaultSeverity) {
                 Severity.FATAL -> {
-                    // SuppressionPolicyViolation itself is FATAL, don't recurse
                     if (cleanId != ISSUE.id) {
                         context.report(
                             ISSUE, 
@@ -118,15 +116,13 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun checkJustification(context: JavaContext, node: UAnnotation, issueId: String): Boolean {
-        val source = context.getContents() ?: return false
+        val contents = context.getContents() ?: return false
         val startOffset = node.sourcePsi?.textRange?.startOffset ?: return false
         
-        // Scan backwards from the annotation to find the preceding line
-        val precedingText = source.substring(0, startOffset).trimEnd()
-        val lastNewline = precedingText.lastIndexOf('\n')
-        val lastLine = if (lastNewline != -1) precedingText.substring(lastNewline + 1) else precedingText
+        val prefix = contents.substring(0, startOffset).trimEnd()
+        val lastNewline = prefix.lastIndexOf('\n')
+        val lastLine = if (lastNewline != -1) prefix.substring(lastNewline + 1).trim() else prefix
         
-        // Pattern: // Justification: IssueId - <reason>
         val pattern = Regex("""//\s*Justification:\s*$issueId\s*-.*""", RegexOption.IGNORE_CASE)
         return pattern.matches(lastLine)
     }

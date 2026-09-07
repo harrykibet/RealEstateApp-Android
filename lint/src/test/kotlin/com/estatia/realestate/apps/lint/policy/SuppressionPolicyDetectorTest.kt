@@ -14,15 +14,19 @@ class SuppressionPolicyDetectorTest {
     fun `blind suppression of all reports fatal`() {
         lint()
             .testModes(TestMode.DEFAULT)
+            .allowCompilationErrors()
             .allowMissingSdk()
             .files(
                 Stubs.ANDROID_ANNOTATION,
+                Stubs.RESULT,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import android.annotation.SuppressLint
+                    
                     @Suppress("all")
                     class Bad1
+                    
                     @SuppressLint("all")
                     class Bad2
                     """.trimIndent()

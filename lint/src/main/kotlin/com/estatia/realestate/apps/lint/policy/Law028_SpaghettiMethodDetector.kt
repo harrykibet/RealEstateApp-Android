@@ -9,9 +9,11 @@ import org.jetbrains.uast.visitor.AbstractUastVisitor
 /**
  * LAW-028: Methods must be concise and focused (Complexity Budget).
  * 
- * Enforces two budgets:
- * 1. Length Budget: Max lines of code.
- * 2. Complexity Budget: Cyclomatic Complexity (number of decision branches).
+ * Enforces:
+ * 1. Length Budget (Lines)
+ * 2. Complexity Budget (Cyclomatic)
+ * 3. Nesting Depth
+ * 4. Fan-out (Call Sites)
  */
 class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
 
@@ -25,97 +27,87 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
             
             // 1. Length Check
             val lineCount = body.asSourceString().lines().size
-            val maxLinesFatal = context.getOption(ISSUE, "maxLinesFatal", 300)
-            val maxLinesError = context.getOption(ISSUE, "maxLinesError", 120)
-            val maxLinesWarning = context.getOption(ISSUE, "maxLinesWarning", 60)
+            checkThreshold(context, node, "Length", lineCount, "maxLines", 60, 120, 300)
 
             // 2. Complexity Check (Cyclomatic Complexity)
-            val complexity = calculateComplexity(body)
-            val maxComplexityFatal = context.getOption(ISSUE, "maxComplexityFatal", 30)
-            val maxComplexityError = context.getOption(ISSUE, "maxComplexityError", 20)
-            val maxComplexityWarning = context.getOption(ISSUE, "maxComplexityWarning", 10)
+            val metrics = calculateMetrics(body)
+            checkThreshold(context, node, "Complexity", metrics.complexity, "maxComplexity", 10, 20, 30)
 
-            when {
-                complexity > maxComplexityFatal -> {
-                    report(context, node, "Complexity", complexity, "FATAL", maxComplexityFatal)
-                }
-                lineCount > maxLinesFatal -> {
-                    report(context, node, "Length", lineCount, "FATAL", maxLinesFatal)
-                }
-                complexity > maxComplexityError -> {
-                    report(context, node, "Complexity", complexity, "ERROR", maxComplexityError)
-                }
-                lineCount > maxLinesError -> {
-                    report(context, node, "Length", lineCount, "ERROR", maxLinesError)
-                }
-                complexity > maxComplexityWarning -> {
-                    report(context, node, "Complexity", complexity, "WARNING", maxComplexityWarning)
-                }
-                lineCount > maxLinesWarning -> {
-                    report(context, node, "Length", lineCount, "WARNING", maxLinesWarning)
-                }
-            }
+            // 3. Nesting Depth
+            checkThreshold(context, node, "Nesting Depth", metrics.maxNesting, "maxNesting", 3, 5, 8)
+
+            // 4. Fan-out (Call Sites / External Dependencies)
+            checkThreshold(context, node, "Fan-out", metrics.callSites, "maxFanOut", 10, 20, 40)
         }
     }
 
-    private fun calculateComplexity(element: UElement): Int {
-        var branches = 1
+    private fun checkThreshold(
+        context: JavaContext, 
+        node: UMethod, 
+        label: String, 
+        value: Int, 
+        optionPrefix: String,
+        warn: Int, 
+        err: Int, 
+        fatal: Int
+    ) {
+        val fLimit = context.getOption(ISSUE, "${optionPrefix}Fatal", fatal)
+        val eLimit = context.getOption(ISSUE, "${optionPrefix}Error", err)
+        val wLimit = context.getOption(ISSUE, "${optionPrefix}Warning", warn)
+
+        when {
+            value > fLimit -> report(context, node, label, value, "FATAL", fLimit)
+            value > eLimit -> report(context, node, label, value, "ERROR", eLimit)
+            value > wLimit -> report(context, node, label, value, "WARNING", wLimit)
+        }
+    }
+
+    private data class MethodMetrics(val complexity: Int, val maxNesting: Int, val callSites: Int)
+
+    private fun calculateMetrics(element: UElement): MethodMetrics {
+        var complexity = 1
+        var callSites = 0
+        var currentNesting = 0
+        var maxNesting = 0
+
         element.accept(object : AbstractUastVisitor() {
-            override fun visitIfExpression(node: UIfExpression): Boolean {
-                branches++
-                return super.visitIfExpression(node)
-            }
-
-            override fun visitWhileExpression(node: UWhileExpression): Boolean {
-                branches++
-                return super.visitWhileExpression(node)
-            }
-
-            override fun visitDoWhileExpression(node: UDoWhileExpression): Boolean {
-                branches++
-                return super.visitDoWhileExpression(node)
-            }
-
-            override fun visitForExpression(node: UForExpression): Boolean {
-                branches++
-                return super.visitForExpression(node)
-            }
-
-            override fun visitForEachExpression(node: UForEachExpression): Boolean {
-                branches++
-                return super.visitForEachExpression(node)
-            }
-
             override fun visitElement(node: UElement): Boolean {
-                // Catch Kotlin 'when' branches and Java 'switch' labels generically
-                if (node is USwitchClauseExpression) {
-                    branches++
+                if (isDecisionPoint(node)) {
+                    complexity++
+                    currentNesting++
+                    if (currentNesting > maxNesting) maxNesting = currentNesting
+                }
+                
+                if (node is UCallExpression) {
+                    callSites++
                 }
                 return super.visitElement(node)
             }
 
-            override fun visitCatchClause(node: UCatchClause): Boolean {
-                branches++
-                return super.visitCatchClause(node)
-            }
-
-            override fun visitBinaryExpression(node: UBinaryExpression): Boolean {
-                val operator = node.operator.text
-                if (operator == "&&" || operator == "||" || operator == "?:") {
-                    branches++
+            override fun afterVisitElement(node: UElement) {
+                if (isDecisionPoint(node)) {
+                    currentNesting--
                 }
-                return super.visitBinaryExpression(node)
+                super.afterVisitElement(node)
             }
-
-            override fun visitPolyadicExpression(node: UPolyadicExpression): Boolean {
-                val operator = node.operator.text
-                if (operator == "&&" || operator == "||" || operator == "?:") {
-                    branches += node.operands.size - 1
+            
+            private fun isDecisionPoint(node: UElement): Boolean = when (node) {
+                is UIfExpression, is UWhileExpression, is UDoWhileExpression, 
+                is UForExpression, is UForEachExpression, is USwitchClauseExpression,
+                is UCatchClause -> true
+                is UBinaryExpression -> {
+                    val op = node.operator.text
+                    op == "&&" || op == "||" || op == "?:"
                 }
-                return super.visitPolyadicExpression(node)
+                is UPolyadicExpression -> {
+                    val op = node.operator.text
+                    op == "&&" || op == "||" || op == "?:"
+                }
+                else -> false
             }
         })
-        return branches
+
+        return MethodMetrics(complexity, maxNesting, callSites)
     }
 
     private fun report(context: JavaContext, node: UMethod, type: String, value: Int, level: String, limit: Int) {
@@ -135,9 +127,7 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "SpaghettiMethodFatal",
             description = "Method violates complexity or length budget",
-            rationale = "Complex and long methods are hard to test and maintain. " +
-                        "Complexity is measured by decision points (if, for, when, etc.). " +
-                        "Length is measured by total lines of code.",
+            rationale = "Complex methods are hard to test and maintain. Estatia enforces budgets for length, cyclomatic complexity, nesting depth, and fan-out.",
             badExample = "fun monster() { if(a) { while(b) { if(c) { ... } } } }",
             goodExample = "fun focused() { decomposeIntoSmallFunctions() }",
             category = IssueCategory.CODE_HEALTH,

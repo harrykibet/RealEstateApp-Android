@@ -31,7 +31,7 @@ class ComplexityBudgetDetectorTest {
     }
 
     @Test
-    fun `complex method with many branches reports complexity warning`() {
+    fun `deeply nested method reports nesting depth error`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -40,25 +40,19 @@ class ComplexityBudgetDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     class Test {
-                        fun complexMethod(a: Int, b: Int, c: Int) {
-                            if (a > 0) {
-                                if (b > 0) {
-                                    if (c > 0) { println(1) } else { println(2) }
-                                } else {
-                                    for (i in 0..10) { println(i) }
-                                }
-                            } else {
-                                when (a) {
-                                    1 -> println(1)
-                                    2 -> println(2)
-                                    3 -> println(3)
-                                    4 -> println(4)
-                                    5 -> println(5)
-                                    else -> println(0)
+                        fun deeplyNested() {
+                            if (true) {
+                                if (true) {
+                                    if (true) {
+                                        if (true) {
+                                            if (true) {
+                                                if (true) {
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            if (a == 0 && b == 0 || c == 0) { println(3) }
-                            try { println(4) } catch (e: Exception) { println(5) }
                         }
                     }
                     """.trimIndent()
@@ -66,37 +60,110 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("violates Complexity Budget")
+            .expectContains("violates Nesting Depth Budget (6)")
+            .expectContains("ERROR limit is 5")
     }
 
     @Test
-    fun `custom complexity thresholds are respected`() {
+    fun `method with too many calls reports fan-out error`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class Test {
+                        fun highFanOut() {
+                            ${(1..25).joinToString("\n") { "call$it()" }}
+                        }
+                        ${(1..25).joinToString("\n") { "fun call$it() {}" }}
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(Law028_SpaghettiMethodDetector.ISSUE)
+            .run()
+            .expectContains("violates Fan-out Budget (25)")
+    }
+
+    @Test
+    fun `class with too much mutable state reports error`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class StateMonster {
+                        var v1 = 0
+                        var v2 = 0
+                        var v3 = 0
+                        var v4 = 0
+                        var v5 = 0
+                        var v6 = 0
+                        var v7 = 0
+                        var v8 = 0
+                        var v9 = 0
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(Law029_GodObjectDetector.ISSUE)
+            .run()
+            .expectContains("violates Mutable State Budget (9)")
+            .expectContains("ERROR limit is 8")
+    }
+
+    @Test
+    fun `class with large public surface reports fatal`() {
+        lint()
+            .testModes(TestMode.DEFAULT)
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class SurfaceMonster {
+                        ${(1..45).joinToString("\n") { "fun api$it() {}" }}
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(Law029_GodObjectDetector.ISSUE)
+            .run()
+            .expectContains("violates Public Surface Area Budget (45)")
+            .expectContains("FATAL limit is 40")
+    }
+
+    @Test
+    fun `custom thresholds in lint xml are respected`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
                 xml("lint.xml", """
                     <lint>
-                        <issue id="SpaghettiMethodFatal">
-                            <option name="maxComplexityWarning" value="2" />
+                        <issue id="GodObjectFatal">
+                            <option name="maxMutableStateError" value="2" />
                         </issue>
                     </lint>
                 """.trimIndent()),
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class Test {
-                        fun simple(a: Boolean, b: Boolean) {
-                            if (a) { println(1) } 
-                            if (b) { println(2) }
-                        }
+                    class SmallState {
+                        var a = 1
+                        var b = 2
+                        var c = 3
                     }
                     """.trimIndent()
                 )
             )
-            .issues(Law028_SpaghettiMethodDetector.ISSUE)
+            .issues(Law029_GodObjectDetector.ISSUE)
             .run()
-            .expectContains("Complexity Budget (3)")
-            .expectContains("WARNING limit is 2")
+            .expectContains("Mutable State Budget (3)")
+            .expectContains("ERROR limit is 2")
     }
 }

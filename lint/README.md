@@ -70,18 +70,28 @@ To prevent technical debt, we enforce tiered thresholds for code complexity.
 
 ### Method Complexity (LAW-028)
 We enforce a strict complexity budget to keep code testable and readable.
-- **Complexity** is measured by Cyclomatic Complexity (number of decision branches: `if`, `for`, `when`, `&&`, `||`, `catch`, etc.).
-- **Length** is measured by physical lines of code.
+- **Complexity**: Cyclomatic Complexity (number of decision branches: `if`, `for`, `when`, `&&`, `||`, `catch`, etc.).
+- **Length**: Physical lines of code in the method body.
+- **Nesting Depth**: Maximum depth of nested control structures.
+- **Fan-out**: Number of unique call sites (external dependencies/calls).
 
-| Budget Type | WARNING | ERROR | FATAL (Merge Blocked) |
+| Metric | WARNING | ERROR | FATAL |
 | :--- | :--- | :--- | :--- |
 | **Complexity** | > 10 | > 20 | > 30 |
 | **Length** | > 60 lines | > 120 lines | > 300 lines |
+| **Nesting Depth** | > 3 | > 5 | > 8 |
+| **Fan-out** | > 10 | > 20 | > 40 |
 
-### Class Size (LAW-029)
-- **> 300 lines**: `WARNING` (Design smell)
-- **> 600 lines**: `ERROR` (Must refactor)
-- **> 1000 lines**: `FATAL` (Merge blocked)
+### Class Size & Scope (LAW-029)
+- **Size**: Total lines of code in the class.
+- **Public Surface Area**: Total count of public methods and properties.
+- **Mutable State**: Total count of `var` properties or `MutableState`/`Flow` containers.
+
+| Metric | WARNING | ERROR | FATAL |
+| :--- | :--- | :--- | :--- |
+| **Size** | > 300 lines | > 600 lines | > 1000 lines |
+| **Public Surface Area** | > 15 | > 25 | > 40 |
+| **Mutable State** | > 5 | > 8 | > 12 |
 
 ### Parameters
 - **> 7 params**: `WARNING`

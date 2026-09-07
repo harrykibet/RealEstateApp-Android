@@ -3,11 +3,16 @@ package com.estatia.realestate.apps.lint.policy
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
 import com.estatia.realestate.apps.core.architecture.Law
-import org.jetbrains.uast.UClass
-import org.jetbrains.uast.UElement
+import com.intellij.psi.PsiModifier
+import org.jetbrains.uast.*
 
 /**
  * LAW-029: Classes must have a single responsibility (Size Limit).
+ * 
+ * Enforces:
+ * 1. Size Budget (Lines)
+ * 2. Public Surface Area (Number of public methods/properties)
+ * 3. Mutable State Count (var or mutable state containers)
  */
 class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
 
@@ -15,28 +20,60 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitClass(node: UClass) {
-            val source = node.asSourceString()
-            val lineCount = source.lines().size
+            if (node is UAnonymousClass) return
             
-            val fatalThreshold = context.getOption(ISSUE, "maxLinesFatal", 1000)
-            val errorThreshold = context.getOption(ISSUE, "maxLinesError", 600)
-            val warningThreshold = context.getOption(ISSUE, "maxLinesWarning", 300)
+            // 1. Size Check
+            val lineCount = node.asSourceString().lines().size
+            checkThreshold(context, node, "Size", lineCount, "maxLines", 300, 600, 1000)
 
-            when {
-                lineCount > fatalThreshold -> {
-                    context.report(ISSUE, node, context.getLocation(node as UElement),
-                        "God Object detected: '${node.name}' has $lineCount lines. FATAL limit is $fatalThreshold (LAW-029).")
-                }
-                lineCount > errorThreshold -> {
-                    context.report(ISSUE, node, context.getLocation(node as UElement),
-                        "Class '${node.name}' exceeds the complexity budget ($lineCount lines). ERROR limit is $errorThreshold (LAW-029).")
-                }
-                lineCount > warningThreshold -> {
-                    context.report(ISSUE, node, context.getLocation(node as UElement),
-                        "Class '${node.name}' is becoming large ($lineCount lines). WARNING limit is $warningThreshold (LAW-029).")
-                }
-            }
+            // 2. Public Surface Area
+            val publicMembers = node.methods.count { context.evaluator.isPublic(it) && !it.isConstructor } +
+                               node.fields.count { context.evaluator.isPublic(it) }
+            checkThreshold(context, node, "Public Surface Area", publicMembers, "maxPublicSurface", 15, 25, 40)
+
+            // 3. Mutable State Count
+            val mutableState = node.fields.count { isMutable(it) }
+            checkThreshold(context, node, "Mutable State", mutableState, "maxMutableState", 5, 8, 12)
         }
+    }
+
+    private fun isMutable(field: UField): Boolean {
+        if (!field.hasModifierProperty(PsiModifier.FINAL)) return true
+        
+        val typeName = field.type.canonicalText
+        return typeName.contains("MutableState") || 
+               typeName.contains("MutableStateFlow") || 
+               typeName.contains("MutableSharedFlow")
+    }
+
+    private fun checkThreshold(
+        context: JavaContext, 
+        node: UClass, 
+        label: String, 
+        value: Int, 
+        optionPrefix: String,
+        warn: Int, 
+        err: Int, 
+        fatal: Int
+    ) {
+        val fLimit = context.getOption(ISSUE, "${optionPrefix}Fatal", fatal)
+        val eLimit = context.getOption(ISSUE, "${optionPrefix}Error", err)
+        val wLimit = context.getOption(ISSUE, "${optionPrefix}Warning", warn)
+
+        when {
+            value > fLimit -> report(context, node, label, value, "FATAL", fLimit)
+            value > eLimit -> report(context, node, label, value, "ERROR", eLimit)
+            value > wLimit -> report(context, node, label, value, "WARNING", wLimit)
+        }
+    }
+
+    private fun report(context: JavaContext, node: UClass, type: String, value: Int, level: String, limit: Int) {
+        context.report(
+            ISSUE,
+            node,
+            context.getLocation(node as UElement),
+            "Class '${node.name}' violates $type Budget ($value). $level limit is $limit (LAW-029)."
+        )
     }
 
     private fun JavaContext.getOption(issue: Issue, name: String, default: Int): Int {
@@ -46,8 +83,8 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "GodObjectFatal",
-            description = "Class violates size budget",
-            rationale = "Large classes usually have too many responsibilities. Decompose into smaller components.",
+            description = "Class violates size or complexity budget",
+            rationale = "Large classes usually have too many responsibilities. Estatia enforces budgets for lines of code, public surface area, and mutable state.",
             badExample = "class EverythingManager { ... 1000 lines ... }",
             goodExample = "class FocusedComponent { ... 200 lines ... }",
             category = IssueCategory.CODE_HEALTH,
