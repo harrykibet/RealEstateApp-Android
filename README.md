@@ -158,6 +158,21 @@ For contributors and engineers seeking deeper technical insights:
 * [ARCHITECTURE.md](./docs/ARCHITECTURE.md) — Full system architecture, module responsibilities, data flow, concurrency, and scalability.
 * [ENGINEERING.md](./docs/ENGINEERING.md) — Coding standards, testing, performance, security, CI/CD, and developer guidelines.
 
+### Verification Contract
+
+Estatia uses a single authoritative command for architectural validation. This command must pass locally before any PR is submitted:
+
+```bash
+./gradlew verifyArchitecture
+```
+
+This task aggregates:
+- **Lint**: Semantic implementation checks.
+- **Konsist**: Global structural invariants.
+- **KSP**: Compiler-level contract enforcement.
+- **Canary**: Heartbeat and regression verification.
+- **Graph**: Dependency boundary validation.
+
 ---
 
 ## Vision

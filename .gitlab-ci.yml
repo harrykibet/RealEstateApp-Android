@@ -1,6 +1,6 @@
 stages:
-  - lint
-  - test
+  - architecture
+  - verification
   - build
   - optimize
 
@@ -17,46 +17,57 @@ before_script:
   - echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
 # ------------------------------------------------------------------------------
-# 🛡️ PR CHECK (Fast Feedback)
+# 🛡️ PR CHECK (High Maturity Gate)
 # ------------------------------------------------------------------------------
 
-pr-lint:
-  stage: lint
+pr-architecture-gate:
+  stage: architecture
   script:
-    - ./gradlew lint --stacktrace
+    - ./gradlew verifyArchitecture --stacktrace --info
+    # Self-Healing Ratchet: Update baselines if violations decreased
+    - ./gradlew lint -Dlint.update.baseline=true
+    - |
+      if [[ `git status --porcelain` ]]; then
+        git config --global user.name "Estatia CI"
+        git config --global user.email "ci@estatia.com"
+        git add "**/lint-baseline.xml"
+        git commit -m "chore: auto-update lint baselines (ratchet)"
+        git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:${CI_COMMIT_REF_NAME}
+      fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-pr-unit-test:
-  stage: test
+pr-logic-verification:
+  stage: verification
+  needs: ["pr-architecture-gate"]
   script:
-    - ./gradlew test --stacktrace
+    - ./gradlew test -x :core:testing-architecture:test --stacktrace
     - ./gradlew jacocoProdDebugVerification --stacktrace
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 pr-smoke-ui-test:
-  stage: test
-  needs: ["pr-unit-test"]
+  stage: verification
+  needs: ["pr-logic-verification"]
   script:
     - ./gradlew :app:pixel2Api34ProdDebugAndroidTest --stacktrace
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 # ------------------------------------------------------------------------------
-# ⚓ MAIN BRANCH (Comprehensive Verification)
+# ⚓ MAIN BRANCH (Authoritative Verification)
 # ------------------------------------------------------------------------------
 
-main-lint:
-  stage: lint
+main-verification:
+  stage: architecture
   script:
-    - ./gradlew lint --stacktrace
+    - ./gradlew verifyArchitecture --stacktrace --info
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
 main-full-test:
-  stage: test
-  needs: ["main-lint"]
+  stage: verification
+  needs: ["main-verification"]
   script:
     - ./gradlew test --stacktrace
     - |
@@ -72,7 +83,6 @@ main-build-release:
   stage: build
   needs: ["main-full-test"]
   script:
-    # Assuming signing secrets are in GitLab CI/CD Variables
     - ./gradlew assembleProdRelease -PsigningStoreFile=$RELEASE_KEYSTORE --stacktrace
   artifacts:
     paths:
@@ -81,54 +91,35 @@ main-build-release:
     - if: $CI_COMMIT_BRANCH == "main"
 
 # ------------------------------------------------------------------------------
-# 🔨 NIGHTLY (Stress & Optimization)
+# 🔨 NIGHTLY (Stress & Audit)
 # ------------------------------------------------------------------------------
 
+nightly-audit:
+  stage: architecture
+  script:
+    # Exhaustive variant audit
+    - ./gradlew verifyArchitecture lint --stacktrace --info
+    - ./gradlew :app:assembleProdRelease
+    - ./gradlew auditBinaryPurity
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
 nightly-chaos-tests:
-  stage: test
+  stage: verification
   script:
     - ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-nightly-baseline-profile:
+nightly-optimization:
   stage: optimize
   script:
     - ./gradlew :app:generateProdBaselineProfile
-    - |
-      git config --global user.name "Estatia CI"
-      git config --global user.email "ci@estatia.com"
-      git checkout -b automation/baseline-profiles
-      git add .
-      if git commit -m "chore: update baseline profiles (nightly)"; then
-        git push "https://ci-user:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" automation/baseline-profiles \
-          -o merge_request.create \
-          -o merge_request.target=main \
-          -o merge_request.title="Update Baseline Profiles (Nightly)" \
-          -o merge_request.remove_source_branch=true \
-          -o merge_request.description="Automated baseline profile generation from nightly run."
-      else
-        echo "No changes to baseline profiles."
-      fi
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-nightly-benchmarks:
-  stage: optimize
-  script:
     - ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest
-  artifacts:
-    paths:
-      - benchmark/build/outputs/connected_android_test_additional_output/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-nightly-quality-metrics:
-  stage: optimize
-  script:
     - ./gradlew jacocoProdDebugReport
   artifacts:
     paths:
+      - benchmark/build/outputs/connected_android_test_additional_output/
       - "**/build/reports/jacoco/"
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"

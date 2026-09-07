@@ -1,7 +1,7 @@
 workflows:
 
   # ------------------------------------------------------------------------------
-  # 🛡️ PR CHECK (Fast Feedback)
+  # 🛡️ PR CHECK (High Maturity Gate)
   # ------------------------------------------------------------------------------
   pr-check:
     name: Estatia PR Check
@@ -20,17 +20,18 @@ workflows:
     scripts:
       - name: Set Permissions
         script: chmod +x ./gradlew
-      - name: Lint
-        script: ./gradlew lint --no-daemon
-      - name: Unit Tests
-        script: ./gradlew test --no-daemon
+      - name: Architecture Gate
+        # 🏗️ AUTHORITATIVE GATE: Runs Lint, KSP, Konsist, and Canary heartbeat.
+        script: ./gradlew verifyArchitecture --no-daemon
+      - name: Logic Verification
+        script: ./gradlew test -x :core:testing-architecture:test --no-daemon
       - name: Verify Coverage
         script: ./gradlew jacocoProdDebugVerification --no-daemon
       - name: Smoke UI Test
         script: ./gradlew :app:pixel2Api34ProdDebugAndroidTest --no-daemon
 
   # ------------------------------------------------------------------------------
-  # ⚓ MAIN BRANCH (Comprehensive Verification)
+  # ⚓ MAIN BRANCH (Authoritative Verification)
   # ------------------------------------------------------------------------------
   main-verification:
     name: Estatia Main Verification
@@ -51,11 +52,11 @@ workflows:
     scripts:
       - name: Set Permissions
         script: chmod +x ./gradlew
-      - name: Lint
-        script: ./gradlew lint --no-daemon
-      - name: Unit Tests
+      - name: Authoritative Verification
+        script: ./gradlew verifyArchitecture --no-daemon
+      - name: Full Logic Verification
         script: ./gradlew test --no-daemon
-      - name: Full Test Suite (All GMDs)
+      - name: Full UI Verification (All GMDs)
         script: |
           ./gradlew :app:pixel2Api34ProdDebugAndroidTest \
                     :app:pixel6Api31ProdDebugAndroidTest \
@@ -68,7 +69,7 @@ workflows:
       - app/build/outputs/apk/prod/release/*.apk
 
   # ------------------------------------------------------------------------------
-  # 🔨 NIGHTLY (Stress & Optimization)
+  # 🔨 NIGHTLY (Stress & Audit)
   # ------------------------------------------------------------------------------
   nightly-optimization:
     name: Estatia Nightly Optimization
@@ -84,23 +85,16 @@ workflows:
     scripts:
       - name: Set Permissions
         script: chmod +x ./gradlew
+      - name: Multi-Variant Architecture Audit
+        script: ./gradlew verifyArchitecture lint --no-daemon
+      - name: Binary Purity Audit (R8)
+        script: |
+          ./gradlew :app:assembleProdRelease --no-daemon
+          ./gradlew auditBinaryPurity --no-daemon
       - name: Chaos Tests
         script: ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
-      - name: Generate Baseline Profiles
+      - name: Performance Optimization (Baseline Profiles)
         script: ./gradlew :app:generateProdBaselineProfile --no-daemon
-      - name: Create Baseline Profile Branch
-        script: |
-          git config --global user.name "Estatia CI"
-          git config --global user.email "ci@estatia.com"
-          git checkout -b automation/baseline-profiles
-          git add .
-          if git commit -m "chore: update baseline profiles (nightly)"; then
-            git push origin automation/baseline-profiles
-            # Note: In a mature CI setup, you would use 'gh pr create' (GitHub) 
-            # or the GitLab API here to automate PR/MR creation.
-          else
-            echo "No changes detected."
-          fi
       - name: Run Benchmarks
         script: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-daemon
       - name: Code Quality & Mutation Testing

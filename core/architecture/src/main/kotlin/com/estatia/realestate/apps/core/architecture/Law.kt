@@ -62,7 +62,9 @@ enum class Law(val id: String, val description: String, val type: LawType) {
     LAW_033("LAW-033", "Rule suppressions must follow strict organizational policy.", LawType.FATAL),
     LAW_034("LAW-034", "Architectural enforcement must be crash-resilient and regression-tested.", LawType.FATAL),
     LAW_035("LAW-035", "FATAL architectural rules must never be baselined.", LawType.FATAL),
-    LAW_036("LAW-036", "Domain results should express business meaning via types.", LawType.CONVENTION);
+    LAW_036("LAW-036", "Domain results should express business meaning via types.", LawType.CONVENTION),
+    LAW_037("LAW-037", "Dependencies must be managed via the version catalog.", LawType.FATAL),
+    LAW_038("LAW-038", "Production binaries must remain pure and obfuscated.", LawType.FATAL);
 
     override fun toString(): String = id
 }

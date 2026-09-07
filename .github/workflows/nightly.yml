@@ -81,6 +81,12 @@ jobs:
       - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
 
+      - name: Assemble Release for Audit
+        run: ./gradlew :app:assembleProdRelease --no-configuration-cache
+
+      - name: Run Binary Purity Audit (R8)
+        run: ./gradlew auditBinaryPurity --no-configuration-cache
+
       - name: Run Startup & Scroll Benchmarks
         run: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-configuration-cache --info
 
@@ -106,6 +112,10 @@ jobs:
 
       - name: Set Executable Permission for Gradlew
         run: chmod +x ./gradlew
+
+      - name: Full Variant Architecture Audit
+        # 🏗️ EXHAUSTIVE AUDIT: Run architecture verification on ALL variants nightly.
+        run: ./gradlew verifyArchitecture lint --no-configuration-cache --info
 
       - name: Run Full Coverage Report
         run: ./gradlew jacocoProdDebugReport --no-configuration-cache --info

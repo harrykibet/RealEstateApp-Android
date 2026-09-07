@@ -64,6 +64,8 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `LintCanaryActive` |
 | **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `FatalBaselineIntegrityTest` |
 | **LAW-036** | Domain results should express business meaning via types. | `CONVENTION` | `DomainExpressiveness` |
+| **LAW-037** | Dependencies must be managed via the version catalog. | `FATAL` | `checkDependencyDrift` |
+| **LAW-038** | Production binaries must remain pure and obfuscated. | `FATAL` | `auditBinaryPurity` |
 
 ---
 
