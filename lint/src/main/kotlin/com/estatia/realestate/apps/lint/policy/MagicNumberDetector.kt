@@ -56,7 +56,7 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             rationale = "Extract literal numbers to named constants to improve readability.",
             badExample = "if (age > 21) { ... }",
             goodExample = "const val MIN_AGE = 21\nif (age > MIN_AGE) { ... }",
-            category = IssueCategory.ARCHITECTURE,
+            category = IssueCategory.CODE_HEALTH,
             tier = IssueTier.WARNING,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_001,

@@ -47,7 +47,7 @@ class Law030_OrchestrationMonsterDetector : Detector(), SourceCodeScanner {
             rationale = "Classes with many dependencies are hard to test and reason about. Use Facades or decompose responsibilities.",
             badExample = "class Monster(d1: D, d2: D, d3: D, d4: D, d5: D, d6: D, d7: D, d8: D, d9: D)",
             goodExample = "class Focused(service: IService)",
-            category = IssueCategory.ARCHITECTURE,
+            category = IssueCategory.CODE_HEALTH,
             tier = IssueTier.ERROR,
             owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_030,

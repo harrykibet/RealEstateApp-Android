@@ -67,15 +67,20 @@ Every detector in this module exists to enforce one of the following fundamental
 
 To prevent technical debt, we enforce tiered thresholds for code complexity.
 
+### Method Complexity (LAW-028)
+We enforce a strict complexity budget to keep code testable and readable.
+- **Complexity** is measured by Cyclomatic Complexity (number of decision branches: `if`, `for`, `when`, `&&`, `||`, `catch`, etc.).
+- **Length** is measured by physical lines of code.
+
+| Budget Type | WARNING | ERROR | FATAL (Merge Blocked) |
+| :--- | :--- | :--- | :--- |
+| **Complexity** | > 10 | > 20 | > 30 |
+| **Length** | > 60 lines | > 120 lines | > 300 lines |
+
 ### Class Size (LAW-029)
 - **> 300 lines**: `WARNING` (Design smell)
 - **> 600 lines**: `ERROR` (Must refactor)
 - **> 1000 lines**: `FATAL` (Merge blocked)
-
-### Method Size (LAW-028)
-- **> 60 lines**: `WARNING` (Lengthy function)
-- **> 120 lines**: `ERROR` (Complex logic)
-- **> 300 lines**: `FATAL` (Merge blocked)
 
 ### Parameters
 - **> 7 params**: `WARNING`

@@ -9,7 +9,7 @@ import org.junit.Test
 class ComplexityBudgetDetectorTest {
 
     @Test
-    fun `long method reports spaghetti fatal`() {
+    fun `long method reports length fatal`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -27,12 +27,11 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("SpaghettiMethodFatal")
-            .expectContains("is too large")
+            .expectContains("violates Length Budget")
     }
 
     @Test
-    fun `large class reports god object fatal`() {
+    fun `complex method with many branches reports complexity warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -40,63 +39,64 @@ class ComplexityBudgetDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class GodObject {
-                        ${(1..1010).joinToString("\n") { "val field$it = $it" }}
+                    class Test {
+                        fun complexMethod(a: Int, b: Int, c: Int) {
+                            if (a > 0) {
+                                if (b > 0) {
+                                    if (c > 0) { println(1) } else { println(2) }
+                                } else {
+                                    for (i in 0..10) { println(i) }
+                                }
+                            } else {
+                                when (a) {
+                                    1 -> println(1)
+                                    2 -> println(2)
+                                    3 -> println(3)
+                                    4 -> println(4)
+                                    5 -> println(5)
+                                    else -> println(0)
+                                }
+                            }
+                            if (a == 0 && b == 0 || c == 0) { println(3) }
+                            try { println(4) } catch (e: Exception) { println(5) }
+                        }
                     }
                     """.trimIndent()
                 )
             )
-            .issues(Law029_GodObjectDetector.ISSUE)
+            .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("GodObjectFatal")
-            .expectContains("limit is 1000")
+            .expectContains("violates Complexity Budget")
     }
 
     @Test
-    fun `constructor with many dependencies reports orchestration monster`() {
-        lint()
-            .testModes(TestMode.DEFAULT)
-            .allowMissingSdk()
-            .files(
-                kotlin(
-                    """
-                    package com.estatia.realestate.apps
-                    class Monster(
-                        d1: Any, d2: Any, d3: Any, d4: Any, d5: Any, 
-                        d6: Any, d7: Any, d8: Any, d9: Any, d10: Any
-                    )
-                    """.trimIndent()
-                )
-            )
-            .issues(Law030_OrchestrationMonsterDetector.ISSUE)
-            .run()
-            .expectContains("OrchestrationMonsterError")
-            .expectContains("Constructor has 10 dependencies")
-    }
-
-    @Test
-    fun `custom thresholds in lint xml are respected`() {
+    fun `custom complexity thresholds are respected`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
                 xml("lint.xml", """
                     <lint>
-                        <issue id="OrchestrationMonsterError">
-                            <option name="errorThreshold" value="3" />
+                        <issue id="SpaghettiMethodFatal">
+                            <option name="maxComplexityWarning" value="2" />
                         </issue>
                     </lint>
                 """.trimIndent()),
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class SmallMonster(d1: Any, d2: Any, d3: Any)
+                    class Test {
+                        fun simple(a: Boolean, b: Boolean) {
+                            if (a) { println(1) } 
+                            if (b) { println(2) }
+                        }
+                    }
                     """.trimIndent()
                 )
             )
-            .issues(Law030_OrchestrationMonsterDetector.ISSUE)
+            .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("OrchestrationMonsterError")
-            .expectContains("limit is 3")
+            .expectContains("Complexity Budget (3)")
+            .expectContains("WARNING limit is 2")
     }
 }

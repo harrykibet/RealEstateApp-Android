@@ -26,5 +26,8 @@ enum class IssueCategory(val lintCategory: Category) {
     PERFORMANCE(Category.PERFORMANCE),
     
     /** Test-only patterns and infrastructure safety. */
-    TESTING(Category.TESTING)
+    TESTING(Category.TESTING),
+
+    /** General code health, maintainability, and complexity budgets. */
+    CODE_HEALTH(Category.CORRECTNESS)
 }

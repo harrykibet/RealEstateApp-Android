@@ -2,7 +2,6 @@ package com.estatia.realestate.apps.lint.registry
 
 import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.client.api.Vendor
-import com.android.tools.lint.detector.api.CURRENT_API
 import com.estatia.realestate.apps.lint.concurrency.*
 import com.estatia.realestate.apps.lint.api.*
 import com.estatia.realestate.apps.lint.compose.*
@@ -74,7 +73,11 @@ class EstatiaIssueRegistry : IssueRegistry() {
         Law030_OrchestrationMonsterDetector.ISSUE
     )
 
-    override val api: Int = CURRENT_API
+    /**
+     * Pinning the API version ensures cross-environment compatibility.
+     * Value 16 corresponds to Lint API 31.4.0 (AGP 8.4+).
+     */
+    override val api: Int = 16
 
     override val minApi: Int = 12
 

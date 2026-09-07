@@ -18,9 +18,9 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             val source = node.asSourceString()
             val lineCount = source.lines().size
             
-            val fatalThreshold = context.getOption(ISSUE, "fatalThreshold", 1000)
-            val errorThreshold = context.getOption(ISSUE, "errorThreshold", 600)
-            val warningThreshold = context.getOption(ISSUE, "warningThreshold", 300)
+            val fatalThreshold = context.getOption(ISSUE, "maxLinesFatal", 1000)
+            val errorThreshold = context.getOption(ISSUE, "maxLinesError", 600)
+            val warningThreshold = context.getOption(ISSUE, "maxLinesWarning", 300)
 
             when {
                 lineCount > fatalThreshold -> {
@@ -50,7 +50,7 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             rationale = "Large classes usually have too many responsibilities. Decompose into smaller components.",
             badExample = "class EverythingManager { ... 1000 lines ... }",
             goodExample = "class FocusedComponent { ... 200 lines ... }",
-            category = IssueCategory.ARCHITECTURE,
+            category = IssueCategory.CODE_HEALTH,
             tier = IssueTier.FATAL,
             owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_029,

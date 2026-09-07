@@ -13,10 +13,7 @@ object ArchitectureIssues {
         SuppressionPolicyDetector.ISSUE,
         ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
         ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
-        CanaryHeartbeatDetector.ISSUE,
-        Law028_SpaghettiMethodDetector.ISSUE,
-        Law029_GodObjectDetector.ISSUE,
-        Law030_OrchestrationMonsterDetector.ISSUE
+        CanaryHeartbeatDetector.ISSUE
     )
 }
 
@@ -84,6 +81,9 @@ object TestingIssues {
 
 object CodeHealthIssues {
     val all = listOf(
-        MagicNumberDetector.ISSUE
+        MagicNumberDetector.ISSUE,
+        Law028_SpaghettiMethodDetector.ISSUE,
+        Law029_GodObjectDetector.ISSUE,
+        Law030_OrchestrationMonsterDetector.ISSUE
     )
 }
