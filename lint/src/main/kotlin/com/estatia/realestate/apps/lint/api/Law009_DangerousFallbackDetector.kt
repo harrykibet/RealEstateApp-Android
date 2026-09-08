@@ -11,7 +11,9 @@ import org.jetbrains.uast.*
 
 /**
  * LAW-009: Production functions do not silently discard failures.
- * Detects dangerous elvis operator fallbacks.
+ * 
+ * Detects dangerous elvis operator fallbacks (e.g., ?: emptyList(), ?: "") 
+ * which often convert underlying infrastructure failures into silent empty states.
  */
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
@@ -34,14 +36,10 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         }
 
         override fun visitIfExpression(node: UIfExpression) {
-            // In Kotlin UAST, elvis often manifests as an If expression with a null check
-            // We check the source string for '?:' to be sure it's an elvis.
+            // Some UAST versions represent Elvis as an If expression
             val src = node.asSourceString()
             if (src.contains("?:")) {
-                val fallback = node.elseExpression
-                if (fallback != null) {
-                    checkFallback(fallback, node)
-                }
+                node.elseExpression?.let { checkFallback(it, node) }
             }
         }
 
@@ -51,7 +49,7 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
                     ISSUE,
                     node,
                     context.getLocation(node),
-                    "Dangerous fallback detected (LAW-009)."
+                    "Dangerous fallback detected (LAW-009). This default value silently consumes potential failures."
                 )
             }
         }
@@ -63,16 +61,25 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
             current = current.expression
         }
         
+        // 1. Literal Check
         if (current is ULiteralExpression) {
             val value = current.value
-            return value == null || (value is String && value.isEmpty()) || value == 0 || value == false
+            return value == null || 
+                   (value is String && value.isEmpty()) || 
+                   value == 0 || 
+                   value == false
         }
         
+        // 2. Collection Builder Check
         if (current is UCallExpression) {
             val name = current.methodName
-            return name == "emptyList" || name == "emptyMap" || name == "emptySet"
+            return name == "emptyList" || name == "emptyMap" || name == "emptySet" ||
+                   name == "listOf" && current.valueArgumentCount == 0 ||
+                   name == "mapOf" && current.valueArgumentCount == 0 ||
+                   name == "setOf" && current.valueArgumentCount == 0
         }
         
+        // 3. Qualified Access to empty collections (e.g., Collections.emptyList())
         if (current is UQualifiedReferenceExpression) {
             return isDangerousFallback(current.selector)
         }
@@ -84,9 +91,10 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "DangerousFallback",
             description = "Elvis operator uses dangerous default value",
-            rationale = "Using '?: emptyList()' converts system failures into empty states.",
+            rationale = "Using '?: emptyList()' or '?: false' often converts critical system failures into " +
+                        "empty states, making bugs nearly impossible to trace in production.",
             badExample = "repo.load() ?: emptyList()",
-            goodExample = "repo.load() // returns Result",
+            goodExample = "repo.load() // returns AppResult and handles Error explicitly",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.CONVENTION,
             owner = RuleOwner.ARCHITECTURE,

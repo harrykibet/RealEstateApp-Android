@@ -6,7 +6,6 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.core.architecture.LawType
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.*

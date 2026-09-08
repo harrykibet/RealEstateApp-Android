@@ -56,6 +56,7 @@ fun LeakyComposable(repo: CanaryRepository) {
 
 // LAW-025: Mutable Singleton Read in Compose
 object CanaryConfig {
+    @JvmField
     var mutableValue = 0
 }
 
@@ -108,7 +109,9 @@ class LeakyLogger {
     val apiKey = "123456789"
     
     fun log(password: String) {
-        Log.d("AUTH", "User password is: ${"$"}{password}")
+        // Violation: Hardcoded secret in local variable
+        val secret = "super_secret_token"
+        Log.d("AUTH", "User password is: $password")
     }
 }
 

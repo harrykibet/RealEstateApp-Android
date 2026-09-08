@@ -17,9 +17,10 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
             val name = node.qualifiedName ?: node.asRenderString()
-            val lowerName = name.lowercase()
-            if (lowerName.contains("suppress") || lowerName.contains("optin") || 
-                lowerName.contains("suppresswarnings") || lowerName.contains("suppresslint")) {
+            // 🛡️ POLICY: Only analyze actual suppression mechanisms.
+            // @OptIn is an API stability tool, not a debt-hiding mechanism.
+            if (name.contains("SuppressLint") || name.contains("Suppress") || 
+                name.contains("SuppressWarnings")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
             }
@@ -34,7 +35,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             extractFromExpression(attr.expression, list)
         }
         
-        // 2. Raw source fallback (Robust for tests)
+        // 2. Raw source fallback (Ensures we catch literals in various formats)
         val src = node.asSourceString()
         Regex("\"([^\"]+)\"").findAll(src).forEach { 
             list.add(it.groupValues[1])
@@ -57,15 +58,6 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             is UExpressionList -> {
                 expr.expressions.forEach { extractFromExpression(it, list) }
             }
-            is UClassLiteralExpression -> {
-                expr.type?.canonicalText?.let { list.add(it) }
-            }
-            is USimpleNameReferenceExpression -> {
-                list.add(expr.identifier)
-            }
-            is UQualifiedReferenceExpression -> {
-                list.add(expr.asRenderString().removeSuffix("::class"))
-            }
         }
     }
 
@@ -85,21 +77,20 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                 return@forEach
             }
 
-            val issue = registry.getIssue(cleanId) ?: 
-                        if (cleanId.contains("UnstableApi")) registry.getIssue("UnsafeOptInUsageError") else null
-            
+            val issue = registry.getIssue(cleanId)
             if (issue == null) return@forEach
             
+            // Prevent suppression of this detector itself to avoid recursion/hiding
+            if (cleanId == ISSUE.id) return@forEach
+
             when (issue.defaultSeverity) {
                 Severity.FATAL -> {
-                    if (cleanId != ISSUE.id) {
-                        context.report(
-                            ISSUE, 
-                            node, 
-                            context.getLocation(node), 
-                            "Architectural Law violation '$cleanId' (FATAL) cannot be suppressed (LAW-033)."
-                        )
-                    }
+                    context.report(
+                        ISSUE, 
+                        node, 
+                        context.getLocation(node), 
+                        "Architectural Law violation '$cleanId' (FATAL) cannot be suppressed (LAW-033)."
+                    )
                 }
                 Severity.ERROR, Severity.WARNING -> {
                     if (!checkJustification(context, node, cleanId)) {

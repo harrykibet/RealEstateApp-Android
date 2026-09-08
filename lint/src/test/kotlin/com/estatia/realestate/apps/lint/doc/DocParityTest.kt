@@ -24,12 +24,17 @@ class DocParityTest {
 
     private fun getReadmeFile(): File {
         val readmePath = System.getProperty("LINT_README_PATH")
+        
+        // 🛡️ PRECONDITION: System property must be provided by Gradle
         assertNotNull(
             "Governance Violation: System property 'LINT_README_PATH' is not set. " +
             "This test must be run via Gradle to ensure correct environment setup.",
             readmePath
         )
-        val file = File(readmePath)
+        
+        val file = File(readmePath!!)
+        
+        // 🛡️ PRECONDITION: File must exist.
         assertTrue(
             "Governance Violation: README.md not found at expected path: ${file.absolutePath}",
             file.exists()

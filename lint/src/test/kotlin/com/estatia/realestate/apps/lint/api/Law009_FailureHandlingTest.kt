@@ -70,9 +70,17 @@ class Law009_FailureHandlingTest {
                     """
                     package com.estatia.realestate.apps
                     class Test {
-                        fun check(value: String?) {
-                            val data = value ?: ""
+                        fun check(value: String?, flag: Boolean?, list: List<Int>?) {
+                            val s = value ?: ""           // Dangerous: empty string
+                            val b = flag ?: false         // Dangerous: false
+                            val l = list ?: emptyList()    // Dangerous: empty list
+                            val n = value ?: null          // Dangerous: null
+                            
+                            val safe = value ?: "default" // Safe: non-empty literal
+                            val alsoSafe = value ?: compute() // Safe: dynamic computation
                         }
+                        fun compute() = "data"
+                        fun <T> emptyList(): List<T> = TODO()
                     }
                     """.trimIndent()
                 )
