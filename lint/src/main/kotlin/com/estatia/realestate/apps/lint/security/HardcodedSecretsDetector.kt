@@ -17,30 +17,24 @@ class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
 
     private val secretKeywords = setOf("apikey", "secret", "token", "password", "credential")
 
-    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(ULocalVariable::class.java, UField::class.java)
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(ULiteralExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
-        override fun visitLocalVariable(node: ULocalVariable) {
-            checkVariable(node)
-        }
-
-        override fun visitField(node: UField) {
-            checkVariable(node)
-        }
-
-        private fun checkVariable(node: UVariable) {
-            val name = node.name?.lowercase() ?: ""
-            if (secretKeywords.any { name.contains(it) }) {
-                val initializer = node.uastInitializer
-                if (initializer is ULiteralExpression && initializer.isString) {
-                    val value = initializer.value as? String ?: ""
-                    if (value.isNotBlank() && value.length > 5) {
-                        context.report(
-                            ISSUE,
-                            node as UElement,
-                            context.getLocation(node as UElement),
-                            "Potential hardcoded secret detected in variable '${node.name}'. Move secrets to a secure config or use build variables (LAW-010)."
-                        )
+        override fun visitLiteralExpression(node: ULiteralExpression) {
+            if (node.isString) {
+                val value = node.value as? String ?: ""
+                if (value.isNotBlank() && value.length > 5) {
+                    val variable = node.getParentOfType<UVariable>(UVariable::class.java, false)
+                    if (variable != null) {
+                        val name = variable.name?.lowercase() ?: ""
+                        if (secretKeywords.any { name.contains(it) }) {
+                            context.report(
+                                ISSUE,
+                                variable as UElement,
+                                context.getLocation(variable as UElement),
+                                "Potential hardcoded secret detected in variable '${variable.name}'. Move secrets to a secure config or use build variables (LAW-010)."
+                            )
+                        }
                     }
                 }
             }

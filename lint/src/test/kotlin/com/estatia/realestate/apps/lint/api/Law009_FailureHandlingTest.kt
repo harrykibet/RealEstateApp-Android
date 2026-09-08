@@ -49,7 +49,7 @@ class Law009_FailureHandlingTest {
                             return emptyList()
                         }
                         fun work() {}
-                        fun <T> emptyList(): List<T> = TODO()
+                        fun <T> emptyList(): List<T> = error("Stub")
                     }
                     """.trimIndent()
                 )

@@ -69,13 +69,21 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
     }
 
     private fun isMutable(member: PsiMember): Boolean {
+        // A member is mutable if it's a non-final field or has a setter
         return when (member) {
             is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
             is PsiMethod -> {
-                // A method is considered mutable if it's a setter or a non-final getter 
-                // (though in Kotlin objects, val getters are final).
-                member.name.startsWith("set") || 
-                (member.name.startsWith("get") && !member.hasModifierProperty(PsiModifier.FINAL))
+                val name = member.name
+                if (name.startsWith("set")) return true
+                if (name.startsWith("get")) {
+                    // In Kotlin objects, 'val' properties have a final getter and NO setter.
+                    // 'var' properties have a getter and a setter.
+                    val containingClass = member.containingClass ?: return false
+                    val setterName = name.replaceFirst("get", "set")
+                    val hasSetter = containingClass.findMethodsByName(setterName, false).isNotEmpty()
+                    return hasSetter
+                }
+                false
             }
             else -> false
         }

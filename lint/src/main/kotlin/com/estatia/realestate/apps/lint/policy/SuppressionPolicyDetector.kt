@@ -17,8 +17,9 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
             val name = node.qualifiedName ?: node.asRenderString()
-            if (name.contains("SuppressLint") || name.contains("Suppress") || 
-                name.contains("OptIn") || name.contains("SuppressWarnings")) {
+            val lowerName = name.lowercase()
+            if (lowerName.contains("suppress") || lowerName.contains("optin") || 
+                lowerName.contains("suppresswarnings") || lowerName.contains("suppresslint")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
             }

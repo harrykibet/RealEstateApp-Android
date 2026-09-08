@@ -21,8 +21,8 @@ object Stubs {
         
         object GlobalScope : CoroutineScope
         
-        fun CoroutineScope(context: Any): CoroutineScope = TODO()
-        fun MainScope(): CoroutineScope = TODO()
+        fun CoroutineScope(context: Any): CoroutineScope = error("Stub")
+        fun MainScope(): CoroutineScope = error("Stub")
         
         val CoroutineScope.isActive: Boolean
             get() = true
@@ -31,22 +31,22 @@ object Stubs {
             context: Any? = null,
             start: Any? = null,
             block: suspend CoroutineScope.() -> Unit
-        ): Job = TODO()
+        ): Job = error("Stub")
         
         fun <T> CoroutineScope.async(
             context: Any? = null,
             start: Any? = null,
             block: suspend CoroutineScope.() -> T
-        ): Deferred<T> = TODO()
+        ): Deferred<T> = error("Stub")
         
-        suspend fun yield(): Unit = TODO()
-        fun CoroutineScope.ensureActive(): Unit = TODO()
-        fun Job.ensureActive(): Unit = TODO()
+        suspend fun yield(): Unit = error("Stub")
+        fun CoroutineScope.ensureActive(): Unit = error("Stub")
+        fun Job.ensureActive(): Unit = error("Stub")
         
         suspend fun <T> withContext(
             context: CoroutineDispatcher,
             block: suspend CoroutineScope.() -> T
-        ): T = TODO()
+        ): T = error("Stub")
 
         interface CoroutineExceptionHandler : CoroutineContext.Element
         """.trimIndent()
@@ -60,11 +60,11 @@ object Stubs {
         interface MutableStateFlow<T> : Flow<T>
         interface MutableSharedFlow<T> : Flow<T>
         
-        fun <T> flow(block: suspend () -> T): Flow<T> = TODO()
-        fun <T> flowOf(vararg elements: T): Flow<T> = TODO()
-        fun <T> Flow<T>.buffer(capacity: Int = -1): Flow<T> = TODO()
+        fun <T> flow(block: suspend () -> T): Flow<T> = error("Stub")
+        fun <T> flowOf(vararg elements: T): Flow<T> = error("Stub")
+        fun <T> Flow<T>.buffer(capacity: Int = -1): Flow<T> = error("Stub")
         
-        suspend fun <T> Flow<T>.collect(collector: (T) -> Unit): Unit = TODO()
+        suspend fun <T> Flow<T>.collect(collector: (T) -> Unit): Unit = error("Stub")
         """.trimIndent()
     )
 
@@ -90,13 +90,13 @@ object Stubs {
         
         annotation class Composable
         
-        fun <T> remember(block: () -> T): T = TODO()
+        fun <T> remember(block: () -> T): T = error("Stub")
         
         interface MutableState<T> {
             var value: T
         }
         
-        fun <T> mutableStateOf(value: T): MutableState<T> = TODO()
+        fun <T> mutableStateOf(value: T): MutableState<T> = error("Stub")
         """.trimIndent()
     )
 
@@ -159,7 +159,7 @@ object Stubs {
     val COLLECTIONS = kotlin(
         """
         package kotlin.collections
-        fun <T> emptyList(): List<T> = TODO()
+        fun <T> emptyList(): List<T> = error("Stub")
         interface List<out T>
         """.trimIndent()
     )
@@ -168,9 +168,9 @@ object Stubs {
         """
         package io.mockk
         object MockK {
-            fun <T> mockk(): T = TODO()
+            fun <T> mockk(): T = error("Stub")
         }
-        fun <T> mockk(): T = TODO()
+        fun <T> mockk(): T = error("Stub")
         """.trimIndent()
     )
 

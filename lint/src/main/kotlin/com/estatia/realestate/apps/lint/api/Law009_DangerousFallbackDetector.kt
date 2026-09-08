@@ -20,22 +20,28 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            if (node.operator.text == "?:" || node.asSourceString().contains("?:")) {
+            val opText = node.operator.text
+            if (opText == "?:" || node.asSourceString().contains("?:")) {
                 checkFallback(node.rightOperand, node)
             }
         }
 
         override fun visitPolyadicExpression(node: UPolyadicExpression) {
-            if (node.operator.text == "?:" || node.asSourceString().contains("?:")) {
+            val opText = node.operator.text
+            if (opText == "?:" || node.asSourceString().contains("?:")) {
                 node.operands.lastOrNull()?.let { checkFallback(it, node) }
             }
         }
 
         override fun visitIfExpression(node: UIfExpression) {
-            // In some versions of Kotlin/UAST, elvis is an if-expression
+            // In Kotlin UAST, elvis often manifests as an If expression with a null check
+            // We check the source string for '?:' to be sure it's an elvis.
             val src = node.asSourceString()
             if (src.contains("?:")) {
-                node.elseExpression?.let { checkFallback(it, node) }
+                val fallback = node.elseExpression
+                if (fallback != null) {
+                    checkFallback(fallback, node)
+                }
             }
         }
 
