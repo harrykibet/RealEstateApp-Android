@@ -17,9 +17,11 @@ class Law009_FailureHandlingTest {
             .files(
                 Stubs.RESULT,
                 Stubs.FLOW,
+                Stubs.COLLECTIONS,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.data
+                    import kotlin.collections.List
                     class MyRepository {
                         // Non-trivial complex type requires wrapping under Estatia Convention
                         suspend fun getData(): List<String> = emptyList()
@@ -66,9 +68,12 @@ class Law009_FailureHandlingTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.COLLECTIONS,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
+                    import kotlin.collections.List
+                    
                     class Test {
                         fun check(value: String?, flag: Boolean?, list: List<Int>?) {
                             val s = value ?: ""           // Dangerous: empty string

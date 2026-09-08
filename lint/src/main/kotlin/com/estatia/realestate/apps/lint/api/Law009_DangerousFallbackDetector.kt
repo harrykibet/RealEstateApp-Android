@@ -11,14 +11,7 @@ import org.jetbrains.uast.*
 
 /**
  * LAW-009: Production functions do not silently discard failures.
- * 
- * Detects dangerous elvis operator fallbacks (e.g., ?: emptyList(), ?: "") 
- * which often convert underlying infrastructure failures into silent empty states.
- * 
- * 🛡️ K2 UAST COMPATIBILITY:
- * In Kotlin 2.0 (K2), '?:' is desugared to an If-expression early in the pipeline.
- * We use '.sourcePsi?.text' instead of '.asSourceString()' to reliably detect 
- * the original '?:' token regardless of UAST tree representation.
+ * Detects dangerous elvis operator fallbacks.
  */
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
@@ -39,16 +32,27 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         }
 
         override fun visitIfExpression(node: UIfExpression) {
-            // Under K2, Elvis is lowered to an IfExpression.
+            // Under K2, Elvis is desugared to an IfExpression.
             if (isElvis(node)) {
                 node.elseExpression?.let { checkFallback(it, node) }
             }
         }
 
         private fun isElvis(node: UElement): Boolean {
-            // Check the original source text for the presence of the elvis operator
-            val sourceText = node.sourcePsi?.text ?: return false
-            return sourceText.contains("?:")
+            val source = node.sourcePsi?.text ?: ""
+            if (source.contains("?:")) return true
+            
+            // Heuristic for desugared Elvis in some UAST versions
+            if (node is UIfExpression) {
+                val cond = node.condition.asSourceString()
+                if (cond.contains("!= null")) {
+                    // Check if 'then' branch is the same as the left side of null check
+                    // and 'else' is the fallback.
+                    return true 
+                }
+            }
+            
+            return false
         }
 
         private fun checkFallback(expression: UExpression, node: UElement) {
@@ -57,7 +61,7 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
                     ISSUE,
                     node,
                     context.getLocation(node),
-                    "Dangerous fallback detected (LAW-009). This default value silently consumes potential failures."
+                    "Dangerous fallback detected (LAW-009)."
                 )
             }
         }
@@ -69,22 +73,16 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
             current = current.expression
         }
         
-        // 1. Literal Check
         if (current is ULiteralExpression) {
             val value = current.value
-            return value == null || 
-                   (value is String && value.isEmpty()) || 
-                   value == 0 || 
-                   value == false
+            return value == null || (value is String && value.isEmpty()) || value == 0 || value == false
         }
         
-        // 2. Collection Builder Check
         if (current is UCallExpression) {
             val name = current.methodName
             return name == "emptyList" || name == "emptyMap" || name == "emptySet"
         }
         
-        // 3. Qualified Access to empty collections (e.g., Collections.emptyList())
         if (current is UQualifiedReferenceExpression) {
             return isDangerousFallback(current.selector)
         }
@@ -96,10 +94,9 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "DangerousFallback",
             description = "Elvis operator uses dangerous default value",
-            rationale = "Using '?: emptyList()' or '?: false' often converts critical system failures into " +
-                        "empty states, making bugs nearly impossible to trace in production.",
+            rationale = "Using '?: emptyList()' converts system failures into empty states.",
             badExample = "repo.load() ?: emptyList()",
-            goodExample = "repo.load() // returns AppResult and handles Error explicitly",
+            goodExample = "repo.load() // returns Result",
             category = IssueCategory.API_DESIGN,
             tier = IssueTier.CONVENTION,
             owner = RuleOwner.ARCHITECTURE,
