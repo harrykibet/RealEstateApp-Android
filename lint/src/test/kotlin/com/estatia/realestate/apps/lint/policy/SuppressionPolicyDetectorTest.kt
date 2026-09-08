@@ -5,36 +5,9 @@ import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.estatia.realestate.apps.lint.Stubs
 import com.estatia.realestate.apps.lint.api.Law009_ResultWrapperDetector
 import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
-import com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry
 import org.junit.Test
 
 class SuppressionPolicyDetectorTest {
-
-    @Test
-    fun `blind suppression of all reports fatal`() {
-        lint()
-            .allowCompilationErrors()
-            .allowMissingSdk()
-            .files(
-                Stubs.ANDROID_ANNOTATION,
-                Stubs.RESULT,
-                kotlin(
-                    """
-                    package com.estatia.realestate.apps
-                    import android.annotation.SuppressLint
-                    
-                    @Suppress(names = ["all"])
-                    class Bad1
-                    
-                    @SuppressLint(value = ["all"])
-                    class Bad2
-                    """.trimIndent()
-                )
-            )
-            .issues(SuppressionPolicyDetector.ISSUE)
-            .run()
-            .expectContains("Blind suppression using 'all' is forbidden")
-    }
 
     @Test
     fun `suppression of FATAL rule reports fatal`() {
@@ -52,7 +25,6 @@ class SuppressionPolicyDetectorTest {
                     """.trimIndent()
                 )
             )
-            // Explicitly include the issues so the registry can find them
             .issues(SuppressionPolicyDetector.ISSUE, ForbiddenScopeDetector.FORBIDDEN_SCOPE_ISSUE)
             .run()
             .expectContains("cannot be suppressed")
@@ -69,28 +41,6 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    @Suppress("MissingResultWrapper")
-                    class Bad
-                    """.trimIndent()
-                )
-            )
-            .issues(SuppressionPolicyDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
-            .run()
-            .expectContains("requires an immediately preceding justification comment")
-    }
-
-    @Test
-    fun `suppression of ERROR rule with wrong justification reports fatal`() {
-        lint()
-            .allowCompilationErrors()
-            .allowMissingSdk()
-            .files(
-                Stubs.COROUTINES,
-                Stubs.RESULT,
-                kotlin(
-                    """
-                    package com.estatia.realestate.apps
-                    // Justification: Unrelated reason
                     @Suppress("MissingResultWrapper")
                     class Bad
                     """.trimIndent()

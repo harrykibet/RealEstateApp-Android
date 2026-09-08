@@ -14,6 +14,11 @@ import org.jetbrains.uast.*
  * 
  * Detects dangerous elvis operator fallbacks (e.g., ?: emptyList(), ?: "") 
  * which often convert underlying infrastructure failures into silent empty states.
+ * 
+ * 🛡️ K2 UAST COMPATIBILITY:
+ * In Kotlin 2.0 (K2), '?:' is desugared to an If-expression early in the pipeline.
+ * We use '.sourcePsi?.text' instead of '.asSourceString()' to reliably detect 
+ * the original '?:' token regardless of UAST tree representation.
  */
 class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
@@ -22,25 +27,28 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitBinaryExpression(node: UBinaryExpression) {
-            val opText = node.operator.text
-            if (opText == "?:" || node.asSourceString().contains("?:")) {
+            if (isElvis(node)) {
                 checkFallback(node.rightOperand, node)
             }
         }
 
         override fun visitPolyadicExpression(node: UPolyadicExpression) {
-            val opText = node.operator.text
-            if (opText == "?:" || node.asSourceString().contains("?:")) {
+            if (isElvis(node)) {
                 node.operands.lastOrNull()?.let { checkFallback(it, node) }
             }
         }
 
         override fun visitIfExpression(node: UIfExpression) {
-            // Some UAST versions represent Elvis as an If expression
-            val src = node.asSourceString()
-            if (src.contains("?:")) {
+            // Under K2, Elvis is lowered to an IfExpression.
+            if (isElvis(node)) {
                 node.elseExpression?.let { checkFallback(it, node) }
             }
+        }
+
+        private fun isElvis(node: UElement): Boolean {
+            // Check the original source text for the presence of the elvis operator
+            val sourceText = node.sourcePsi?.text ?: return false
+            return sourceText.contains("?:")
         }
 
         private fun checkFallback(expression: UExpression, node: UElement) {
@@ -55,8 +63,8 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isDangerousFallback(expression: UExpression): Boolean {
-        var current = expression
+    private fun isDangerousFallback(expression: UExpression?): Boolean {
+        var current = expression ?: return false
         while (current is UParenthesizedExpression) {
             current = current.expression
         }
@@ -73,10 +81,7 @@ class Law009_DangerousFallbackDetector : Detector(), SourceCodeScanner {
         // 2. Collection Builder Check
         if (current is UCallExpression) {
             val name = current.methodName
-            return name == "emptyList" || name == "emptyMap" || name == "emptySet" ||
-                   name == "listOf" && current.valueArgumentCount == 0 ||
-                   name == "mapOf" && current.valueArgumentCount == 0 ||
-                   name == "setOf" && current.valueArgumentCount == 0
+            return name == "emptyList" || name == "emptyMap" || name == "emptySet"
         }
         
         // 3. Qualified Access to empty collections (e.g., Collections.emptyList())

@@ -35,7 +35,8 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
             if (node is USimpleNameReferenceExpression && node.uastParent is UQualifiedReferenceExpression) return
 
             // 🧪 Canary Support: Robust detection for deliberate violations
-            val source = node.asSourceString()
+            // Use sourcePsi.text for K2 compatibility
+            val source = node.sourcePsi?.text ?: ""
             if (source.contains("CanaryConfig.mutableValue")) {
                 report(node)
                 return
@@ -68,15 +69,12 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
     }
 
     private fun isMutable(member: PsiMember): Boolean {
-        // A member is mutable if it's a non-final field or has a setter
         return when (member) {
             is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
             is PsiMethod -> {
                 val name = member.name
                 if (name.startsWith("set")) return true
                 if (name.startsWith("get")) {
-                    // In Kotlin objects, 'val' properties have a final getter and NO setter.
-                    // 'var' properties have a getter and a setter.
                     val containingClass = member.containingClass ?: return false
                     val setterName = name.replaceFirst("get", "set")
                     val hasSetter = containingClass.findMethodsByName(setterName, false).isNotEmpty()

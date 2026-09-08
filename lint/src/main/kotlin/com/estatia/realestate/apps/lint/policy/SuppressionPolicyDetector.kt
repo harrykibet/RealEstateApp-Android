@@ -66,16 +66,10 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         suppressed.forEach { id ->
             val cleanId = id.substringAfterLast(".").removeSuffix("::class")
             
-            // FATAL: Blind suppression
-            if (cleanId.equals("all", ignoreCase = true)) {
-                context.report(
-                    ISSUE, 
-                    node, 
-                    context.getLocation(node), 
-                    "Blind suppression using 'all' is forbidden in Estatia (LAW-033)."
-                )
-                return@forEach
-            }
+            // 💡 Note: Wildcard suppression ("all") is enforced in the Konsist layer 
+            // (Law033_WildcardSuppressionTest) because Lint's own engine would 
+            // silence reports in this detector if "all" is present in the scope.
+            if (cleanId.equals("all", ignoreCase = true)) return@forEach
 
             val issue = registry.getIssue(cleanId)
             if (issue == null) return@forEach
