@@ -19,29 +19,34 @@ All platforms utilize **Gradle Managed Devices (GMD)** to ensure that tests run 
 
 We use a "funnel" approach where expensive operations are deferred to later stages.
 
-### Tier 1: PR Check (Fast Feedback)
+### Tier 1: PR Check (High Maturity & Fast Feedback)
 *   **Trigger**: Every Pull Request (GitHub/GitLab) or PR build (Codemagic).
-*   **Goal**: Catch obvious regressions in < 10 minutes.
+*   **Goal**: Ensure architectural compliance and catch regressions in < 15 minutes.
 *   **Key Operations**:
-    *   `./gradlew lint`: Static analysis to catch code smells.
-    *   `./gradlew test`: All Unit tests (JVM).
-    *   **Smoke UI Suite**: Instrumented tests on a single `pixel2Api34` device to verify basic app startup and login.
+    *   **Level 0: Architecture Gate**: Runs `./gradlew verifyArchitecture` (Lint, KSP, Konsist, Canary violations, and Dependency Drift checks).
+    *   **Level 1: Selective Verification**: Uses `./gradlew calculateImpact` to identify and run tests/lint only for impacted modules.
+    *   **Level 2: Coverage Ratchet**: Verifies code coverage hasn't regressed using `./gradlew jacocoProdDebugVerification`.
+    *   **Level 3: Smoke UI Suite**: Instrumented tests on a single `pixel2Api34` device to verify basic app startup.
+    *   **Self-Healing**: Automatically updates lint baselines if violations are resolved (Ratchet mechanism).
 
 ### Tier 2: Main Branch (Full Verification)
 *   **Trigger**: Merge/Push to `main`.
 *   **Goal**: Ensure release readiness and multi-device compatibility.
 *   **Key Operations**:
+    *   **Exhaustive Analysis**: Full `./gradlew lint` and `./gradlew test` across all modules.
     *   **Fleet Testing**: Runs instrumented tests across four distinct device shapes (Small Phone, Modern Pixel, Medium Phone, Tablet).
-    *   **Release Build**: `assembleProdRelease` to verify R8/Proguard shrinking and resource optimization.
-    *   **Artifact Archival**: Uploads the signed APK for internal QA distribution.
+    *   **Release Build**: `assembleProdRelease` with full R8 shrinking and production signing.
+    *   **Artifact Archival**: Signed APKs are archived for internal QA distribution.
 
 ### Tier 3: Nightly (Stress & Optimization)
 *   **Trigger**: Scheduled daily at 00:00 UTC.
-*   **Goal**: Heavy-duty performance tuning and chaos validation.
+*   **Goal**: Heavy-duty performance tuning, security auditing, and chaos validation.
 *   **Key Operations**:
-    *   **Deterministic Chaos**: Runs `FeedGestureChaosTest` with fixed seeds to find rare race conditions.
-    *   **Baseline Profile Generation**: Automatically captures and commits AOT compilation profiles to keep the app smooth.
-    *   **Macrobenchmarks**: Measures Startup and Scrolling performance; results are archived for historical comparison.
+    *   **Deterministic Chaos**: Runs `FeedGestureChaosTest` on `pixel6Api31` to find rare race conditions.
+    *   **Baseline Profile Generation**: Captures AOT profiles and automatically creates a PR to update them in the repo.
+    *   **Performance Benchmarks**: Measures Startup and Scrolling performance via Macrobenchmarks.
+    *   **Security & Purity**: Runs OWASP Dependency Check and `auditBinaryPurity` (R8 mapping audit).
+    *   **Full Quality Audit**: Generates exhaustive JaCoCo coverage reports and runs architecture audits on all variants.
 
 ---
 
@@ -63,6 +68,9 @@ The project defines a standardized fleet in `build-logic` used by all CI runners
 Developers can run any CI job locally using these commands:
 
 ```bash
+# Run the Architecture Gate
+./gradlew verifyArchitecture
+
 # Run the PR Smoke Suite
 ./gradlew :app:pixel2Api34ProdDebugAndroidTest
 
@@ -70,18 +78,21 @@ Developers can run any CI job locally using these commands:
 ./gradlew :app:allDevicesProdDebugAndroidTest
 
 # Generate Baseline Profiles (Nightly Tier)
-./gradlew :app:generateProdBaselineProfile
+./gradlew :app:generateBaselineProfile
 
 # Run Performance Benchmarks
 ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest
+
+# Run Binary Purity Audit
+./gradlew auditBinaryPurity
 ```
 
 ---
 
 ## 🔒 Security & Secrets
-CI platforms require the following secrets to be configured in their respective environment settings:
+CI platforms require the following secrets to be configured:
 - `KEYSTORE_BASE64`: The production signing key encoded in Base64.
 - `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD`: Signing credentials.
-- `SONAR_TOKEN`: Token for SonarQube analysis.
+- `SONAR_TOKEN`: Token for SonarQube analysis (used in quality stages).
 - `FIREBASE_TOKEN`: Token for deploying Firestore/Storage rules.
-- `CI_PUSH_TOKEN` (GitLab only): To allow committing Baseline Profiles back to the repo.
+- `GITHUB_TOKEN` / `CI_PUSH_TOKEN`: To allow committing Baseline Profiles or Lint updates back to the repo.
