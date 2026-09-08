@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -52,7 +52,7 @@ class PlaybackOrchestrator @Inject constructor(
         title: String?,
         artist: String?
     ) = withContext(playerDispatcher) {
-        checkConfinement()
+        Confinement.checkMainThread()
         val forceLegacy = decoderPolicy.shouldForceLegacy(mediaId)
         val managed = pool.getOrCreate(mediaId, uri, mediaType, matchScore, forceLegacy, title, artist)
         val environment = environmentCoordinator.environment.value
@@ -83,7 +83,7 @@ class PlaybackOrchestrator @Inject constructor(
         title: String?,
         artist: String?
     ) = withContext(playerDispatcher) {
-        checkConfinement()
+        Confinement.checkMainThread()
         val result = pool.prewarm(mediaId, uri, mediaType, matchScore, false, false, title, artist)
         if (result is PrewarmResult.Success) {
             val managed = result.managed
@@ -94,12 +94,12 @@ class PlaybackOrchestrator @Inject constructor(
     }
 
     fun pauseCurrentPlayer() {
-        checkConfinement()
+        Confinement.checkMainThread()
         activeMediaId?.let { pool.get(it)?.player?.pause() }
     }
 
     fun resumeCurrentPlayer() {
-        checkConfinement()
+        Confinement.checkMainThread()
         activeMediaId?.let { id ->
             pool.get(id)?.player?.let { player ->
                 if (!player.isPlaying) {
@@ -110,14 +110,8 @@ class PlaybackOrchestrator @Inject constructor(
     }
 
     fun isCurrentlyPlaying(): Boolean {
-        checkConfinement()
+        Confinement.checkMainThread()
         return activeMediaId?.let { pool.get(it)?.player?.isPlaying } ?: false
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("PlaybackOrchestrator must only be accessed from the Main thread.")
-        }
     }
 
     private fun attachListenerIfNeeded(managed: ManagedPlayer) {

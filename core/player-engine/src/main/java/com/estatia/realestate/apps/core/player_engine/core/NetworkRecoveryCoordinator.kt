@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.network.core.NetworkState
@@ -30,7 +30,7 @@ class NetworkRecoveryCoordinator @Inject constructor(
      * Starts observing network state and triggers recovery for players in reconnecting state.
      */
     fun start() {
-        checkConfinement()
+        Confinement.checkMainThread()
         engineScope.launch(playerDispatcher) {
             networkStateProvider.observe().collect { state ->
                 if (state is NetworkState.Connected) {
@@ -63,10 +63,4 @@ class NetworkRecoveryCoordinator @Inject constructor(
      * Returns the current network state.
      */
     fun getCurrentState(): NetworkState = networkStateProvider.current()
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("NetworkRecoveryCoordinator must only be accessed from the Main thread.")
-        }
-    }
 }

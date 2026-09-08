@@ -90,4 +90,29 @@ class Law018_ViewModelSsotProcessorTest {
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("has no public StateFlow"))
     }
+
+    @Test
+    fun `LAW-018 class inheriting from ViewModel with no StateFlow fails without marker`() {
+        val source = SourceFile.kotlin(
+            "TestViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import androidx.lifecycle.ViewModel
+            
+            class TestViewModel : ViewModel() {
+                // No StateFlow
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.coroutineStubs, 
+            KspTestUtils.lifecycleStubs,
+            source,
+            providers = listOf(Law018_ViewModelSsotProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        assertTrue(result.messages.contains("has no public StateFlow"))
+    }
 }

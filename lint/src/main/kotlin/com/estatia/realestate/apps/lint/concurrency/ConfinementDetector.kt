@@ -49,9 +49,23 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
         var foundCheck = false
         body.accept(object : AbstractUastVisitor() {
             override fun visitCallExpression(node: UCallExpression): Boolean {
-                val name = node.methodName
-                if (name == "checkConfinement" || name == "assertMainThread") {
-                    foundCheck = true
+                val resolved = node.resolve()
+                if (resolved != null) {
+                    val evaluator = context.evaluator
+                    // Official Estatia Confinement Utility
+                    if (evaluator.isMemberInClass(resolved, "com.estatia.realestate.apps.core.common.concurrency.Confinement")) {
+                        foundCheck = true
+                    }
+                    // Jetpack Arch Components
+                    if (evaluator.isMemberInClass(resolved, "androidx.lifecycle.LiveData") && resolved.name == "assertMainThread") {
+                        foundCheck = true
+                    }
+                } else {
+                    // Fallback for cases where resolution fails but the intention is clear
+                    val name = node.methodName
+                    if (name == "checkMainThread" && node.receiver?.asRenderString()?.contains("Confinement") == true) {
+                        foundCheck = true
+                    }
                 }
                 return super.visitCallExpression(node)
             }
@@ -62,7 +76,8 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
                 ISSUE,
                 method,
                 context.getLocation(method as UElement),
-                "Critical infrastructure method '${method.name}' is missing a thread-confinement check."
+                "Critical infrastructure method '${method.name}' is missing a thread-confinement check. " +
+                        "Use 'Confinement.checkMainThread()' to satisfy architectural safety (LAW-014)."
             )
         }
     }

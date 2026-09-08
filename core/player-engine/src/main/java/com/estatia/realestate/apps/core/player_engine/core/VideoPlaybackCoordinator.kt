@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import android.os.SystemClock
 import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.common.MediaReference
@@ -54,7 +54,7 @@ class VideoPlaybackCoordinator @Inject constructor(
         title: String? = null,
         artist: String? = null
     ) {
-        checkConfinement()
+        Confinement.checkMainThread()
         
         if (playerController.activeMediaId == mediaId) return
         
@@ -122,18 +122,12 @@ class VideoPlaybackCoordinator @Inject constructor(
     }
 
     private fun markWarmed(mediaId: String): Boolean {
-        checkConfinement()
+        Confinement.checkMainThread()
         val isNew = warmedMedia.add(mediaId)
         while (warmedMedia.size > tuning.maxWarmedMedia) {
             warmedMedia.remove(warmedMedia.first())
         }
         return isNew
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("VideoPlaybackCoordinator must only be accessed from the Main thread.")
-        }
     }
 
     private fun warmVisible(mediaId: String, uri: MediaReference) {
@@ -173,7 +167,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     fun isMediaActive(mediaId: String): Boolean = playerController.isMediaActive(mediaId)
 
     fun retry(scope: CoroutineScope, mediaId: String, uri: MediaReference) {
-        checkConfinement()
+        Confinement.checkMainThread()
         playJob?.cancel()
         playJob = scope.launch {
             playerController.play(mediaId, uri, MediaType.VOD)
@@ -184,7 +178,7 @@ class VideoPlaybackCoordinator @Inject constructor(
     fun onBufferingEnded() = streamingPipeline.onBufferingEnded()
 
     fun clear() {
-        checkConfinement()
+        Confinement.checkMainThread()
         warmedMedia.clear()
         consecutiveFastScrolls = 0
     }

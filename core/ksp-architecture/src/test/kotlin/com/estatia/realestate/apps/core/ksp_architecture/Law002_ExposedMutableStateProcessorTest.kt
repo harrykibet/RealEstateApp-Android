@@ -37,4 +37,31 @@ class Law002_ExposedMutableStateProcessorTest {
         assertTrue(result.messages.contains("Architecture Law (LAW-002)"))
         assertTrue(result.messages.contains("exposes mutable state"))
     }
+
+    @Test
+    fun `LAW-002 class inheriting from ViewModel exposing MutableStateFlow fails compilation without marker`() {
+        val source = SourceFile.kotlin(
+            "TestViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import androidx.lifecycle.ViewModel
+            import kotlinx.coroutines.flow.MutableStateFlow
+            
+            class TestViewModel : ViewModel() {
+                val mutableState: MutableStateFlow<Int> = TODO()
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.coroutineStubs,
+            KspTestUtils.lifecycleStubs,
+            source,
+            providers = listOf(Law002_ExposedMutableStateProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        assertTrue(result.messages.contains("Architecture Law (LAW-002)"))
+        assertTrue(result.messages.contains("exposes mutable state"))
+    }
 }

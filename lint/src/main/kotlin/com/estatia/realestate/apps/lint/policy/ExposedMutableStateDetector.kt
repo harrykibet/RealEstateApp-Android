@@ -33,10 +33,12 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
         override fun visitField(node: UField) {
             val containingClass = node.containingClass ?: return
             
-            val isTargetClass = context.evaluator.getAnnotations(containingClass, false)
+            val hasTargetAnnotation = context.evaluator.getAnnotations(containingClass, false)
                 .any { targetAnnotations.contains(it.qualifiedName) }
             
-            if (!isTargetClass) return
+            val isViewModel = context.evaluator.inheritsFrom(containingClass, "androidx.lifecycle.ViewModel", false)
+            
+            if (!hasTargetAnnotation && !isViewModel) return
 
             if (context.evaluator.isPublic(node)) {
                 val type = node.type

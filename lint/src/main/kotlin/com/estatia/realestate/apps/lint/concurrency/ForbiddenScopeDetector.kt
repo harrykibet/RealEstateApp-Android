@@ -36,6 +36,8 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
         }
 
         if (methodName == "CoroutineScope" || methodName == "MainScope") {
+            if (!isMemberInPackage(method, "kotlinx.coroutines")) return
+
             val containingClass = node.getParentOfType(UClass::class.java)
             val isAllowed = containingClass?.let { 
                 context.evaluator.inheritsFrom(it, "dagger.Module", false) 
@@ -53,6 +55,11 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: ""
+        return qualifiedName.startsWith(packageName)
     }
 
     companion object {

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.common.MediaReference
@@ -74,7 +74,7 @@ class PlayerManager @Inject constructor(
         title: String?,
         artist: String?
     ) {
-        checkConfinement()
+        Confinement.checkMainThread()
         orchestrator.play(mediaId, uri, mediaType, matchScore, title, artist)
         audioFocusManager.request()
         environmentManager.updateActiveMediaId(mediaId)
@@ -88,13 +88,13 @@ class PlayerManager @Inject constructor(
         title: String?,
         artist: String?
     ) {
-        checkConfinement()
+        Confinement.checkMainThread()
         orchestrator.preload(mediaId, uri, mediaType, matchScore, title, artist)
     }
 
     override suspend fun pause() {
         withContext(playerDispatcher) {
-            checkConfinement()
+            Confinement.checkMainThread()
             orchestrator.pauseCurrentPlayer()
             audioFocusManager.abandon()
         }
@@ -102,7 +102,7 @@ class PlayerManager @Inject constructor(
 
     override suspend fun getPlayer(mediaId: String, uri: MediaReference, mediaType: MediaType, matchScore: Float): Player =
         withContext(playerDispatcher) {
-            checkConfinement()
+            Confinement.checkMainThread()
             pool.getOrCreate(mediaId, uri, mediaType, matchScore).player
         }
 
@@ -111,7 +111,7 @@ class PlayerManager @Inject constructor(
 
     override fun shutdown() {
         engineScope.launch(playerDispatcher) {
-            checkConfinement()
+            Confinement.checkMainThread()
             orchestrator.pauseCurrentPlayer()
             audioFocusManager.abandon()
             audioFocusManager.cleanup()
@@ -123,33 +123,27 @@ class PlayerManager @Inject constructor(
     }
 
     override fun isPlaying(): Boolean {
-        checkConfinement()
+        Confinement.checkMainThread()
         return orchestrator.isCurrentlyPlaying()
     }
 
     override fun isMediaActive(mediaId: String): Boolean {
-        checkConfinement()
+        Confinement.checkMainThread()
         return activeMediaId == mediaId
     }
 
     override fun notifyMediaBound(mediaId: String) {
-        checkConfinement()
+        Confinement.checkMainThread()
         composedMediaIds.add(mediaId)
         environmentManager.updatePinnedIds(composedMediaIds)
         pool.updatePinnedIds(composedMediaIds)
     }
 
     override fun notifyMediaUnbound(mediaId: String) {
-        checkConfinement()
+        Confinement.checkMainThread()
         composedMediaIds.remove(mediaId)
         environmentManager.updatePinnedIds(composedMediaIds)
         pool.updatePinnedIds(composedMediaIds)
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("PlayerManager must only be accessed from the Main thread.")
-        }
     }
 
     // region Testing Hooks

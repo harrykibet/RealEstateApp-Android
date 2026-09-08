@@ -58,4 +58,33 @@ class CoroutineCancellationDetectorTest {
             .run()
             .expectClean()
     }
+
+    @Test
+    fun `suspend loop with unreachable yield fails`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.COROUTINES,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import kotlinx.coroutines.*
+                    class Test {
+                        suspend fun loop() {
+                            while(true) {
+                                if (false) {
+                                    yield()
+                                }
+                                // work
+                            }
+                        }
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(CoroutineCancellationDetector.ISSUE)
+            .run()
+            .expectContains("is missing a cancellation check")
+    }
 }

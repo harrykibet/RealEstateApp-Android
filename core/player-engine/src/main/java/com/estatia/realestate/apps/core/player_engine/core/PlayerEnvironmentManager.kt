@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
@@ -40,7 +40,7 @@ class PlayerEnvironmentManager @Inject constructor(
         onAppBackgrounded: suspend () -> Unit,
         onAppForegrounded: suspend () -> Unit
     ) {
-        checkConfinement()
+        Confinement.checkMainThread()
         environmentCoordinator.start(engineScope)
         engineScope.launch(playerDispatcher) {
             environmentCoordinator.environment.collect { env ->
@@ -90,23 +90,17 @@ class PlayerEnvironmentManager @Inject constructor(
     }
 
     fun stop() {
-        checkConfinement()
+        Confinement.checkMainThread()
         environmentCoordinator.stop()
     }
 
     fun updateActiveMediaId(mediaId: String?) {
-        checkConfinement()
+        Confinement.checkMainThread()
         activeMediaId = mediaId
     }
 
     fun updatePinnedIds(ids: Set<String>) {
-        checkConfinement()
+        Confinement.checkMainThread()
         pinnedIds = ids
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("PlayerEnvironmentManager must only be accessed from the Main thread.")
-        }
     }
 }

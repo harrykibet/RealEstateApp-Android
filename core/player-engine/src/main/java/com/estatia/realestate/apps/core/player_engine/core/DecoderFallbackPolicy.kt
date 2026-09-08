@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +21,7 @@ class DecoderFallbackPolicy @Inject constructor() {
      * Returns true if the specified media ID has previously failed with a decoder error.
      */
     fun shouldForceLegacy(mediaId: String): Boolean {
-        checkConfinement()
+        Confinement.checkMainThread()
         return decoderFailures.containsKey(mediaId)
     }
 
@@ -29,7 +29,7 @@ class DecoderFallbackPolicy @Inject constructor() {
      * Records a decoder failure for the specified media ID.
      */
     fun recordFailure(mediaId: String) {
-        checkConfinement()
+        Confinement.checkMainThread()
         decoderFailures.remove(mediaId)
         decoderFailures[mediaId] = true
     }
@@ -38,13 +38,7 @@ class DecoderFallbackPolicy @Inject constructor() {
      * Clears failure history.
      */
     fun clear() {
-        checkConfinement()
+        Confinement.checkMainThread()
         decoderFailures.clear()
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("DecoderFallbackPolicy must only be accessed from the Main thread.")
-        }
     }
 }

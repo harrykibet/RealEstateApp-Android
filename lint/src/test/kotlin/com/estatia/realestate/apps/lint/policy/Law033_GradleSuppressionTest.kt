@@ -1,7 +1,11 @@
-package com.estatia.realestate.apps.core.testing_architecture
+package com.estatia.realestate.apps.lint.policy
 
+import com.android.tools.lint.client.api.LintClient
+import com.android.tools.lint.detector.api.Severity
 import com.estatia.realestate.apps.core.architecture.Law
+import com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import java.io.File
 
@@ -9,24 +13,30 @@ import java.io.File
  * LAW-033: Suppression Policy Enforcement (Gradle Layer).
  * 
  * Ensures that build.gradle.kts files do not globally disable critical lint checks.
- * All suppressions must be local (in source) with a "Justification:" comment.
+ * This test dynamically derives protected issues from the EstatiaIssueRegistry.
  */
 class Law033_GradleSuppressionTest {
 
-    private val forbiddenGlobalDisables = setOf(
-        "UnsafeOptInUsageError",
-        "TrustAllX509TrustManager",
-        "ExposedMutableState",
-        "ForbiddenCoroutineScope",
-        "HardcodedDispatcher",
-        "MissingResultWrapper"
-    )
+    @Before
+    fun setUp() {
+        try {
+            LintClient.clientName = "EstatiaTest"
+        } catch (_: Exception) { }
+    }
 
     @Test
     fun `gradle files must not globally disable architectural or security lint checks`() {
-        val rootDir = File("../../") // Navigate to project root from core/testing-architecture
+        val registry = EstatiaIssueRegistry()
+        val forbiddenGlobalDisables = registry.issues
+            .filter { it.defaultSeverity == Severity.FATAL }
+            .map { it.id }
+            .toSet()
+
+        // From 'lint' module directory, '..' is the project root
+        val rootDir = File("..") 
         val gradleFiles = rootDir.walkTopDown()
             .filter { it.name == "build.gradle.kts" || it.name == "LintConventionPlugin.kt" }
+            .filter { !it.path.contains(".gradle") && !it.path.contains("build") }
             .toList()
 
         val violations = mutableListOf<String>()
@@ -34,7 +44,9 @@ class Law033_GradleSuppressionTest {
         gradleFiles.forEach { file ->
             val content = file.readText()
             forbiddenGlobalDisables.forEach { id ->
-                if (content.contains("disable.add(\"$id\")") || content.contains("disable += \"$id\"")) {
+                // Matches both disable.add("ID") and disable += "ID" (and variants with whitespace)
+                val regex = Regex("""disable(\.add|\s*\+=\s*)\s*\(?\s*["']$id["']\s*\)?""")
+                if (regex.containsMatchIn(content)) {
                     violations.add("${file.path}: Found global disable of '$id'")
                 }
             }

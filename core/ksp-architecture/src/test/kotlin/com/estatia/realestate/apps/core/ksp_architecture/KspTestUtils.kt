@@ -38,6 +38,14 @@ object KspTestUtils {
         """.trimIndent()
     )
 
+    val lifecycleStubs = SourceFile.kotlin(
+        "LifecycleStubs.kt",
+        """
+        package androidx.lifecycle
+        abstract class ViewModel
+        """.trimIndent()
+    )
+
     val firebaseStub = SourceFile.kotlin(
         "FirebaseStubs.kt",
         """

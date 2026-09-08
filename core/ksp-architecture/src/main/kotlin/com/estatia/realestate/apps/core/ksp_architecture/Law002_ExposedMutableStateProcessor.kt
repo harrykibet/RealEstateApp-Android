@@ -18,9 +18,21 @@ class Law002_ExposedMutableStateProcessor(
     private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.ViewModelMarker")
+        val viewModelFqn = "androidx.lifecycle.ViewModel"
+        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.common.annotations.ViewModelMarker"
 
-        symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
+        val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
+
+        val symbols = resolver.getAllFiles()
+            .flatMap { it.declarations }
+            .filterIsInstance<KSClassDeclaration>()
+            .filter { clazz ->
+                val hasMarker = clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == viewModelMarkerFqn }
+                val isViewModel = viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
+                hasMarker || isViewModel
+            }
+
+        symbols.forEach { clazz ->
             if (clazz.classKind == ClassKind.INTERFACE || clazz.modifiers.contains(Modifier.ABSTRACT)) return@forEach
 
             val publicProperties = clazz.getDeclaredProperties().filter { prop ->

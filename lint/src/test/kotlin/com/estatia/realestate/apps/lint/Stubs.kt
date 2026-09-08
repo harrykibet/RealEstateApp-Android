@@ -184,6 +184,15 @@ object Stubs {
         """.trimIndent()
     )
 
+    val CONFINEMENT = kotlin(
+        """
+        package com.estatia.realestate.apps.core.common.concurrency
+        object Confinement {
+            fun checkMainThread() {}
+        }
+        """.trimIndent()
+    )
+
     val ANDROID_LOG = kotlin(
         """
         package android.util

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.CoroutineScope
@@ -60,15 +60,9 @@ class PlaybackStateReducer(
 
     private var watchdogJob: Job? = null
 
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("PlaybackStateReducer must only be accessed from the Main thread.")
-        }
-    }
-
     fun dispatch(event: Event) {
         scope.launch(Dispatchers.Main.immediate) {
-            checkConfinement()
+            Confinement.checkMainThread()
             _state.value = reduce(event)
             handleWatchdog(event)
         }

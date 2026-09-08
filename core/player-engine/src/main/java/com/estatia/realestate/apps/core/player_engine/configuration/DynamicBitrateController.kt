@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.configuration
 
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
@@ -28,7 +28,7 @@ class DynamicBitrateController @Inject constructor(
         bufferSeconds: Double = 5.0,
         startupPhase: Boolean = false
     ) {
-        checkConfinement()
+        Confinement.checkMainThread()
         val targetBitrate =
             bitratePolicy.calculateMaxVideoBitrate(
                 mediaType = mediaType,
@@ -50,11 +50,5 @@ class DynamicBitrateController @Inject constructor(
                 .buildUpon()
                 .setMaxVideoBitrate(effectiveBitrate)
                 .build()
-    }
-
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("DynamicBitrateController must only be accessed from the Main thread.")
-        }
     }
 }

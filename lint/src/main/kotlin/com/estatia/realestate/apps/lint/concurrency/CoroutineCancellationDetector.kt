@@ -34,17 +34,18 @@ class CoroutineCancellationDetector : Detector(), SourceCodeScanner {
             if (!context.evaluator.isSuspend(method)) return
 
             var hasCancellationCheck = false
-            node.body.accept(object : AbstractUastVisitor() {
+            val loopBody = node.body
+            
+            loopBody.accept(object : AbstractUastVisitor() {
                 override fun visitCallExpression(node: UCallExpression): Boolean {
-                    val name = node.methodName
-                    if (name == "yield" || name == "ensureActive") {
+                    if (isCancellationCall(node) && isMainPath(node, loopBody)) {
                         hasCancellationCheck = true
                     }
                     return super.visitCallExpression(node)
                 }
 
                 override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression): Boolean {
-                    if (node.identifier == "isActive") {
+                    if (node.identifier == "isActive" && isMainPath(node, loopBody)) {
                         hasCancellationCheck = true
                     }
                     return super.visitSimpleNameReferenceExpression(node)
@@ -57,9 +58,36 @@ class CoroutineCancellationDetector : Detector(), SourceCodeScanner {
                     node,
                     context.getLocation(node),
                     "Suspended loop in '${method.name}' is missing a cancellation check. " +
-                            "Use 'yield()' or 'ensureActive()' to prevent 'zombie' coroutines."
+                            "Use 'yield()' or 'ensureActive()' in the main execution path of the loop to prevent 'zombie' coroutines (LAW-013)."
                 )
             }
+        }
+
+        private fun isCancellationCall(node: UCallExpression): Boolean {
+            val name = node.methodName
+            if (name != "yield" && name != "ensureActive") return false
+            
+            val resolved = node.resolve() ?: return true
+            return isMemberInPackage(resolved, "kotlinx.coroutines")
+        }
+
+        private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+            val evaluator = context.evaluator
+            val containingClass = method.containingClass ?: return false
+            return evaluator.getPackage(containingClass)?.qualifiedName == packageName
+        }
+
+        private fun isMainPath(node: UElement, loopBody: UExpression): Boolean {
+            var current = node.uastParent
+            while (current != null && current != loopBody) {
+                // If the check is nested in a conditional or lambda, it's not "guaranteed" enough for this law.
+                if (current is UIfExpression || current is UTryExpression || 
+                    current is ULambdaExpression || current is USwitchExpression) {
+                    return false
+                }
+                current = current.uastParent
+            }
+            return true
         }
     }
 

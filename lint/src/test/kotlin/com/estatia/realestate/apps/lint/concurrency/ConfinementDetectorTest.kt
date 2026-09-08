@@ -36,7 +36,36 @@ class ConfinementDetectorTest {
     }
 
     @Test
-    fun `critical method with confinement check is clean`() {
+    fun `critical method with official confinement check is clean`() {
+        lint()
+            .skipTestModes(TestMode.JVM_OVERLOADS)
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.DAGGER_HILT,
+                Stubs.CONFINEMENT,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps.core.player_engine
+                    import javax.inject.Singleton
+                    import com.estatia.realestate.apps.core.common.concurrency.Confinement
+                    
+                    @Singleton
+                    class PlayerEngine {
+                        fun play() {
+                            Confinement.checkMainThread()
+                        }
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ConfinementDetector.ISSUE)
+            .run()
+            .expectClean()
+    }
+
+    @Test
+    fun `critical method with empty local check fails`() {
         lint()
             .skipTestModes(TestMode.JVM_OVERLOADS)
             .allowCompilationErrors()
@@ -53,14 +82,16 @@ class ConfinementDetectorTest {
                         fun play() {
                             checkConfinement()
                         }
-                        private fun checkConfinement() {}
+                        private fun checkConfinement() {
+                            // Empty check that used to game the linter
+                        }
                     }
                     """.trimIndent()
                 )
             )
             .issues(ConfinementDetector.ISSUE)
             .run()
-            .expectClean()
+            .expectContains("is missing a thread-confinement check")
     }
 
     @Test

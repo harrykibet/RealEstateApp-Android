@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.lint.registry
 
+import com.android.tools.lint.detector.api.Issue
 import com.estatia.realestate.apps.lint.concurrency.*
 import com.estatia.realestate.apps.lint.api.*
 import com.estatia.realestate.apps.lint.compose.*
@@ -8,12 +9,29 @@ import com.estatia.realestate.apps.lint.performance.*
 import com.estatia.realestate.apps.lint.testing.*
 import com.estatia.realestate.apps.lint.policy.*
 
+/**
+ * Single Source of Truth for Estatia Lint Issue groupings.
+ */
+object EstatiaPolicyGroups {
+    val all: List<Issue> = 
+        ArchitectureIssues.all + 
+        ConcurrencyIssues.all + 
+        ApiIssues.all + 
+        ComposeIssues.all + 
+        SecurityIssues.all + 
+        PerformanceIssues.all + 
+        TestingIssues.all + 
+        CodeHealthIssues.all
+}
+
 object ArchitectureIssues {
     val all = listOf(
         SuppressionPolicyDetector.ISSUE,
         ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
         ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
-        CanaryHeartbeatDetector.ISSUE
+        CanaryHeartbeatDetector.ISSUE,
+        ExposedMutableStateDetector.ISSUE,
+        BackingPropertyConventionDetector.ISSUE
     )
 }
 
@@ -37,7 +55,8 @@ object ApiIssues {
         Law009_ResultWrapperDetector.ISSUE,
         Law009_FailureSmugglingDetector.ISSUE,
         Law009_DangerousFallbackDetector.ISSUE,
-        VisibilityModifierDetector.ISSUE
+        VisibilityModifierDetector.ISSUE,
+        ImplementationTypeDetector.ISSUE
     )
 }
 

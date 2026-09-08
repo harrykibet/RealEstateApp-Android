@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import android.net.Uri
-import android.os.Looper
+import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.core.net.toUri
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -74,13 +74,6 @@ class PlayerPool @Inject constructor(
         var isUrgent: Boolean
     )
 
-    private fun checkConfinement() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw IllegalStateException("PlayerPool must only be accessed from the player dispatcher thread (Main). " +
-                    "Called from ${Thread.currentThread().name}, expected Main.")
-        }
-    }
-
     private val poolUpdates = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private var maxPoolSize = poolSizingPolicy.calculateMaxPoolSize(environmentCoordinator.environment.value)
     private val players = LinkedHashMap<String, ManagedPlayer>(16, 0.75f, true)
@@ -90,7 +83,7 @@ class PlayerPool @Inject constructor(
         get() = if (maxPoolSize <= 1) 0 else maxOf(1, minOf(2, maxPoolSize / 2))
 
     fun get(mediaId: String): ManagedPlayer? {
-        checkConfinement()
+        Confinement.checkMainThread()
         return players[mediaId]
     }
 
@@ -111,7 +104,7 @@ class PlayerPool @Inject constructor(
         title: String? = null,
         artist: String? = null
     ): ManagedPlayer {
-        checkConfinement()
+        Confinement.checkMainThread()
         // If forcing legacy, we should probably re-prepare even if it's in the pool
         players[mediaId]?.let {
             if (forceLegacy) release(mediaId) else return it
@@ -133,7 +126,7 @@ class PlayerPool @Inject constructor(
         title: String? = null,
         artist: String? = null
     ): PrewarmResult {
-        checkConfinement()
+        Confinement.checkMainThread()
         
         // 1. Check if already active
         players[mediaId]?.let { return PrewarmResult.Success(it) }
@@ -225,7 +218,7 @@ class PlayerPool @Inject constructor(
         isFillingIdlePool = true
         try {
             withContext(Dispatchers.Main.immediate) {
-                checkConfinement()
+                Confinement.checkMainThread()
                 val quota = prewarmBudget
                 var createdCount = 0
                 while (idlePlayers.size < quota && createdCount < quota) {
@@ -313,17 +306,17 @@ class PlayerPool @Inject constructor(
     }
 
     fun forEachPlayer(block: (ExoPlayer, MediaType) -> Unit) {
-        checkConfinement()
+        Confinement.checkMainThread()
         players.values.forEach { block(it.player, it.mediaType) }
     }
 
     fun getMediaId(player: ExoPlayer): String? {
-        checkConfinement()
+        Confinement.checkMainThread()
         return playerToIdMap[player]
     }
 
     fun release(mediaId: String) {
-        checkConfinement()
+        Confinement.checkMainThread()
         players.remove(mediaId)?.let { managed ->
             playbackPositions[mediaId] = managed.player.currentPosition
             playerToIdMap.remove(managed.player)
@@ -347,7 +340,7 @@ class PlayerPool @Inject constructor(
     }
 
     fun releaseAll() {
-        checkConfinement()
+        Confinement.checkMainThread()
         val playersToRelease = players.values.toList()
         players.clear()
         playerToIdMap.clear()
@@ -370,19 +363,19 @@ class PlayerPool @Inject constructor(
     }
 
     fun notifyAppBackgrounded() {
-        checkConfinement()
+        Confinement.checkMainThread()
         players.values.forEach { it.analyticsListener.onAppBackgrounded() }
     }
 
     fun updatePinnedIds(ids: Set<String>) {
-        checkConfinement()
+        Confinement.checkMainThread()
         pinnedMediaIds.clear()
         pinnedMediaIds.addAll(ids)
         trimIfNeeded(pinnedMediaIds)
     }
 
     fun updateMaxPoolSize(newSize: Int, pinnedIds: Set<String>) {
-        checkConfinement()
+        Confinement.checkMainThread()
         if (newSize == maxPoolSize) return
         if (newSize < maxPoolSize) {
             maxPoolSize = newSize
@@ -393,7 +386,7 @@ class PlayerPool @Inject constructor(
     }
 
     fun trimIfNeeded(pinnedIds: Set<String>) {
-        checkConfinement()
+        Confinement.checkMainThread()
         if (players.size <= maxPoolSize) return
 
         val toRemove = mutableListOf<String>()
