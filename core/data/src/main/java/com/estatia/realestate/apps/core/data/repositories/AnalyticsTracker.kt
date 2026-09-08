@@ -35,7 +35,6 @@ internal class AnalyticsTracker @Inject constructor(
     private val remoteDataSource: IAnalyticsRemoteDataSource,
     private val localDataSource: IAnalyticsLocalDataSource,
     private val logger: ILogger,
-    @AllowedArchitectureDependency(reason = "Required for event serialization in the local outbox")
     private val json: Json,
     @AllowedArchitectureDependency(reason = "System Context required for WorkManager orchestration")
     @ApplicationContext private val context: Context

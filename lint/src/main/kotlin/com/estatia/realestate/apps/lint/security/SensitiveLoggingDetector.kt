@@ -20,11 +20,11 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
     private val sensitiveKeywords = listOf("password", "token", "secret", "apikey", "email", "phone")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val evaluator = context.evaluator
-        if (evaluator.isMemberInClass(method, "android.util.Log") || 
-            evaluator.isMemberInClass(method, "timber.log.Timber")) {
-            
+        if (isLoggingLibrary(method)) {
+            var reported = false
             node.valueArguments.forEach { arg ->
+                if (reported) return@forEach
+                
                 val argText = arg.asRenderString().lowercase()
                 val isSensitiveText = sensitiveKeywords.any { keyword -> argText.contains(keyword) }
                 
@@ -44,11 +44,19 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
                         ISSUE,
                         node,
                         context.getLocation(node),
-                        "Potential exposure of sensitive data in logs. Avoid logging identifiers like 'password', 'token', or 'email'."
+                        "Potential exposure of sensitive data in logs. Avoid logging identifiers like 'password', 'token', or 'email' (LAW-010)."
                     )
+                    reported = true
                 }
             }
         }
+    }
+
+    private fun isLoggingLibrary(method: PsiMethod): Boolean {
+        val fqn = method.containingClass?.qualifiedName ?: return false
+        return fqn == "android.util.Log" || 
+               fqn == "timber.log.Timber" ||
+               fqn == "timber.log.Timber.Tree"
     }
 
     companion object {
@@ -59,7 +67,7 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
             badExample = "Log.d(\"Auth\", \"Token: \$token\")",
             goodExample = "Log.d(\"Auth\", \"Token received\")",
             category = IssueCategory.SECURITY,
-            tier = IssueTier.FATAL,
+            tier = IssueTier.ERROR,
             owner = RuleOwner.SECURITY,
             architectureLaw = Law.LAW_010,
             implementation = Implementation(SensitiveLoggingDetector::class.java, Scope.JAVA_FILE_SCOPE)

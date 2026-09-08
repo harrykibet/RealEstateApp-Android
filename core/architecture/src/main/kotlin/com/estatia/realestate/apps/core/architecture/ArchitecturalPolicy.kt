@@ -38,6 +38,32 @@ object ArchitecturalPolicy {
     )
 
     /**
+     * Packages allowed in the Model layer.
+     */
+    val ModelAllowedPackages = DomainAllowedPackages + setOf(
+        "kotlinx.parcelize.",
+        "android.os.Parcelable"
+    )
+
+    /**
+     * Types from infrastructure modules that are explicitly allowed in constructors
+     * of architectural components (LAW-030).
+     */
+    val AllowedInfrastructureTypes = setOf(
+        "kotlinx.serialization.json.Json",
+        "com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource"
+    )
+
+    /**
+     * Packages/Modules that feature modules are allowed to depend on despite LAW-004.
+     */
+    val FeatureCouplingAllowedPackages = setOf(
+        ".shared_ui",
+        ".navigation",
+        ".core.ui"
+    )
+
+    /**
      * Specific rules for each architectural layer.
      */
     object Layers {

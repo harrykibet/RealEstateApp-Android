@@ -9,6 +9,12 @@ import org.junit.Test
 
 class Law008_Law002_PublicApiPurityTest {
 
+    /**
+     * NOTE: This is a syntactic check based on type name strings.
+     * Limitations: 
+     * - Over-firing: 'UserHashMapAdapter' would be flagged because it contains 'HashMap'.
+     * - Under-firing: FQN used inline or typealiases may evade this check.
+     */
     @Test
     fun `public api must not expose mutable containers or implementation types`() {
         // LAW-008 and LAW-002

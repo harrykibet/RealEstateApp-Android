@@ -4,10 +4,16 @@ package com.estatia.realestate.apps.core.architecture
  * Defines the nature and enforcement weight of an architectural rule.
  */
 enum class LawType {
-    /** Non-negotiable structural rules. Violation blocks the build. */
+    /** 
+     * Non-negotiable structural rules. Violation blocks the build. 
+     * Reserved for high-fidelity enforcement (KSP, semantic Lint).
+     */
     FATAL,
     
-    /** Core production safety rules. Must be resolved before merge. */
+    /** 
+     * Core production safety rules. Must be resolved before merge. 
+     * Suitable for heuristic-based enforcement (Konsist, syntactic Lint).
+     */
     ERROR,
     
     /** Design smells or best-practice deviations. */
@@ -36,7 +42,7 @@ enum class Law(val id: String, val description: String, val type: LawType) {
     LAW_007("LAW-007", "Production code does not use wall-clock time directly.", LawType.ERROR),
     LAW_008("LAW-008", "Public APIs expose abstractions, not implementation types.", LawType.FATAL),
     LAW_009("LAW-009", "Production functions do not silently discard failures.", LawType.CONVENTION),
-    LAW_010("LAW-010", "Sensitive data never enters application logs.", LawType.FATAL),
+    LAW_010("LAW-010", "Sensitive data never enters application logs.", LawType.ERROR),
     LAW_011("LAW-011", "Blocking work never executes on the main thread.", LawType.FATAL),
     LAW_012("LAW-012", "Shared mutable state requires explicit synchronization.", LawType.FATAL),
     LAW_013("LAW-013", "Lifecycle-owned work must be cancellable.", LawType.ERROR),

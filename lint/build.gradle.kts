@@ -22,8 +22,21 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
-    // Pass the path to README.md to ensure DocParityTest can find it reliably across different environments.
+    // 🛡️ Governance Properties: Enable dynamic verification of the entire architectural engine.
+    
+    // Pass the path to README.md for DocParityTest
     systemProperty("LINT_README_PATH", "${project.projectDir}/README.md")
+    
+    // Pass the path to the canary report for Law034
+    systemProperty("CANARY_LINT_REPORT", "${project.rootDir}/core/canary-violations/build/reports/lint-results.txt")
+    
+    // Pass module paths for MetaArchitectureSyncTest
+    systemProperty("KSP_SERVICES_PATH", "${project.rootDir}/core/ksp-architecture/src/main/resources/META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider")
+    systemProperty("KONSIST_TESTS_PATH", "${project.rootDir}/core/testing-architecture/src/test/kotlin/com/estatia/realestate/apps/core/testing_architecture")
+    systemProperty("PROJECT_ROOT", "${project.rootDir}")
+
+    // Ensure canary report is generated before running tests that depend on it
+    dependsOn(":core:canary-violations:lintDemoDebug")
 }
 
 tasks.withType<org.gradle.jvm.tasks.Jar> {

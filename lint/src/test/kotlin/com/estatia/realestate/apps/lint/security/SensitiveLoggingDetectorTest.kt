@@ -33,6 +33,31 @@ class SensitiveLoggingDetectorTest {
     }
 
     @Test
+    fun `timber with tag logging token reports error`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.TIMBER,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import timber.log.Timber
+                    
+                    class Test {
+                        fun auth(token: String) {
+                            Timber.tag("Auth").d("Token: %s", token)
+                        }
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(SensitiveLoggingDetector.ISSUE)
+            .run()
+            .expectContains("Potential exposure of sensitive data in logs")
+    }
+
+    @Test
     fun `logging generic message is clean`() {
         lint()
             .allowCompilationErrors()

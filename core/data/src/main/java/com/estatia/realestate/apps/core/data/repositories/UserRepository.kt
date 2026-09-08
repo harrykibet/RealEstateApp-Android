@@ -31,7 +31,6 @@ import javax.inject.Inject
 @Repository
 internal class UserRepository @Inject constructor(
     private val remoteDataSource: IUserRemoteDataSource,
-    @AllowedArchitectureDependency(reason = "Common local persistence orchestrator for user profiles")
     private val estatiaPreferencesDataSource: EstatiaPreferencesDataSource,
     private val metricsTracker: IMetricsTracker,
     private val exceptionTranslator: IExceptionTranslator

@@ -22,9 +22,10 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
         override fun visitClass(node: UClass) {
             if (node is UAnonymousClass) return
             
-            // 1. Size Check
-            val lineCount = node.asSourceString().lines().size
-            checkThreshold(context, node, "Size", lineCount, "maxLines", 300, 600, 1000)
+            // 1. Size Check (Effective Lines of Code)
+            val source = node.asSourceString()
+            val effectiveLineCount = calculateEffectiveLineCount(source)
+            checkThreshold(context, node, "Size", effectiveLineCount, "maxLines", 300, 600, 1000)
 
             // 2. Public Surface Area
             val publicMembers = node.methods.count { context.evaluator.isPublic(it) && !it.isConstructor } +
@@ -35,6 +36,22 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             val mutableState = node.fields.count { isMutable(it) }
             checkThreshold(context, node, "Mutable State", mutableState, "maxMutableState", 5, 8, 12)
         }
+    }
+
+    /**
+     * Calculates line count excluding blank lines and comments.
+     */
+    private fun calculateEffectiveLineCount(source: String): Int {
+        // Strip block comments (/* ... */) including multi-line
+        val noBlockComments = source.replace(Regex("/\\*([\\s\\S]*?)\\*/"), "")
+        
+        return noBlockComments.lines()
+            .map { it.trim() }
+            .filter { line ->
+                // Filter blank lines, single-line comments, and KDoc star-prefixes
+                line.isNotEmpty() && !line.startsWith("//") && !line.startsWith("*")
+            }
+            .size
     }
 
     private fun isMutable(field: UField): Boolean {

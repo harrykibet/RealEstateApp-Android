@@ -49,6 +49,7 @@ object Stubs {
         ): T = error("Stub")
 
         interface CoroutineExceptionHandler : CoroutineContext.Element
+        fun CoroutineExceptionHandler(handler: (Any, Throwable) -> Unit): CoroutineExceptionHandler = error("Stub")
         """.trimIndent()
     )
 
@@ -178,8 +179,14 @@ object Stubs {
         """
         package timber.log
         object Timber {
+            fun tag(tag: String): Tree = error("Stub")
             fun d(message: String, vararg args: Any?) {}
             fun e(t: Throwable, message: String, vararg args: Any?) {}
+            
+            abstract class Tree {
+                fun d(message: String, vararg args: Any?) {}
+                fun e(t: Throwable, message: String, vararg args: Any?) {}
+            }
         }
         """.trimIndent()
     )

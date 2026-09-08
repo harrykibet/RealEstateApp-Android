@@ -41,7 +41,6 @@ internal class SecurityRepository @Inject constructor(
     private val signatureManager: ISignatureManager,
     private val hashManager: IHashManager,
     private val tokenDataSource: ITokenLocalDataSource,
-    @AllowedArchitectureDependency(reason = "Required for standard JSON serialization of payloads")
     private val json: Json,
 ) : ISecurityRepository {
 

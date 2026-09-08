@@ -22,7 +22,7 @@ class Law032_DomainPurityTest {
                                      import.name.startsWith("android.") ||
                                      import.name.startsWith("androidx.")
                     
-                    isForbidden && !import.name.contains("androidx.annotation")
+                    isForbidden && ArchitecturalPolicy.DomainAllowedPackages.none { allowed -> import.name.startsWith(allowed) }
                 }
             }
     }
@@ -39,10 +39,7 @@ class Law032_DomainPurityTest {
                     val isForbidden = import.name.startsWith("android.") || 
                                      import.name.startsWith("androidx.")
                     
-                    isForbidden && 
-                    !import.name.contains("androidx.annotation") &&
-                    !import.name.contains("kotlinx.parcelize") &&
-                    !import.name.contains("android.os.Parcelable")
+                    isForbidden && ArchitecturalPolicy.ModelAllowedPackages.none { allowed -> import.name.startsWith(allowed) }
                 }
             }
     }

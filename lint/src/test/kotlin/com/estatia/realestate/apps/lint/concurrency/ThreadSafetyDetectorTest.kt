@@ -24,14 +24,14 @@ class ThreadSafetyDetectorTest {
                     
                     @Singleton
                     class MyRepo {
-                        private val cache = HashMap<String, String>()
+                        private var cache = HashMap<String, String>()
                     }
                     """.trimIndent()
                 )
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' used in a multi-threaded component")
+            .expectContains("Unsafe collection 'java.util.HashMap' mutated in a multi-threaded component")
     }
 
     @Test
@@ -49,14 +49,14 @@ class ThreadSafetyDetectorTest {
                     import java.util.HashMap
                     
                     class MyViewModel : ViewModel() {
-                        private val localState = HashMap<String, Int>()
+                        private var localState = HashMap<String, Int>()
                     }
                     """.trimIndent()
                 )
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' used in a multi-threaded component")
+            .expectContains("Unsafe collection 'java.util.HashMap' mutated in a multi-threaded component")
     }
 
     @Test
@@ -72,14 +72,14 @@ class ThreadSafetyDetectorTest {
                     import java.util.ArrayList
                     
                     class PropertyRepository {
-                        private val observers = ArrayList<String>()
+                        private var observers = ArrayList<String>()
                     }
                     """.trimIndent()
                 )
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.ArrayList' used in a multi-threaded component")
+            .expectContains("Unsafe collection 'java.util.ArrayList' mutated in a multi-threaded component")
     }
 
     @Test
@@ -106,5 +106,93 @@ class ThreadSafetyDetectorTest {
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
             .expectClean()
+    }
+
+    @Test
+    fun `read-only val hashmap is clean`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.DAGGER_HILT,
+                Stubs.VIEWMODEL,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import javax.inject.Singleton
+                    import java.util.HashMap
+                    
+                    @Singleton
+                    class MyComponent {
+                        private val lookup = HashMap<String, Int>()
+                        
+                        init {
+                            lookup.put("a", 1) // Mutation in init is allowed
+                        }
+                        
+                        fun get(key: String): Int? = lookup.get(key) // Read is fine
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ThreadSafetyDetector.ISSUE)
+            .run()
+            .expectClean()
+    }
+
+    @Test
+    fun `mutated val hashmap reports fatal`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.DAGGER_HILT,
+                Stubs.VIEWMODEL,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import javax.inject.Singleton
+                    import java.util.HashMap
+                    
+                    @Singleton
+                    class MyComponent {
+                        private val cache = HashMap<String, Int>()
+                        
+                        fun update(key: String, value: Int) {
+                            cache.put(key, value) // Mutation in method is forbidden
+                        }
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ThreadSafetyDetector.ISSUE)
+            .run()
+            .expectContains("Unsafe collection 'java.util.HashMap' mutated")
+    }
+
+    @Test
+    fun `var hashmap always reports fatal`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.DAGGER_HILT,
+                Stubs.VIEWMODEL,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    import javax.inject.Singleton
+                    import java.util.HashMap
+                    
+                    @Singleton
+                    class MyComponent {
+                        private var dynamicLookup = HashMap<String, Int>() // var is always forbidden
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(ThreadSafetyDetector.ISSUE)
+            .run()
+            .expectContains("Unsafe collection 'java.util.HashMap' mutated")
     }
 }

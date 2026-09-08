@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.ksp_architecture
 
+import com.estatia.realestate.apps.core.architecture.ArchitecturalPolicy
 import com.estatia.realestate.apps.core.architecture.Law
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
@@ -14,6 +15,7 @@ class Law030_ConstructorPurityProcessor(
 ) : SymbolProcessor {
 
     private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
+    private val allowedInfrastructure = ArchitecturalPolicy.AllowedInfrastructureTypes
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository") +
@@ -30,12 +32,13 @@ class Law030_ConstructorPurityProcessor(
                 val isInterface = declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE
                 val isDataModel = qualifiedName.contains(".core.model.")
                 val isPrimitive = qualifiedName.startsWith("kotlin.") || qualifiedName.startsWith("java.lang.")
+                val isSafeInfra = allowedInfrastructure.contains(qualifiedName)
                 
                 // 2. Metadata Authorization Check
                 val isExplicitlyAllowed = param.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation } ||
                                          declaration.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
 
-                if (!isInterface && !isDataModel && !isPrimitive && !isExplicitlyAllowed) {
+                if (!isInterface && !isDataModel && !isPrimitive && !isSafeInfra && !isExplicitlyAllowed) {
                     logger.report(
                         Law.LAW_030,
                         "Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +

@@ -22,6 +22,28 @@ We use a tiered severity model based on production risk to ensure that developer
 
 ---
 
+## 🛡️ Security Enforcement Disclaimer
+
+While LAW-010 (Sensitive Data Protection) is enforced via Android Lint detectors, please note that **these checks are heuristic-based** and rely on keyword matching and call-chain analysis. They are designed for fast feedback during development but **do not provide 100% coverage** against all possible secret leaks or sensitive logs.
+
+For production-grade security, these detectors are supplemented by:
+1.  **Dedicated Secret Scanning**: Tools like Gitleaks or Trufflehog in the CI pipeline.
+2.  **External Audits**: OWASP Dependency Check for third-party vulnerabilities.
+3.  **Human Review**: Sensitive code paths (auth, crypto) require mandatory review by the Security owner.
+
+---
+
+## 🏎️ Thread Safety Enforcement (LAW-012)
+
+The `ThreadSafetyDetector` flags non-thread-safe collections (HashMap, ArrayList, etc.) in shared components like Singletons, ViewModels, and Repositories.
+
+To minimize false positives:
+- **`var` collections** are always flagged.
+- **`val` collections** are only flagged if the linter detects a mutating call (e.g., `put`, `add`, `clear`) outside of the object's initialization.
+- **Read-only maps/lists** used as static lookups are permitted as long as they are not mutated post-construction.
+
+---
+
 ## ⚖️ The Laws of the Codebase
 
 Every detector in this module enforces a rule defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) registry. 
@@ -39,7 +61,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `L:DirectSystemTimeUsage` |
 | **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `L:MissingVisibilityModifier`, `L:ImplementationTypeInPublicApi`, `K:Law008_InterfaceContract`, `K:Law008_AbstractionLeakage`, `S:Law008_Law002_PublicApiPurity` |
 | **LAW-009** | Production functions do not silently discard failures. | `CONVENTION` | `L:MissingResultWrapper`, `K:Law009_ResultWrapping`, `L:FailureSmuggling`, `L:DangerousFallback` |
-| **LAW-010** | Sensitive data never enters application logs. | `FATAL` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
+| **LAW-010** | Sensitive data never enters application logs. | `ERROR` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
 | **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
 | **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `L:UnsynchronizedChaosState`, `L:ThreadSafetyViolation`, `L:UnsafeStateCollection` |
 | **LAW-013** | Lifecycle-owned work must be cancellable. | `ERROR` | `L:MissingCoroutineCancellation` |

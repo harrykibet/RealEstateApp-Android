@@ -21,7 +21,6 @@ import javax.inject.Inject
  * - Resilience: Surfaces [UserData] flow; handles [IOException] during updates.
  * - Observability: Tracks preference update failures.
  */
-@AllowedArchitectureDependency(reason = "Common local persistence orchestrator used by multiple repositories.")
 class EstatiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
     private val metricsTracker: IMetricsTracker,

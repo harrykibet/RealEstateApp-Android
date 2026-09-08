@@ -12,6 +12,9 @@ import org.jetbrains.uast.*
 /**
  * LAW-010: Sensitive Data Protection.
  * Prevents hardcoding of sensitive strings like API keys or secrets.
+ * 
+ * NOTE: This is a heuristic-based check using keyword matching and string length.
+ * It is not a substitute for dedicated secret scanning tools.
  */
 class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
 
@@ -45,11 +48,11 @@ class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
         val ISSUE = EstatiaIssue.create(
             id = "HardcodedSecrets",
             description = "Potential hardcoded secret detected",
-            rationale = "Secrets should not be committed to source control.",
+            rationale = "Secrets should not be committed to source control. This check is heuristic-based; use dedicated tools like Gitleaks for full coverage.",
             badExample = "val apiKey = \"12345\"",
             goodExample = "val apiKey = BuildConfig.API_KEY",
             category = IssueCategory.SECURITY,
-            tier = IssueTier.FATAL,
+            tier = IssueTier.ERROR,
             owner = RuleOwner.SECURITY,
             architectureLaw = Law.LAW_010,
             implementation = Implementation(HardcodedSecretsDetector::class.java, Scope.JAVA_FILE_SCOPE)

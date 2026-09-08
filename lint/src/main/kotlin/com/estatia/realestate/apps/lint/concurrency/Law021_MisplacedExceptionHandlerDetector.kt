@@ -16,23 +16,51 @@ import org.jetbrains.uast.visitor.AbstractUastVisitor
  */
 class Law021_MisplacedExceptionHandlerDetector : Detector(), SourceCodeScanner {
 
-    override fun getApplicableMethodNames() = listOf("withContext")
+    override fun getApplicableMethodNames() = listOf("withContext", "launch", "async")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
         if (!isMemberInPackage(method, "kotlinx.coroutines")) return
         
-        val arguments = node.valueArguments
-        if (arguments.isNotEmpty()) {
-            val contextArg = arguments[0]
-            if (containsExceptionHandler(context, contextArg)) {
-                context.report(
-                    ISSUE,
-                    node,
-                    context.getLocation(node),
-                    "CoroutineExceptionHandler used in 'withContext' will be ignored (LAW-021)."
-                )
+        val methodName = node.methodName ?: return
+        val containingMethod = node.getParentOfType<UMethod>() ?: return
+        val isInsideSuspend = context.evaluator.isSuspend(containingMethod)
+
+        val shouldCheck = when (methodName) {
+            "withContext" -> true
+            "launch", "async" -> isInsideSuspend && isChildCoroutine(context, node, method)
+            else -> false
+        }
+
+        if (shouldCheck) {
+            node.valueArguments.forEach { argument ->
+                if (containsExceptionHandler(context, argument)) {
+                    val message = if (methodName == "withContext") {
+                        "CoroutineExceptionHandler used in 'withContext' will be ignored (LAW-021)."
+                    } else {
+                        "CoroutineExceptionHandler used in a child coroutine ('$methodName') will be ignored. CEH only works on root scopes (LAW-021)."
+                    }
+                    context.report(ISSUE, node, context.getLocation(node), message)
+                }
             }
         }
+    }
+
+    private fun isChildCoroutine(context: JavaContext, node: UCallExpression, method: PsiMethod): Boolean {
+        val receiverType = node.receiverType
+        return if (receiverType != null) {
+            context.evaluator.inheritsFrom(context.evaluator.getTypeClass(receiverType), "kotlinx.coroutines.CoroutineScope", false)
+        } else {
+            context.evaluator.isMemberInClass(method, "kotlinx.coroutines.CoroutineScope") ||
+            isExtensionOnScope(context, method)
+        }
+    }
+
+    private fun isExtensionOnScope(context: JavaContext, method: PsiMethod): Boolean {
+        val evaluator = context.evaluator
+        val parameters = method.parameterList.parameters
+        if (parameters.isEmpty()) return false
+        val firstParamType = parameters[0].type
+        return evaluator.inheritsFrom(evaluator.getTypeClass(firstParamType), "kotlinx.coroutines.CoroutineScope", false)
     }
 
     private fun containsExceptionHandler(context: JavaContext, expression: UExpression): Boolean {

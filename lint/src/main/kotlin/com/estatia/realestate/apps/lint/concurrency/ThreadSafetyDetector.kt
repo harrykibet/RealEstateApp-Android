@@ -7,11 +7,16 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.intellij.psi.PsiModifier
 import org.jetbrains.uast.*
+import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * LAW-012: State Synchronization.
  * Detects usage of non-thread-safe collections or state in multi-threaded environments.
+ * 
+ * This detector is mutation-aware: it flags 'var' collections immediately, but 'val'
+ * collections are only flagged if they are mutated outside of initialization.
  */
 class ThreadSafetyDetector : Detector(), SourceCodeScanner {
 
@@ -24,27 +29,92 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
         "HashSet" to "ConcurrentHashMap.newKeySet()"
     )
 
-    override fun getApplicableUastTypes() = listOf(UField::class.java)
+    private val mutatingMethods = setOf(
+        "put", "putAll", "remove", "clear", "replace", "replaceAll", "compute", "merge", // Map
+        "add", "addAll", "remove", "removeAll", "retainAll", "set", "plusAssign", "minusAssign" // Collection/List
+    )
+
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UClass::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
-        override fun visitField(node: UField) {
-            val containingClass = node.getParentOfType<UClass>() ?: return
-            
-            // 🏎️ Risk Surface: Any class that is shared or manages asynchronous work
-            if (!isAtRiskComponent(context, containingClass)) return
+        override fun visitClass(node: UClass) {
+            if (node is UAnonymousClass) return
+            if (!isAtRiskComponent(context, node)) return
 
-            val type = node.type
-            
-            unsafeCollections.forEach { (unsafe, safe) ->
-                if (context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), unsafe, false)) {
-                    context.report(
-                        ISSUE,
-                        node,
-                        context.getLocation(node as UElement),
-                        "Unsafe collection '$unsafe' used in a multi-threaded component. " +
-                                "Use '$safe' or wrap in a mutex (LAW-012)."
-                    )
+            val unsafeFields = node.fields.filter { field ->
+                unsafeCollections.keys.any { unsafe -> 
+                    context.evaluator.inheritsFrom(context.evaluator.getTypeClass(field.type), unsafe, false)
                 }
+            }
+
+            if (unsafeFields.isEmpty()) return
+
+            val violations = mutableSetOf<UField>()
+            
+            // 1. var fields are always violations in shared components
+            unsafeFields.filter { !it.hasModifierProperty(PsiModifier.FINAL) }.forEach { 
+                violations.add(it) 
+            }
+
+            // 2. val fields are only violations if mutated post-init
+            val candidateValFields = unsafeFields.filter { it.hasModifierProperty(PsiModifier.FINAL) }
+            if (candidateValFields.isNotEmpty()) {
+                val fieldNames = candidateValFields.map { it.name }.toSet()
+                val mutatedFields = mutableSetOf<String>()
+
+                node.accept(object : AbstractUastVisitor() {
+                    override fun visitCallExpression(node: UCallExpression): Boolean {
+                        val methodName = node.methodName
+                        if (mutatingMethods.contains(methodName)) {
+                            val receiver = node.receiver
+                            if (receiver != null) {
+                                val resolvedReceiver = receiver.tryResolve()
+                                if (resolvedReceiver != null) {
+                                    val field = candidateValFields.find { it.javaPsi == resolvedReceiver }
+                                    if (field != null && !isInsideInitialization(node)) {
+                                        mutatedFields.add(field.name)
+                                    }
+                                } else {
+                                    // Fallback for cases where resolution fails: strip parentheses from render string
+                                    val receiverName = receiver.asRenderString().replace("(", "").replace(")", "")
+                                    if (fieldNames.contains(receiverName) && !isInsideInitialization(node)) {
+                                        mutatedFields.add(receiverName)
+                                    }
+                                }
+                            }
+                        }
+                        return super.visitCallExpression(node)
+                    }
+
+                    private fun isInsideInitialization(element: UElement): Boolean {
+                        var current = element.uastParent
+                        while (current != null) {
+                            if (current is UMethod && current.isConstructor) return true
+                            if (current is UClassInitializer) return true
+                            current = current.uastParent
+                        }
+                        return false
+                    }
+                })
+
+                candidateValFields.filter { mutatedFields.contains(it.name) }.forEach {
+                    violations.add(it)
+                }
+            }
+
+            violations.forEach { field ->
+                val unsafeType = unsafeCollections.keys.find { 
+                    context.evaluator.inheritsFrom(context.evaluator.getTypeClass(field.type), it, false)
+                } ?: "Collection"
+                val safeType = unsafeCollections[unsafeType] ?: "thread-safe alternative"
+
+                context.report(
+                    ISSUE,
+                    field,
+                    context.getLocation(field as UElement),
+                    "Unsafe collection '$unsafeType' mutated in a multi-threaded component. " +
+                            "Use '$safeType' or wrap in a mutex (LAW-012)."
+                )
             }
         }
     }

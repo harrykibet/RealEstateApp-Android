@@ -72,8 +72,11 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
 
         element.accept(object : AbstractUastVisitor() {
             override fun visitElement(node: UElement): Boolean {
-                if (isDecisionPoint(node)) {
+                if (isComplexityPoint(node)) {
                     complexity++
+                }
+                
+                if (isNestingPoint(node)) {
                     currentNesting++
                     if (currentNesting > maxNesting) maxNesting = currentNesting
                 }
@@ -85,13 +88,13 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
             }
 
             override fun afterVisitElement(node: UElement) {
-                if (isDecisionPoint(node)) {
+                if (isNestingPoint(node)) {
                     currentNesting--
                 }
                 super.afterVisitElement(node)
             }
             
-            private fun isDecisionPoint(node: UElement): Boolean = when (node) {
+            private fun isComplexityPoint(node: UElement): Boolean = when (node) {
                 is UIfExpression, is UWhileExpression, is UDoWhileExpression, 
                 is UForExpression, is UForEachExpression, is USwitchClauseExpression,
                 is UCatchClause -> true
@@ -103,6 +106,13 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
                     val op = node.operator.text
                     op == "&&" || op == "||" || op == "?:"
                 }
+                else -> false
+            }
+
+            private fun isNestingPoint(node: UElement): Boolean = when (node) {
+                is UIfExpression, is UWhileExpression, is UDoWhileExpression, 
+                is UForExpression, is UForEachExpression, is USwitchClauseExpression,
+                is UCatchClause -> true
                 else -> false
             }
         })

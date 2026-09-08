@@ -23,7 +23,15 @@ class Law019_SecretConcurrencyDetector : Detector(), SourceCodeScanner {
         val containingMethod = node.getParentOfType<UMethod>() ?: return
         if (context.evaluator.isSuspend(containingMethod)) {
             val receiverType = node.receiverType
-            if (receiverType != null && context.evaluator.inheritsFrom(context.evaluator.getTypeClass(receiverType), "kotlinx.coroutines.CoroutineScope", false)) {
+            val isScope = if (receiverType != null) {
+                context.evaluator.inheritsFrom(context.evaluator.getTypeClass(receiverType), "kotlinx.coroutines.CoroutineScope", false)
+            } else {
+                // Handle implicit receiver
+                context.evaluator.isMemberInClass(method, "kotlinx.coroutines.CoroutineScope") ||
+                isExtensionOnScope(context, method)
+            }
+
+            if (isScope) {
                  context.report(
                     ISSUE,
                     node,
@@ -32,6 +40,14 @@ class Law019_SecretConcurrencyDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isExtensionOnScope(context: JavaContext, method: PsiMethod): Boolean {
+        val evaluator = context.evaluator
+        val parameters = method.parameterList.parameters
+        if (parameters.isEmpty()) return false
+        val firstParamType = parameters[0].type
+        return evaluator.inheritsFrom(evaluator.getTypeClass(firstParamType), "kotlinx.coroutines.CoroutineScope", false)
     }
 
     private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {

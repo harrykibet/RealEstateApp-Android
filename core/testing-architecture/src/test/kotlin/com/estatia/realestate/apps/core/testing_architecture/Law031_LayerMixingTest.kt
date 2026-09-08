@@ -8,6 +8,10 @@ import org.junit.Test
 
 class Law031_LayerMixingTest {
 
+    /**
+     * NOTE: This check relies on import string analysis.
+     * Limitations: Star imports or FQN usage without imports will be missed.
+     */
     @Test
     fun `viewmodels must not reference infrastructure libraries`() {
         Konsist.scopeFromProject()
@@ -23,6 +27,10 @@ class Law031_LayerMixingTest {
             }
     }
 
+    /**
+     * NOTE: This check relies on import string analysis.
+     * Limitations: Star imports or FQN usage without imports will be missed.
+     */
     @Test
     fun `business logic components must not reference android view or compose`() {
         Konsist.scopeFromProject()

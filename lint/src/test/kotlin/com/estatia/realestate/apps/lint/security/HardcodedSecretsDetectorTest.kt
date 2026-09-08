@@ -32,6 +32,27 @@ class HardcodedSecretsDetectorTest {
     }
 
     @Test
+    fun `long string with generic name is missed`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    class Config {
+                        // This matches an AWS key pattern but has a generic name
+                        val data = "AKIAIOSFODNN7EXAMPLE" 
+                    }
+                    """.trimIndent()
+                )
+            )
+            .issues(HardcodedSecretsDetector.ISSUE)
+            .run()
+            .expectClean() // Current behavior: misses because 'data' is not a keyword
+    }
+
+    @Test
     fun `non-secret string is clean`() {
         lint()
             .allowCompilationErrors()

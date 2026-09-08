@@ -27,9 +27,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
             if (currentPackage.contains(".feature.")) {
                 val currentFeature = getFeatureName(currentPackage)
                 if (importPath.contains(".feature.") && 
-                    !importPath.contains(".shared_ui") && 
-                    !importPath.contains(".navigation") &&
-                    !importPath.contains(".core.ui")) { // Allow core.ui interop if needed
+                    ArchitecturalPolicy.FeatureCouplingAllowedPackages.none { importPath.contains(it) }) {
                     
                     val importedFeature = getFeatureName(importPath)
                     if (currentFeature != null && importedFeature != null && currentFeature != importedFeature) {

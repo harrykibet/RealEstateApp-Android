@@ -13,6 +13,17 @@ While Android Lint focuses on local file-level patterns and KSP enforces high-pr
 
 ---
 
+## ⚠️ Known Limitations (Syntactic vs. Semantic Analysis)
+
+It is important to understand that **Konsist checks in this module are syntactic**, meaning they operate on code structure and string matching, not full semantic resolution.
+
+### Implications:
+1.  **Resolution Blindness**: Konsist may not catch violations hidden behind `typealias`, star imports (`import .*`), or fully qualified names used inline without an import statement.
+2.  **String Matching**: Some rules use substring matching (e.g., `contains("HashMap")`). This can lead to **false positives** if a class name contains a forbidden string but is legitimately architected (e.g., `UserHashMapAdapter`).
+3.  **Severity Policy**: Due to these limitations, **Konsist rules should generally not be used for FATAL enforcement** if a high degree of precision is required. Mission-critical, non-bypassable laws are instead enforced via **KSP** or **Android Lint** with full UAST resolution.
+
+---
+
 ## ⚖️ Enforced Laws
 
 The following laws (as defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) enum) are primary targets for Konsist enforcement:
