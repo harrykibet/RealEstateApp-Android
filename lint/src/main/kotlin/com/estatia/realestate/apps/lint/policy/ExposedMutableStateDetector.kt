@@ -7,6 +7,8 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.lint.policy.RuleOwner
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UField
 
@@ -40,7 +42,14 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
             
             if (!hasTargetAnnotation && !isViewModel) return
 
-            if (context.evaluator.isPublic(node)) {
+            // 🛡️ REFINEMENT: In Kotlin, properties are fields + accessors. 
+            // We want to catch exposed mutable containers regardless of backing field visibility
+            // if the property itself is public.
+            val isPublic = context.evaluator.isPublic(node) || 
+                          (node.sourcePsi is KtProperty &&
+                           !(node.sourcePsi as KtProperty).hasModifier(KtTokens.PRIVATE_KEYWORD))
+
+            if (isPublic) {
                 val type = node.type
                 val isMutable = mutableContainers.any { containerFqn ->
                     context.evaluator.inheritsFrom(context.evaluator.getTypeClass(type), containerFqn, false)

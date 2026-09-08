@@ -1,8 +1,14 @@
 package com.estatia.realestate.apps.core.canary_violations
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.common.annotations.Repository
 import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
@@ -11,47 +17,39 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.DomainLeakageCarrier
 import com.estatia.realestate.apps.core.domain.DomainCouplingCarrier
 import com.estatia.realestate.apps.feature.home.HomeCoupling
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import java.util.*
+import javax.inject.Singleton
 
 /**
  * DELIBERATE ARCHITECTURAL VIOLATIONS
- * This class exists to verify that our static analysis (Lint/KSP) correctly detects 
- * regressions when running against a real multi-module codebase.
  */
 
-// LAW-008: Missing Visibility Modifier (Kotlin default public)
-class MissingVisibilityClass {
-    fun missingVisibilityMethod() {}
-}
+// LAW-008: Implementation Type in Public API
+interface ICanaryRepo
 
-// LAW-009: Missing Result Wrapper
 @Repository
-class CanaryRepository : Runnable { // LAW-008: Must implement interface
-    override fun run() {}
-
-    // Violation: Returns raw String (non-suspend, but we want to catch complex logic)
-    // Actually, LAW-009 is now a CONVENTION and exempts trivial simple types.
-    // Let's use a non-trivial type to trigger it.
+class CanaryRepository : ICanaryRepo {
+    fun leakImplementation(retrofit: retrofit2.Retrofit?): String = ""
+    
     fun getRawData(): List<String> = emptyList()
+    
+    fun smuggledReturn(): List<String> {
+        try { return listOf("a") } catch (e: Exception) { return emptyList() } // FailureSmuggling
+    }
+    
+    fun dangerousFallback(data: String?): List<String> {
+        return data?.let { listOf(it) } ?: emptyList()
+    }
 }
 
 // LAW-027: Compose Architecture Leakage
 @Composable
-fun LeakyComposable(repo: CanaryRepository) {
-    // Violation: Direct repository call
-    repo.getRawData()
-    
-    // LAW-001: Business Logic in Compose
-    // Violation: launch in Composable
-    @Suppress("OPT_IN_USAGE")
-    GlobalScope.launch { } 
+fun LeakyComposable(repo: CanaryRepository, state: MutableState<Int>) {
+    repo.getRawData() // ComposeArchitectureLeakage
+    val list = listOf(1, 2, 3) // ExpensiveRecomposition
+    GlobalScope.launch { } // BusinessLogicInCompose
 }
 
 // LAW-025: Mutable Singleton Read in Compose
@@ -62,101 +60,125 @@ object CanaryConfig {
 
 @Composable
 fun LeakySingletonRead() {
-    // Violation: Reading var from object
-    val x = CanaryConfig.mutableValue
+    val x = CanaryConfig.mutableValue // ComposeMutableSingletonRead
 }
 
-// LAW-011: Blocking Main Thread Work
+// LAW-011: Blocking Main Thread Work & Unbounded Buffer (UnboundedBuffer)
 @Composable
 fun BlockingComposable() {
-    // Violation: Thread.sleep on UI
-    Thread.sleep(1000)
+    Thread.sleep(1000) // BlockingMainThreadWork
+    val flow = MutableSharedFlow<Int>(replay = 101) // UnboundedBuffer (> 100)
+    val flow2 = flow { emit(1) }.buffer() // UnboundedBuffer (no args)
 }
 
-// LAW-012: Unsafe collection in ViewModel (Concurrency)
-@ViewModelMarker
-class ConcurrencyViewModel : ViewModel() {
-    // LAW-018 requirement
-    val uiState: StateFlow<Int> = MutableStateFlow(0)
-    
-    // Violation: HashMap in ViewModel
-    private val unsafeMap = HashMap<String, String>()
-}
-
-// LAW-018: ViewModel SSoT & LAW-002: State Ownership
+// LAW-012: Unsafe collection (ThreadSafetyViolation), Unsafe State Collection (UnsafeStateCollection)
+// LAW-018: ViewModel SSoT
+// LAW-023: Lifecycle Leak (LifecycleLeak)
+// LAW-024: Context Leak (ContextLeak)
+// LAW-029: God Object (GodObjectFatal)
 @ViewModelMarker
 class BadViewModel : ViewModel() {
-    // LAW-018 Violation: Multiple public StateFlows (Multiple Authorities)
     val state1: StateFlow<Int> = MutableStateFlow(0)
+    val state2: StateFlow<String> = MutableStateFlow("") // ViewModel SSoT Violation
+    val mutableState = MutableStateFlow(0) 
+    var unsafeMap = HashMap<String, String>() 
+    var leakedActivity: Activity? = null 
+    val collectedState = listOf(MutableStateFlow(0)) // UnsafeStateCollection
     
-    @AllowedArchitectureDependency(reason = "Deliberate violation for KSP canary testing")
-    val state2: StateFlow<String> = MutableStateFlow("")
+    // God Object Trigger (13 mutable states > 12)
+    var m1 = 0; var m2 = 0; var m3 = 0; var m4 = 0; var m5 = 0; var m6 = 0
+    var m7 = 0; var m8 = 0; var m9 = 0; var m10 = 0; var m11 = 0; var m12 = 0; var m13 = 0
     
-    // LAW-002 Violation: Exposing mutable state container
-    @AllowedArchitectureDependency(reason = "Deliberate violation for KSP canary testing")
-    val mutableState = MutableStateFlow(0)
-
-    // ✅ VALID: Other Flows for events/navigation are permitted under refined LAW-018
-    val navigationEvents: Flow<String> = flow { }
-    
-    // LAW-023: Lifecycle Leak
-    var leakedActivity: Activity? = null
+    fun work() {
+        unsafeMap.put("a", "b") // ThreadSafetyViolation
+    }
 }
 
-// LAW-010: Sensitive Logging & Hardcoded Secrets
-class LeakyLogger {
-    // Violation: Hardcoded secret in field
-    val apiKey = "123456789"
+// Trigger ContextLeak (LAW-024)
+@Singleton
+class MonsterComponent(val context: Context) { // ContextLeak
+    fun spaghetti() { // SpaghettiMethodFatal
+        if (true) { if (true) { if (true) { if (true) { if (true) { if (true) {
+            println(12345) 
+        } } } } } }
+    }
+}
+
+// LAW-010: Security
+class SecurityViolation {
+    val apiKey = "AKIAIOSFODNN7EXAMPLE" // HardcodedSecrets
     
     fun log(password: String) {
-        // Violation: Hardcoded secret in local variable
-        val secret = "super_secret_token"
-        Log.d("AUTH", "User password is: $password")
+        val secret = "super_secret_token" // HardcodedSecrets
+        Log.d("AUTH", "User password is: $password") // SensitiveLogging
     }
 }
 
-// LAW-019: Secret Concurrency
-class ConcurrencyViolation {
-    val scope = CoroutineScope(Dispatchers.Main)
+// LAW-019, LAW-006, LAW-013, LAW-020, LAW-021
+class ConcurrencyViolation : CoroutineScope {
+    override val coroutineContext = Dispatchers.Main // HardcodedDispatcher
     
     suspend fun doWork() {
-        // Violation: launching on external scope in suspend function
-        scope.launch { }
+        launch { } // SecretConcurrency
+        val deferred = async { 1 } // UnusedAsync
+        withContext(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) { // MisplacedCEH
+        }
+    }
+    
+    suspend fun zombieLoop() {
+        while(true) { // MissingCoroutineCancellation
+            println("zombie")
+        }
     }
 }
 
-// LAW-006: Hardcoded Dispatcher
-class DispatcherViolation {
-    fun run() {
-        // Violation: Direct use of Dispatchers.IO
-        CoroutineScope(Dispatchers.IO).launch { }
-    }
+// LAW-030: Orchestration Monster
+class MonsterConstructor(
+    val r1: BadViewModel, val r2: BadViewModel, val r3: BadViewModel,
+    val r4: BadViewModel, val r5: BadViewModel, val r6: BadViewModel,
+    val r7: BadViewModel, val r8: BadViewModel, val r9: BadViewModel,
+    val r10: BadViewModel
+)
+
+@Composable
+fun DesignViolation() {
+    Text(text = "Hardcoded", color = Color.Red) // HardcodedDesignValue
+}
+
+// LAW-007: Direct System Time (DirectSystemTimeUsage)
+class TimeViolation {
+    fun now() = System.currentTimeMillis() // DirectSystemTimeUsage
+}
+
+// LAW-015: Direct System Time in Test (DirectSystemTimeUsageInTest)
+class CanaryTestClass {
+    fun testTime() = System.currentTimeMillis() // DirectSystemTimeUsageInTest
+}
+
+// LAW-016: Mock in Production (MockInProduction)
+class MockViolation {
+    fun mock() = io.mockk.mockk<String>() // MockInProduction
 }
 
 /**
- * Canary Hub: Wires all classes together to ensure they are present in the compiled artifact
- * and reachable by the Lint graph.
+ * Canary Hub
  */
 @Composable
 fun CanaryHub(
     repo: CanaryRepository,
     viewModel: BadViewModel,
-    logger: LeakyLogger,
+    monster: MonsterComponent,
+    security: SecurityViolation,
     concurrency: ConcurrencyViolation,
-    dispatcher: DispatcherViolation
+    orchestrator: MonsterConstructor
 ) {
-    // Wire everything
-    LeakyComposable(repo)
+    LeakyComposable(repo, mutableStateOf(0))
     LeakySingletonRead()
-    
-    // Use properties to ensure they aren't optimized away
-    println(MissingVisibilityClass().toString())
     println(viewModel.state1.value)
-    
-    // Trigger module coupling detectors via usage
     println(DomainLeakageCarrier().toString())
     println(DomainCouplingCarrier().toString())
     println(HomeCoupling().toString())
-    
-    logger.log("fake_password")
+    monster.spaghetti()
+    security.log("p")
+    DesignViolation()
 }

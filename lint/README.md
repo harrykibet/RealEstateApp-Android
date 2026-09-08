@@ -53,14 +53,14 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | Law ID | Law Description | Type | Enforcement Rule(s) |
 | :--- | :--- | :--- | :--- |
 | **LAW-001** | Presentation owns UI state. | `CONVENTION` | `L:BusinessLogicInCompose`, `L:MagicNumber` |
-| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `L:ExposedMutableState`, `K:Law002_ExposedMutableState`, `L:RememberMissing`, `L:MutableStateParameter`, `S:Law008_Law002_PublicApiPurity` |
-| **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `L:InfrastructureLeakage`, `S:Law003_FeatureIsolation` |
-| **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `L:FeatureCouplingViolation`, `S:Law004_NamingConsistency` |
+| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `L:ExposedMutableState`, `K:Law002_ExposedMutableStateProcessor`, `L:RememberMissing`, `L:MutableStateParameter`, `S:Law008_Law002_PublicApiPurityTest` |
+| **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `L:InfrastructureLeakage`, `S:Law003_FeatureIsolationTest` |
+| **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `L:FeatureCouplingViolation`, `S:Law004_NamingConsistencyTest` |
 | **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `L:ForbiddenCoroutineScope` |
 | **LAW-006** | Production code does not choose dispatchers directly. | `FATAL` | `L:HardcodedDispatcher` |
 | **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `L:DirectSystemTimeUsage` |
-| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `L:MissingVisibilityModifier`, `L:ImplementationTypeInPublicApi`, `K:Law008_InterfaceContract`, `K:Law008_AbstractionLeakage`, `S:Law008_Law002_PublicApiPurity` |
-| **LAW-009** | Production functions do not silently discard failures. | `CONVENTION` | `L:MissingResultWrapper`, `K:Law009_ResultWrapping`, `L:FailureSmuggling`, `L:DangerousFallback` |
+| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `L:MissingVisibilityModifier`, `L:ImplementationTypeInPublicApi`, `K:Law008_InterfaceContractProcessor`, `K:Law008_AbstractionLeakageProcessor`, `S:Law008_Law002_PublicApiPurityTest` |
+| **LAW-009** | Production functions do not silently discard failures. | `CONVENTION` | `L:MissingResultWrapper`, `K:Law009_ResultWrappingProcessor`, `L:FailureSmuggling`, `L:DangerousFallback` |
 | **LAW-010** | Sensitive data never enters application logs. | `ERROR` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
 | **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
 | **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `L:UnsynchronizedChaosState`, `L:ThreadSafetyViolation`, `L:UnsafeStateCollection` |
@@ -69,7 +69,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-015** | Tests must not depend on real time. | `WARNING` | `L:DirectSystemTimeUsageInTest` |
 | **LAW-016** | Tests must strictly remain in test source sets. | `FATAL` | `L:MockInProduction` |
 | **LAW-017** | Mutable state must follow the backing-property convention. | `STYLE` | `L:BackingPropertyConvention` |
-| **LAW-018** | ViewModels must expose a single canonical persistent UI-state owner. | `ERROR` | `K:Law018_ViewModelSsot` |
+| **LAW-018** | ViewModels must expose a single canonical persistent UI-state owner. | `ERROR` | `K:Law018_ViewModelSsotProcessor` |
 | **LAW-019** | Suspend functions must not secretly launch independent work. | `FATAL` | `L:SecretConcurrency` |
 | **LAW-020** | Async results (Deferred) must be joined or returned. | `ERROR` | `L:UnusedAsync` |
 | **LAW-021** | Exception handlers must be placed on root scopes. | `WARNING` | `L:MisplacedCoroutineExceptionHandler` |
@@ -81,13 +81,13 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-027** | Composables must not directly call domain or data layer components. | `ERROR` | `L:ComposeArchitectureLeakage` |
 | **LAW-028** | Methods must be concise and focused (Complexity Budget). | `FATAL` | `L:SpaghettiMethodFatal` |
 | **LAW-029** | Classes must have a single responsibility (Size Limit). | `FATAL` | `L:GodObjectFatal` |
-| **LAW-030** | Constructors must have a limited dependency budget. | `ERROR` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurity` |
-| **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `S:Law031_LayerMixing` |
-| **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `S:Law032_DomainPurity` |
-| **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `L:SuppressionPolicyViolation`, `S:Law033_GradleSuppression` |
-| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegression` |
-| **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `V:Law035_FatalBaselineIntegrity` |
-| **LAW-036** | Domain results should express business meaning via types. | `CONVENTION` | `K:Law036_DomainExpressiveness` |
+| **LAW-030** | Constructors must have a limited dependency budget. | `ERROR` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
+| **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `S:Law031_LayerMixingTest` |
+| **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `S:Law032_DomainPurityTest` |
+| **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `L:SuppressionPolicyViolation`, `S:Law033_WildcardSuppressionTest`, `V:Law033_GradleSuppressionTest` |
+| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegressionTest` |
+| **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `V:Law035_FatalBaselineIntegrityTest` |
+| **LAW-036** | Domain results should express business meaning via types. | `CONVENTION` | `K:Law036_DomainExpressivenessProcessor` |
 | **LAW-037** | Dependencies must be managed via the version catalog. | `FATAL` | `T:checkDependencyDrift` |
 | **LAW-038** | Production binaries must remain pure and obfuscated. | `FATAL` | `T:auditBinaryPurity` |
 

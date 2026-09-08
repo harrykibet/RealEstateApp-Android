@@ -30,4 +30,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.mockkAndroid)
+    implementation(libs.retrofit)
 }
