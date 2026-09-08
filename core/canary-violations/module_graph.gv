@@ -12,10 +12,6 @@ digraph {
   ":core:ui" [fillcolor="#9BF6FF"];
   ":core:design-system" [fillcolor="#9BF6FF"];
   ":core:navigation" [fillcolor="#9BF6FF"];
-  ":lint" [fillcolor="#BDB2FF"];
-  ":core:architecture" [fillcolor="#9BF6FF"];
-  ":lint" -> ":core:architecture" [color="#1A237E", style=solid]
-  ":lint" -> ":core:architecture" [color="#757575", style=dashed]
   ":core:network" -> ":core:common" [color="#1A237E", style=solid]
   ":core:network" -> ":core:domain" [color="#1A237E", style=solid]
   ":core:network" -> ":core:model" [color="#1A237E", style=solid]
@@ -42,13 +38,13 @@ digraph {
   ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
   ":core:canary-violations" -> ":core:common" [color="#1A237E", style=solid]
   ":core:canary-violations" -> ":core:domain" [color="#1A237E", style=solid]
   ":core:canary-violations" -> ":core:model" [color="#1A237E", style=solid]
   ":core:canary-violations" -> ":core:network" [color="#1A237E", style=solid]
   ":core:canary-violations" -> ":core:database" [color="#1A237E", style=solid]
   ":core:canary-violations" -> ":feature:auth" [color="#1A237E", style=solid]
-  ":core:canary-violations" -> ":lint" [color="#607D8B", style=dotted, label="lint"]
   ":core:canary-violations" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
   ":feature:auth" -> ":core:ui" [color="#4CAF50", style=dotted, label="implicit"]
   ":feature:auth" -> ":core:common" [color="#4CAF50", style=dotted, label="implicit"]

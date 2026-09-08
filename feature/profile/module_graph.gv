@@ -35,6 +35,7 @@ digraph {
   ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
   ":feature:profile" -> ":core:localization" [color="#1A237E", style=solid]
   ":feature:profile" -> ":core:ui" [color="#4CAF50", style=dotted, label="implicit"]
   ":feature:profile" -> ":core:common" [color="#4CAF50", style=dotted, label="implicit"]

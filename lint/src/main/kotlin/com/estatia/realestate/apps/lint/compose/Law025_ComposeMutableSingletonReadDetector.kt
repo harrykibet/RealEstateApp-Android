@@ -2,10 +2,11 @@ package com.estatia.realestate.apps.lint.compose
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.core.architecture.Law
+import com.estatia.realestate.apps.core.architecture.LawType
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.*
@@ -70,7 +71,12 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
     private fun isMutable(member: PsiMember): Boolean {
         return when (member) {
             is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
-            is PsiMethod -> (member.name.startsWith("get") || member.name.startsWith("set"))
+            is PsiMethod -> {
+                // A method is considered mutable if it's a setter or a non-final getter 
+                // (though in Kotlin objects, val getters are final).
+                member.name.startsWith("set") || 
+                (member.name.startsWith("get") && !member.hasModifierProperty(PsiModifier.FINAL))
+            }
             else -> false
         }
     }

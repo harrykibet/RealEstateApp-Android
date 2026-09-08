@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
 import com.estatia.realestate.apps.core.architecture.Law
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -15,28 +16,19 @@ class Law034_LintCanaryRegressionTest {
 
     @Test
     fun `canary module must fire all expected architectural violations`() {
-        // Attempt to find the report file by traversing up from the current directory
-        var currentDir = File(".").absoluteFile
-        var rootDir: File? = null
+        val reportPath = System.getProperty("CANARY_LINT_REPORT")
         
-        while (currentDir != null) {
-            if (File(currentDir, "settings.gradle.kts").exists()) {
-                rootDir = currentDir
-                break
-            }
-            currentDir = currentDir.parentFile
-        }
+        assertNotNull(
+            "Governance Violation: System property 'CANARY_LINT_REPORT' is not set. " +
+            "This test must be run via Gradle to ensure correct environment setup.",
+            reportPath
+        )
 
-        val reportFile = if (rootDir != null) {
-            File(rootDir, "core/canary-violations/build/reports/lint-results.txt")
-        } else {
-            // Fallback to relative path if root not found
-            File("../../core/canary-violations/build/reports/lint-results.txt")
-        }
+        val reportFile = File(reportPath)
 
         assertTrue(
-            "Governance Violation (${Law.LAW_034.id}): Canary lint report was not generated at expected path: ${reportFile.absolutePath}. " +
-            "The enforcement infrastructure might be broken. Run './gradlew :core:canary-violations:lintDemoDebug' first.",
+            "Governance Violation (${Law.LAW_034.id}): Canary lint report was not found at: ${reportFile.absolutePath}. " +
+            "The enforcement infrastructure might be broken. Ensure ':core:canary-violations:lintDemoDebug' is running.",
             reportFile.exists()
         )
 
@@ -55,7 +47,9 @@ class Law034_LintCanaryRegressionTest {
             "MissingVisibilityModifier",
             "ThreadSafetyViolation",
             "BlockingMainThreadWork",
-            "ComposeMutableSingletonRead"
+            "ComposeMutableSingletonRead",
+            "HardcodedSecrets",
+            "BackingPropertyConvention"
         )
 
         val missingIssues = expectedIssues.filterNot { reportText.contains(it) }

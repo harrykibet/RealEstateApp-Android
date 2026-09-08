@@ -24,4 +24,5 @@ digraph {
   ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
 }

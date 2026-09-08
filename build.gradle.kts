@@ -41,7 +41,7 @@ extensions.configure<GraphRulesExtension>("moduleGraphAssert") {
     configurations = setOf("api", "implementation")
     
     restricted = arrayOf(
-        ":core.* -X> :feature.*",
+        ":core:(?!canary-violations).* -X> :feature.*",
         ":feature.* -X> :feature:(?!shared-ui).*",
         ":core:domain -X> :core:(network|database|datastore|intelligence|notifications|security)",
         ":core:model -X> :core:(?!common).*"
@@ -144,6 +144,7 @@ object EstatiaArch {
 }
 
 tasks.register("generateModuleGraphs") {
+    description = "Generates module dependency graphs."
     group = "reporting"
     doLast {
         val rootDir = project.projectDir
@@ -211,6 +212,7 @@ tasks.register("generateModuleGraphs") {
 }
 
 tasks.register("checkDependencyDrift") {
+    description = "Checks for hardcoded dependencies."
     group = "verification"
     doLast {
         val rootDir = project.projectDir
@@ -229,6 +231,7 @@ tasks.register("checkDependencyDrift") {
 }
 
 tasks.register("calculateImpact") {
+    description = "Calculates the impact of changes on the codebase."
     group = "verification"
     doLast {
         val rootDir = project.projectDir
@@ -251,6 +254,7 @@ tasks.register("calculateImpact") {
 }
 
 tasks.register("auditBinaryPurity") {
+    description = "Audits the binary for sensitive keywords."
     group = "verification"
     doLast {
         val mappingFile = File(project.rootDir, "app/build/outputs/mapping/prodRelease/mapping.txt")
@@ -267,8 +271,13 @@ tasks.register("auditBinaryPurity") {
 
 tasks.register("verifyArchitecture") {
     group = "verification"
-    dependsOn(":lint:assemble")
-    dependsOn(":lint")
+    description = "Executes all architectural and policy enforcement gates."
+
+    // 1. Standard Implementation Guard (Lint)
+    dependsOn(":lint:assemble") // Ensure custom lint rules are built
+    dependsOn(":lint:test")     // Run detector unit tests and DocParityTest
+
+    // 2. Global Structural Enforcement (Konsist & Regression Tests)
     dependsOn(":core:testing-architecture:test")
     dependsOn(":core:canary-violations:lintDemoDebug")
     dependsOn("assertModuleGraph")

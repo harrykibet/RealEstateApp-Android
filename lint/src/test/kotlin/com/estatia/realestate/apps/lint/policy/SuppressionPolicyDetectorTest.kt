@@ -2,10 +2,10 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
-import com.android.tools.lint.checks.infrastructure.TestMode
 import com.estatia.realestate.apps.lint.Stubs
 import com.estatia.realestate.apps.lint.api.Law009_ResultWrapperDetector
 import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
+import com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry
 import org.junit.Test
 
 class SuppressionPolicyDetectorTest {
@@ -13,7 +13,6 @@ class SuppressionPolicyDetectorTest {
     @Test
     fun `blind suppression of all reports fatal`() {
         lint()
-            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -24,10 +23,10 @@ class SuppressionPolicyDetectorTest {
                     package com.estatia.realestate.apps
                     import android.annotation.SuppressLint
                     
-                    @Suppress("all")
+                    @Suppress(names = ["all"])
                     class Bad1
                     
-                    @SuppressLint("all")
+                    @SuppressLint(value = ["all"])
                     class Bad2
                     """.trimIndent()
                 )
@@ -40,7 +39,6 @@ class SuppressionPolicyDetectorTest {
     @Test
     fun `suppression of FATAL rule reports fatal`() {
         lint()
-            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -54,6 +52,7 @@ class SuppressionPolicyDetectorTest {
                     """.trimIndent()
                 )
             )
+            // Explicitly include the issues so the registry can find them
             .issues(SuppressionPolicyDetector.ISSUE, ForbiddenScopeDetector.FORBIDDEN_SCOPE_ISSUE)
             .run()
             .expectContains("cannot be suppressed")
@@ -62,7 +61,6 @@ class SuppressionPolicyDetectorTest {
     @Test
     fun `suppression of ERROR rule without justification reports fatal`() {
         lint()
-            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -84,7 +82,6 @@ class SuppressionPolicyDetectorTest {
     @Test
     fun `suppression of ERROR rule with wrong justification reports fatal`() {
         lint()
-            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -107,7 +104,6 @@ class SuppressionPolicyDetectorTest {
     @Test
     fun `suppression of ERROR rule with correct justification is clean`() {
         lint()
-            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(

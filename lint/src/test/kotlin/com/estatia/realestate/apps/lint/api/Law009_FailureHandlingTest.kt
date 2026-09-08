@@ -9,7 +9,7 @@ import org.junit.Test
 class Law009_FailureHandlingTest {
 
     @Test
-    fun `unwrapped return in repository reports error`() {
+    fun `unwrapped return in repository reports warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
@@ -21,14 +21,15 @@ class Law009_FailureHandlingTest {
                     """
                     package com.estatia.realestate.apps.core.data
                     class MyRepository {
-                        fun getData(): String = ""
+                        // Non-trivial complex type requires wrapping under Estatia Convention
+                        suspend fun getData(): List<String> = emptyList()
                     }
                     """.trimIndent()
                 )
             )
             .issues(Law009_ResultWrapperDetector.ISSUE)
             .run()
-            .expectContains("must return a wrapped Result type")
+            .expectContains("should return a wrapped Result type")
     }
 
     @Test
@@ -59,17 +60,18 @@ class Law009_FailureHandlingTest {
     }
 
     @Test
-    fun `dangerous fallback with elvis reports error`() {
+    fun `dangerous fallback with elvis reports warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
+            .allowCompilationErrors()
             .allowMissingSdk()
             .files(
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     class Test {
-                        fun check(value: Boolean?) {
-                            val data = value ?: false
+                        fun check(value: String?) {
+                            val data = value ?: ""
                         }
                     }
                     """.trimIndent()

@@ -21,6 +21,11 @@ dependencies {
     testImplementation(projects.core.architecture)
 }
 
+tasks.withType<Test>().configureEach {
+    // Pass the path to README.md to ensure DocParityTest can find it reliably across different environments.
+    systemProperty("LINT_README_PATH", "${project.projectDir}/README.md")
+}
+
 tasks.withType<org.gradle.jvm.tasks.Jar> {
     manifest {
         attributes("Lint-Registry-v2" to "com.estatia.realestate.apps.lint.registry.EstatiaIssueRegistry")

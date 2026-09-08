@@ -21,6 +21,8 @@ class EstatiaIssueRegistry : IssueRegistry() {
         ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
         ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
         CanaryHeartbeatDetector.ISSUE,
+        ExposedMutableStateDetector.ISSUE,
+        BackingPropertyConventionDetector.ISSUE,
         
         // Concurrency
         CoroutineCancellationDetector.ISSUE,
@@ -39,6 +41,7 @@ class EstatiaIssueRegistry : IssueRegistry() {
         Law009_FailureSmugglingDetector.ISSUE,
         Law009_DangerousFallbackDetector.ISSUE,
         VisibilityModifierDetector.ISSUE,
+        ImplementationTypeDetector.ISSUE,
         
         // Compose
         BusinessLogicInComposeDetector.ISSUE,

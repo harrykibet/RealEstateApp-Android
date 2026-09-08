@@ -17,7 +17,8 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitAnnotation(node: UAnnotation) {
             val name = node.qualifiedName ?: node.asRenderString()
-            if (name.contains("SuppressLint") || name.contains("Suppress") || name.contains("OptIn")) {
+            if (name.contains("SuppressLint") || name.contains("Suppress") || 
+                name.contains("OptIn") || name.contains("SuppressWarnings")) {
                 val suppressed = extractSuppressed(node)
                 checkSuppressedIssues(context, node, suppressed)
             }
@@ -27,7 +28,7 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
     private fun extractSuppressed(node: UAnnotation): List<String> {
         val list = mutableListOf<String>()
         
-        // 1. Literal extraction
+        // 1. Attribute extraction
         node.attributeValues.forEach { attr ->
             extractFromExpression(attr.expression, list)
         }
@@ -99,13 +100,13 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
                         )
                     }
                 }
-                Severity.ERROR -> {
+                Severity.ERROR, Severity.WARNING -> {
                     if (!checkJustification(context, node, cleanId)) {
                         context.report(
                             ISSUE, 
                             node, 
                             context.getLocation(node), 
-                            "Suppression of ERROR-level rule '$cleanId' requires an immediately preceding justification comment " +
+                            "Suppression of ${issue.defaultSeverity.description}-level rule '$cleanId' requires an immediately preceding justification comment " +
                             "matching: '// Justification: $cleanId - <reason>' (LAW-033)."
                         )
                     }

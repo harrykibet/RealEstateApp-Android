@@ -2,39 +2,44 @@ package com.estatia.realestate.apps.lint.security
 
 import com.android.tools.lint.client.api.UElementHandler
 import com.android.tools.lint.detector.api.*
+import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UField
-import org.jetbrains.uast.ULiteralExpression
+import org.jetbrains.uast.*
 
 /**
+ * LAW-010: Sensitive Data Protection.
  * Prevents hardcoding of sensitive strings like API keys or secrets.
  */
 class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
 
     private val secretKeywords = setOf("apikey", "secret", "token", "password", "credential")
 
-    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UField::class.java)
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(ULocalVariable::class.java, UField::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
+        override fun visitLocalVariable(node: ULocalVariable) {
+            checkVariable(node)
+        }
+
         override fun visitField(node: UField) {
-            val name = node.name.lowercase()
+            checkVariable(node)
+        }
+
+        private fun checkVariable(node: UVariable) {
+            val name = node.name?.lowercase() ?: ""
             if (secretKeywords.any { name.contains(it) }) {
                 val initializer = node.uastInitializer
                 if (initializer is ULiteralExpression && initializer.isString) {
                     val value = initializer.value as? String ?: ""
                     if (value.isNotBlank() && value.length > 5) {
-                        // Check if it's a constant that's being initialized with a literal
-                        // (which is usually what we want to catch if it's a secret)
                         context.report(
                             ISSUE,
-                            node,
-                            context.getLocation(node),
-                            "Potential hardcoded secret detected in field '${node.name}'. Move secrets to a secure config or use build variables."
+                            node as UElement,
+                            context.getLocation(node as UElement),
+                            "Potential hardcoded secret detected in variable '${node.name}'. Move secrets to a secure config or use build variables (LAW-010)."
                         )
                     }
                 }
@@ -44,7 +49,7 @@ class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
 
     companion object {
         val ISSUE = EstatiaIssue.create(
-            id = "HardcodedSecret",
+            id = "HardcodedSecrets",
             description = "Potential hardcoded secret detected",
             rationale = "Secrets should not be committed to source control.",
             badExample = "val apiKey = \"12345\"",

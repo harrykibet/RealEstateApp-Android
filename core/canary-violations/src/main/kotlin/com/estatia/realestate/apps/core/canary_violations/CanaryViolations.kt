@@ -102,8 +102,11 @@ class BadViewModel : ViewModel() {
     var leakedActivity: Activity? = null
 }
 
-// LAW-010: Sensitive Logging
+// LAW-010: Sensitive Logging & Hardcoded Secrets
 class LeakyLogger {
+    // Violation: Hardcoded secret in field
+    val apiKey = "123456789"
+    
     fun log(password: String) {
         Log.d("AUTH", "User password is: ${"$"}{password}")
     }

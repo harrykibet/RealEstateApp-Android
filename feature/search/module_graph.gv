@@ -87,6 +87,7 @@ digraph {
   ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
   ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:testing" [color="#4CAF50", style=dotted, label="implicit"]
   ":core:ksp-architecture" -> ":core:architecture" [color="#1A237E", style=solid]
   ":core:testing-network" -> ":core:network" [color="#1A237E", style=solid]
   ":core:testing-network" -> ":core:domain" [color="#1A237E", style=solid]
