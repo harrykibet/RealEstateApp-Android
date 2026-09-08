@@ -148,8 +148,36 @@ tasks.register("generateModuleGraphs") {
     group = "reporting"
     doLast {
         val rootDir = project.projectDir
-        val dotBinary = "C:/Program Files/Graphviz/bin/dot.exe"
-        val hasDot = File(dotBinary).exists()
+        
+        val dotBinary = project.findProperty("estatia.graphviz.dot")?.toString()
+            ?: System.getenv("GRAPHVIZ_DOT")
+            ?: listOf(
+                "C:/Program Files/Graphviz/bin/dot.exe",
+                "C:/Program Files (x86)/Graphviz/bin/dot.exe",
+                "/opt/homebrew/bin/dot",
+                "/usr/local/bin/dot",
+                "/usr/bin/dot"
+            ).find { File(it).exists() }
+            ?: "dot"
+
+        val hasDot = try {
+            ProcessBuilder(dotBinary, "-V").start().waitFor() == 0
+        } catch (_: Exception) {
+            false
+        }
+
+        if (!hasDot) {
+            logger.warn(
+                """
+                [GRAPHVIZ_NOT_FOUND] The 'dot' binary was not found. PNG graph generation will be skipped.
+                To enable PNG generation:
+                  1. Install Graphviz (https://graphviz.org/download/)
+                  2. Ensure 'dot' is in your system PATH, OR
+                  3. Set 'estatia.graphviz.dot' property in gradle.properties, OR
+                  4. Set 'GRAPHVIZ_DOT' environment variable.
+                """.trimIndent()
+            )
+        }
 
         val modules = EstatiaArch.discoverModules(rootDir)
         val allEdges = EstatiaArch.extractEdges(rootDir, modules)
