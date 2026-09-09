@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.lint.doc
 
 import com.android.tools.lint.client.api.LintClient
+import com.estatia.realestate.apps.core.architecture.Fidelity
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.core.architecture.LawType
 import org.junit.Assert.assertNotNull
@@ -74,7 +75,7 @@ class MetaArchitectureSyncTest {
     }
 
     @Test
-    fun `every Law ID in the enum must have at least one documented enforcement rule`() {
+    fun `every Law ID in the enum must have at least one documented enforcement rule and matching fidelity`() {
         val readmeFile = getFileFromProperty("LINT_README_PATH")
         val readmeContent = readmeFile.readText()
 
@@ -82,16 +83,42 @@ class MetaArchitectureSyncTest {
             // Skip conventions which might be project-wide guidelines
             if (law.type == LawType.CONVENTION) return@forEach
 
-            val rowRegex = Regex("""\| \*\*${law.id}\*\* \| [^|]+ \| [^|]+ \| ([^|]+) \|""")
+            val rowRegex = Regex("""\| \*\*${law.id}\*\* \| [^|]+ \| ([^|]+) \| ([^|]+) \| ([^|]+) \|""")
             val match = rowRegex.find(readmeContent)
             
             assertNotNull("Governance Violation: Law '${law.id}' is missing from the README table.", match)
-            val enforcementColumn = match!!.groupValues[1]
             
+            val readmeType = match!!.groupValues[1].trim().replace("`", "")
+            val readmeFidelity = match.groupValues[2].trim().replace("`", "")
+            val enforcementColumn = match.groupValues[3]
+            
+            // 1. Verify Type sync
             assertTrue(
-                "Governance Violation: Law '${law.id}' has no enforcement rules (L:, K:, S:, T:, V:) listed in README.md. " +
-                "A Law without enforcement is just advice.",
+                "Governance Violation: Law '${law.id}' type mismatch. Enum: ${law.type}, README: $readmeType",
+                law.type.name == readmeType
+            )
+
+            // 2. Verify Fidelity sync
+            assertTrue(
+                "Governance Violation: Law '${law.id}' fidelity mismatch. Enum: ${law.primaryFidelity}, README: $readmeFidelity",
+                law.primaryFidelity.name == readmeFidelity
+            )
+
+            // 3. Verify Enforcement exists
+            assertTrue(
+                "Governance Violation: Law '${law.id}' has no enforcement rules (L:, K:, S:, T:, V:) listed in README.md.",
                 enforcementColumn.contains(":")
+            )
+        }
+    }
+
+    @Test
+    fun `FATAL laws must be backed by high-confidence enforcement`() {
+        Law.entries.filter { it.type == LawType.FATAL }.forEach { law ->
+            assertTrue(
+                "Governance Violation: FATAL Law '${law.id}' is enforced via HEURISTIC methods. " +
+                "FATAL rules MUST use NON_BYPASSABLE (Symbol resolution) or STRUCTURAL (Topology) enforcement.",
+                law.primaryFidelity != Fidelity.HEURISTIC
             )
         }
     }

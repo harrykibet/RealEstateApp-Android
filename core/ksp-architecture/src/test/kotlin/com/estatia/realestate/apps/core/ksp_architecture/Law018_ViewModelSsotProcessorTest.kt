@@ -115,4 +115,70 @@ class Law018_ViewModelSsotProcessorTest {
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("has no public StateFlow"))
     }
+
+    @Test
+    fun `LAW-018 ViewModel inheriting StateFlow and adding another fails`() {
+        val baseSource = SourceFile.kotlin(
+            "BaseViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import kotlinx.coroutines.flow.StateFlow
+            import androidx.lifecycle.ViewModel
+            
+            abstract class BaseViewModel : ViewModel() {
+                val baseState: StateFlow<Int> = TODO()
+            }
+            """.trimIndent()
+        )
+        
+        val childSource = SourceFile.kotlin(
+            "ChildViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import kotlinx.coroutines.flow.StateFlow
+            
+            class ChildViewModel : BaseViewModel() {
+                val childState: StateFlow<String> = TODO()
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.coroutineStubs, 
+            KspTestUtils.lifecycleStubs,
+            baseSource,
+            childSource,
+            providers = listOf(Law018_ViewModelSsotProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        assertTrue(result.messages.contains("Multiple state authorities detected in 'ChildViewModel'"))
+    }
+
+    @Test
+    fun `LAW-018 ViewModel with custom StateFlow subtype passes`() {
+        val source = SourceFile.kotlin(
+            "TestViewModel.kt",
+            """
+            package com.estatia.realestate.apps.feature.test
+            import kotlinx.coroutines.flow.StateFlow
+            import androidx.lifecycle.ViewModel
+            
+            interface MyUiState<T> : StateFlow<T>
+            
+            class TestViewModel : ViewModel() {
+                val state: MyUiState<Int> = TODO()
+            }
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            KspTestUtils.coroutineStubs, 
+            KspTestUtils.lifecycleStubs,
+            source,
+            providers = listOf(Law018_ViewModelSsotProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
 }
