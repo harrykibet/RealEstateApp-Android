@@ -10,9 +10,11 @@ android {
         // 🏗️ Canary Policy: abortOnError is false because we WANT to produce a report with violations.
         abortOnError = false
         
-        // 🧪 Regression Enforcement: Ensure deterministic text report for Law034 test.
+        // 🧪 Regression Enforcement: Structured reports for high-fidelity verification (Law034).
         textReport = true
         textOutput = file("build/reports/lint-results.txt")
+        xmlReport = true
+        xmlOutput = file("build/reports/lint-results.xml")
         
         checkDependencies = false
         checkTestSources = true

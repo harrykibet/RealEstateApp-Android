@@ -12,7 +12,7 @@ class Law004_NamingConsistencyTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_004.id}: ${Law.LAW_004.description}") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_004.id} [Fidelity: ${Law.LAW_004.primaryFidelity.name}]: ${Law.LAW_004.description}") { file ->
                 val path = file.path.replace("\\", "/")
                 val coreMatch = "/core/([^/]+)/".toRegex().find(path)
                 val featureMatch = "/feature/([^/]+)/".toRegex().find(path)

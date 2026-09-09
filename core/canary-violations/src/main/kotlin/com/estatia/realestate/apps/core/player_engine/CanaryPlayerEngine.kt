@@ -7,6 +7,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class CanaryPlayerEngine {
+    // [CANARY:POSITIVE:MissingConcurrencyCheck] [CANARY:POSITIVE:MissingVisibilityModifier]
     fun play() {
         // Violation: Missing Confinement.checkMainThread()
     }

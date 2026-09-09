@@ -5,5 +5,5 @@ package com.estatia.realestate.apps.core.testing.chaos
  */
 class FakeChaos {
     @JvmField
-    var chaosCounter = 0 // UnsynchronizedChaosState
+    var chaosCounter = 0 // [CANARY:POSITIVE:UnsynchronizedChaosState] [CANARY:POSITIVE:MissingVisibilityModifier]
 }

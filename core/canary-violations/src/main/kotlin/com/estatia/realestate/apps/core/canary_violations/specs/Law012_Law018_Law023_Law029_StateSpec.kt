@@ -1,0 +1,64 @@
+package com.estatia.realestate.apps.core.canary_violations.specs
+
+import android.app.Activity
+import androidx.lifecycle.ViewModel
+import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+
+/**
+ * LAW-012: Concurrency & Thread Safety
+ * LAW-018: ViewModel SSoT
+ * LAW-023: Lifecycle Leak
+ * LAW-029: Class Size/God Object
+ */
+
+@ViewModelMarker
+/**
+ * [CANARY:POSITIVE:MissingVisibilityModifier]
+ */
+class Law012_018_023_029_Positive_ViewModel : ViewModel() {
+    // [CANARY:POSITIVE:GodObjectFatal]
+    
+    public val s1: StateFlow<Int> = MutableStateFlow(0)
+    // [CANARY:POSITIVE:ViewModelSsot]
+    // [CANARY:POSITIVE:MissingVisibilityModifier]
+    val s2: StateFlow<String> = MutableStateFlow("")
+    
+    // [CANARY:POSITIVE:ExposedMutableState] [CANARY:POSITIVE:BackingPropertyConvention]
+    public val mutableState: MutableStateFlow<Int> = MutableStateFlow(0)
+    
+    // [CANARY:POSITIVE:ThreadSafetyViolation]
+    public var unsafeMap: HashMap<String, String> = HashMap()
+    
+    // [CANARY:POSITIVE:LifecycleLeak]
+    public var leakedActivity: Activity? = null
+    
+    // [CANARY:POSITIVE:UnsafeStateCollection]
+    public val collectedState: List<StateFlow<Int>> = listOf(MutableStateFlow(0))
+    
+    // God Object State Trigger
+    public var m1: Int = 0; public var m2: Int = 0; public var m3: Int = 0; public var m4: Int = 0; public var m5: Int = 0; public var m6: Int = 0
+    public var m7: Int = 0; public var m8: Int = 0; public var m9: Int = 0; public var m10: Int = 0; public var m11: Int = 0; public var m12: Int = 0; public var m13: Int = 0
+    
+    public fun mutate() {
+        unsafeMap.put("a", "b")
+    }
+}
+
+@ViewModelMarker
+public class Law012_018_Negative_ViewModel : ViewModel() {
+    // [CANARY:NEGATIVE:ViewModelSsot]
+    public val uiState: StateFlow<Int> = MutableStateFlow(0)
+    
+    // [CANARY:NEGATIVE:ExposedMutableState] [CANARY:NEGATIVE:BackingPropertyConvention]
+    private val _internalState = MutableStateFlow(0)
+    
+    // [CANARY:NEGATIVE:ThreadSafetyViolation]
+    private val safeMap = ConcurrentHashMap<String, String>()
+    
+    // [CANARY:NEGATIVE:ThreadSafetyViolation]
+    private val readOnlyMap = mapOf("a" to "b")
+}

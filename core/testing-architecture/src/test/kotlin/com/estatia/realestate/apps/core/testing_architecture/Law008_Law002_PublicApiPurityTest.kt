@@ -27,7 +27,7 @@ class Law008_Law002_PublicApiPurityTest {
         Konsist.scopeFromProject()
             .classes()
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_008.id}: ${Law.LAW_008.description} AND ${Law.LAW_002.id}: ${Law.LAW_002.description}") { clazz ->
+            .assertTrue(additionalMessage = "${Law.LAW_008.id} [Fidelity: ${Law.LAW_008.primaryFidelity.name}]: ${Law.LAW_008.description} AND ${Law.LAW_002.id} [Fidelity: ${Law.LAW_002.primaryFidelity.name}]: ${Law.LAW_002.description}") { clazz ->
                 val publicProps = clazz.properties(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 val publicFuncs = clazz.functions(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 

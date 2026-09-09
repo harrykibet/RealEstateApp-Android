@@ -17,7 +17,7 @@ fun KSPLogger.report(law: Law, message: String, node: KSNode? = null) {
         else -> "Architecture Warning"
     }
     
-    val fullMessage = "$prefix (${law.id}): ${law.description} $message"
+    val fullMessage = "$prefix (${law.id}) [Fidelity: ${law.primaryFidelity.name}]: ${law.description} $message"
     
     when (law.type) {
         LawType.FATAL, LawType.ERROR -> error(fullMessage, node)
