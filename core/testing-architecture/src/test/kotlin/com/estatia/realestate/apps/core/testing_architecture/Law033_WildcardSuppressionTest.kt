@@ -18,7 +18,7 @@ class Law033_WildcardSuppressionTest {
             .files
             // Exempt canary module and any architectural verification tests that might contain strings for matching.
             .filterNot { it.path.contains("canary-violations") || it.path.contains("Law033_WildcardSuppressionTest") }
-            .assertTrue(additionalMessage = "${Law.LAW_033.id} [Fidelity: ${Law.LAW_033.primaryFidelity.name}]: ${Law.LAW_033.description}. Wildcard suppression ('all') is forbidden.") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_033.id} [Risk: ${Law.LAW_033.risk.name}, Confidence: ${Law.LAW_033.confidence.name}]: ${Law.LAW_033.description}. Wildcard suppression ('all') is forbidden.") { file ->
                 val content = file.text
                 val hasWildcard = content.contains("""Suppress("all")""", ignoreCase = true) ||
                                  content.contains("""Suppress(names = ["all"])""", ignoreCase = true) ||

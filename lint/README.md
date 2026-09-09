@@ -7,40 +7,15 @@ In Estatia, we treat architectural principles as **Compiler-Enforced Laws**, not
 
 ---
 
-## 🚦 Enforcement Levels (Severity Model)
+## 🚦 The Enforcement Oracle (3D Risk Model)
 
-We use a tiered severity model based on production risk to ensure that developers focus on critical issues without being overwhelmed by minor suggestions.
+Estatia uses a multi-dimensional model to evaluate and enforce architectural laws.
 
-| Tier | Severity | Policy |
+| Dimension | Levels | Description |
 | :--- | :--- | :--- |
-| **FATAL** | `FATAL` | Fundamental structural rules or security risks that **must never enter main**. CI will fail and blocks merge. |
-| **ERROR** | `ERROR` | Core production safety, concurrency, or lifecycle defects. Must be resolved before release. |
-| **WARNING** | `WARNING` | Design smells or localized best-practice deviations. Requires justification if suppressed. |
-| **CONVENTION** | `WARNING` | Estatia-specific design patterns that promote consistency but aren't structural laws. |
-| **STYLE** | `INFORMATIONAL` | Syntactic or organizational style preferences. Recommended for clarity. |
-| **INFO** | `INFORMATIONAL` | Optimization or future-proofing guidance. Optional. |
-
----
-
-## 🛡️ Security Enforcement Disclaimer
-
-While LAW-010 (Sensitive Data Protection) is enforced via Android Lint detectors, please note that **these checks are heuristic-based** and rely on keyword matching and call-chain analysis. They are designed for fast feedback during development but **do not provide 100% coverage** against all possible secret leaks or sensitive logs.
-
-For production-grade security, these detectors are supplemented by:
-1.  **Dedicated Secret Scanning**: Tools like Gitleaks or Trufflehog in the CI pipeline.
-2.  **External Audits**: OWASP Dependency Check for third-party vulnerabilities.
-3.  **Human Review**: Sensitive code paths (auth, crypto) require mandatory review by the Security owner.
-
----
-
-## 🏎️ Thread Safety Enforcement (LAW-012)
-
-The `ThreadSafetyDetector` flags non-thread-safe collections (HashMap, ArrayList, etc.) in shared components like Singletons, ViewModels, and Repositories.
-
-To minimize false positives:
-- **`var` collections** are always flagged.
-- **`val` collections** are only flagged if the linter detects a mutating call (e.g., `put`, `add`, `clear`) outside of the object's initialization.
-- **Read-only maps/lists** used as static lookups are permitted as long as they are not mutated post-construction.
+| **Risk** | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` | Impact on production stability, security, or maintainability. |
+| **Confidence** | `CERTAIN`, `HIGH`, `HEURISTIC` | Technical certainty of the detection mechanism. |
+| **Enforcement** | `BLOCK`, `WARN`, `INFO` | The action taken by the CI pipeline and IDE. |
 
 ---
 
@@ -49,54 +24,54 @@ To minimize false positives:
 Every detector in this module enforces a rule defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) registry. 
 
 ### Enforcement Legend
-| Code | Type | Confidence | Implementation Detail |
-| :--- | :--- | :--- | :--- |
-| **L:** | **Lint** | `NON_BYPASSABLE` | Semantic analysis via UAST & Symbol resolution. |
-| **K:** | **KSP** | `NON_BYPASSABLE` | Compiler-integrated symbol processing. |
-| **S:** | **Konsist** | `STRUCTURAL` | Import-string and topology analysis. Bypassable via FQN. |
-| **H:** | **Heuristic** | `HEURISTIC` | Pattern/Keyword matching (Syntactic Lint/Grep). |
-| **V:** | **Verify** | `NON_BYPASSABLE` | Runtime or build-time verification tests. |
+| Code | Confidence | Implementation Detail |
+| :--- | :--- | :--- |
+| **L:** | `CERTAIN` | Semantic analysis via UAST & Symbol resolution. |
+| **K:** | `CERTAIN` | Compiler-integrated symbol processing. |
+| **S:** | `HIGH` | Import-string and topology analysis (Konsist). |
+| **H:** | `HEURISTIC` | Pattern/Keyword matching (Syntactic Lint/Grep). |
+| **V:** | `CERTAIN` | High-fidelity verification tests. |
 
-| Law ID | Law Description | Type | Fidelity | Enforcement Rule(s) |
-| :--- | :--- | :--- | :--- | :--- |
-| **LAW-001** | Presentation owns UI state. | `CONVENTION` | `HEURISTIC` | `H:BusinessLogicInCompose`, `H:MagicNumber` |
-| **LAW-002** | Mutable state never crosses an ownership boundary. | `ERROR` | `NON_BYPASSABLE` | `L:ExposedMutableState`, `K:Law002_ExposedMutableStateProcessor`, `L:RememberMissing`, `L:MutableStateParameter`, `S:Law008_Law002_PublicApiPurityTest` |
-| **LAW-003** | Infrastructure does not leak into domain or presentation. | `FATAL` | `NON_BYPASSABLE` | `L:InfrastructureLeakage`, `S:Law003_FeatureIsolationTest` |
-| **LAW-004** | Feature modules cannot depend on other feature modules. | `FATAL` | `STRUCTURAL` | `L:FeatureCouplingViolation`, `S:Law004_NamingConsistencyTest` |
-| **LAW-005** | Production code does not create coroutine scopes. | `FATAL` | `NON_BYPASSABLE` | `L:ForbiddenCoroutineScope` |
-| **LAW-006** | Production code does not choose dispatchers directly. | `FATAL` | `NON_BYPASSABLE` | `L:HardcodedDispatcher` |
-| **LAW-007** | Production code does not use wall-clock time directly. | `ERROR` | `NON_BYPASSABLE` | `L:DirectSystemTimeUsage` |
-| **LAW-008** | Public APIs expose abstractions, not implementation types. | `FATAL` | `NON_BYPASSABLE` | `L:MissingVisibilityModifier`, `L:ImplementationTypeInPublicApi`, `K:Law008_InterfaceContractProcessor`, `K:Law008_AbstractionLeakageProcessor`, `S:Law008_Law002_PublicApiPurityTest` |
-| **LAW-009** | Production functions do not silently discard failures. | `CONVENTION` | `HEURISTIC` | `L:MissingResultWrapper`, `K:Law009_ResultWrappingProcessor`, `L:FailureSmuggling`, `L:DangerousFallback` |
-| **LAW-010** | Sensitive data never enters application logs. | `ERROR` | `HEURISTIC` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
-| **LAW-011** | Blocking work never executes on the main thread. | `FATAL` | `NON_BYPASSABLE` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
-| **LAW-012** | Shared mutable state requires explicit synchronization. | `FATAL` | `NON_BYPASSABLE` | `L:UnsynchronizedChaosState`, `L:ThreadSafetyViolation`, `L:UnsafeStateCollection` |
-| **LAW-013** | Lifecycle-owned work must be cancellable. | `ERROR` | `NON_BYPASSABLE` | `L:MissingCoroutineCancellation` |
-| **LAW-014** | Critical infrastructure must enforce thread-confinement. | `FATAL` | `NON_BYPASSABLE` | `L:MissingConcurrencyCheck` |
-| **LAW-015** | Tests must not depend on real time. | `WARNING` | `HEURISTIC` | `L:DirectSystemTimeUsageInTest` |
-| **LAW-016** | Tests must strictly remain in test source sets. | `FATAL` | `NON_BYPASSABLE` | `L:MockInProduction` |
-| **LAW-017** | Mutable state must follow the backing-property convention. | `STYLE` | `HEURISTIC` | `L:BackingPropertyConvention` |
-| **LAW-018** | ViewModels must expose a single canonical persistent UI-state owner. | `ERROR` | `NON_BYPASSABLE` | `K:Law018_ViewModelSsotProcessor` |
-| **LAW-019** | Suspend functions must not secretly launch independent work. | `FATAL` | `NON_BYPASSABLE` | `L:SecretConcurrency` |
-| **LAW-020** | Async results (Deferred) must be joined or returned. | `ERROR` | `NON_BYPASSABLE` | `L:UnusedAsync` |
-| **LAW-021** | Exception handlers must be placed on root scopes. | `WARNING` | `NON_BYPASSABLE` | `L:MisplacedCoroutineExceptionHandler` |
-| **LAW-022** | UI must remain localized and accessible. | `CONVENTION` | `HEURISTIC` | `L:HardcodedStringInCompose`, `L:DesignSystemViolation`, `L:HardcodedDesignValue` |
-| **LAW-023** | Lifecycle-bound objects (Activity/View) must not be stored in long-lived components. | `FATAL` | `NON_BYPASSABLE` | `L:LifecycleLeak` |
-| **LAW-024** | Long-lived components must not hold direct references to UI Context. | `FATAL` | `NON_BYPASSABLE` | `L:ContextLeak` |
-| **LAW-025** | Composables must not read from mutable singletons directly. | `ERROR` | `NON_BYPASSABLE` | `L:ComposeMutableSingletonRead` |
-| **LAW-026** | Expensive object creation must be cached via remember. | `WARNING` | `NON_BYPASSABLE` | `L:ExpensiveRecomposition` |
-| **LAW-027** | Composables must not directly call domain or data layer components. | `ERROR` | `NON_BYPASSABLE` | `L:ComposeArchitectureLeakage` |
-| **LAW-028** | Methods must be concise and focused (Complexity Budget). | `FATAL` | `NON_BYPASSABLE` | `L:SpaghettiMethodFatal` |
-| **LAW-029** | Classes must have a single responsibility (Size Limit). | `FATAL` | `NON_BYPASSABLE` | `L:GodObjectFatal` |
-| **LAW-030** | Constructors must have a limited dependency budget. | `ERROR` | `NON_BYPASSABLE` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
-| **LAW-031** | Components must not mix architectural layers or responsibilities. | `FATAL` | `STRUCTURAL` | `S:Law031_LayerMixingTest` |
-| **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `FATAL` | `STRUCTURAL` | `S:Law032_DomainPurityTest` |
-| **LAW-033** | Rule suppressions must follow strict organizational policy. | `FATAL` | `STRUCTURAL` | `L:SuppressionPolicyViolation`, `S:Law033_WildcardSuppressionTest`, `V:Law033_GradleSuppressionTest` |
-| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `FATAL` | `NON_BYPASSABLE` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegressionTest` |
-| **LAW-035** | FATAL architectural rules must never be baselined. | `FATAL` | `NON_BYPASSABLE` | `V:Law035_FatalBaselineIntegrityTest` |
-| **LAW-036** | Domain results should express business meaning via types. | `CONVENTION` | `NON_BYPASSABLE` | `K:Law036_DomainExpressivenessProcessor` |
-| **LAW-037** | Dependencies must be managed via the version catalog. | `FATAL` | `STRUCTURAL` | `T:checkDependencyDrift` |
-| **LAW-038** | Production binaries must remain pure and obfuscated. | `FATAL` | `STRUCTURAL` | `T:auditBinaryPurity` |
+| Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **LAW-001** | Presentation owns UI state. | `MEDIUM` | `HEURISTIC` | `WARN` | `H:BusinessLogicInCompose`, `H:MagicNumber` |
+| **LAW-002** | Mutable state never crosses an ownership boundary. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ExposedMutableState`, `K:Law002_ExposedMutableStateProcessor`, `L:RememberMissing`, `L:MutableStateParameter`, `S:Law008_Law002_PublicApiPurityTest` |
+| **LAW-003** | Infrastructure does not leak into domain or presentation. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:InfrastructureLeakage`, `S:Law003_FeatureIsolationTest` |
+| **LAW-004** | Feature modules cannot depend on other feature modules. | `HIGH` | `HIGH` | `BLOCK` | `L:FeatureCouplingViolation`, `S:Law004_NamingConsistencyTest` |
+| **LAW-005** | Production code does not create coroutine scopes. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:ForbiddenCoroutineScope` |
+| **LAW-006** | Production code does not choose dispatchers directly. | `HIGH` | `CERTAIN` | `BLOCK` | `L:HardcodedDispatcher` |
+| **LAW-007** | Production code does not use wall-clock time directly. | `MEDIUM` | `CERTAIN` | `WARN` | `L:DirectSystemTimeUsage` |
+| **LAW-008** | Public APIs expose abstractions, not implementation types. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:MissingVisibilityModifier`, `L:ImplementationTypeInPublicApi`, `K:Law008_InterfaceContractProcessor`, `K:Law008_AbstractionLeakageProcessor`, `S:Law008_Law002_PublicApiPurityTest` |
+| **LAW-009** | Production functions do not silently discard failures. | `MEDIUM` | `HEURISTIC` | `WARN` | `L:MissingResultWrapper`, `K:Law009_ResultWrappingProcessor`, `L:FailureSmuggling`, `L:DangerousFallback` |
+| **LAW-010** | Sensitive data never enters application logs. | `CRITICAL` | `HEURISTIC` | `WARN` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
+| **LAW-011** | Blocking work never executes on the main thread. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
+| **LAW-012** | Shared mutable state requires explicit synchronization. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:UnsynchronizedChaosState`, `L:ThreadSafetyViolation`, `L:UnsafeStateCollection` |
+| **LAW-013** | Lifecycle-owned work must be cancellable. | `HIGH` | `CERTAIN` | `BLOCK` | `L:MissingCoroutineCancellation` |
+| **LAW-014** | Critical infrastructure must enforce thread-confinement. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:MissingConcurrencyCheck` |
+| **LAW-015** | Tests must not depend on real time. | `LOW` | `HEURISTIC` | `WARN` | `L:DirectSystemTimeUsageInTest` |
+| **LAW-016** | Tests must strictly remain in test source sets. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:MockInProduction` |
+| **LAW-017** | Mutable state must follow the backing-property convention. | `LOW` | `HEURISTIC` | `INFO` | `L:BackingPropertyConvention` |
+| **LAW-018** | ViewModels must expose a single canonical persistent UI-state owner. | `HIGH` | `CERTAIN` | `BLOCK` | `K:Law018_ViewModelSsotProcessor` |
+| **LAW-019** | Suspend functions must not secretly launch independent work. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:SecretConcurrency` |
+| **LAW-020** | Async results (Deferred) must be joined or returned. | `HIGH` | `CERTAIN` | `BLOCK` | `L:UnusedAsync` |
+| **LAW-021** | Exception handlers must be placed on root scopes. | `MEDIUM` | `CERTAIN` | `WARN` | `L:MisplacedCoroutineExceptionHandler` |
+| **LAW-022** | UI must remain localized and accessible. | `MEDIUM` | `HEURISTIC` | `WARN` | `L:HardcodedStringInCompose`, `L:DesignSystemViolation`, `L:HardcodedDesignValue` |
+| **LAW-023** | Lifecycle-bound objects (Activity/View) must not be stored in long-lived components. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:LifecycleLeak` |
+| **LAW-024** | Long-lived components must not hold direct references to UI Context. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:ContextLeak` |
+| **LAW-025** | Composables must not read from mutable singletons directly. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ComposeMutableSingletonRead` |
+| **LAW-026** | Expensive object creation must be cached via remember. | `MEDIUM` | `CERTAIN` | `WARN` | `L:ExpensiveRecomposition` |
+| **LAW-027** | Composables must not directly call domain or data layer components. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ComposeArchitectureLeakage` |
+| **LAW-028** | Methods must be concise and focused (Complexity Budget). | `HIGH` | `CERTAIN` | `BLOCK` | `L:SpaghettiMethodFatal` |
+| **LAW-029** | Classes must have a single responsibility (Size Limit). | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
+| **LAW-030** | Constructors must have a limited dependency budget. | `MEDIUM` | `CERTAIN` | `WARN` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
+| **LAW-031** | Components must not mix architectural layers or responsibilities. | `CRITICAL` | `HIGH` | `BLOCK` | `S:Law031_LayerMixingTest` |
+| **LAW-032** | Domain and Model layers must remain pure Kotlin (No Frameworks). | `CRITICAL` | `HIGH` | `BLOCK` | `S:Law032_DomainPurityTest` |
+| **LAW-033** | Rule suppressions must follow strict organizational policy. | `CRITICAL` | `HIGH` | `BLOCK` | `L:SuppressionPolicyViolation`, `S:Law033_WildcardSuppressionTest`, `V:Law033_GradleSuppressionTest` |
+| **LAW-034** | Architectural enforcement must be crash-resilient and regression-tested. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegressionTest` |
+| **LAW-035** | FATAL architectural rules must never be baselined. | `CRITICAL` | `CERTAIN` | `BLOCK` | `V:Law035_FatalBaselineIntegrityTest` |
+| **LAW-036** | Domain results should express business meaning via types. | `MEDIUM` | `CERTAIN` | `WARN` | `K:Law036_DomainExpressivenessProcessor` |
+| **LAW-037** | Dependencies must be managed via the version catalog. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
+| **LAW-038** | Production binaries must remain pure and obfuscated. | `CRITICAL` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
 
 ---
 

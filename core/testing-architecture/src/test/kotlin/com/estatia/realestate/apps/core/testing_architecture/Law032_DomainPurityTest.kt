@@ -16,7 +16,7 @@ class Law032_DomainPurityTest {
             .files
             .filterNot { it.path.contains("canary-violations") }
             .withPackage(ArchitecturalPolicy.Layers.Domain.packagePattern)
-            .assertTrue(additionalMessage = "${Law.LAW_032.id} [Fidelity: ${Law.LAW_032.primaryFidelity.name}]: ${Law.LAW_032.description}") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_032.id} [Risk: ${Law.LAW_032.risk.name}, Confidence: ${Law.LAW_032.confidence.name}]: ${Law.LAW_032.description}") { file ->
                 file.imports.none { import ->
                     val isForbidden = ArchitecturalPolicy.InfrastructurePackages.any { import.name.startsWith(it) } ||
                                      import.name.startsWith("android.") ||
@@ -34,7 +34,7 @@ class Law032_DomainPurityTest {
             .files
             .filterNot { it.path.contains("canary-violations") }
             .withPackage(ArchitecturalPolicy.Layers.Model.packagePattern)
-            .assertTrue(additionalMessage = "${Law.LAW_032.id} [Fidelity: ${Law.LAW_032.primaryFidelity.name}]: ${Law.LAW_032.description}") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_032.id} [Risk: ${Law.LAW_032.risk.name}, Confidence: ${Law.LAW_032.confidence.name}]: ${Law.LAW_032.description}") { file ->
                 file.imports.none { import ->
                     val isForbidden = import.name.startsWith("android.") || 
                                      import.name.startsWith("androidx.")

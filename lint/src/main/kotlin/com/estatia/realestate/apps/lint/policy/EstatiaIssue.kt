@@ -36,9 +36,9 @@ object EstatiaIssue {
             |```
             |
             |**Architecture Law**: ${architectureLaw.id} (${architectureLaw.description})
-            |**Type**: ${architectureLaw.type.name}
-            |**Fidelity**: ${architectureLaw.primaryFidelity.name}
-            |**Enforcement Tier**: ${tier.name}
+            |**Risk**: ${architectureLaw.risk.name}
+            |**Confidence**: ${architectureLaw.confidence.name}
+            |**Enforcement**: ${architectureLaw.enforcement.name}
             |**Category**: ${category.name}
             |**Owner**: ${owner.handle}
             |**Autofix Available**: $autofixAvailable

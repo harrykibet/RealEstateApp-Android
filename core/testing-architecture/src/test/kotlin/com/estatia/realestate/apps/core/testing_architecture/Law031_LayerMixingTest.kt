@@ -17,7 +17,7 @@ class Law031_LayerMixingTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Fidelity: ${Law.LAW_031.primaryFidelity.name}]: ${Law.LAW_031.description}") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Risk: ${Law.LAW_031.risk.name}, Confidence: ${Law.LAW_031.confidence.name}]: ${Law.LAW_031.description}") { file ->
                 val hasViewModel = file.classes().any { it.name.endsWith("ViewModel") }
                 if (!hasViewModel) return@assertTrue true
                 
@@ -36,7 +36,7 @@ class Law031_LayerMixingTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Fidelity: ${Law.LAW_031.primaryFidelity.name}]: ${Law.LAW_031.description}") { file ->
+            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Risk: ${Law.LAW_031.risk.name}, Confidence: ${Law.LAW_031.confidence.name}]: ${Law.LAW_031.description}") { file ->
                 val isBusinessLogic = file.classes().any { clazz ->
                     clazz.name.endsWith("Repository") || 
                     clazz.name.endsWith("UseCase") || 

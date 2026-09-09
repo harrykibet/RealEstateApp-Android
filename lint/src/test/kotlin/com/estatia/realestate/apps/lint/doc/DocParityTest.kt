@@ -47,11 +47,11 @@ class DocParityTest {
         val readmeFile = getReadmeFile()
         val readmeContent = readmeFile.readText()
         
-        // Match: | **LAW-001** | Description | `TYPE` | `FIDELITY` | ... |
-        val rowRegex = Regex("""\| \*\*LAW-(\d+)\*\* \| [^|]+ \| `([^`]+)` \| `([^`]+)` \|""")
+        // Match: | **LAW-001** | Description | `RISK` | `CONFIDENCE` | `ENFORCEMENT` | ... |
+        val rowRegex = Regex("""\| \*\*LAW-(\d+)\*\* \| [^|]+ \| `([^`]+)` \| `([^`]+)` \| `([^`]+)` \|""")
         val rowsInReadme = rowRegex.findAll(readmeContent).map { 
             val id = "LAW-${it.groupValues[1]}"
-            id to (it.groupValues[2] to it.groupValues[3])
+            id to Triple(it.groupValues[2], it.groupValues[3], it.groupValues[4])
         }.toMap()
 
         val lawIdsInEnum = Law.entries.map { it.id }.toSet()
@@ -72,18 +72,23 @@ class DocParityTest {
             missingInEnum.isEmpty()
         )
 
-        // Verify Types and Fidelity match
+        // Verify Risk, Confidence, Enforcement match
         Law.entries.forEach { law ->
-            val (readmeType, readmeFidelity) = rowsInReadme[law.id]!!
+            val (readmeRisk, readmeConfidence, readmeEnforcement) = rowsInReadme[law.id]!!
             assertEquals(
-                "Type mismatch for ${law.id} in README.md",
-                law.type.name,
-                readmeType
+                "Risk mismatch for ${law.id} in README.md",
+                law.risk.name,
+                readmeRisk
             )
             assertEquals(
-                "Fidelity mismatch for ${law.id} in README.md",
-                law.primaryFidelity.name,
-                readmeFidelity
+                "Confidence mismatch for ${law.id} in README.md",
+                law.confidence.name,
+                readmeConfidence
+            )
+            assertEquals(
+                "Enforcement mismatch for ${law.id} in README.md",
+                law.enforcement.name,
+                readmeEnforcement
             )
         }
     }
@@ -118,13 +123,15 @@ class DocParityTest {
             val lawId = lawMatch!!.groupValues[1].uppercase()
             val law = Law.entries.find { it.id == lawId }
             assertNotNull("Issue '${issue.id}' references unknown Law '$lawId'.", law)
-            assertTrue("Issue '${issue.id}' explanation has wrong Law Type.", explanation.contains("Type: ${law!!.type.name}"))
-            assertTrue("Issue '${issue.id}' explanation has wrong Fidelity.", explanation.contains("Fidelity: ${law.primaryFidelity.name}"))
+            
+            assertTrue("Issue '${issue.id}' explanation has wrong Risk.", explanation.contains("Risk: ${law!!.risk.name}"))
+            assertTrue("Issue '${issue.id}' explanation has wrong Confidence.", explanation.contains("Confidence: ${law.confidence.name}"))
+            assertTrue("Issue '${issue.id}' explanation has wrong Enforcement.", explanation.contains("Enforcement: ${law.enforcement.name}"))
         }
 
         // 2. Every L: or H: rule ID in the README must correspond to a registered issue
-        // Match the "Enforcement Rule" column: | LAW-XXX | Description | Type | Fidelity | `L:Rule1`, `K:Rule2` |
-        val ruleColumnRegex = Regex("""\| \*\*LAW-\d+\*\* \| [^|]+ \| [^|]+ \| [^|]+ \| ([^|]+) \|""")
+        // Match the "Enforcement Rule" column: | LAW-XXX | Description | Risk | Confidence | Enforcement | `L:Rule1`, `K:Rule2` |
+        val ruleColumnRegex = Regex("""\| \*\*LAW-\d+\*\* \| [^|]+ \| [^|]+ \| [^|]+ \| [^|]+ \| ([^|]+) \|""")
         val mentionedLintRules = ruleColumnRegex.findAll(readmeContent).flatMap { match ->
             match.groupValues[1].split(",")
                 .map { it.trim().removeSurrounding("`") }
