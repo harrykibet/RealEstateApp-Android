@@ -9,23 +9,17 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * LAW-012: Concurrency & Thread Safety
- * LAW-018: ViewModel SSoT
- * LAW-023: Lifecycle Leak
- * LAW-029: Class Size/God Object
+ * State and Concurrency Enforcement
  */
 
 @ViewModelMarker
-/**
- * [CANARY:POSITIVE:MissingVisibilityModifier]
- */
-class Law012_018_023_029_Positive_ViewModel : ViewModel() {
+public class PositiveStateViewModel : ViewModel() {
     // [CANARY:POSITIVE:GodObjectFatal]
     
     public val s1: StateFlow<Int> = MutableStateFlow(0)
-    // [CANARY:POSITIVE:ViewModelSsot]
-    // [CANARY:POSITIVE:MissingVisibilityModifier]
-    val s2: StateFlow<String> = MutableStateFlow("")
+    
+    // KSP RULE: [CANARY:POSITIVE:ViewModelSsot]
+    public val s2: StateFlow<String> = MutableStateFlow("")
     
     // [CANARY:POSITIVE:ExposedMutableState] [CANARY:POSITIVE:BackingPropertyConvention]
     public val mutableState: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -37,9 +31,9 @@ class Law012_018_023_029_Positive_ViewModel : ViewModel() {
     public var leakedActivity: Activity? = null
     
     // [CANARY:POSITIVE:UnsafeStateCollection]
-    public val collectedState: List<StateFlow<Int>> = listOf(MutableStateFlow(0))
+    public val collectedState: List<MutableStateFlow<Int>> = listOf(MutableStateFlow(0))
     
-    // God Object State Trigger
+    // God Object State Trigger (LAW-029)
     public var m1: Int = 0; public var m2: Int = 0; public var m3: Int = 0; public var m4: Int = 0; public var m5: Int = 0; public var m6: Int = 0
     public var m7: Int = 0; public var m8: Int = 0; public var m9: Int = 0; public var m10: Int = 0; public var m11: Int = 0; public var m12: Int = 0; public var m13: Int = 0
     
@@ -49,7 +43,7 @@ class Law012_018_023_029_Positive_ViewModel : ViewModel() {
 }
 
 @ViewModelMarker
-public class Law012_018_Negative_ViewModel : ViewModel() {
+public class NegativeStateViewModel : ViewModel() {
     // [CANARY:NEGATIVE:ViewModelSsot]
     public val uiState: StateFlow<Int> = MutableStateFlow(0)
     

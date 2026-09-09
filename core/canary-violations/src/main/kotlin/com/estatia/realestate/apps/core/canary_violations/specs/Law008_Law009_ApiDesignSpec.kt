@@ -13,28 +13,15 @@ import javax.inject.Inject
 
 public interface ICanaryRepo
 
-/**
- * [CANARY:POSITIVE:MissingVisibilityModifier]
- */
-class Law008_Positive_Repository : ICanaryRepo {
-    // [CANARY:POSITIVE:ImplementationTypeInPublicApi]
-    public fun leak(retrofit: Retrofit?): String = ""
-}
-
-/**
- * ✅ NEGATIVE CANARY
- */
-public interface IValidRepo
-
-@Repository
-public class Law008_Negative_Repository @Inject constructor() : IValidRepo {
-    public fun safe(id: String): String = id
+// [CANARY:POSITIVE:MissingVisibilityModifier]
+class PositiveRepository : ICanaryRepo {
+    // [CANARY:POSITIVE:ImplementationTypeInPublicApi] [CANARY:POSITIVE:MissingVisibilityModifier]
+    fun leak(retrofit: Retrofit?): String = ""
 }
 
 @Repository
-public class Law009_Positive_Repository {
-    // [CANARY:POSITIVE:MissingResultWrapper]
-    // [CANARY:POSITIVE:MissingVisibilityModifier]
+public class PositiveFailureRepository {
+    // [CANARY:POSITIVE:MissingResultWrapper] [CANARY:POSITIVE:MissingVisibilityModifier]
     fun getRawData(): List<String> = emptyList()
     
     public fun smuggled(): List<String> {
@@ -48,8 +35,14 @@ public class Law009_Positive_Repository {
     }
 }
 
+/**
+ * ✅ NEGATIVE CANARIES
+ */
+
 @Repository
-public class Law009_Negative_Repository {
+public class NegativeRepository @Inject constructor() : ICanaryRepo {
+    // [CANARY:NEGATIVE:MissingVisibilityModifier]
+    // [CANARY:NEGATIVE:ImplementationTypeInPublicApi]
     // [CANARY:NEGATIVE:MissingResultWrapper]
     public fun safeData(): AppResult<String> = AppResult.Success("ok")
     

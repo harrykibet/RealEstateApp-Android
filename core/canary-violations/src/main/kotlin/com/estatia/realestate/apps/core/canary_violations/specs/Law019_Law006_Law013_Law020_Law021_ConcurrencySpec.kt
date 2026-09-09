@@ -4,14 +4,10 @@ import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 /**
- * LAW-019: Secret Concurrency
- * LAW-006: Hardcoded Dispatchers
- * LAW-013: Cancellation
- * LAW-020: Async Usage
- * LAW-021: Exception Handlers
+ * Concurrency Spec
  */
 
-public class Law019_006_013_020_021_Positive_Spec : CoroutineScope {
+public class PositiveConcurrencySpec : CoroutineScope {
     // [CANARY:POSITIVE:HardcodedDispatcher]
     override val coroutineContext: CoroutineContext = Dispatchers.Main
     
@@ -19,10 +15,8 @@ public class Law019_006_013_020_021_Positive_Spec : CoroutineScope {
         // [CANARY:POSITIVE:SecretConcurrency]
         launch { }
         
-        val deferred = async { 
-            // [CANARY:POSITIVE:UnusedAsync]
-            1 
-        }
+        // [CANARY:POSITIVE:UnusedAsync]
+        async { 1 }
         
         // [CANARY:POSITIVE:MisplacedCoroutineExceptionHandler] [CANARY:POSITIVE:HardcodedDispatcher]
         withContext(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) { }
@@ -36,9 +30,9 @@ public class Law019_006_013_020_021_Positive_Spec : CoroutineScope {
     }
 }
 
-public class Concurrency_Negative_Spec {
+public class NegativeConcurrencySpec {
     public suspend fun safeWork() = coroutineScope {
-        launch { yield() }
+        yield()
         val result = async { 1 }.await()
     }
 }

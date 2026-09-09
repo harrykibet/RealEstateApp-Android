@@ -12,7 +12,7 @@ public class Law010_Positive_Spec {
     
     public fun log(password: String) {
         // [CANARY:POSITIVE:HardcodedSecrets]
-        val secret = "super_secret_token"
+        val secret: String = "super_secret_token"
         
         // [CANARY:POSITIVE:SensitiveLogging]
         Log.d("AUTH", "User password is: $password")

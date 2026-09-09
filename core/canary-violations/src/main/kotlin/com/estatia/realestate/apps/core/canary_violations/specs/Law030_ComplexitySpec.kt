@@ -16,20 +16,20 @@ public class Law028_Positive_Spec {
 
 // [CANARY:POSITIVE:OrchestrationMonsterError]
 public class Law030_Positive_Spec(
-    public val r1: Law012_018_023_029_Positive_ViewModel,
-    public val r2: Law012_018_023_029_Positive_ViewModel,
-    public val r3: Law012_018_023_029_Positive_ViewModel,
-    public val r4: Law012_018_023_029_Positive_ViewModel,
-    public val r5: Law012_018_023_029_Positive_ViewModel,
-    public val r6: Law012_018_023_029_Positive_ViewModel,
-    public val r7: Law012_018_023_029_Positive_ViewModel,
-    public val r8: Law012_018_023_029_Positive_ViewModel,
-    public val r9: Law012_018_023_029_Positive_ViewModel,
-    public val r10: Law012_018_023_029_Positive_ViewModel
+    public val r1: PositiveStateViewModel,
+    public val r2: PositiveStateViewModel,
+    public val r3: PositiveStateViewModel,
+    public val r4: PositiveStateViewModel,
+    public val r5: PositiveStateViewModel,
+    public val r6: PositiveStateViewModel,
+    public val r7: PositiveStateViewModel,
+    public val r8: PositiveStateViewModel,
+    public val r9: PositiveStateViewModel,
+    public val r10: PositiveStateViewModel
 )
 
 public class Complexity_Negative_Spec(
-    public val r1: Law012_018_023_029_Positive_ViewModel
+    public val r1: PositiveStateViewModel
 ) {
     public fun clean() {
         println("ok")

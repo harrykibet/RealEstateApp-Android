@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.estatia.android.compose)
 }
 
+// 🛡️ High-Fidelity Oracle: Disable KSP for the canary module 
+// to prevent deliberate violations from breaking the build 
+// before Lint can report them.
+tasks.configureEach {
+    if (name.contains("ksp", ignoreCase = true)) {
+        enabled = false
+    }
+}
+
 android {
     namespace = "com.estatia.realestate.apps.core.canary_violations"
     

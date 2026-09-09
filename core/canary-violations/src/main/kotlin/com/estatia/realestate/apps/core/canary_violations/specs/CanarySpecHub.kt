@@ -6,23 +6,32 @@ import androidx.compose.runtime.mutableStateOf
 /**
  * Hub to ensure all specs are visible to the compiler and analyzer.
  */
+public val heartbeat: String = "DELIBERATE ARCHITECTURAL VIOLATIONS" // [CANARY:POSITIVE:LintCanaryActive]
+
 @Composable
 public fun CanarySpecHub(
-    repo: Law009_Positive_Repository,
-    viewModel: Law012_018_023_029_Positive_ViewModel,
-    monster: Law030_Positive_Spec
+    api: PositiveFailureRepository,
+    state: PositiveStateViewModel,
+    complexity: Law030_Positive_Spec,
+    perf: Law011_Performance_Positive_Spec,
+    security: Law010_Positive_Spec
 ) {
-    // API Design
-    repo.getRawData()
+    // API
+    api.getRawData()
     
     // Compose
-    Law001_002_026_027_Positive_Compose().PositiveCanary(repo, mutableStateOf(0))
+    PositiveComposeSpec().ViolatingComposable(PositiveRepository(), mutableStateOf(0))
+    PositiveComposeUiSpec().PositiveCanary()
+    Law025_Compose_Positive_Spec().PositiveCanary()
     
     // State
-    viewModel.mutate()
+    state.mutate()
     
     // Complexity
-    monster.r1.mutate()
+    complexity.r1.mutate()
+    
+    // Performance
+    perf.PositiveCanary()
     
     // Environment
     Environment_Positive_Spec().now()

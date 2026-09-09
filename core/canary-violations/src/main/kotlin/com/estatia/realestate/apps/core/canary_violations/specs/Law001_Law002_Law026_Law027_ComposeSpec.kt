@@ -6,22 +6,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * LAW-001: Business Logic in Compose
- * LAW-002: State Ownership
- * LAW-026: Expensive Recomposition
- * LAW-027: Architecture Leakage
+ * Compose Architectural Enforcement
  */
 
-public class Law001_002_026_027_Positive_Compose {
+public class PositiveComposeSpec {
 
     @Composable
-    public fun PositiveCanary(
-        repo: Law009_Positive_Repository,
+    public fun ViolatingComposable(
+        repo: PositiveRepository,
         // [CANARY:POSITIVE:MutableStateParameter]
         state: MutableState<Int>
     ) {
         // [CANARY:POSITIVE:ComposeArchitectureLeakage]
-        repo.getRawData()
+        repo.leak(null)
         
         // [CANARY:POSITIVE:ExpensiveRecomposition]
         val regex = Regex(".*")
@@ -34,16 +31,18 @@ public class Law001_002_026_027_Positive_Compose {
     }
 }
 
-public class Law001_002_026_027_Negative_Compose {
+public class NegativeComposeSpec {
 
     @Composable
-    public fun NegativeCanary(state: StateFlow<Int>) {
+    public fun ValidComposable(state: StateFlow<Int>) {
         // [CANARY:NEGATIVE:ComposeArchitectureLeakage]
+        // [CANARY:NEGATIVE:MutableStateParameter]
         val value by state.collectAsState()
         
         // [CANARY:NEGATIVE:ExpensiveRecomposition]
         val regex = remember { Regex(".*") }
         
+        // [CANARY:NEGATIVE:RememberMissing]
         val list = remember { listOf(1, 2, 3) }
     }
 }
