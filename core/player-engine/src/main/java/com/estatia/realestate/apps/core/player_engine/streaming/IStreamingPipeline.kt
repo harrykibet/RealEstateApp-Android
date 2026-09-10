@@ -4,6 +4,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.MediaSource
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Abstraction over the entire streaming stack.
@@ -16,6 +17,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
  *
  * Upper layers must not depend on Media3 cache internals.
  */
+@Contract
 interface IStreamingPipeline {
 
     /**

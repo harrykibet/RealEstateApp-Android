@@ -4,10 +4,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 import java.text.NumberFormat
 import java.util.Locale
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for localized number formatting.
  */
+@Contract
 interface NumberFormatter {
     fun formatNumber(number: Number): String
     fun formatDecimal(number: Number, decimalPlaces: Int = 2): String

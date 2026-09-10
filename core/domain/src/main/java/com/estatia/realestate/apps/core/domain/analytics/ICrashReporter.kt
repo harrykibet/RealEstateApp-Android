@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.domain.analytics
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for reporting crashes and logging non-fatal exceptions.
  */
+@Contract
 interface ICrashReporter {
 
     /**

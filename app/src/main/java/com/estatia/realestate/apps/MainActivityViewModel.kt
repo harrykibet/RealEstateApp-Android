@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * High-level ViewModel for the primary application Activity.
@@ -53,10 +54,12 @@ class MainActivityViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
+@Contract
     sealed interface MainActivityUiState {
 @Helper
         data object Loading : MainActivityUiState
 
+@Helper
         data class Success(
             val userData: UserData,
             val isAuthenticated: Boolean

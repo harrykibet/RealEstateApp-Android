@@ -4,10 +4,12 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.feature.PaymentMethod
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
 import com.estatia.realestate.apps.core.model.property.Money
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for payment-related network operations, often handled via server-side logic (AWS Lambda / Cloud Functions).
  */
+@Contract
 interface IPaymentsRemoteDataSource {
     /**
      * Processes a payment transaction.

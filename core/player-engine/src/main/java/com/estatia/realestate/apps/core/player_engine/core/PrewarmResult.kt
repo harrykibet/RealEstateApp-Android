@@ -2,12 +2,14 @@ package com.estatia.realestate.apps.core.player_engine.core
 
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Result of a player prewarm operation.
  */
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
+@Contract
 sealed interface PrewarmResult {
     /**
      * Prewarm succeeded, and the player is ready in the pool.

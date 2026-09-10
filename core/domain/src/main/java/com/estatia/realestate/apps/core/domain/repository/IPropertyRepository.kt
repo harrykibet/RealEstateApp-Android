@@ -7,11 +7,13 @@ import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Domain-level repository for property management.
  * Orchestrates data between remote sources and local storage (drafts).
  */
+@Contract
 interface IPropertyRepository {
     /**
      * Saves a property draft to local storage.

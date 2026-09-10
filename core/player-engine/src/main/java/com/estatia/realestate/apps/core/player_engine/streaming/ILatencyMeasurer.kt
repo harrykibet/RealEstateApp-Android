@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import kotlin.time.Duration
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Utility for measuring network latency to a specific host.
  */
+@Contract
 interface ILatencyMeasurer {
     /**
      * Measures the Round Trip Time (RTT) to the specified host.

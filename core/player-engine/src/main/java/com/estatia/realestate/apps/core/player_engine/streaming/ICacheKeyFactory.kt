@@ -1,11 +1,13 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for deriving stable cache keys and media IDs from media URIs.
  * Ensures that logical content is correctly identified even if delivery URLs change (e.g., token rotation).
  */
+@Contract
 interface ICacheKeyFactory {
     /**
      * Resolves a stable key for the given [uri].

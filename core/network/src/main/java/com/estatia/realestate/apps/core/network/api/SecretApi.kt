@@ -2,10 +2,12 @@ package com.estatia.realestate.apps.core.network.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Retrofit interface for fetching secrets from the secure backend.
  */
+@Contract
 interface SecretApi {
 
     /**

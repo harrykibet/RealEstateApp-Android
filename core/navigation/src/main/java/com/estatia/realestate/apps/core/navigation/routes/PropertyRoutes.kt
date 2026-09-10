@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 data class PropertyDetailRoute(val propertyId: String)
 
 @Serializable
+@Helper
 data object PropertyRoute
 
 @Serializable
@@ -15,4 +16,5 @@ data object PropertyRoute
 data object PropertyMediaCaptureRoute
 
 @Serializable
+@Helper
 data object PropertyBaseRoute

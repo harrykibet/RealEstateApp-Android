@@ -2,10 +2,12 @@ package com.estatia.realestate.apps.core.intelligence
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.common.MediaReference
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Service for analyzing property media to extract features and amenities.
  */
+@Contract
 interface IMediaIntelligenceService {
     /**
      * Analyzes an image to detect amenities (e.g., pool, balcony, modern kitchen).

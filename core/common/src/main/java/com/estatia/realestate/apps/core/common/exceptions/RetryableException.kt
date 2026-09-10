@@ -1,4 +1,5 @@
 package com.estatia.realestate.apps.core.common.exceptions
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * A marker interface used to indicate that an exception represents a transient failure
@@ -8,4 +9,5 @@ package com.estatia.realestate.apps.core.common.exceptions
  * (such as job processors or circuit breakers) that it is safe and potentially
  * productive to attempt the operation again.
  */
+@Contract
 interface RetryableException

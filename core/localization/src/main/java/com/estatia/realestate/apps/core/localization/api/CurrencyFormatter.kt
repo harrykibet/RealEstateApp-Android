@@ -5,10 +5,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for localized currency formatting.
  */
+@Contract
 interface CurrencyFormatter {
     fun formatCurrency(amount: Number, currencyCode: String): String
 }

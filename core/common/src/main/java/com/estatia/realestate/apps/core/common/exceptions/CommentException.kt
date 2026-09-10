@@ -33,6 +33,7 @@ sealed class CommentException(
     data class InvalidComment(val reason: String) : CommentException(reason)
 
 
+@Helper
     data object PermissionDenied :
         CommentException(
             "Permission denied"

@@ -9,7 +9,9 @@ import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface ITogglePropertyLikeUseCase {
     suspend operator fun invoke(propertyId: String, isCurrentlyLiked: Boolean): AppResult<Unit>
 }

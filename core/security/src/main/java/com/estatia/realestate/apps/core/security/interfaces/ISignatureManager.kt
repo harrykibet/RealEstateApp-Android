@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.security.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 
+@Contract
 interface ISignatureManager {
 
 

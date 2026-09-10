@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 data object ChatsRoute
 
 @Serializable
+@Helper
 data object ChatsBaseRoute
 
 @Serializable

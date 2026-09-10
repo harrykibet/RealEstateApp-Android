@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Policy for selecting the optimal CDN endpoint from a list of available candidates.
  */
+@Contract
 interface ICdnPolicy {
     /**
      * Selects an endpoint based on a snapshot of health metrics.

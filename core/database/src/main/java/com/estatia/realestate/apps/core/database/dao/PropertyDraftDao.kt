@@ -6,8 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 @Dao
+@Contract
 interface PropertyDraftDao {
 
     // Insert a new draft into the database

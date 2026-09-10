@@ -1,4 +1,5 @@
 package com.estatia.realestate.apps.core.common.exceptions
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Marks an exception as carrying infrastructure-specific detail (SDK/backend
@@ -10,4 +11,5 @@ package com.estatia.realestate.apps.core.common.exceptions
  * semantics (session/transport state) and are safe for direct ViewModel
  * consumption as-is.
  */
+@Contract
 sealed interface InfrastructureException

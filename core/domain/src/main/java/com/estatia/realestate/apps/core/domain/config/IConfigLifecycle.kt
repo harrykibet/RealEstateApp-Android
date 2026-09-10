@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.domain.config
 
 import kotlinx.coroutines.flow.StateFlow
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IConfigLifecycle {
     /**
      * Emits true when the configuration has been loaded (at least from local assets).

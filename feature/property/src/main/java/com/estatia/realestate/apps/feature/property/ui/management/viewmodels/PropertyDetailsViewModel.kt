@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * ViewModel for displaying the detailed view of a specific property.
@@ -52,10 +53,12 @@ class PropertyDetailsViewModel @Inject constructor(
     }
 }
 
+@Contract
 sealed interface PropertyDetailsUiState {
 @Helper
     object Loading : PropertyDetailsUiState
 @Helper
     data class Success(val property: PropertyDomainModel) : PropertyDetailsUiState
+@Helper
     data class Error(val message: String) : PropertyDetailsUiState
 }

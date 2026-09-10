@@ -8,7 +8,9 @@ import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IGetLikedPropertiesUseCase {
     suspend operator fun invoke(): AppResult<List<PropertyDomainModel>>
 }

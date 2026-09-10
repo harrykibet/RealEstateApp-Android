@@ -7,7 +7,9 @@ import com.estatia.realestate.apps.core.model.feature.PaymentMethod
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
 import com.estatia.realestate.apps.core.model.property.Money
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IProcessPaymentUseCase {
     suspend operator fun invoke(
         referenceId: String,

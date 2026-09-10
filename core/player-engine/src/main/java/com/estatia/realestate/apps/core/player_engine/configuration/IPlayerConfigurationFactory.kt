@@ -3,12 +3,14 @@ package com.estatia.realestate.apps.core.player_engine.configuration
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Factory for creating [PlayerConfiguration] instances based on media URI and type.
  */
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
+@Contract
 interface IPlayerConfigurationFactory {
     /**
      * Creates a configuration for the specified media.

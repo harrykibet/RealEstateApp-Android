@@ -1,11 +1,13 @@
 package com.estatia.realestate.apps.core.domain.analytics
 
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Domain-level contract for reporting personalized engagement signals.
  * These signals are consumed by the recommendation engine to refine user feeds.
  */
+@Contract
 interface IEngagementRepository {
     /**
      * Reports a viewing session for a media item.

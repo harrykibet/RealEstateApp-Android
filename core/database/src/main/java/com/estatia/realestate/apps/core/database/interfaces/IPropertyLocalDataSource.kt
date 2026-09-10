@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.database.entities.CommentCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for the local property data source.
@@ -12,6 +13,7 @@ import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
  * - Responsibility: Manage the persistence of property entities, drafts, and comments.
  * - Concurrency: Implementations must be thread-safe.
  */
+@Contract
 interface IPropertyLocalDataSource {
 
     // -----------------------------

@@ -1,65 +1,54 @@
 package com.estatia.realestate.apps.core.testing_architecture
 
 import com.estatia.realestate.apps.core.architecture.Law
+import com.estatia.realestate.apps.core.architecture.ArchitecturalPolicy
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
+import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import org.junit.Test
 
 /**
  * LAW-041: Mandatory Architectural Identity.
  * 
- * authoritatively enforces that EVERY class in the project (except foundations)
+ * authoritatively enforces that EVERY class or interface in the codebase 
  * declares its identity via annotations. This ensures that semantic detectors 
- * see the entire codebase, and no logic bypasses the safety system.
+ * see the entire codebase and no contract or logic bypasses the safety system.
  */
 class Law041_IdentityMandateTest {
 
-    private val recognizedArchitecturalAnnotations = setOf(
-        "Repository", "Service", "DataSource", "ViewModelMarker", "UseCase", "Manager", 
-        "ChaosComponent", "Coordinator", "Helper", "ErrorMapper", "DomainModel", 
-        "EntityModel", "AppEntryPoint", "UiState", "Module", "AndroidEntryPoint", "HiltAndroidApp"
-    )
-
-    private val foundationModules = setOf(
-        "core/architecture",
-        "core/ksp-architecture",
-        "core/testing-architecture",
-        "core/canary-violations",
-        "lint",
-        "build-logic",
-        "benchmark"
-    )
-
     @Test
-    fun `every class in the codebase must have a formal architectural identity`() {
-        Konsist.scopeFromProject()
-            .classes()
-            // 1. Only check top-level classes (Inner classes share parent identity)
+    fun `every class or interface in the codebase must have a formal architectural identity`() {
+        val classes = Konsist.scopeFromProject().classes()
+        val interfaces = Konsist.scopeFromProject().interfaces()
+
+        (classes + interfaces)
             .filter { it.isTopLevel }
-            // 2. Exclude foundation and testing support modules
-            .filterNot { clazz -> 
-                val path = clazz.path.replace("\\", "/")
-                foundationModules.any { path.contains(it) } ||
+            .filterNot { decl -> 
+                val path = decl.path.replace("\\", "/")
+                ArchitecturalPolicy.Law041.FoundationModules.any { path.contains(it) } ||
                 path.contains("/test/") || 
                 path.contains("/androidTest/") ||
                 path.contains("/testFixtures/")
             }
-            // 3. Exclude passive types: interfaces, enums, annotation classes
-            .filterNot { it.hasEnumModifier || it.hasAnnotationModifier }
+            // 3. Exclude passive types: enums, annotation classes
+            .filterNot { 
+                (it as? KoClassDeclaration)?.hasEnumModifier == true ||
+                (it as? KoClassDeclaration)?.hasAnnotationModifier == true
+            }
             // 4. Enforce identity via annotations
             .assertTrue(
                 additionalMessage = """
                     |
-                    |WHAT: Anonymous component detected. Every class must declare its role.
+                    |WHAT: Anonymous component detected. Every class or interface must declare its role.
                     |WHY: ${Law.LAW_041.rationale}
-                    |GOVERNANCE: Naming convention or logic-less status does not exempt a component.
+                    |GOVERNANCE: High-fidelity semantic checks require explicit metadata.
                     |
                     |[LAW: ${Law.LAW_041.id} | RISK: ${Law.LAW_041.risk.name} | CONFIDENCE: ${Law.LAW_041.confidence.name}]
                 """.trimMargin()
-            ) { clazz ->
-                // Check if class has any of the recognized architectural annotations
-                clazz.hasAnnotation { ann -> 
-                    recognizedArchitecturalAnnotations.contains(ann.name)
+            ) { decl ->
+                decl.hasAnnotation { ann -> 
+                    val name = ann.name.substringAfterLast(".")
+                    ArchitecturalPolicy.Law041.RecognizedArchitecturalAnnotations.contains(name)
                 }
             }
     }
@@ -71,7 +60,7 @@ class Law041_IdentityMandateTest {
             .filterNot { it.path.replace("\\", "/").contains("/annotations/") }
             .filterNot { it.path.replace("\\", "/").contains("/test/") || it.path.replace("\\", "/").contains("/androidTest/") || it.path.replace("\\", "/").contains("/testFixtures/") }
             .filter { it.name.endsWith("Repository") || it.name.endsWith("Service") || it.name.endsWith("UseCase") || it.name.endsWith("ViewModel") }
-            .filterNot { foundationModules.any { module -> it.path.replace("\\", "/").contains(module) } }
+            .filterNot { ArchitecturalPolicy.Law041.FoundationModules.any { module -> it.path.replace("\\", "/").contains(module) } }
             .assertTrue(
                 additionalMessage = "Naming convention suggests architectural role. Class must have matching annotation (LAW-041)."
             ) { clazz ->

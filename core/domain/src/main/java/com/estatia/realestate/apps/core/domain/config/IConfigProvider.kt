@@ -4,7 +4,9 @@ import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import kotlinx.coroutines.flow.StateFlow
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IConfigProvider : IConfigLifecycle, INetworkConfig, ISecurityConfig, IPlayerTuningConfig {
 
     override val isReady: StateFlow<Boolean>

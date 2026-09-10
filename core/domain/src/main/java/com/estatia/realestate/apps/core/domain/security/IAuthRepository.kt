@@ -5,10 +5,12 @@ import com.estatia.realestate.apps.core.model.auth.AuthUserDomainModel
 import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import kotlinx.coroutines.flow.Flow
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Domain-level repository for user authentication and authorization.
  */
+@Contract
 interface IAuthRepository {
     /**
      * Returns a [Flow] that emits true if the user is authenticated.

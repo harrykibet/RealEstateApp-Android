@@ -8,4 +8,5 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 data object SettingsRoute
 
 @Serializable
+@Helper
 data object SettingsBaseRoute

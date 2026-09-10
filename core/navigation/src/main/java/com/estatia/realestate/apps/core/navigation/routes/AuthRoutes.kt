@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 data object AuthBaseRoute
 
 @Serializable
+@Helper
 data object LoginRoute
 
 @Serializable
@@ -15,6 +16,7 @@ data object LoginRoute
 data object SignUpRoute
 
 @Serializable
+@Helper
 data object ForgotPasswordRoute
 
 @Serializable
@@ -22,4 +24,5 @@ data object ForgotPasswordRoute
 data object EmailVerificationRoute
 
 @Serializable
+@Helper
 data object PhoneVerificationRoute

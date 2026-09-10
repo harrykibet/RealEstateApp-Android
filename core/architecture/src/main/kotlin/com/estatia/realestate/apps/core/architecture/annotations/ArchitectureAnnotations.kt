@@ -75,7 +75,7 @@ annotation class Manager
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class Helper
 
 /**
@@ -83,7 +83,7 @@ annotation class Helper
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class DataSource
 
 /**
@@ -92,7 +92,7 @@ annotation class DataSource
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class ErrorMapper
 
 /**
@@ -101,7 +101,7 @@ annotation class ErrorMapper
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class DomainModel
 
 /**
@@ -110,7 +110,7 @@ annotation class DomainModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class EntityModel
 
 /**
@@ -119,5 +119,13 @@ annotation class EntityModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@com.estatia.realestate.apps.core.architecture.annotations.Helper
+@Helper
 annotation class AppEntryPoint
+
+/**
+ * Marks an interface as a formal Architectural Contract.
+ * Used to define the behavior of Repositories, Services, and UseCases.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Contract

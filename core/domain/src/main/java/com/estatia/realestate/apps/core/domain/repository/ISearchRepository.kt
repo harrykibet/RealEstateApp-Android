@@ -2,7 +2,9 @@ package com.estatia.realestate.apps.core.domain.repository
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface ISearchRepository {
 
     suspend fun searchProperties(

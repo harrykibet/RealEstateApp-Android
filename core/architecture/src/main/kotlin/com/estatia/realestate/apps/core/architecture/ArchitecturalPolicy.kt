@@ -74,6 +74,28 @@ object ArchitecturalPolicy {
         )
     }
 
+    /**
+     * LAW-041: Mandatory Architectural Identity.
+     */
+    object Law041 {
+        val RecognizedArchitecturalAnnotations = setOf(
+            "Repository", "Service", "DataSource", "ViewModelMarker", "UseCase", "Manager", 
+            "ChaosComponent", "Coordinator", "Helper", "ErrorMapper", "DomainModel", 
+            "EntityModel", "AppEntryPoint", "UiState", "Module", "AndroidEntryPoint", 
+            "HiltAndroidApp", "Contract"
+        )
+
+        val FoundationModules = setOf(
+            "core/architecture",
+            "core/ksp-architecture",
+            "core/testing-architecture",
+            "core/canary-violations",
+            "lint",
+            "build-logic",
+            "benchmark"
+        )
+    }
+
     data class Layer(
         val name: String, 
         val packagePattern: String, 

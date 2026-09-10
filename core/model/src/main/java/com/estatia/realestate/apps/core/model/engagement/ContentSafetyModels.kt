@@ -1,9 +1,11 @@
 package com.estatia.realestate.apps.core.model.engagement
 import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Result of a content safety check.
  */
+@Contract
 sealed interface SafetyResult {
     /**
      * Content is clean and safe to submit.

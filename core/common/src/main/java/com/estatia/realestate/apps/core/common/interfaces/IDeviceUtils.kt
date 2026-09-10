@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.common.interfaces
 
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IDeviceUtils {
     fun getDeviceInfo(): DeviceInfo
     fun supportsAV1(): Boolean

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.domain.config
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface ISecurityConfig : IConfigLifecycle {
     val isLoggingEnabled: Boolean
     val isTelemetryEnabled: Boolean

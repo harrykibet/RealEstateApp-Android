@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Main entry point for the media playback engine.
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 // Justification: Exposes raw Media3 Player and preloading APIs which are currently marked as UnstableApi.
 @UnstableApi
+@Contract
 interface IPlayerManager {
 
     /**

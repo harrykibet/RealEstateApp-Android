@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.common.interfaces
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface ILogger {
 
     fun d(tag: String? = null, message: String)

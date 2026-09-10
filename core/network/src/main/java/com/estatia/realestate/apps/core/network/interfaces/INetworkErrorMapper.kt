@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface INetworkErrorMapper {
 
     fun map(

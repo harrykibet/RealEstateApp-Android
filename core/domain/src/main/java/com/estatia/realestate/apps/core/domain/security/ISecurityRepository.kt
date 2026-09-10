@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.core.domain.security
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Defines security-related operations such as encryption, decryption, signing, and verification.
  */
+@Contract
 interface ISecurityRepository {
     suspend fun asymmetricEncrypt(data: String): AppResult<String>
     suspend fun asymmetricDecrypt(encryptedData: String): AppResult<String>

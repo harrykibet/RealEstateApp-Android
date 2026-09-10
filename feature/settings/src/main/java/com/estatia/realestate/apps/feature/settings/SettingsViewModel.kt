@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * ViewModel for managing the user settings experience.
@@ -49,8 +50,10 @@ class SettingsViewModel @Inject constructor(
 @Helper
 class UserEditableSettings
 
+@Contract
 sealed interface SettingsUiState {
 @Helper
     data object Loading : SettingsUiState
+@Helper
     data class Success(val settings: UserEditableSettings) : SettingsUiState
 }

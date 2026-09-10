@@ -2,10 +2,12 @@ package com.estatia.realestate.apps.core.localization.api
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import java.util.Locale
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Interface for localized measurement formatting (e.g., area size, distance).
  */
+@Contract
 interface MeasurementFormatter {
     fun formatArea(squareMeters: Double): String
     fun formatDistance(meters: Double): String

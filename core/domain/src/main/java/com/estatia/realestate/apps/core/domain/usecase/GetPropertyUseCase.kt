@@ -5,7 +5,9 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
+@Contract
 interface IGetPropertyUseCase {
     suspend operator fun invoke(propertyId: String): AppResult<PropertyDomainModel>
 }

@@ -8,6 +8,7 @@ sealed class NetworkState {
 @EntityModel
     data object Connected : NetworkState()
 
+@EntityModel
     data object PoorConnection : NetworkState()
 
 @EntityModel
