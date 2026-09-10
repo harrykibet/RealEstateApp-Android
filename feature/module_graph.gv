@@ -1,0 +1,5 @@
+digraph {
+  graph [label=":feature Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
+  node [style="rounded,filled", fontname="sans-serif", shape=box];
+  ":feature" [fillcolor="#FFD6A5"];
+}

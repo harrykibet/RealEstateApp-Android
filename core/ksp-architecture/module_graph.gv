@@ -1,0 +1,7 @@
+digraph {
+  graph [label=":core:ksp-architecture Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
+  node [style="rounded,filled", fontname="sans-serif", shape=box];
+  ":core:architecture" [fillcolor="#9BF6FF"];
+  ":core:ksp-architecture" [fillcolor="#9BF6FF"];
+  ":core:ksp-architecture" -> ":core:architecture" [color="#1A237E", style=solid]
+}

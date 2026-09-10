@@ -102,5 +102,9 @@ gradlePlugin {
             id = libs.plugins.estatia.android.lint.get().pluginId
             implementationClass = "LintConventionPlugin"
         }
+        register("estatiaArch") {
+            id = "com.estatia.realestate.apps.architecture"
+            implementationClass = "com.estatia.realestate.apps.graph.ModuleGraphPlugin"
+        }
     }
 }

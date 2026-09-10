@@ -1,0 +1,68 @@
+digraph {
+  graph [label=":core:domain Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
+  node [style="rounded,filled", fontname="sans-serif", shape=box];
+  ":core:architecture" [fillcolor="#9BF6FF"];
+  ":core:common" [fillcolor="#9BF6FF"];
+  ":core:database" [fillcolor="#9BF6FF"];
+  ":core:domain" [fillcolor="#9BF6FF"];
+  ":core:ksp-architecture" [fillcolor="#9BF6FF"];
+  ":core:model" [fillcolor="#9BF6FF"];
+  ":core:network" [fillcolor="#9BF6FF"];
+  ":core:testing" [fillcolor="#9BF6FF"];
+  ":core:testing-network" [fillcolor="#9BF6FF"];
+  ":core:common" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:common" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:common" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:common" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:database" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:database" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:database" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:database" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:domain" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:domain" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:domain" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:domain" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:ksp-architecture" -> ":core:architecture" [color="#1A237E", style=solid]
+  ":core:model" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:model" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:model" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:model" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:model" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:network" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:network" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:network" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:network" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:testing" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:database" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:testing" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing" -> ":core:testing-network" [color="#1A237E", style=solid]
+  ":core:testing" -> ":core:testing-network" [color="#757575", style=dashed]
+  ":core:testing-network" -> ":core:common" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:common" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:domain" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:domain" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:ksp-architecture" [color="#9C27B0", style=dotted, label="ksp"]
+  ":core:testing-network" -> ":core:model" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:model" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:network" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:network" [color="#FF9800", style=dashed, label="fixtures"]
+  ":core:testing-network" -> ":core:testing" [color="#1A237E", style=solid]
+  ":core:testing-network" -> ":core:testing" [color="#757575", style=dashed]
+  ":core:testing-network" -> ":core:testing" [color="#FF9800", style=dashed, label="fixtures"]
+}
