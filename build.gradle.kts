@@ -73,11 +73,9 @@ tasks.register("auditBinaryPurity") {
     group = "verification"
     
     doLast {
-        val appModule = project.findProject(":app") ?: return@doLast
         val rootDir = project.rootDir
         
         // --- LAW-038A: Release minification contract ---
-        // We check the build configuration if possible, or build artifacts.
         val releaseMappingDir = File(rootDir, "app/build/outputs/mapping/prodRelease")
         if (releaseMappingDir.exists()) {
             val mappingFile = File(releaseMappingDir, "mapping.txt")
@@ -99,7 +97,6 @@ tasks.register("auditBinaryPurity") {
 
         // --- LAW-038C: Secret/string leak detection ---
         val rawSecrets = listOf("AKIA", "AIza", "AAAA") // Common cloud provider prefixes
-        // We scan the mapping file as a proxy for the binary strings
         if (mappingFile.exists()) {
             val content = mappingFile.readText()
             val foundSecrets = rawSecrets.filter { content.contains(it) }

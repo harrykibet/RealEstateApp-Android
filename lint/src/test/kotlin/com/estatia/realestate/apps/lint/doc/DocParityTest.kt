@@ -47,10 +47,10 @@ class DocParityTest {
         val readmeFile = getReadmeFile()
         val readmeContent = readmeFile.readText()
         
-        // Match: | **LAW-001** | Description | `RISK` | `CONFIDENCE` | `ENFORCEMENT` | ... |
-        val rowRegex = Regex("""\| \*\*LAW-(\d+)\*\* \| [^|]+ \| `([^`]+)` \| `([^`]+)` \| `([^`]+)` \|""")
+        // Match: | **LAW-XXX** | Description | `RISK` | `CONFIDENCE` | `ENFORCEMENT` | ... |
+        val rowRegex = Regex("""\| \*\*(LAW-[0-9A-Z_]+)\*\* \| [^|]+ \| `([^`]+)` \| `([^`]+)` \| `([^`]+)` \|""")
         val rowsInReadme = rowRegex.findAll(readmeContent).map { 
-            val id = "LAW-${it.groupValues[1]}"
+            val id = it.groupValues[1]
             id to Triple(it.groupValues[2], it.groupValues[3], it.groupValues[4])
         }.toMap()
 
