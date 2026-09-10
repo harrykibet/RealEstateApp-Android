@@ -17,7 +17,16 @@ class Law003_FeatureIsolationTest {
             .filterNot { it.path.contains("canary-violations") }
             .withPackage(ArchitecturalPolicy.Layers.Feature.packagePattern)
             .filterNot { ArchitecturalPolicy.TechnicalDebt.FeatureIsolation.contains(it.nameWithExtension) }
-            .assertTrue(additionalMessage = "${Law.LAW_004.id} [Risk: ${Law.LAW_004.risk.name}, Confidence: ${Law.LAW_004.confidence.name}]: ${Law.LAW_004.description}") { file ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: Feature module isolation violation.
+                    |WHY: ${Law.LAW_004.rationale}
+                    |RECOMMENDED: ${Law.LAW_004.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_004.id} | RISK: ${Law.LAW_004.risk.name} | CONFIDENCE: ${Law.LAW_004.confidence.name}]
+                """.trimMargin()
+            ) { file ->
                 val packageName = file.packagee?.name ?: return@assertTrue true
                 val packageParts = packageName.split(".")
                 val featureIndex = packageParts.indexOf("feature")
@@ -46,7 +55,16 @@ class Law003_FeatureIsolationTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_003.id} [Risk: ${Law.LAW_003.risk.name}, Confidence: ${Law.LAW_003.confidence.name}]: ${Law.LAW_003.description}") { file ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: Infrastructure leakage into Feature layer.
+                    |WHY: ${Law.LAW_003.rationale}
+                    |RECOMMENDED: ${Law.LAW_003.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_003.id} | RISK: ${Law.LAW_003.risk.name} | CONFIDENCE: ${Law.LAW_003.confidence.name}]
+                """.trimMargin()
+            ) { file ->
                 val isFeature = (file.packagee?.name ?: "").contains(".feature.")
                 if (!isFeature) return@assertTrue true
 

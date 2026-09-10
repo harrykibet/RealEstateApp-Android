@@ -17,7 +17,16 @@ class Law031_LayerMixingTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Risk: ${Law.LAW_031.risk.name}, Confidence: ${Law.LAW_031.confidence.name}]: ${Law.LAW_031.description}") { file ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: ViewModel referencing infrastructure directly.
+                    |WHY: ${Law.LAW_031.rationale}
+                    |RECOMMENDED: ${Law.LAW_031.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_031.id} | RISK: ${Law.LAW_031.risk.name} | CONFIDENCE: ${Law.LAW_031.confidence.name}]
+                """.trimMargin()
+            ) { file ->
                 val hasViewModel = file.classes().any { it.name.endsWith("ViewModel") }
                 if (!hasViewModel) return@assertTrue true
                 
@@ -36,7 +45,16 @@ class Law031_LayerMixingTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_031.id} [Risk: ${Law.LAW_031.risk.name}, Confidence: ${Law.LAW_031.confidence.name}]: ${Law.LAW_031.description}") { file ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: Business logic component referencing UI frameworks.
+                    |WHY: ${Law.LAW_031.rationale}
+                    |RECOMMENDED: ${Law.LAW_031.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_031.id} | RISK: ${Law.LAW_031.risk.name} | CONFIDENCE: ${Law.LAW_031.confidence.name}]
+                """.trimMargin()
+            ) { file ->
                 val isBusinessLogic = file.classes().any { clazz ->
                     clazz.name.endsWith("Repository") || 
                     clazz.name.endsWith("UseCase") || 

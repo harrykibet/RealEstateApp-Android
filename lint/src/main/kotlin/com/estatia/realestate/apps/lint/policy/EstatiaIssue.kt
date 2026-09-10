@@ -22,8 +22,19 @@ object EstatiaIssue {
         autofixAvailable: Boolean = false
     ): Issue {
         val fullExplanation = """
-            |**Rationale**
+            |**Architecture Law**: ${architectureLaw.id} (${architectureLaw.description})
+            |
+            |**WHAT**
+            |$description
+            |
+            |**WHY (Rationale)**
+            |${architectureLaw.rationale}
+            |
+            |**Contextual Rationale**
             |$rationale
+            |
+            |**HOW TO FIX (Recommended)**
+            |${architectureLaw.recommendation}
             |
             |**Bad Example**
             |```kotlin
@@ -35,13 +46,13 @@ object EstatiaIssue {
             |${goodExample.trimIndent()}
             |```
             |
-            |**Architecture Law**: ${architectureLaw.id} (${architectureLaw.description})
-            |**Risk**: ${architectureLaw.risk.name}
-            |**Confidence**: ${architectureLaw.confidence.name}
-            |**Enforcement**: ${architectureLaw.enforcement.name}
-            |**Category**: ${category.name}
-            |**Owner**: ${owner.handle}
-            |**Autofix Available**: $autofixAvailable
+            |**METADATA**
+            |Risk: ${architectureLaw.risk.name}
+            |Confidence: ${architectureLaw.confidence.name}
+            |Enforcement: ${architectureLaw.enforcement.name}
+            |Category: ${category.name}
+            |Owner: ${owner.handle}
+            |Autofix Available: $autofixAvailable
         """.trimMargin()
 
         return Issue.create(

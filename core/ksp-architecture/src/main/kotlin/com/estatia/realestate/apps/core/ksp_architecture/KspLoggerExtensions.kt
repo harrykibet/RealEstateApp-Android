@@ -16,7 +16,22 @@ fun KSPLogger.report(law: Law, message: String, node: KSNode? = null) {
         Enforcement.INFO -> "Architecture Convention"
     }
     
-    val fullMessage = "$prefix (${law.id}) [Risk: ${law.risk.name}, Confidence: ${law.confidence.name}]: ${law.description} $message"
+    val fullMessage = """
+        |
+        |$prefix: ${law.id} [${law.risk.name} / ${law.confidence.name}]
+        |
+        |WHAT:
+        |$message
+        |
+        |WHY:
+        |${law.rationale}
+        |
+        |RECOMMENDED:
+        |${law.recommendation}
+        |
+        |SUPPRESSION:
+        |Allowed only with explicit architectural waiver.
+    """.trimMargin()
     
     when (law.enforcement) {
         Enforcement.BLOCK -> error(fullMessage, node)

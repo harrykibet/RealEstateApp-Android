@@ -12,7 +12,16 @@ class Law004_NamingConsistencyTest {
         Konsist.scopeFromProject()
             .files
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_004.id} [Risk: ${Law.LAW_004.risk.name}, Confidence: ${Law.LAW_004.confidence.name}]: ${Law.LAW_004.description}") { file ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: Package name mismatch detected.
+                    |WHY: ${Law.LAW_004.rationale}
+                    |RECOMMENDED: ${Law.LAW_004.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_004.id} | RISK: ${Law.LAW_004.risk.name} | CONFIDENCE: ${Law.LAW_004.confidence.name}]
+                """.trimMargin()
+            ) { file ->
                 val path = file.path.replace("\\", "/")
                 val coreMatch = "/core/([^/]+)/".toRegex().find(path)
                 val featureMatch = "/feature/([^/]+)/".toRegex().find(path)

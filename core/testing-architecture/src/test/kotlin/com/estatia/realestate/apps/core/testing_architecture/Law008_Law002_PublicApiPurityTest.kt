@@ -27,7 +27,16 @@ class Law008_Law002_PublicApiPurityTest {
         Konsist.scopeFromProject()
             .classes()
             .filterNot { it.path.contains("canary-violations") }
-            .assertTrue(additionalMessage = "${Law.LAW_008.id} [Risk: ${Law.LAW_008.risk.name}, Confidence: ${Law.LAW_008.confidence.name}]: ${Law.LAW_008.description} AND ${Law.LAW_002.id} [Risk: ${Law.LAW_002.risk.name}, Confidence: ${Law.LAW_002.confidence.name}]: ${Law.LAW_002.description}") { clazz ->
+            .assertTrue(
+                additionalMessage = """
+                    |
+                    |WHAT: Public API exposes mutable containers or implementation types.
+                    |WHY: ${Law.LAW_008.rationale} (and ${Law.LAW_002.rationale})
+                    |RECOMMENDED: ${Law.LAW_008.recommendation}
+                    |
+                    |[LAW: ${Law.LAW_008.id} | RISK: ${Law.LAW_008.risk.name} | CONFIDENCE: ${Law.LAW_008.confidence.name}]
+                """.trimMargin()
+            ) { clazz ->
                 val publicProps = clazz.properties(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 val publicFuncs = clazz.functions(includeNested = true).filter { it.hasModifier(KoModifier.PUBLIC) }
                 
