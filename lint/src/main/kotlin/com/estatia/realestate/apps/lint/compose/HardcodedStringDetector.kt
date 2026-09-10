@@ -23,7 +23,7 @@ class HardcodedStringDetector : Detector(), SourceCodeScanner {
 
             val containingMethod = node.getParentOfType(UMethod::class.java) ?: return
             val isComposable = context.evaluator.getAnnotations(containingMethod.javaPsi)
-                .any { it.qualifiedName?.endsWith("Composable") == true }
+                .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
 
             if (isComposable) {
                 context.report(

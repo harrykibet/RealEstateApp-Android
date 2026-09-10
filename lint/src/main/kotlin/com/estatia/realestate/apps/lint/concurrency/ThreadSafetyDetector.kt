@@ -120,26 +120,23 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun isAtRiskComponent(context: JavaContext, node: UClass): Boolean {
-        val name = node.name ?: ""
-        
-        // 1. Long-lived singletons (Hilt)
-        val hasSingletonAnnotation = context.evaluator.getAnnotations(node.javaPsi, false)
-            .any { 
-                val qn = it.qualifiedName ?: ""
-                qn.contains("Singleton") || qn.contains("Service") || qn.contains("Repository") 
-            }
-            
-        // 2. ViewModels (Implicitly multi-threaded via viewModelScope)
-        val isViewModel = context.evaluator.inheritsFrom(node, "androidx.lifecycle.ViewModel", false) ||
-                          name.endsWith("ViewModel")
-                          
-        // 3. Explicit architectural markers
-        val isArchComponent = name.endsWith("Repository") || 
-                              name.endsWith("Service") || 
-                              name.endsWith("UseCase") ||
-                              name.endsWith("Manager")
+        // 1. ViewModels (Implicitly multi-threaded via viewModelScope)
+        if (context.evaluator.inheritsFrom(node, "androidx.lifecycle.ViewModel", false)) {
+            return true
+        }
 
-        return hasSingletonAnnotation || isViewModel || isArchComponent
+        // 2. Long-lived components marked with architectural annotations
+        val annotations = context.evaluator.getAnnotations(node.javaPsi, false)
+        val isSharedComponent = annotations.any {
+            val qn = it.qualifiedName ?: ""
+            qn.contains("Singleton") || 
+            qn.contains("Repository") || 
+            qn.contains("Service") || 
+            qn.contains("UseCase") ||
+            qn.contains("Manager")
+        }
+            
+        return isSharedComponent
     }
 
     companion object {

@@ -8,6 +8,9 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.UClass
+import org.jetbrains.uast.UElement
+import org.jetbrains.uast.getParentOfType
 
 /**
  * LAW-007: Production code does not use wall-clock time directly.
@@ -30,7 +33,7 @@ class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
             else -> false
         }
 
-        if (isForbidden && !isExempt(context)) {
+        if (isForbidden && !isExempt(context, node)) {
             context.report(
                 ISSUE,
                 node,
@@ -43,7 +46,7 @@ class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
     override fun visitConstructor(context: JavaContext, node: UCallExpression, constructor: PsiMethod) {
         if (isTestContext(context)) return
         
-        if (context.evaluator.isMemberInClass(constructor, "java.util.Date") && !isExempt(context)) {
+        if (context.evaluator.isMemberInClass(constructor, "java.util.Date") && !isExempt(context, node)) {
             context.report(
                 ISSUE,
                 node,
@@ -58,9 +61,18 @@ class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
         return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
-    private fun isExempt(context: JavaContext): Boolean {
-        val path = context.file.path.replace("\\", "/")
-        return context.file.name.contains("TimeProvider") || path.contains("/di/")
+    private fun isExempt(context: JavaContext, node: UElement): Boolean {
+        // Exempt the TimeProvider implementation itself
+        val containingClass = node.getParentOfType<UClass>()
+        if (containingClass != null) {
+            val name = containingClass.name ?: ""
+            if (name.contains("TimeProvider")) return true
+            
+            // Exempt DI Modules where we might be providing System time as a default
+            val annotations = context.evaluator.getAnnotations(containingClass.javaPsi, false)
+            if (annotations.any { it.qualifiedName == "dagger.Module" }) return true
+        }
+        return false
     }
 
     private fun isTestContext(context: JavaContext): Boolean {

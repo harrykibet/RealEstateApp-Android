@@ -15,27 +15,30 @@ import org.jetbrains.uast.*
  */
 class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner {
 
+    private val targetAnnotations = setOf(
+        "com.estatia.realestate.apps.core.common.annotations.Repository",
+        "com.estatia.realestate.apps.core.common.annotations.Service",
+        "com.estatia.realestate.apps.core.common.annotations.UseCase"
+    )
+
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UCallExpression::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitCallExpression(node: UCallExpression) {
             if (!isInsideComposable(context, node)) return
             
-            // 🏎️ CRASH RESILIENCE: Handle null resolution by falling back to name analysis.
             val method = node.resolve()
-            val containingClass = method?.containingClass?.qualifiedName 
-                ?: node.receiverType?.canonicalText 
-                ?: node.asRenderString().substringBefore(".")
+            val containingClass = method?.containingClass ?: return
+            
+            val isArchComponent = context.evaluator.getAnnotations(containingClass, false)
+                .any { targetAnnotations.contains(it.qualifiedName) }
 
-            if (containingClass.endsWith("Repository") || 
-                containingClass.endsWith("Service") || 
-                containingClass.endsWith("UseCase")) {
-                
+            if (isArchComponent) {
                 context.report(
                     ISSUE,
                     node,
                     context.getLocation(node),
-                    "Direct call to architectural component '$containingClass' inside Composable. " +
+                    "Direct call to architectural component '${containingClass.name}' inside Composable. " +
                             "This work must be managed by a ViewModel to ensure proper lifecycle handling (LAW-027)."
                 )
             }

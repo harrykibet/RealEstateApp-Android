@@ -21,10 +21,13 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
         override fun visitClass(node: UClass) {
             if (node is UAnonymousClass) return
             
-            val qualifiedName = node.qualifiedName ?: return
-            val isCritical = qualifiedName.contains(".player_engine") || qualifiedName.contains(".security")
+            // 🛡️ SEMANTIC RESOLUTION: Check for critical modules via package and Singleton status
+            val qualifiedName = node.qualifiedName ?: ""
+            val isCriticalModule = qualifiedName.contains(".core.player_engine") || 
+                                  qualifiedName.contains(".core.security") ||
+                                  qualifiedName.contains(".core.data")
 
-            if (isCritical && !node.isInterface && hasSingletonAnnotation(context, node)) {
+            if (isCriticalModule && !node.isInterface && hasSingletonAnnotation(context, node)) {
                 node.methods.forEach { method ->
                     if (context.evaluator.isPublic(method) && !method.isConstructor && !isGenerated(method)) {
                         checkConfinement(context, method)

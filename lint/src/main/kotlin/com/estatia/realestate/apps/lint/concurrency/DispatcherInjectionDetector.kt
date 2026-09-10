@@ -33,11 +33,9 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
 
                 if (isDispatcher) {
                     val path = context.file.path.replace("\\", "/")
-                    val isAllowed = path.contains("/di/") || path.contains("Module") ||
-                                   path.contains("/test/") || path.contains("/androidTest/") ||
-                                   context.isTestSource
-
-                    if (!isAllowed) {
+                    val isTestFile = path.contains("/test/") || path.contains("/androidTest/") || context.isTestSource
+                    
+                    if (!isTestFile && !isInsideDiModule(node)) {
                         context.report(
                             ISSUE,
                             node,
@@ -47,6 +45,22 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
                     }
                 }
             }
+        }
+
+        private fun isInsideDiModule(node: UElement): Boolean {
+            var current: UElement? = node
+            while (current != null) {
+                if (current is UClass) {
+                    val annotations = context.evaluator.getAnnotations(current.javaPsi, false)
+                    val hasDiAnnotation = annotations.any {
+                        val name = it.qualifiedName
+                        name == "dagger.Module" || name == "dagger.hilt.InstallIn"
+                    }
+                    if (hasDiAnnotation) return true
+                }
+                current = current.uastParent
+            }
+            return false
         }
     }
 

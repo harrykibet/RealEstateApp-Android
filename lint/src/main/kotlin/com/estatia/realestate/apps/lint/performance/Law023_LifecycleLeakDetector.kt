@@ -22,10 +22,17 @@ class Law023_LifecycleLeakDetector : Detector(), SourceCodeScanner {
         override fun visitField(node: UField) {
             val containingClass = node.getParentOfType<UClass>() ?: return
             
+            // 🛡️ SEMANTIC RESOLUTION: Check actual base classes and annotations
             val isLongLived = context.evaluator.inheritsFrom(containingClass, "androidx.lifecycle.ViewModel", false) ||
                              context.evaluator.inheritsFrom(containingClass, "android.app.Service", false) ||
-                             containingClass.name?.endsWith("Repository") == true ||
-                             context.evaluator.getAnnotations(containingClass.javaPsi, false).any { it.qualifiedName?.contains("Singleton") == true }
+                             context.evaluator.getAnnotations(containingClass.javaPsi, false).any { 
+                                 val qn = it.qualifiedName ?: ""
+                                 qn.contains("Singleton") || 
+                                 qn.contains("Repository") || 
+                                 qn.contains("Service") ||
+                                 qn.contains("UseCase") ||
+                                 qn.contains("Manager")
+                             }
 
             if (isLongLived) {
                 val type = node.type

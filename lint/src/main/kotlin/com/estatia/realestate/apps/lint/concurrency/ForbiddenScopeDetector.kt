@@ -38,13 +38,10 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
         if (methodName == "CoroutineScope" || methodName == "MainScope") {
             if (!isMemberInPackage(method, "kotlinx.coroutines")) return
 
-            val containingClass = node.getParentOfType(UClass::class.java)
-            val isAllowed = containingClass?.let { 
-                context.evaluator.inheritsFrom(it, "dagger.Module", false) 
-            } ?: false ||
-            context.file.path.contains("/test/") || 
-            context.file.path.contains("/androidTest/") ||
-            context.file.path.contains("Initializer")
+            val path = context.file.path.replace("\\", "/")
+            val isTestContext = path.contains("/test/") || path.contains("/androidTest/") || context.isTestSource
+            
+            val isAllowed = isTestContext || isInsideAllowedComponent(context, node)
 
             if (!isAllowed) {
                 context.report(
@@ -55,6 +52,28 @@ class ForbiddenScopeDetector : Detector(), SourceCodeScanner {
                 )
             }
         }
+    }
+
+    private fun isInsideAllowedComponent(context: JavaContext, node: UElement): Boolean {
+        var current: UElement? = node
+        while (current != null) {
+            if (current is UClass) {
+                // 1. Check for DI Modules
+                val annotations = context.evaluator.getAnnotations(current.javaPsi, false)
+                val isDiModule = annotations.any {
+                    val name = it.qualifiedName
+                    name == "dagger.Module" || name == "dagger.hilt.InstallIn"
+                }
+                if (isDiModule) return true
+                
+                // 2. Check for App Initializers (androidx.startup.Initializer)
+                if (context.evaluator.inheritsFrom(current, "androidx.startup.Initializer", false)) {
+                    return true
+                }
+            }
+            current = current.uastParent
+        }
+        return false
     }
 
     private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
