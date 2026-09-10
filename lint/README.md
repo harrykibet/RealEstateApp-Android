@@ -110,6 +110,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-037** | Version catalog mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
 | **LAW-038** | Release symbol obfuscation integrity. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditReleaseSymbols` |
 | **LAW-039** | Magic literal extraction. | `LOW` | `HEURISTIC` | `INFO` | `L:MagicNumber` |
+| **LAW-041** | Mandatory Architectural Identity. | `HIGH` | `HIGH` | `BLOCK` | `S:Law041_IdentityMandateTest` |
 
 ---
 

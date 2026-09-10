@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.core.network.db_names
 
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+
+@EntityModel
 object FirestoreFields {
         const val ACTIVE = "active"
         const val ADDRESS = "address"

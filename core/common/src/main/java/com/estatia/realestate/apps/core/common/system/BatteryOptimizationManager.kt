@@ -1,5 +1,9 @@
 package com.estatia.realestate.apps.core.common.system
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
+
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -20,10 +24,12 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import com.estatia.realestate.apps.core.architecture.annotations.Manager
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 
+@UiState
 sealed class BatteryState {
     abstract val level: Int
     abstract val isCharging: Boolean
@@ -51,6 +57,7 @@ sealed class BatteryState {
  * - Lifecycle: Automatically unregisters system receivers on [cleanup].
  * - Resilience: Surfaces a default [BatteryState.Normal] if system sensors fail.
  */
+@Manager
 @Singleton
 class BatteryOptimizationManager @Inject constructor(
     private val context: Context,
@@ -196,6 +203,7 @@ class BatteryOptimizationManager @Inject constructor(
         }
     }
 
+@Helper
     class BatteryAwareWorker(
         context: Context,
         workerParams: WorkerParameters

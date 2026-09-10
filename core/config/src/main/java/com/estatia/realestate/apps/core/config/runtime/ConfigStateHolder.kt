@@ -1,10 +1,13 @@
 package com.estatia.realestate.apps.core.config.runtime
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicLong
 
+@Helper
 class ConfigStateHolder {
 
     private val _config = MutableStateFlow<RemoteConfigModel?>(null)

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -117,6 +119,7 @@ fun EstatiaSectionCardDarkPreview() {
     }
 }
 
+@Helper
 object EstatiaCardDefaults {
     val CardCornerRadius = 12.dp
 }

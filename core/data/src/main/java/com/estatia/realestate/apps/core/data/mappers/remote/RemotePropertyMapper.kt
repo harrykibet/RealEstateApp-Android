@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.remote
 
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+
 import com.estatia.realestate.apps.core.model.property.ContactInfo
 import com.estatia.realestate.apps.core.model.property.Coordinates
 import com.estatia.realestate.apps.core.model.property.Money
@@ -15,6 +17,7 @@ import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Surfaces "Untitled" for blank titles to avoid UI empty states.
  */
+@ErrorMapper
 object RemotePropertyMapper {
 
     fun toDomain(entity: PropertyEntityModel): PropertyDomainModel {

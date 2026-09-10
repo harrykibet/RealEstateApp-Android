@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull

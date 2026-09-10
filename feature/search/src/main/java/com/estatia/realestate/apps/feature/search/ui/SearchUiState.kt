@@ -1,12 +1,16 @@
 package com.estatia.realestate.apps.feature.search.ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 
 sealed interface SearchUiState {
     val initialPage: Int
         get() = 0
 
+@Helper
     object Initial : SearchUiState
+@Helper
     object Loading : SearchUiState
     data class Success(
         val results: List<PropertyDomainModel>,

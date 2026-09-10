@@ -24,9 +24,9 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
     )
 
     private val targetAnnotations = setOf(
-        "com.estatia.realestate.apps.core.common.annotations.ViewModelMarker",
-        "com.estatia.realestate.apps.core.common.annotations.Repository",
-        "com.estatia.realestate.apps.core.common.annotations.Service"
+        "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker",
+        "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Service"
     )
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UField::class.java)

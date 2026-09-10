@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.intelligence
 
-import com.estatia.realestate.apps.core.common.annotations.Service
+import com.estatia.realestate.apps.core.architecture.annotations.Service
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import android.content.Context

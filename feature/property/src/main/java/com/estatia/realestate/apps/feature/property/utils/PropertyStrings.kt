@@ -1,6 +1,10 @@
 package com.estatia.realestate.apps.feature.property.utils
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
+@Helper
 object PropertyStrings {
+@Helper
     object Amenities {
         const val WIFI = "Wifi"
         const val POOL = "Pool"

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
@@ -20,6 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Includes a watchdog mechanism to prevent hanging in the "Buffering" state
  * when encountering corrupt or zero-duration media.
  */
+@Helper
 class PlaybackStateReducer(
     private val scope: CoroutineScope,
     private val watchdogTimeoutMs: Long = 7_000L,

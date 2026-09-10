@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.core.common.events
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
+@Helper
 object EventTypes {
     // General App Events
     const val EVENT_APP_LAUNCH = "App launched"

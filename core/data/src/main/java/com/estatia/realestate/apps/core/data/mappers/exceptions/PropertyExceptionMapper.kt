@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.PropertyException
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import javax.inject.Inject
 
 /**
@@ -10,6 +11,7 @@ import javax.inject.Inject
  * - Responsibility: Map platform errors (Firestore/Room) to [PropertyException] domain failures.
  * - Concurrency: Stateless and thread-safe.
  */
+@Helper
 internal class PropertyExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<PropertyException>(
     notFound = { PropertyException.PropertyNotFound },
     permissionDenied = { PropertyException.PermissionDenied },

@@ -1,6 +1,9 @@
 package com.estatia.realestate.apps.feature.property.utils
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
+
+@Helper
 object MediaStrings {
     const val IMAGE_MIME_TYPE = "image/*"
     const val VIDEO_MIME_TYPE = "video/*"
@@ -17,6 +20,7 @@ object MediaStrings {
     const val ERROR_PICTURES_DIR = "MediaLoader: Default pictures directory not found or is empty."
     const val MEDIA_SELECTION_PROMPT = "Please select at least one media file"
 
+@Helper
     object FileExtensions {
         const val JPG = "jpg"
         const val JPEG = "jpeg"

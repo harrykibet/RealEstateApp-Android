@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import com.estatia.realestate.apps.core.data.mappers.remote.RemoteUserProfileMapper
 import com.estatia.realestate.apps.core.data.util.translateUserFailures
 import com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource
-import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.model.user.UserDomainModel
 import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig

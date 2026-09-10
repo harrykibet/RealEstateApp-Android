@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
@@ -232,6 +234,7 @@ private fun EstatiaNavigationItemContent(
 /**
  * A wrapper around [NavigationSuiteScope] to declare navigation items.
  */
+@Helper
 class EstatiaNavigationSuiteScope internal constructor(
     private val navigationSuiteScope: NavigationSuiteScope,
     private val navigationSuiteItemColors: NavigationSuiteItemColors,
@@ -296,6 +299,7 @@ fun EstatiaNavigationBarPreview() {
 /**
  * Estatia navigation default values.
  */
+@Helper
 object EstatiaNavigationDefaults {
     @Composable
     fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant

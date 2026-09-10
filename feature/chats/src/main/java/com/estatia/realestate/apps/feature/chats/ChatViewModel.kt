@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.chats
 
-import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.model.feature.Chat
 import com.estatia.realestate.apps.core.model.feature.ChatUser

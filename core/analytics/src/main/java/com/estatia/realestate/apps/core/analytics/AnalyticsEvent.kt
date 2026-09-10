@@ -1,5 +1,9 @@
 package com.estatia.realestate.apps.core.analytics
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+
 /**
  * Represents an analytics event.
  *
@@ -10,11 +14,13 @@ package com.estatia.realestate.apps.core.analytics
  *
  * @param extras - list of parameters which supply additional context to the event. See `Param`.
  */
+@DomainModel
 data class AnalyticsEvent(
     val type: String,
     val extras: List<Param> = emptyList(),
 ) {
     // Standard analytics types.
+@Helper
     class Types {
         companion object {
             const val SCREEN_VIEW = "screen_view" // (extras: SCREEN_NAME)
@@ -34,6 +40,7 @@ data class AnalyticsEvent(
     data class Param(val key: String, val value: String)
 
     // Standard parameter keys.
+@Helper
     class ParamKeys {
         companion object {
             const val SCREEN_NAME = "screen_name"

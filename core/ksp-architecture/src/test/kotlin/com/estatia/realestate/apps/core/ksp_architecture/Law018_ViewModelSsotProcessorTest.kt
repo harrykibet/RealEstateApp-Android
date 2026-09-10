@@ -16,7 +16,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
             import kotlinx.coroutines.flow.StateFlow
             
             @ViewModelMarker
@@ -43,7 +43,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
             import kotlinx.coroutines.flow.StateFlow
             import kotlinx.coroutines.flow.Flow
             
@@ -71,7 +71,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
             import kotlinx.coroutines.flow.Flow
             
             @ViewModelMarker

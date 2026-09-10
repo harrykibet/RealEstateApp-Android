@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.Tag
+import com.estatia.realestate.apps.core.architecture.annotations.Manager
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration
@@ -20,6 +21,7 @@ import kotlin.time.toJavaDuration
  * - Resilience: Non-blocking; metric collection should not impact user-facing latency.
  * - Observability: Directly enables Service Level Indicators (SLIs) for the application.
  */
+@Manager
 @Singleton
 class MetricsTracker @Inject constructor() : IMetricsTracker {
 

@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.di.ApplicationScope
+import com.estatia.realestate.apps.core.architecture.annotations.AppEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 import javax.inject.Inject
 
+@AppEntryPoint
 @HiltAndroidApp
 class EstatiaApplication : Application(), Configuration.Provider  {
 

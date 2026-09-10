@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import android.util.Base64
-import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.map
 import com.estatia.realestate.apps.core.domain.security.ISecurityRepository

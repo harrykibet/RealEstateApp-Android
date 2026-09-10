@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.common.system
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -21,6 +23,7 @@ import java.io.InputStream
  * - Performance: I/O intensive operations (like [getFileFromUri]) should be called from background dispatchers.
  * - Security: Does NOT grant or request permissions; assumes the caller has appropriate Storage access.
  */
+@Helper
 object FileUtils {
 
     /**

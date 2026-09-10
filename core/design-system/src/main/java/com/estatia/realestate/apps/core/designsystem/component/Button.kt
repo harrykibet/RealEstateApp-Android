@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
@@ -244,6 +246,7 @@ fun EstatiaOutlinedButtonPreview() {
 /**
  * Estatia button default values.
  */
+@Helper
 object EstatiaButtonDefaults {
     const val DISABLED_OUTLINED_BUTTON_BORDER_ALPHA = 0.12f
     val OutlinedButtonBorderWidth = 1.dp

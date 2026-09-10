@@ -1,10 +1,13 @@
 package com.estatia.realestate.apps.core.datastore
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import androidx.datastore.core.DataMigration
 
 /**
  * Migrates from using lists to maps for user data.
  */
+@Helper
 internal object ListToMapMigration : DataMigration<UserPreferences> {
 
     override suspend fun cleanUp() = Unit

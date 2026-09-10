@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.navigation.routes
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import com.estatia.realestate.apps.core.model.feature.PaymentContext
 import kotlinx.serialization.Serializable
 
@@ -14,6 +16,7 @@ data class PaymentRoute(
     val context: PaymentContext
 )
 
+@Helper
 object PaymentNavConstants {
     const val PAYMENT_RESULT_KEY = "payment_result"
 }

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
+
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.Orientation.Horizontal
 import androidx.compose.foundation.gestures.Orientation.Vertical
@@ -56,6 +58,7 @@ private const val SCROLLBAR_PRESS_DELAY_MS = 10L
  */
 private const val SCROLLBAR_PRESS_DELTA_PCT = 0.02f
 
+@UiState
 class ScrollbarState {
     private var packedValue by mutableLongStateOf(0L)
 

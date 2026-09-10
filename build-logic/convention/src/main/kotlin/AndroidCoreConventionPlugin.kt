@@ -1,6 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-
+import org.gradle.kotlin.dsl.dependencies
 
 class AndroidCoreConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
@@ -10,5 +10,9 @@ class AndroidCoreConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.hilt")
         pluginManager.apply("com.estatia.realestate.apps.android.flavors")
         pluginManager.apply("com.estatia.realestate.apps.android.jacoco")
+
+        dependencies {
+            "implementation"(project(":core:architecture"))
+        }
     }
 }

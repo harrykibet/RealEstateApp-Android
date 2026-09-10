@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.testing.fake.analytics
 
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import com.estatia.realestate.apps.core.testing.witness.Witness
@@ -7,6 +8,8 @@ import com.estatia.realestate.apps.core.testing.witness.Witness
 /**
  * A fake engagement repository that records signals via [Witness].
  */
+
+@Repository
 class FakeEngagementRepository : IEngagementRepository {
 
     val witness = Witness<EngagementSignal>()

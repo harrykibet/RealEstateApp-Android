@@ -40,7 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import com.estatia.realestate.apps.core.model.property.MediaType

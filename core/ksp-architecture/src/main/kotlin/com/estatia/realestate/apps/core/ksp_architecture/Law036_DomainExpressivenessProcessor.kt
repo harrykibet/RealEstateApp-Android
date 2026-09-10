@@ -15,7 +15,7 @@ class Law036_DomainExpressivenessProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase")
+        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.getDeclaredFunctions().forEach { func ->

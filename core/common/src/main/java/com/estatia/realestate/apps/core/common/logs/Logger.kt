@@ -2,6 +2,7 @@ package com.estatia.realestate.apps.core.common.logs
 
 import android.util.Log
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
+import com.estatia.realestate.apps.core.architecture.annotations.Manager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -16,6 +17,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe (delegates to system [Log]).
  * - Performance: Avoids heavy string concatenation when Log.DEBUG is disabled in production.
  */
+@Manager
 class Logger @Inject constructor(
 ) : ILogger {
 

@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.core.common.annotations
+package com.estatia.realestate.apps.core.architecture.annotations
 
 import kotlin.annotation.AnnotationRetention
 import kotlin.annotation.AnnotationTarget
@@ -52,3 +52,64 @@ annotation class UiState
 annotation class AllowedArchitectureDependency(
     val reason: String
 )
+
+/**
+ * Marks a class as an Orchestration Coordinator.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Coordinator
+
+/**
+ * Marks a class as a long-lived Functional Manager.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Manager
+
+/**
+ * Marks a class as a Functional Helper.
+ * Used for internal logic, formatters, or math utilities.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Helper
+
+/**
+ * Marks a class as a Data Source (Network or Local).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class DataSource
+
+/**
+ * Marks a class as an Error Mapper.
+ * Responsible for translating infrastructure exceptions into Domain results.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class ErrorMapper
+
+/**
+ * Marks a data class or sealed class as a Pure Domain Model.
+ * Enforced to remain free of platform/framework imports (LAW-032).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class DomainModel
+
+/**
+ * Marks a data class as an Infrastructure Entity (DB/Network).
+ * Must not leak into Domain or Presentation layers.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class EntityModel
+
+/**
+ * Marks a class as an Application Entry Point.
+ * Used for Activities, Fragments (that aren't ViewModels), or Application classes.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class AppEntryPoint

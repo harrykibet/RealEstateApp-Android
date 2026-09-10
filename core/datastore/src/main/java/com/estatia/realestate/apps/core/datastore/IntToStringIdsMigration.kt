@@ -1,10 +1,13 @@
 package com.estatia.realestate.apps.core.datastore
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import androidx.datastore.core.DataMigration
 
 /**
  * Migrates saved ids from [Int] to [String] types
  */
+@Helper
 internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
 
     override suspend fun cleanUp() = Unit

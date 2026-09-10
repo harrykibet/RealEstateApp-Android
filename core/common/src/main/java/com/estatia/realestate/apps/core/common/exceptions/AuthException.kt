@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
+@Helper
 sealed class AuthException(
     message: String,
     cause: Throwable? = null

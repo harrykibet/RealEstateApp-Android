@@ -14,12 +14,12 @@ class Law030_ConstructorPurityProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency"
     private val allowedInfrastructure = ArchitecturalPolicy.Law030.AllowedInfrastructureInConstructors
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository") +
-                      resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase")
+        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.Repository") +
+                      resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.primaryConstructor?.parameters?.forEach { param ->

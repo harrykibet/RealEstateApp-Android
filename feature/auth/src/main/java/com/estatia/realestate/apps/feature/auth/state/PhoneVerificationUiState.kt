@@ -1,9 +1,13 @@
 package com.estatia.realestate.apps.feature.auth.state
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 sealed interface PhoneVerificationUiState {
 
+@Helper
     object Idle : PhoneVerificationUiState
 
+@Helper
     object SendingCode : PhoneVerificationUiState
 
     data class CodeSent(val verificationId: String) : PhoneVerificationUiState
@@ -12,10 +16,13 @@ sealed interface PhoneVerificationUiState {
         val secondsLeft: Int
     ) : PhoneVerificationUiState
 
+@Helper
     object Verifying : PhoneVerificationUiState
 
+@Helper
     object Expired : PhoneVerificationUiState
 
+@Helper
     object Success : PhoneVerificationUiState
 
     data class Error(

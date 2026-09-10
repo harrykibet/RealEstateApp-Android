@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.model.user.UserData
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

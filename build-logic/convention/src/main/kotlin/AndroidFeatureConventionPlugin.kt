@@ -16,6 +16,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         pluginManager.apply("com.estatia.realestate.apps.android.jacoco")
 
         dependencies {
+            "implementation"(project(":core:architecture"))
             "implementation"(project(":core:ui"))
             "implementation"(project(":core:common"))
             "implementation"(project(":core:domain"))

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.domain.usecase
 
-import com.estatia.realestate.apps.core.common.annotations.UseCase
+import com.estatia.realestate.apps.core.architecture.annotations.UseCase
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository

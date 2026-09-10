@@ -1,9 +1,11 @@
 package com.estatia.realestate.apps.core.config.datasource
 
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+@DataSource
 internal class AssetConfigDataSource @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {

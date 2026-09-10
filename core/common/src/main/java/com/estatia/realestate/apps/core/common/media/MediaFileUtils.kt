@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.common.media
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -31,6 +33,7 @@ import java.security.MessageDigest
  * - Performance: Avoid O(N) operations on the Main thread.
  * - Security: Does NOT validate file content beyond basic header checks.
  */
+@Helper
 object MediaFileUtils {
 
     private const val TAG = "MediaFileUtils"

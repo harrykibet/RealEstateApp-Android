@@ -18,8 +18,8 @@ class Law008_AbstractionLeakageProcessor(
     private val forbiddenInfrastructure = ArchitecturalPolicy.Law003.InfrastructurePackages
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase") +
-                      resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository")
+        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.UseCase") +
+                      resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.Repository")
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.getDeclaredProperties().forEach { prop ->

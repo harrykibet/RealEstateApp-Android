@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.graphics.PixelFormat
 import android.os.Build
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
@@ -10,9 +12,13 @@ import javax.inject.Singleton
 class HdrConfiguration @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {
+@Helper
     sealed class HdrMode(val format: Int) {
+@Helper
         object HDR10 : HdrMode(PixelFormat.RGBA_1010102)
+@Helper
         object DolbyVision : HdrMode(PixelFormat.RGBA_1010102)
+@Helper
         object None : HdrMode(PixelFormat.RGB_565)
     }
 

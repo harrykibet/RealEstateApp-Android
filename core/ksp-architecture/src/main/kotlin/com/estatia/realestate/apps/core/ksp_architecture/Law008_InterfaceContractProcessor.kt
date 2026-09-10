@@ -13,8 +13,8 @@ class Law008_InterfaceContractProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val repoSymbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository")
-        val useCaseSymbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase")
+        val repoSymbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.Repository")
+        val useCaseSymbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
         
         (repoSymbols + useCaseSymbols).filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             val hasInterface = clazz.superTypes.any { 

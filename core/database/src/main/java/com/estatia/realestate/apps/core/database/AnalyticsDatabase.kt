@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.database
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -12,6 +14,7 @@ import com.estatia.realestate.apps.core.database.entities.AnalyticsOutboxEntity
     version = 1,
     exportSchema = false
 )
+@Helper
 abstract class AnalyticsDatabase : RoomDatabase() {
     abstract fun analyticsOutboxDao(): AnalyticsOutboxDao
 

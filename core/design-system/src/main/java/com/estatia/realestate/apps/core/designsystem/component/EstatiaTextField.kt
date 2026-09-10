@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -158,6 +160,7 @@ private fun TextFieldPreviewContent() {
     }
 }
 
+@Helper
 object EstatiaTextFieldDefaults {
     val TextFieldCornerRadius = 12.dp
 }

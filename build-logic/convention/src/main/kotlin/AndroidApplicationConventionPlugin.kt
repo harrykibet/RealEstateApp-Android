@@ -4,6 +4,7 @@ import com.android.build.api.artifact.SingleArtifact
 import com.estatia.realestate.apps.release.AuditSymbolObfuscationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import java.io.File
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
@@ -165,6 +166,10 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     dependsOn(auditTask)
                 }
             }
+        }
+
+        dependencies {
+            "implementation"(project(":core:architecture"))
         }
     }
 }

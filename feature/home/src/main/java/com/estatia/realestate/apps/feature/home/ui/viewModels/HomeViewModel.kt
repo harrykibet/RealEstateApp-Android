@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.feature.home.ui.viewModels
 
 import androidx.lifecycle.SavedStateHandle
-import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.getOrThrow

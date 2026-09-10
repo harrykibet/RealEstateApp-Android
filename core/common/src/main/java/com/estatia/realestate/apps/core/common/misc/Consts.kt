@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.common.misc
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 // Global constants and objects
 /**
  * Central registry for project-wide hardcoded values.
@@ -8,6 +10,7 @@ package com.estatia.realestate.apps.core.common.misc
  * - Responsibility: Prevent string-literal duplication across modules.
  * - Immutability: Compile-time constants.
  */
+@Helper
 object Consts {
     const val EMPTY_STRING = ""
     const val PROPERTY = "property"

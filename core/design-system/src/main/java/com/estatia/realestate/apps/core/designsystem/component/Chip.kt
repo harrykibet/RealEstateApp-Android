@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
+
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilterChip
@@ -104,6 +106,7 @@ fun ChipPreview() {
 /**
  * Estatia chip default values.
  */
+@Helper
 object EstatiaChipDefaults {
     // TODO: File bug
     // FilterChip default values aren't exposed via FilterChipDefaults

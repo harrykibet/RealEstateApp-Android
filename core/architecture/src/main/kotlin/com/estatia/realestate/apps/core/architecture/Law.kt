@@ -303,6 +303,11 @@ enum class Law(
         "LAW-039", "Clean Code: Mandatory constant extraction for literals.", LawCategory.CODE_HEALTH, Risk.LOW, Confidence.HEURISTIC, Enforcement.INFO,
         "Using magic numbers or strings directly in logic makes the code difficult to maintain and reason about.",
         "Extract literals to named constants in a Companion object or Top-level file."
+    ),
+    LAW_041(
+        "LAW-041", "Mandatory Architectural Identity.", LawCategory.ARCHITECTURE, Risk.HIGH, Confidence.HIGH, Enforcement.BLOCK,
+        "Classes in governed modules must explicitly declare their role via annotations to enable semantic safety checks.",
+        "Add the appropriate architectural annotation (e.g., @Repository, @Service) to the class."
     );
 
     override fun toString(): String = id

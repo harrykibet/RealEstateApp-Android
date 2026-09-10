@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import java.io.ByteArrayOutputStream
 import java.io.File
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 
@@ -36,6 +37,7 @@ import kotlinx.coroutines.CancellationException
  * - Resilience: Surfaces null on failure; handles hardware codec availability via Media3 Transformer.
  * - Performance: Caps resolution at 1080p to optimize bandwidth/storage.
  */
+@Helper
 class MediaCompressor @Inject constructor(
     private val logger: ILogger,
     private val fileSystem: IFileSystem

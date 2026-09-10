@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.common.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.domain.config.IConfigDataRepository
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource

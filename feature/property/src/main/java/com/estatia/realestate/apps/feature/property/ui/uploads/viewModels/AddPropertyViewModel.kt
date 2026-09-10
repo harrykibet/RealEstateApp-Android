@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.feature.property.ui.uploads.viewModels
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import com.estatia.realestate.apps.core.common.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult

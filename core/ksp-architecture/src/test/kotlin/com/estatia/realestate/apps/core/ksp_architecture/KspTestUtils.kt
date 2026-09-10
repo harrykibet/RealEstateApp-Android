@@ -10,7 +10,7 @@ object KspTestUtils {
     val annotationsSource = SourceFile.kotlin(
         "ArchitectureAnnotations.kt",
         """
-        package com.estatia.realestate.apps.core.common.annotations
+        package com.estatia.realestate.apps.core.architecture.annotations
         annotation class Repository
         annotation class Service
         annotation class UseCase

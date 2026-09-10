@@ -13,11 +13,11 @@ class Law018_ViewModelSsotProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency"
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
-        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.common.annotations.ViewModelMarker"
+        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker"
         val stateFlowFqn = "kotlinx.coroutines.flow.StateFlow"
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()

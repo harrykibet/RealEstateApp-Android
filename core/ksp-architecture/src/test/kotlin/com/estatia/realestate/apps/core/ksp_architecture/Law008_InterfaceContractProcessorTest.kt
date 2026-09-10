@@ -16,7 +16,7 @@ class Law008_InterfaceContractProcessorTest {
             "TestRepository.kt",
             """
             package com.estatia.realestate.apps.core.data.repositories
-            import com.estatia.realestate.apps.core.common.annotations.Repository
+            import com.estatia.realestate.apps.core.architecture.annotations.Repository
             
             @Repository
             class TestRepository { // Missing interface

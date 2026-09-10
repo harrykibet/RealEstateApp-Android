@@ -4,12 +4,14 @@ import com.estatia.realestate.apps.core.model.config.NetworkConfigModel
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import com.estatia.realestate.apps.core.model.config.SecurityConfigModel
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import kotlinx.serialization.json.Json
 
 /**
  * Robust config parser using Kotlin Serialization.
  * Automatically maps nested JSON fragments to Typed Kotlin objects.
  */
+@Helper
 class ConfigParser {
 
     private val json = Json {
