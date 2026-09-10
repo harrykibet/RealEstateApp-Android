@@ -5,49 +5,7 @@ import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
 import org.junit.Test
 
-class ModuleDependencyDetectorTest {
-
-    @Test
-    fun `feature module depending on another feature module reports fatal`() {
-        lint()
-            .testModes(TestMode.DEFAULT)
-            .allowMissingSdk()
-            .allowCompilationErrors()
-            .files(
-                kotlin(
-                    """
-                    package com.estatia.realestate.apps.feature.home
-                    import com.estatia.realestate.apps.feature.auth.AuthViewModel
-                    
-                    class HomeUI
-                    """.trimIndent()
-                )
-            )
-            .issues(ModuleDependencyDetector.FEATURE_COUPLING_ISSUE)
-            .run()
-            .expectContains("Feature module 'home' cannot depend on feature 'auth'")
-    }
-
-    @Test
-    fun `feature module depending on shared_ui is clean`() {
-        lint()
-            .testModes(TestMode.DEFAULT)
-            .allowMissingSdk()
-            .allowCompilationErrors()
-            .files(
-                kotlin(
-                    """
-                    package com.estatia.realestate.apps.feature.home
-                    import com.estatia.realestate.apps.feature.shared_ui.CommonButton
-                    
-                    class HomeUI
-                    """.trimIndent()
-                )
-            )
-            .issues(ModuleDependencyDetector.FEATURE_COUPLING_ISSUE)
-            .run()
-            .expectClean()
-    }
+class InfrastructureLeakageDetectorTest {
 
     @Test
     fun `infrastructure leaked into domain reports fatal`() {
@@ -65,7 +23,7 @@ class ModuleDependencyDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE)
+            .issues(InfrastructureLeakageDetector.ISSUE)
             .run()
             .expectContains("Infrastructure implementation 'com.estatia.realestate.apps.core.database.UserDao' leaked into pure layer")
     }
@@ -86,7 +44,7 @@ class ModuleDependencyDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE)
+            .issues(InfrastructureLeakageDetector.ISSUE)
             .run()
             .expectContains("Infrastructure implementation 'com.google.firebase.auth.FirebaseUser' leaked into pure layer")
     }

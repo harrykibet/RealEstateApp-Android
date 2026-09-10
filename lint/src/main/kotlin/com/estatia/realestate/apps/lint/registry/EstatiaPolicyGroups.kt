@@ -21,8 +21,8 @@ import com.estatia.realestate.apps.core.architecture.LawCategory
 object EstatiaPolicyGroups {
     val all: List<Issue> = listOf(
         // --- ARCHITECTURE ---
-        ModuleDependencyDetector.FEATURE_COUPLING_ISSUE,
-        ModuleDependencyDetector.IMPLEMENTATION_LEAKAGE_ISSUE,
+        FeatureCouplingDetector.ISSUE,
+        InfrastructureLeakageDetector.ISSUE,
         ExposedMutableStateDetector.ISSUE,
         
         // --- CONCURRENCY ---
