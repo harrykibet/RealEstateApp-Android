@@ -107,7 +107,11 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-029** | Global class size budget. | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
 | **LAW-030** | Orchestration dependency budget. | `MEDIUM` | `CERTAIN` | `BLOCK` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
 | **LAW-037** | Version catalog mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
-| **LAW-038** | Binary purity & obfuscation. | `CRITICAL` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038A** | Release minification contract. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038B** | R8 mapping integrity. | `HIGH` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038C** | Secret/string leak detection. | `CRITICAL` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038D** | Forbidden debug artifact detection. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038E** | Release binary policy. | `HIGH` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
 | **LAW-039** | Magic literal extraction. | `LOW` | `HEURISTIC` | `INFO` | `L:MagicNumber` |
 
 ---

@@ -285,10 +285,32 @@ enum class Law(
         "Directly hardcoding dependency versions in build scripts leads to version drift and conflicts.",
         "Move all dependency declarations to gradle/libs.versions.toml."
     ),
-    LAW_038(
-        "LAW-038", "Production binaries must remain pure and obfuscated.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.HIGH, Enforcement.BLOCK,
-        "Leaking symbols or using non-standard packaging increases APK size and security risk.",
-        "Ensure Proguard/R8 rules are strictly applied and audited."
+    
+    // --- RELEASE HARDENING (Refactored LAW-038) ---
+    LAW_038_A(
+        "LAW-038A", "Release minification contract.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Shipping un-minified code to production increases reverse-engineering risk and APK size.",
+        "Ensure 'minifyEnabled true' and 'shrinkResources true' are set in release build types."
+    ),
+    LAW_038_B(
+        "LAW-038B", "R8 mapping integrity.", LawCategory.INFRASTRUCTURE, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Sensitive internal implementation details leaking into R8 mapping files indicates suboptimal obfuscation rules.",
+        "Audit Proguard/R8 rules to ensure sensitive package names are correctly obfuscated."
+    ),
+    LAW_038_C(
+        "LAW-038C", "Secret/string leak detection.", LawCategory.SECURITY, Risk.CRITICAL, Confidence.HIGH, Enforcement.BLOCK,
+        "Hardcoded secrets in the binary are easily extractable even from obfuscated code.",
+        "Use BuildConfig fields, environment variables, or encrypted storage for sensitive strings."
+    ),
+    LAW_038_D(
+        "LAW-038D", "Forbidden debug artifact detection.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Including debug tools (LeakCanary, Stetho, Timber DebugTree) in release binaries compromises security.",
+        "Use 'releaseImplementation' or separate source sets to isolate debug tools."
+    ),
+    LAW_038_E(
+        "LAW-038E", "Release binary policy.", LawCategory.INFRASTRUCTURE, Risk.HIGH, Confidence.HIGH, Enforcement.BLOCK,
+        "Non-standard binary configuration (e.g., debuggable=true) in release builds is a critical security failure.",
+        "Verify AndroidManifest metadata and signing configurations for the release build type."
     ),
 
     // --- CODE HEALTH ---
