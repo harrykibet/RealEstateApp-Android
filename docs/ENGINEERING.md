@@ -3,6 +3,7 @@
 ## Coding Standards
 
 * Kotlin idiomatic practices; immutability preferred.
+* **Semantic Architecture**: Every logical component must declare its role via annotations ([Industrial Analysis Meta-System](./INDUSTRIAL_ANALYSIS_META_SYSTEM.md)).
 * SOLID principles enforced, with a focus on **Interface Segregation (ISP)** for configuration.
 * Minimal boilerplate; explicit state and dependencies via Hilt.
 * Clear separation between UI, domain, and data logic.

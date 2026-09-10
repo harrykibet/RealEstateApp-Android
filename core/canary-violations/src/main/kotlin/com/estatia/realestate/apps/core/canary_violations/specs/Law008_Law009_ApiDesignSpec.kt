@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.canary_violations.specs
 
 import android.util.Log
+import com.estatia.realestate.apps.core.architecture.annotations.Contract
 import com.estatia.realestate.apps.core.architecture.annotations.Repository
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import retrofit2.Retrofit
@@ -11,6 +12,7 @@ import javax.inject.Inject
  * LAW-009: Explicit Failure Handling
  */
 
+@Contract
 public interface ICanaryRepo
 
 // [CANARY:POSITIVE:MissingVisibilityModifier]

@@ -19,6 +19,7 @@ flowchart TD
 * **Module Isolation**: Strict boundaries; no cross-feature direct access.
 * **Lifecycle Safety**: State handling across recomposition, process death, concurrency.
 * **Actor-style Concurrency**: For media-heavy and async workflows.
+* **Semantic Governance**: Mandatory architectural identity via annotations ([Meta-System Details](INDUSTRIAL_ANALYSIS_META_SYSTEM.md)).
 
 ## Module Responsibilities
 
