@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.intelligence
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * High-level processor for aggregating and prioritizing user engagement signals.
@@ -13,6 +14,7 @@ import javax.inject.Singleton
  * - Performance: Minimal overhead; avoids heavy logic on the UI thread.
  */
 @Singleton
+@Helper
 class EngagementSignalProcessor @Inject constructor(
     private val engagementRepository: IEngagementRepository
 ) {

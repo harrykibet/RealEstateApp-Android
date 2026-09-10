@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import com.estatia.realestate.apps.core.model.property.MediaType
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
+@DomainModel
 data class VideoItem(
     val mediaId: String,
     val title: String = "",

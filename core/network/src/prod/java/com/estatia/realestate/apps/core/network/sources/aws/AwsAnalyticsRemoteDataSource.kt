@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as Domain
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * AWS implementation of [IAnalyticsRemoteDataSource].
@@ -17,6 +18,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe (SDK internal).
  * - Observability: Tracks recording events success/failure.
  */
+@DataSource
 internal class AwsAnalyticsRemoteDataSource @Inject constructor(
     private val metricsTracker: IMetricsTracker
 ) : IAnalyticsRemoteDataSource {

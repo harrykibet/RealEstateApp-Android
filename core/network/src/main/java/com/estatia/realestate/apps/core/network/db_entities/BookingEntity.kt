@@ -1,4 +1,5 @@
 package com.estatia.realestate.apps.core.network.db_entities
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 enum class BookingStatus {
     PENDING,
@@ -6,6 +7,7 @@ enum class BookingStatus {
     CANCELED
 }
 
+@EntityModel
 data class BookingEntity(
     val bookingId: String,
     val propertyId: String,

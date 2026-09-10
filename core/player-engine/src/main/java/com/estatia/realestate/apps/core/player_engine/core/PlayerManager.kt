@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Facade implementation of [IPlayerManager].
@@ -26,6 +27,7 @@ import javax.inject.Singleton
 // Justification: Implementation of IPlayerManager which exposes Unstable Media3 APIs.
 @UnstableApi
 @Singleton
+@Helper
 class PlayerManager @Inject constructor(
     private val orchestrator: PlaybackOrchestrator,
     private val sessionCoordinator: MediaSessionCoordinator,

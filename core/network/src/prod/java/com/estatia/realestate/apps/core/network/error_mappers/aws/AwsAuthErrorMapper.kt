@@ -5,6 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException as Domai
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 /**
  * AWS implementation of [IAuthExceptionMapper] for translating Cognito failures.
@@ -15,6 +16,7 @@ import javax.inject.Singleton
  * - Resilience: Surfaces [AuthException.Unknown] for unhandled AWS error codes.
  */
 @Singleton
+@ErrorMapper
 internal class AwsAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
     override fun map(throwable: Throwable): DomainAuthException {

@@ -4,8 +4,10 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
 import com.google.firebase.firestore.FirebaseFirestoreException
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 
+@ErrorMapper
 class FirebaseFirestoreErrorMapper @Inject constructor() : IDatabaseErrorMapper {
 
 

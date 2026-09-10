@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Handles Android audio focus requests and transitions.
@@ -24,6 +25,7 @@ import javax.inject.Singleton
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
+@Helper
 class AudioFocusManager @Inject constructor(
     @ApplicationContext private val context: Context,
     @param:EngineScope private val engineScope: CoroutineScope,

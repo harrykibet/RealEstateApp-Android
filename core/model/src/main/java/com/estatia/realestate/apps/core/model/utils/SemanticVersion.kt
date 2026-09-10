@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.model.utils
 
 import java.lang.IllegalArgumentException
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 /**
  * Represents a semantic version following the SemVer 2.0.0 specification
@@ -9,6 +10,7 @@ import java.lang.IllegalArgumentException
  * @param patch Patch version (increment for bug fixes)
  * @param preRelease Optional pre-release version (hyphen-separated identifiers)
  */
+@DomainModel
 data class SemanticVersion(
     val major: Int,
     val minor: Int,

@@ -12,9 +12,11 @@ import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
+@Helper
 class PlaybackConfigurationProvider @Inject constructor(
     @ApplicationContext private val context: Context,
     private val config: IPlayerTuningConfig

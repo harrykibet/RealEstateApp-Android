@@ -6,7 +6,9 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
+@EntityModel
 internal class FirebaseConfig @Inject constructor(
     private val remoteConfig: FirebaseRemoteConfig,
     private val networkClient: INetworkClient

@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.database.converters.RoomTypeConverters
 import com.estatia.realestate.apps.core.database.entities.CommentCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 
 @Database(
@@ -24,6 +25,7 @@ import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
     exportSchema = false
 )
 @TypeConverters(RoomTypeConverters::class)
+@Helper
 abstract class PropertyDatabase : RoomDatabase() {
 
     // Abstract function to get the PropertyDraftDao

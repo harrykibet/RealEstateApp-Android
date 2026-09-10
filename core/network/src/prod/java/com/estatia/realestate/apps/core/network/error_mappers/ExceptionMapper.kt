@@ -18,11 +18,13 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 /**
  * Robust entry point for error mapping.
  * Routes exceptions to provider-specific mappers (Firebase or AWS) based on the exception type.
  */
+@ErrorMapper
 class ExceptionMapper @Inject constructor(
     private val networkMapper: INetworkErrorMapper,
     @FirebaseMapper private val firebaseAuthMapper: IAuthExceptionMapper,

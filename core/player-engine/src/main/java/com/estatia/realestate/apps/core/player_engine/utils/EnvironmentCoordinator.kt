@@ -28,10 +28,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Singleton
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
+@Helper
 class EnvironmentCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val batteryManager: IBatteryManager,

@@ -39,9 +39,11 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Module
 @InstallIn(SingletonComponent::class)
+@EntityModel
 object DemoNetworkModule {
 
     @Provides

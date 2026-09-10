@@ -6,9 +6,11 @@ import com.estatia.realestate.apps.core.model.feature.PaymentContext
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Helper
 data object PaymentBaseRoute
 
 @Serializable
+@Helper
 data class PaymentRoute(
     val referenceId: String,
     val amount: Double,

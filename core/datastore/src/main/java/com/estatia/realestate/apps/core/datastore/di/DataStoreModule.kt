@@ -18,9 +18,11 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Helper
 object DataStoreModule {
 
     @Provides

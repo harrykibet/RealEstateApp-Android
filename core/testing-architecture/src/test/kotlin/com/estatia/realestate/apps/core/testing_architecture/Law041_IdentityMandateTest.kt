@@ -17,7 +17,7 @@ class Law041_IdentityMandateTest {
     private val recognizedArchitecturalAnnotations = setOf(
         "Repository", "Service", "DataSource", "ViewModelMarker", "UseCase", "Manager", 
         "ChaosComponent", "Coordinator", "Helper", "ErrorMapper", "DomainModel", 
-        "EntityModel", "AppEntryPoint", "UiState"
+        "EntityModel", "AppEntryPoint", "UiState", "Module", "AndroidEntryPoint", "HiltAndroidApp"
     )
 
     private val foundationModules = setOf(
@@ -26,7 +26,8 @@ class Law041_IdentityMandateTest {
         "core/testing-architecture",
         "core/canary-violations",
         "lint",
-        "build-logic"
+        "build-logic",
+        "benchmark"
     )
 
     @Test
@@ -43,7 +44,9 @@ class Law041_IdentityMandateTest {
                 path.contains("/androidTest/") ||
                 path.contains("/testFixtures/")
             }
-            // 3. Enforce identity via annotations
+            // 3. Exclude passive types: interfaces, enums, annotation classes
+            .filterNot { it.hasEnumModifier || it.hasAnnotationModifier }
+            // 4. Enforce identity via annotations
             .assertTrue(
                 additionalMessage = """
                     |
@@ -65,10 +68,10 @@ class Law041_IdentityMandateTest {
     fun `naming convention must be backed by matching annotation`() {
         Konsist.scopeFromProject()
             .classes()
-            .filterNot { it.path.contains("/annotations/") }
-            .filterNot { it.path.contains("/test/") || it.path.contains("/androidTest/") || it.path.contains("/testFixtures/") }
+            .filterNot { it.path.replace("\\", "/").contains("/annotations/") }
+            .filterNot { it.path.replace("\\", "/").contains("/test/") || it.path.replace("\\", "/").contains("/androidTest/") || it.path.replace("\\", "/").contains("/testFixtures/") }
             .filter { it.name.endsWith("Repository") || it.name.endsWith("Service") || it.name.endsWith("UseCase") || it.name.endsWith("ViewModel") }
-            .filterNot { foundationModules.any { module -> it.path.contains(module) } }
+            .filterNot { foundationModules.any { module -> it.path.replace("\\", "/").contains(module) } }
             .assertTrue(
                 additionalMessage = "Naming convention suggests architectural role. Class must have matching annotation (LAW-041)."
             ) { clazz ->

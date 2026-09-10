@@ -10,9 +10,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Helper
 internal abstract class ObservabilityModule {
 
     @Binds

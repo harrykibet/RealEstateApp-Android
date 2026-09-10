@@ -15,6 +15,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 
 private const val RSA_ENCRYPTION_ALIAS =
@@ -47,6 +48,7 @@ private const val GCM_TAG_LENGTH =
  * - Resilience: Surfaces domain-specific [SecurityException] via [cryptoExecutor].
  */
 @Singleton
+@Helper
 class RsaCryptoEngine @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,
     private val cryptoExecutor: ICryptoExecutor

@@ -22,8 +22,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@EntityModel
 class FirestorePropertiesTest {
 
     private lateinit var database: FirebaseFirestore

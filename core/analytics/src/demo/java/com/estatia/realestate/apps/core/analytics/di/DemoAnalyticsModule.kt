@@ -11,9 +11,11 @@ import dagger.multibindings.IntoSet
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Helper
 abstract class DemoAnalyticsModule {
     @Binds
     @Singleton

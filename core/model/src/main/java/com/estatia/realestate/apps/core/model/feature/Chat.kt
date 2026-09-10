@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import kotlin.time.Instant
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
+@DomainModel
 data class Chat(
     val id: String,
     val user: ChatUser,
@@ -10,6 +12,7 @@ data class Chat(
     val unreadCount: Int = 0
 )
 
+@DomainModel
 data class ChatUser(
     val id: String,
     val name: String,
@@ -17,6 +20,7 @@ data class ChatUser(
     val isActive: Boolean = false
 )
 
+@DomainModel
 data class Message(
     val id: String,
     val senderId: String,

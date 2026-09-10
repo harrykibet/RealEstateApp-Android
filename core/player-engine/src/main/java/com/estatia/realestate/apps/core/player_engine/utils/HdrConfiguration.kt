@@ -9,6 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Helper
 class HdrConfiguration @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {

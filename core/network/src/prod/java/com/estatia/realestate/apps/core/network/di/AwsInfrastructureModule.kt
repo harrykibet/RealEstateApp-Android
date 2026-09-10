@@ -13,9 +13,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Module
 @InstallIn(SingletonComponent::class)
+@EntityModel
 internal object AwsInfrastructureModule {
 
     @Provides

@@ -4,8 +4,10 @@ import android.net.Uri
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Singleton
+@Helper
 class StreamingUriResolver @Inject constructor(
     private val deviceUtils: IDeviceUtils
 ) {

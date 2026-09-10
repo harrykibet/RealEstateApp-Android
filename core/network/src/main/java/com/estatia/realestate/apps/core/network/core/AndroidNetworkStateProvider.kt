@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 
 /**
@@ -21,6 +22,7 @@ import javax.inject.Inject
  * - Resilience: Performs validation checks (NET_CAPABILITY_VALIDATED) to distinguish between 
  *   connected-but-offline (e.g., captive portal) and true internet connectivity.
  */
+@EntityModel
 internal class AndroidNetworkStateProvider @Inject constructor(
     private val connectivityManager: ConnectivityManager
 ) : INetworkStateProvider {

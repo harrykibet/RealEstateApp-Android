@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.model.property
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 /**
  * A lightweight UI model for representing a property listing in a feed.
  */
+@DomainModel
 data class ListingUiModel(
     val id: String,
     val title: String,

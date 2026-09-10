@@ -4,7 +4,9 @@ import android.content.Context
 import com.estatia.realestate.apps.core.localization.api.StringProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
+@Helper
 class AndroidStringProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) : StringProvider {

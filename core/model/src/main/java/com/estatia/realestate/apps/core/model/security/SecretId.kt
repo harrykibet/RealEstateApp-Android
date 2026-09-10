@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.core.model.security
 
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+
+@DomainModel
 @JvmInline
 value class SecretId(val value: String) {
     init {

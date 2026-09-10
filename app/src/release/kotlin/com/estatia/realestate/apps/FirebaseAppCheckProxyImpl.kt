@@ -4,7 +4,9 @@ import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAppCheckProx
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
+@Helper
 internal class FirebaseAppCheckProxyImpl @Inject constructor() : IFirebaseAppCheckProxy {
     override fun initialize() {
         FirebaseAppCheck.getInstance()

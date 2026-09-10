@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.network.core
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
+@EntityModel
 data class RetryConfig(
 
     val name:String,

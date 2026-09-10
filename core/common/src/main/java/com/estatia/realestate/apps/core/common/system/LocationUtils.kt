@@ -17,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Android implementation of [ILocationUtils] for retrieving user location data.
@@ -28,6 +29,7 @@ import javax.inject.Inject
  * - Security: Strictly respects [Manifest.permission.ACCESS_FINE_LOCATION] and [Manifest.permission.ACCESS_COARSE_LOCATION].
  * - Performance: Avoids blocking the Main thread during heavy reverse geocoding operations.
  */
+@Helper
 class LocationUtils @Inject constructor(
     private val context: Context,
     private val logger: ILogger

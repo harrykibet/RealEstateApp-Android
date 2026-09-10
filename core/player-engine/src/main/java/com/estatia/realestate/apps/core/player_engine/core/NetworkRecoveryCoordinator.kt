@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 /**
  * Handles automatic recovery of playback when network connection is restored.
@@ -20,6 +21,7 @@ import javax.inject.Singleton
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
+@EntityModel
 class NetworkRecoveryCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val pool: PlayerPool,

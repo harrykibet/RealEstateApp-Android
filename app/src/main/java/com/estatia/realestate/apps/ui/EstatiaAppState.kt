@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 
 @Composable
 fun rememberEstatiaAppState(
@@ -63,6 +64,7 @@ fun rememberEstatiaAppState(
 }
 
 @Stable
+@UiState
 class EstatiaAppState(
     val navController: NavHostController,
     private val coroutineScope: CoroutineScope,

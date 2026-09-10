@@ -15,6 +15,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Listens to ExoPlayer playback state changes and reports
@@ -27,6 +28,7 @@ import javax.inject.Inject
  */
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
+@Helper
 class PlaybackAnalyticsListener @Inject constructor(
     private val analyticsClient: IAnalyticsTracker,
     private val engagementRepository: IEngagementRepository,

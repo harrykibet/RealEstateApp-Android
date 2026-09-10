@@ -5,8 +5,10 @@ import com.estatia.realestate.apps.core.common.exceptions.StorageException as Do
 import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 @Singleton
+@ErrorMapper
 internal class AwsStorageErrorMapper @Inject constructor() : IStorageErrorMapper {
 
     override fun map(throwable: Throwable): DomainStorageException {

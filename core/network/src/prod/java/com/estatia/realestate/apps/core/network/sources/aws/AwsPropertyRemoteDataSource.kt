@@ -27,6 +27,7 @@ import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * AWS implementation of [IPropertyRemoteDatasource] using AppSync (GraphQL) and S3.
@@ -38,6 +39,7 @@ import kotlin.coroutines.resume
  * - Performance: Performs parallel media compression and upload via [async]/[awaitAll].
  * - Observability: Tracks upload and fetch latency for property management.
  */
+@DataSource
 internal class AwsPropertyRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
     private val networkClient: INetworkClient,

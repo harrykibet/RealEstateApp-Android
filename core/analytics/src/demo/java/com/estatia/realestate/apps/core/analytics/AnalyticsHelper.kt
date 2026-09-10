@@ -5,11 +5,13 @@ import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 private const val TAG = "StubAnalyticsHelper"
 
 
 @Singleton
+@Helper
 class AnalyticsHelper @Inject constructor(
     private val analyticsRepository: IAnalyticsTracker
 ) : IAnalyticsHelper {

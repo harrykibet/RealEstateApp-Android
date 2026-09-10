@@ -1,8 +1,10 @@
 package com.estatia.realestate.apps.core.model.system
 
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 @Serializable
+@DomainModel
 data class DeviceInfo(
     val os: String,
     val browser: String,

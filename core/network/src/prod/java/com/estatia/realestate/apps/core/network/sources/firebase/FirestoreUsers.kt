@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 
 /**
@@ -22,6 +23,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces [DatabaseException.NotFound] if the profile doesn't exist.
  * - Observability: Tracks profile fetch latency and cache performance.
  */
+@EntityModel
 internal class FirestoreUsers @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

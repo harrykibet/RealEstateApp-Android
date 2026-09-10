@@ -1,5 +1,6 @@
 package com.estatia.realestate.apps.core.model.common
 
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 import android.os.Parcelable
 import kotlin.jvm.JvmInline
 import kotlinx.serialization.Serializable
@@ -10,6 +11,7 @@ import kotlinx.parcelize.Parcelize
  * Wraps an underlying string representation (e.g., a file path or URI string)
  * to avoid leaking platform-specific types like android.net.Uri into the domain layer.
  */
+@DomainModel
 @Serializable
 @JvmInline
 @Parcelize

@@ -11,6 +11,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 /**
  * Standard implementation of [INetworkClient] for production environments.
@@ -21,6 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * - Failure Modes: Automatically maps lower-level protocol exceptions to [AppException] via [exceptionMapper].
  * - Resilience: Enforces the provided [RetryConfig] via an injectable [IRetryPolicy].
  */
+@EntityModel
 class ProductionNetworkClient @Inject constructor(
     private val retryPolicy: IRetryPolicy,
     private val exceptionMapper: IExceptionMapper,

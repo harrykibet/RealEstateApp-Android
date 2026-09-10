@@ -24,9 +24,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Module
 @InstallIn(SingletonComponent::class)
+@EntityModel
 object FirebaseModule {
 
     private fun initializeFirebaseIfNeeded(context: Context) {

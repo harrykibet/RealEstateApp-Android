@@ -8,6 +8,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Standard executor for local database operations.
@@ -18,6 +19,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces domain-specific [InfrastructureException] via [exceptionMapper].
  * - Observability: Tracks operation latency and failure rates for database SLIs.
  */
+@Helper
 internal class LocalDatabaseExecutor @Inject constructor(
     private val exceptionMapper: IRoomExceptionMapper,
     private val metricsTracker: IMetricsTracker,

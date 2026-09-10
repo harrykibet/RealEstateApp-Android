@@ -9,6 +9,7 @@ sealed class RemoteServiceException(
 ) : AppException(message, cause) {
 
 
+@Helper
     data class FirebaseUnknown(
         val original: Throwable
     ) : RemoteServiceException(
@@ -17,6 +18,7 @@ sealed class RemoteServiceException(
     )
 
 
+@Helper
     data class Unknown(
         val original: Throwable
     ) : RemoteServiceException(

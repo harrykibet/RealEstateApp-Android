@@ -13,6 +13,7 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Engine for performing cryptographic hashing and HMAC operations.
@@ -24,6 +25,7 @@ import javax.inject.Singleton
  * - Resilience: Surfaces domain-specific failures via [cryptoExecutor].
  */
 @Singleton
+@Helper
 class HashManager @Inject constructor(
     private val cryptoExecutor: ICryptoExecutor
 ) : IHashManager {

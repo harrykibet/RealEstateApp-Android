@@ -14,9 +14,11 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.registry.otlp.OtlpConfig
 import io.micrometer.registry.otlp.OtlpMeterRegistry
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Helper
 abstract class ProdAnalyticsModule {
     @Binds
     @Singleton

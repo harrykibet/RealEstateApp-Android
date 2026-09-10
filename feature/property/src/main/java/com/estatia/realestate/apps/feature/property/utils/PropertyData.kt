@@ -2,8 +2,10 @@ package com.estatia.realestate.apps.feature.property.utils
 
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Singleton
+@Helper
 class PropertyData @Inject constructor() {
     // Static data for property types
     val propertyTypes: List<String> = listOf(

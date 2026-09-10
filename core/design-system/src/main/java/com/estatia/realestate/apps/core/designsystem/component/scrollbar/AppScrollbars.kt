@@ -159,6 +159,7 @@ private fun Modifier.scrollThumb(
     return this then ScrollThumbElement { colorState.value }
 }
 
+@Helper
 private data class ScrollThumbElement(val colorProducer: ColorProducer) :
     ModifierNodeElement<ScrollThumbNode>() {
     override fun create(): ScrollThumbNode = ScrollThumbNode(colorProducer)

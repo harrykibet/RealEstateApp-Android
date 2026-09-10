@@ -107,6 +107,7 @@ private fun ScrollbarTrack.thumbPosition(
 /**
  * Class definition for the core properties of a scroll bar
  */
+@UiState
 @Immutable
 @JvmInline
 value class ScrollbarStateValue internal constructor(
@@ -116,6 +117,7 @@ value class ScrollbarStateValue internal constructor(
 /**
  * Class definition for the core properties of a scroll bar track
  */
+@UiState
 @Immutable
 @JvmInline
 private value class ScrollbarTrack(

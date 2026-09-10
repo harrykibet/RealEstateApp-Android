@@ -2,7 +2,9 @@ package com.estatia.realestate.apps.core.model.service
 
 import com.estatia.realestate.apps.core.model.system.Location
 import java.util.Date
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
+@DomainModel
 data class ServiceProvider(
     val id: String,
     val name: String,

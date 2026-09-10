@@ -6,10 +6,12 @@ import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAppCheckProx
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 /**
  * Firebase implementation of [IBackendInitializer].
  */
+@EntityModel
 internal class FirebaseBackendInitializer @Inject constructor(
     @ApplicationContext private val context: Context,
     private val appCheckProxy: IFirebaseAppCheckProxy

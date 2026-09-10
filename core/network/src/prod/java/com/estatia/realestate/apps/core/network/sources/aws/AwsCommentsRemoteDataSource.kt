@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * AWS implementation of [ICommentsRemoteDataSource] using AppSync Subscriptions.
@@ -25,6 +26,7 @@ import kotlin.coroutines.resume
  * - Resilience: Surfaces [DatabaseException.Unknown] on subscription failures.
  * - Observability: Tracks submission latency and subscription events.
  */
+@DataSource
 internal class AwsCommentsRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient,
     private val metricsTracker: IMetricsTracker

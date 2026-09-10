@@ -9,11 +9,13 @@ import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Firebase implementation of [IPaymentsRemoteDataSource].
  * Triggers a Firebase Cloud Function.
  */
+@DataSource
 internal class FirebasePaymentsRemoteDataSource @Inject constructor(
     private val functions: FirebaseFunctions,
     private val networkClient: INetworkClient

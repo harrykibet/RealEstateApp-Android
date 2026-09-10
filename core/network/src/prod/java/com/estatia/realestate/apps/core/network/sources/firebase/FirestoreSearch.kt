@@ -16,6 +16,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 
 /**
@@ -30,6 +31,7 @@ import kotlin.math.sqrt
  * - Resilience: Delegates execution and error mapping to [networkClient].
  * - Observability: Tracks search latency and result count for SLIs.
  */
+@EntityModel
 internal class FirestoreSearch @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

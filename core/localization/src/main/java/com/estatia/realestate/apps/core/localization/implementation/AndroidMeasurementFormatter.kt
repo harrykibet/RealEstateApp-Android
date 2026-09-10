@@ -3,7 +3,9 @@ package com.estatia.realestate.apps.core.localization.implementation
 import com.estatia.realestate.apps.core.localization.api.MeasurementFormatter
 import java.util.Locale
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
+@Helper
 class AndroidMeasurementFormatter @Inject constructor() : MeasurementFormatter {
     override fun formatArea(squareMeters: Double): String {
         return if (Locale.getDefault().country == "US") {

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * High-integrity local storage for authentication tokens.
@@ -31,6 +32,7 @@ import javax.inject.Singleton
  * - Observability: Tracks token encryption and decryption failure rates.
  */
 @Singleton
+@DataSource
 class TokenLocalDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val cryptoEngine: IAesGcmCryptoEngine,

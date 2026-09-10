@@ -3,8 +3,10 @@ package com.estatia.realestate.apps.core.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Entity(tableName = "comments_cache")
+@EntityModel
 data class CommentCacheEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "property_id")

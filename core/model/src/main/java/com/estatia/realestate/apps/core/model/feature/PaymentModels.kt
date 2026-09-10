@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 /**
  * Represents the status of a payment transaction.
@@ -17,12 +18,15 @@ enum class PaymentStatus {
  * Represents the method used for payment.
  */
 @Serializable
+@DomainModel
 sealed class PaymentMethod {
     @Serializable
+@DomainModel
     data object CreditCard : PaymentMethod()
     @Serializable
     data object PayPal : PaymentMethod()
     @Serializable
+@DomainModel
     data object ApplePay : PaymentMethod()
     @Serializable
     data object GooglePay : PaymentMethod()
@@ -44,9 +48,11 @@ enum class PaymentContext {
 @Serializable
 sealed interface PaymentResult {
     @Serializable
+@DomainModel
     data class Success(val transactionId: String) : PaymentResult
     @Serializable
     data class Failed(val reason: String) : PaymentResult
     @Serializable
+@DomainModel
     data object Cancelled : PaymentResult
 }

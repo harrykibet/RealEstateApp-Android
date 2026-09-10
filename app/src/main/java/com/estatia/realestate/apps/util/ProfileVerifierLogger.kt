@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Logs the app's Baseline Profile Compilation Status using [ProfileVerifier].
@@ -40,6 +41,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; uses [ApplicationScope] to avoid blocking startup.
  * - Resilience: Non-critical; failures to retrieve status are ignored.
  */
+@Helper
 class ProfileVerifierLogger @Inject constructor(
     private val logger: ILogger,
     @ApplicationScope private val scope: CoroutineScope,

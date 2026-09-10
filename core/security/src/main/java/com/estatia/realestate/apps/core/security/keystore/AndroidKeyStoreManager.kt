@@ -17,6 +17,7 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Manager for the Android hardware KeyStore.
@@ -28,6 +29,7 @@ import javax.inject.Singleton
  * - Resilience: Surfaces domain-specific [SecurityException] on hardware failure.
  */
 @Singleton
+@Helper
 class AndroidKeyStoreManager @Inject constructor(
     private val cryptoExecutor: ICryptoExecutor
 ) : IKeyStoreManager {

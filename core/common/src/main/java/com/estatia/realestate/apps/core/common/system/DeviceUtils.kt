@@ -14,6 +14,7 @@ import android.os.StatFs
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Android implementation of [IDeviceUtils] for hardware capability detection.
@@ -23,6 +24,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; memoizes heavy codec scans using lazy delegates.
  * - Performance: Minimizes Main-thread stalls by caching codec capabilities.
  */
+@Helper
 class DeviceUtils @Inject constructor(
     private val context: Context,
     private val displayManager: DisplayManager

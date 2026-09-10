@@ -4,8 +4,10 @@ import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import com.estatia.realestate.apps.core.model.api.ApiEndpoint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 @Serializable
+@DomainModel
 data class RemoteConfigModel(
     val network: NetworkConfigModel,
     val security: SecurityConfigModel,
@@ -13,6 +15,7 @@ data class RemoteConfigModel(
 )
 
 @Serializable
+@DomainModel
 data class NetworkConfigModel(
     @SerialName("base_url")
     val baseUrl: String,
@@ -25,6 +28,7 @@ data class NetworkConfigModel(
 )
 
 @Serializable
+@DomainModel
 data class SecurityConfigModel(
     @SerialName("key_patterns")
     val keyPatterns: KeyPatterns,
@@ -37,6 +41,7 @@ data class SecurityConfigModel(
 )
 
 @Serializable
+@DomainModel
 data class KeyPatterns(
     val google: String,
     val generic: String,
@@ -44,6 +49,7 @@ data class KeyPatterns(
 )
 
 @Serializable
+@DomainModel
 data class EncryptionKeys(
     @SerialName("location_id")
     val locationId: String,
@@ -58,6 +64,7 @@ data class EncryptionKeys(
 )
 
 @Serializable
+@DomainModel
 data class PlayerTuningConfig(
     @SerialName("dwell_time_debounce_ms")
     val dwellTimeDebounceMs: Long = 100,

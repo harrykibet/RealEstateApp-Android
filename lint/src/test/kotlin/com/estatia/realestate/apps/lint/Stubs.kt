@@ -130,11 +130,18 @@ object Stubs {
 
     val ESTATIA_ARCH = kotlin(
         """
-        package com.estatia.realestate.apps.core.common.annotations
+        package com.estatia.realestate.apps.core.architecture.annotations
         annotation class Repository
         annotation class Service
         annotation class UseCase
         annotation class ViewModelMarker
+        annotation class Helper
+        annotation class DataSource
+        annotation class ErrorMapper
+        annotation class DomainModel
+        annotation class EntityModel
+        annotation class AppEntryPoint
+        annotation class UiState
         """.trimIndent()
     )
 

@@ -1,10 +1,12 @@
 package com.estatia.realestate.apps.core.localization.model
 
 import java.util.Locale
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Encapsulates a locale supported by the application.
  */
+@Helper
 data class SupportedLocale(
     val language: Language,
     val region: Region? = null

@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import java.util.WeakHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * The core implementation of playback operations, including listener translation and resource allocation.
@@ -29,6 +30,7 @@ import javax.inject.Singleton
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
+@Helper
 class PlaybackOrchestrator @Inject constructor(
     private val pool: PlayerPool,
     private val bitrateController: DynamicBitrateController,

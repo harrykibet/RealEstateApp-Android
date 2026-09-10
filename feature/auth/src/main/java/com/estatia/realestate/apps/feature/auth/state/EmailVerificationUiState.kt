@@ -19,5 +19,6 @@ sealed interface EmailVerificationUiState {
 @Helper
     object Verified : EmailVerificationUiState
 
+@Helper
     data class Error(val message: String) : EmailVerificationUiState
 }

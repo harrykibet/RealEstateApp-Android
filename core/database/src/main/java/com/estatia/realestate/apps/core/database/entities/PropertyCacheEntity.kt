@@ -3,8 +3,10 @@ package com.estatia.realestate.apps.core.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Entity(tableName = "properties_cache")
+@EntityModel
 data class PropertyCacheEntity(
     @PrimaryKey val id: String,
 

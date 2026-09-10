@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.database.entities.AnalyticsOutboxEntity
 import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataSource
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Local data source for analytics events using an outbox pattern.
@@ -15,6 +16,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; delegates to [databaseExecutor].
  * - Resilience: Surfaces domain-specific failures via [databaseExecutor].
  */
+@DataSource
 internal class AnalyticsLocalDataSource @Inject constructor(
     private val dao: AnalyticsOutboxDao,
     private val databaseExecutor: ILocalDatabaseExecutor

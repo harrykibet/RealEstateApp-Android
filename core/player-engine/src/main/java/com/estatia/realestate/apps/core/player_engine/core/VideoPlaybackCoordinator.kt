@@ -20,10 +20,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 // Justification: Relies on IPlayerManager which uses Unstable Media3 APIs for preloading and fine-grained state observation.
 @OptIn(UnstableApi::class)
 @ViewModelScoped
+@Helper
 class VideoPlaybackCoordinator @Inject constructor(
     private val playerController: IPlayerManager,
     private val streamingPipeline: IStreamingPipeline,

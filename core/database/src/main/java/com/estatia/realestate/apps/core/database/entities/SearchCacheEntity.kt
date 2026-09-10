@@ -5,9 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.estatia.realestate.apps.core.database.converters.RoomTypeConverters
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Entity(tableName = "search_results_cache")
 @TypeConverters(RoomTypeConverters::class)
+@EntityModel
 data class SearchCacheEntity(
     @PrimaryKey val query: String,
     @ColumnInfo(name = "property_ids")

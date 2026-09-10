@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.core.model.user
 
 import com.estatia.realestate.apps.core.model.property.PriceRange
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
+@DomainModel
 data class UserPreferences(
     val preferredPropertyTypes: List<String>, // e.g., Apartment, House, Studio
     val preferredPriceRange: PriceRange,

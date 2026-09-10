@@ -1,12 +1,14 @@
 package com.estatia.realestate.apps.core.model.property
 
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 /**
  * Represents an allowlisted set of fields that can be updated on a property listing.
  * This prevents arbitrary field updates and potential rule-bypass vectors.
  */
 @Serializable
+@DomainModel
 data class PropertyUpdateFields(
     val title: String? = null,
     val description: String? = null,

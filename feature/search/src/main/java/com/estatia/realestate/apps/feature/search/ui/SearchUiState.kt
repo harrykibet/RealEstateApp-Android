@@ -12,13 +12,16 @@ sealed interface SearchUiState {
     object Initial : SearchUiState
 @Helper
     object Loading : SearchUiState
+@Helper
     data class Success(
         val results: List<PropertyDomainModel>,
         val query: String,
         override val initialPage: Int = 0
     ) : SearchUiState
+@Helper
     data class History(
         val history: List<String>
     ) : SearchUiState
+@Helper
     data class Error(val message: String) : SearchUiState
 }

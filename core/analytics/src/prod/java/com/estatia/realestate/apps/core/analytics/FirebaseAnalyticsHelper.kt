@@ -6,8 +6,10 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Singleton
+@Helper
 class FirebaseAnalyticsHelper @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val analyticsRepository: IAnalyticsTracker

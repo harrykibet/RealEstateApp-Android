@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.model.utils
 
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 
 /**
@@ -10,6 +11,7 @@ import kotlinx.serialization.Serializable
  * metadata about that model. In a single change list, a given model id can only show up once.
  */
 @Serializable
+@DomainModel
 data class NetworkChangeList(
     /**
      * The id of the model that was changed

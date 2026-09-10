@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 /**
  * Firebase implementation of [ICommentsRemoteDataSource].
@@ -31,6 +32,7 @@ import javax.inject.Inject
  * - Safety: Enforces atomic comment count increments via [runBatch].
  * - Observability: Tracks comment observation stream health and submission latency.
  */
+@EntityModel
 internal class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

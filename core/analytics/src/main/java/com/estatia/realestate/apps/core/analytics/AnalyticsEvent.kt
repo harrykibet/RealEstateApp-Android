@@ -37,6 +37,7 @@ data class AnalyticsEvent(
      *
      * @param value - the parameter value.
      */
+@Helper
     data class Param(val key: String, val value: String)
 
     // Standard parameter keys.

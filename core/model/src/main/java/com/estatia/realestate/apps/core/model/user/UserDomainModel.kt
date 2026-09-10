@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.model.user
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
+@DomainModel
 data class UserDomainModel(
     val userId: String?,
     val name: String?,

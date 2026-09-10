@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 enum class WarmPriority {
     VISIBLE,
@@ -9,6 +10,7 @@ enum class WarmPriority {
     LOW
 }
 
+@Helper
 data class WarmRequest(
     val uri: Uri,
     val priority: WarmPriority,

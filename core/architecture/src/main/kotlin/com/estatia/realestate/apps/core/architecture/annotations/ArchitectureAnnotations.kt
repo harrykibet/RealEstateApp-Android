@@ -58,6 +58,7 @@ annotation class AllowedArchitectureDependency(
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@Helper
 annotation class Coordinator
 
 /**
@@ -65,6 +66,7 @@ annotation class Coordinator
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@Helper
 annotation class Manager
 
 /**
@@ -73,6 +75,7 @@ annotation class Manager
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class Helper
 
 /**
@@ -80,6 +83,7 @@ annotation class Helper
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class DataSource
 
 /**
@@ -88,6 +92,7 @@ annotation class DataSource
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class ErrorMapper
 
 /**
@@ -96,6 +101,7 @@ annotation class ErrorMapper
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class DomainModel
 
 /**
@@ -104,6 +110,7 @@ annotation class DomainModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class EntityModel
 
 /**
@@ -112,4 +119,5 @@ annotation class EntityModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
+@com.estatia.realestate.apps.core.architecture.annotations.Helper
 annotation class AppEntryPoint

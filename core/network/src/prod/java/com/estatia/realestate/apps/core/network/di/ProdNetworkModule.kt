@@ -32,6 +32,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -39,6 +40,7 @@ private annotation class BaseClient
 
 @Module
 @InstallIn(SingletonComponent::class)
+@EntityModel
 object ProdNetworkModule {
 
     @Provides

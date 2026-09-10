@@ -50,6 +50,7 @@ class SettingsViewModel @Inject constructor(
 class UserEditableSettings
 
 sealed interface SettingsUiState {
+@Helper
     data object Loading : SettingsUiState
     data class Success(val settings: UserEditableSettings) : SettingsUiState
 }

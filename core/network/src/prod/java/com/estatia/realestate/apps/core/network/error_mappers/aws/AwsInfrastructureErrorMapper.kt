@@ -6,8 +6,10 @@ import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.network.interfaces.IInfrastructureErrorMapper
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 @Singleton
+@ErrorMapper
 internal class AwsInfrastructureErrorMapper @Inject constructor() : IInfrastructureErrorMapper {
 
     override fun map(throwable: Throwable): AppException {

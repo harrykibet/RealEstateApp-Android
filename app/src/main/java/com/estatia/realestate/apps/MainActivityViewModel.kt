@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * High-level ViewModel for the primary application Activity.
@@ -53,6 +54,7 @@ class MainActivityViewModel @Inject constructor(
     )
 
     sealed interface MainActivityUiState {
+@Helper
         data object Loading : MainActivityUiState
 
         data class Success(

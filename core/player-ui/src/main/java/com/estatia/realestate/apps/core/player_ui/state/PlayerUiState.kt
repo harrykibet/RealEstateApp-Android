@@ -23,6 +23,7 @@ sealed class PlayerUiState {
 @Helper
     object Ready : PlayerUiState()
 
+@Helper
     data class Error(
         val message: String?,
         val type: PlayerErrorType = PlayerErrorType.UNKNOWN

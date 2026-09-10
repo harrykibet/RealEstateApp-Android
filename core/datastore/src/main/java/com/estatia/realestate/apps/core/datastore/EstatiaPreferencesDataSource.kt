@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Data source for application preferences using Jetpack DataStore.
@@ -21,6 +22,7 @@ import javax.inject.Inject
  * - Resilience: Surfaces [UserData] flow; handles [IOException] during updates.
  * - Observability: Tracks preference update failures.
  */
+@DataSource
 class EstatiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
     private val metricsTracker: IMetricsTracker,

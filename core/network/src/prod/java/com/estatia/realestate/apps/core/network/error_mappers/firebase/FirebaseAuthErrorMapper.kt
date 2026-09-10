@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
 
 
 /**
@@ -19,6 +20,7 @@ import javax.inject.Inject
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Surfaces [AuthException.Unknown] for unhandled Firebase error codes.
  */
+@ErrorMapper
 class FirebaseAuthErrorMapper @Inject constructor() : IAuthExceptionMapper {
 
 

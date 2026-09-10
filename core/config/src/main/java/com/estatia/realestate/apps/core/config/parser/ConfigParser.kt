@@ -6,6 +6,7 @@ import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import com.estatia.realestate.apps.core.model.config.SecurityConfigModel
 import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import kotlinx.serialization.json.Json
+import com.estatia.realestate.apps.core.architecture.annotations.AppEntryPoint
 
 /**
  * Robust config parser using Kotlin Serialization.
@@ -35,6 +36,7 @@ class ConfigParser {
 
     // Helper wrappers to match the JSON structure in assets
     @kotlinx.serialization.Serializable
+@AppEntryPoint
     private data class PlayerConfigFragment(
         @kotlinx.serialization.SerialName("player_tuning") val playerTuning: PlayerTuningConfig
     )

@@ -2,8 +2,10 @@ package com.estatia.realestate.apps.feature.market
 
 import com.estatia.realestate.apps.core.model.feature.MarketItem
 import com.estatia.realestate.apps.core.model.feature.MarketProject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 sealed interface MarketUiState {
+@Helper
     data object Loading : MarketUiState
     
     data class Success(
@@ -13,5 +15,6 @@ sealed interface MarketUiState {
         val activeProjects: List<MarketProject> = emptyList()
     ) : MarketUiState
     
+@Helper
     data class Error(val message: String) : MarketUiState
 }

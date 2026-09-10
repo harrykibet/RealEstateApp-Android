@@ -7,11 +7,13 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 sealed class AppResult<out T> {
 
 
+@Helper
     data class Success<out T>(
         val data:T
     ):AppResult<T>()
 
 
+@Helper
     data class Error(
         val exception: AppException
     ):AppResult<Nothing>()

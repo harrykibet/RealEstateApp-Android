@@ -1,6 +1,7 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import kotlinx.serialization.Serializable
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 @Serializable
 enum class MarketCategory {
@@ -22,6 +23,7 @@ enum class MarketServiceType {
 }
 
 @Serializable
+@DomainModel
 data class MarketItem(
     val id: String,
     val title: String,
@@ -38,6 +40,7 @@ data class MarketItem(
 )
 
 @Serializable
+@DomainModel
 data class MarketProvider(
     val id: String,
     val name: String,
@@ -48,6 +51,7 @@ data class MarketProvider(
 )
 
 @Serializable
+@DomainModel
 data class MarketProject(
     val id: String,
     val userId: String,

@@ -9,6 +9,7 @@ import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecut
 import com.estatia.realestate.apps.core.database.interfaces.ISearchLocalDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 private const val MAX_SEARCH_RESULTS = 50
 private const val TARGET_SEARCH_RESULTS = 40
@@ -23,6 +24,7 @@ private const val TARGET_SEARCH_RESULTS = 40
  * - Performance: Offloads all I/O to background threads.
  * - Observability: Tracks cache trim events.
  */
+@DataSource
 internal class SearchLocalDataSource @Inject constructor(
     private val historyDao: SearchHistoryDao,
     private val cacheDao: SearchCacheDao,

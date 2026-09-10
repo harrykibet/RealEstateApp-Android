@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Standard implementation of [IFileSystem] using the JVM File API.
@@ -17,6 +18,7 @@ import javax.inject.Singleton
  * - Performance: Assumes calling context handles Dispatchers.IO.
  */
 @Singleton
+@Helper
 class AndroidFileSystem @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IFileSystem {

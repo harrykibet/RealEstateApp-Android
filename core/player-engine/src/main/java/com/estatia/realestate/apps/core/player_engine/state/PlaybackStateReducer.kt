@@ -33,12 +33,16 @@ class PlaybackStateReducer(
      * Represent the possible UI-visible states of a video player.
      */
     sealed interface State {
+@Helper
         data object Idle : State
         data object Buffering : State
+@Helper
         data object Ready : State
         data object Playing : State
+@Helper
         data object Paused : State
         data object Ended : State
+@Helper
         data object Reconnecting : State
         data class Error(val error: PlaybackException) : State
     }
@@ -47,14 +51,19 @@ class PlaybackStateReducer(
      * Represents events that trigger state transitions.
      */
     sealed interface Event {
+@Helper
         data object Reset : Event
         data object BufferingStarted : Event
+@Helper
         data object BufferingCompleted : Event
         data object Play : Event
+@Helper
         data object Pause : Event
         data object PlaybackEnded : Event
+@Helper
         data object NetworkLost : Event
         data object NetworkRestored : Event
+@Helper
         data class PlaybackError(val error: PlaybackException) : Event
     }
 

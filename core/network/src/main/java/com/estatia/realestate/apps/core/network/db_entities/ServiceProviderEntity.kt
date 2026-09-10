@@ -4,7 +4,9 @@ import com.estatia.realestate.apps.core.model.service.ServiceType
 import com.estatia.realestate.apps.core.model.system.Location
 import com.google.firebase.firestore.DocumentSnapshot
 import java.util.Date
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
+@EntityModel
 data class ServiceProviderEntity(
     val id: String? = null,
     val name: String? = null,

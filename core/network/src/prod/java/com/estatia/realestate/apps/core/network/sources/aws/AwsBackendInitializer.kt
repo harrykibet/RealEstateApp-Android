@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 /**
  * AWS implementation of [IBackendInitializer].
@@ -22,6 +23,7 @@ import javax.inject.Inject
  * - Concurrency: Thread-safe; handles SDK-internal locking.
  * - Resilience: Surfaces a terminal failure log if plugins cannot be registered.
  */
+@EntityModel
 internal class AwsBackendInitializer @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: ILogger

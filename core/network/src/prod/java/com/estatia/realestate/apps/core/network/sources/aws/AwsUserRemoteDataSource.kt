@@ -10,6 +10,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * AWS implementation of [IUserRemoteDataSource].
@@ -19,6 +20,7 @@ import kotlin.coroutines.resume
  * - Concurrency: Thread-safe via [suspendCancellableCoroutine].
  * - Resilience: Surfaces [DatabaseException.NotFound] on missing data.
  */
+@DataSource
 internal class AwsUserRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient
 ) : IUserRemoteDataSource {

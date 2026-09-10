@@ -4,6 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 
 /**
@@ -14,6 +15,7 @@ import javax.inject.Inject
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Enforces 100% coverage of infrastructure-to-domain error mapping.
  */
+@Helper
 internal class ExceptionTranslator @Inject constructor(
     private val propertyMapper: PropertyExceptionMapper,
     private val userMapper: UserExceptionMapper,

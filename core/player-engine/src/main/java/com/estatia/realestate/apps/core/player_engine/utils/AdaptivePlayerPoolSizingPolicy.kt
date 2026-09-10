@@ -7,8 +7,10 @@ import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 @Singleton
+@Helper
 class AdaptivePlayerPoolSizingPolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
     private val batteryManager: IBatteryManager,

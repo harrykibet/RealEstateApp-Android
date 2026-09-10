@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.utils
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 
+@UiState
 data class AddPropertyUiState(
 
     val countyNames: List<String> = emptyList(),

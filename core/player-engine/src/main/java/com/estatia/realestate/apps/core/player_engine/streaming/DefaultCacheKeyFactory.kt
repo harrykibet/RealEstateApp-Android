@@ -2,10 +2,12 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Default implementation of [ICacheKeyFactory].
  */
+@Helper
 internal class DefaultCacheKeyFactory @Inject constructor() : ICacheKeyFactory {
 
     override fun resolveStableKey(uri: Uri, providedId: String?, qualityHint: String?): String {

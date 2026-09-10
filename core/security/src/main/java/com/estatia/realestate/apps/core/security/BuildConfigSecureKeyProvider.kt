@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.core.security
 import com.estatia.realestate.apps.core.model.security.SecretId
 import com.estatia.realestate.apps.core.security.interfaces.ISecureKeyProvider
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Implementation of [ISecureKeyProvider] that retrieves hardcoded keys from [BuildConfig].
@@ -12,6 +13,7 @@ import javax.inject.Inject
  * - Security: Provides keys injected during the build process; assumes the build environment is secure.
  * - Concurrency: Stateless and thread-safe.
  */
+@Helper
 class BuildConfigSecureKeyProvider @Inject constructor() : ISecureKeyProvider {
     override fun getLocalSecret(secretId: SecretId): String? {
         // Map SecretId to BuildConfig fields

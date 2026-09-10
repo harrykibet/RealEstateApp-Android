@@ -11,6 +11,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * AWS implementation of [ISearchRemoteDataSource] using OpenSearch via AppSync.
@@ -21,6 +22,7 @@ import kotlin.coroutines.resume
  * - Resilience: Delegates execution and retries to [networkClient].
  * - Observability: Tracks search latency and result count.
  */
+@DataSource
 internal class AwsSearchRemoteDataSource @Inject constructor(
     private val networkClient: INetworkClient,
     private val metricsTracker: IMetricsTracker

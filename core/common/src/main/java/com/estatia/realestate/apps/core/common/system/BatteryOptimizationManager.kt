@@ -35,12 +35,14 @@ sealed class BatteryState {
     abstract val isCharging: Boolean
     abstract val thermalStatus: Int
 
+@Helper
     data class Normal(
         override val level: Int,
         override val isCharging: Boolean,
         override val thermalStatus: Int = 0
     ) : BatteryState()
 
+@Helper
     data class Throttled(
         override val level: Int,
         override val isCharging: Boolean,

@@ -10,6 +10,7 @@ sealed interface PhoneVerificationUiState {
 @Helper
     object SendingCode : PhoneVerificationUiState
 
+@Helper
     data class CodeSent(val verificationId: String) : PhoneVerificationUiState
 
     data class Countdown(
@@ -25,6 +26,7 @@ sealed interface PhoneVerificationUiState {
 @Helper
     object Success : PhoneVerificationUiState
 
+@Helper
     data class Error(
         val message: String
     ) : PhoneVerificationUiState

@@ -34,6 +34,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 
 /**
@@ -47,6 +48,7 @@ import javax.inject.Inject
  * - Performance: Offloads HLS generation to server-side; performs only direct VOD/Image uploads.
  * - Observability: Tracks upload and fetch latency for property management.
  */
+@EntityModel
 internal class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,

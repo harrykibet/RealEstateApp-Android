@@ -4,11 +4,13 @@ import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Adaptive policy that scales the cache ceiling based on available device storage.
  */
 @Singleton
+@Helper
 class AdaptiveCacheSizingPolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
     private val config: IPlayerTuningConfig

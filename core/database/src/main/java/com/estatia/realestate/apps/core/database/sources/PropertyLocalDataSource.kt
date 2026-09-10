@@ -12,6 +12,7 @@ import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecut
 import com.estatia.realestate.apps.core.database.interfaces.IPropertyLocalDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 private const val MAX_PROPERTIES = 200
 private const val TARGET_PROPERTIES = 160
@@ -28,6 +29,7 @@ private const val TARGET_COMMENTS = 400
  * - Performance: Offloads all I/O to background threads.
  * - Observability: Tracks cache trim operations.
  */
+@DataSource
 internal class PropertyLocalDataSource @Inject constructor(
     private val draftDao: PropertyDraftDao,
     private val cacheDao: PropertyCacheDao,

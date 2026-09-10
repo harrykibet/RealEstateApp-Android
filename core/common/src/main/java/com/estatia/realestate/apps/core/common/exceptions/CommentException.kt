@@ -9,16 +9,19 @@ sealed class CommentException(
 ) : AppException(message, cause) {
 
 
+@Helper
     data object UserNotAuthenticated :
         CommentException(
             "User must be authenticated to comment"
         )
 
+@Helper
     data object CommentNotFound :
         CommentException(
             "Comment not found"
         )
 
+@Helper
     data class UserLookupFailed(
         val exception: AppException
     ): CommentException(
@@ -26,6 +29,7 @@ sealed class CommentException(
         exception
     )
 
+@Helper
     data class InvalidComment(val reason: String) : CommentException(reason)
 
 
@@ -34,6 +38,7 @@ sealed class CommentException(
             "Permission denied"
         )
 
+@Helper
     data class Unknown(
         val throwable:Throwable
     ): CommentException(
@@ -42,18 +47,21 @@ sealed class CommentException(
     )
 
 
+@Helper
     data object UserProfileMissing :
         CommentException(
             "User profile required"
         )
 
 
+@Helper
     data object EmptyComment :
         CommentException(
             "Comment cannot be empty"
         )
 
 
+@Helper
     data object CommentSubmissionFailed :
         CommentException(
             "Failed to submit comment"

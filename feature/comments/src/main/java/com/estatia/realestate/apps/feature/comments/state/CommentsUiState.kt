@@ -1,7 +1,9 @@
 package com.estatia.realestate.apps.feature.comments.state
 
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 
+@UiState
 data class CommentsUiState(
     val isLoading: Boolean = false,
     val comments: List<CommentDomainModel> = emptyList(),

@@ -3,12 +3,14 @@ package com.estatia.realestate.apps.core.player_engine.core
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.estatia.realestate.apps.core.architecture.annotations.Helper
 
 /**
  * Tracks decoder failures and decides when to force legacy decoders for specific media.
  * 🌡️ Bounded Failure Tracker: Cap at 50 to prevent unbounded memory growth in long sessions.
  */
 @Singleton
+@Helper
 class DecoderFallbackPolicy @Inject constructor() {
     
     private val decoderFailures = object : LinkedHashMap<String, Boolean>(50, 0.75f, true) {

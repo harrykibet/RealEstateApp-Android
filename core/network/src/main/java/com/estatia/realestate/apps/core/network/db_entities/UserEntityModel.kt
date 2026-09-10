@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.network.db_entities
+import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
+@EntityModel
 data class UserEntityModel(
     val userId: String? = null,
     val name: String? = null,
