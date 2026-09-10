@@ -31,7 +31,7 @@ class Law031_LayerMixingTest {
                 if (!hasViewModel) return@assertTrue true
                 
                 file.imports.none { import ->
-                    ArchitecturalPolicy.InfrastructurePackages.any { import.name.contains(it) }
+                    ArchitecturalPolicy.Law003.InfrastructurePackages.any { import.name.contains(it) }
                 }
             }
     }

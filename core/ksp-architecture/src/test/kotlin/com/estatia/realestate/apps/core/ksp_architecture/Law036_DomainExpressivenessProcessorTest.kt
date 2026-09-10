@@ -36,7 +36,7 @@ class Law036_DomainExpressivenessProcessorTest {
         )
         // Rule is now a CONVENTION (Warning), so compilation should pass
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Convention (LAW-036)"))
+        assertTrue(result.messages.contains("LAW-036"))
         assertTrue(result.messages.contains("Consider using a sealed class or enum"))
     }
 }

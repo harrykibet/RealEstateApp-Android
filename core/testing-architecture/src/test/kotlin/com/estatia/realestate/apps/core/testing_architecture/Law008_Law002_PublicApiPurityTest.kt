@@ -42,15 +42,15 @@ class Law008_Law002_PublicApiPurityTest {
                 
                 val propLeak = publicProps.any { prop ->
                     forbiddenTypes.any { prop.type?.name?.contains(it) == true } ||
-                    ArchitecturalPolicy.InfrastructurePackages.any { prop.type?.name?.startsWith(it) == true }
+                    ArchitecturalPolicy.Law003.InfrastructurePackages.any { prop.type?.name?.startsWith(it) == true }
                 }
                 
                 val funcLeak = publicFuncs.any { func ->
                     forbiddenTypes.any { func.returnType?.name?.contains(it) == true } ||
-                    ArchitecturalPolicy.InfrastructurePackages.any { func.returnType?.name?.startsWith(it) == true } ||
+                    ArchitecturalPolicy.Law003.InfrastructurePackages.any { func.returnType?.name?.startsWith(it) == true } ||
                     func.parameters.any { param ->
                         forbiddenTypes.any { param.type.name.contains(it) } ||
-                        ArchitecturalPolicy.InfrastructurePackages.any { param.type.name.startsWith(it) }
+                        ArchitecturalPolicy.Law003.InfrastructurePackages.any { param.type.name.startsWith(it) }
                     }
                 }
                 

@@ -33,7 +33,7 @@ class Law030_ConstructorPurityProcessorTest {
             providers = listOf(Law030_ConstructorPurityProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Law (LAW-030)"))
+        assertTrue(result.messages.contains("LAW-030"))
     }
 
     @Test

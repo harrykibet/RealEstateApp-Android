@@ -27,7 +27,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
             if (currentPackage.contains(".feature.")) {
                 val currentFeature = getFeatureName(currentPackage)
                 if (importPath.contains(".feature.") && 
-                    ArchitecturalPolicy.FeatureCouplingAllowedPackages.none { importPath.contains(it) }) {
+                    ArchitecturalPolicy.Law004.AllowedCouplingPackages.none { importPath.contains(it) }) {
                     
                     val importedFeature = getFeatureName(importPath)
                     if (currentFeature != null && importedFeature != null && currentFeature != importedFeature) {
@@ -61,7 +61,7 @@ class ModuleDependencyDetector : Detector(), SourceCodeScanner {
     }
 
     private fun isInfrastructure(path: String): Boolean {
-        return ArchitecturalPolicy.InfrastructurePackages.any { path.contains(it) }
+        return ArchitecturalPolicy.Law003.InfrastructurePackages.any { path.contains(it) }
     }
 
     companion object {

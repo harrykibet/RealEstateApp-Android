@@ -15,7 +15,7 @@ class Law030_ConstructorPurityProcessor(
 ) : SymbolProcessor {
 
     private val allowedAnnotation = "com.estatia.realestate.apps.core.common.annotations.AllowedArchitectureDependency"
-    private val allowedInfrastructure = ArchitecturalPolicy.AllowedInfrastructureTypes
+    private val allowedInfrastructure = ArchitecturalPolicy.Law030.AllowedInfrastructureInConstructors
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.Repository") +

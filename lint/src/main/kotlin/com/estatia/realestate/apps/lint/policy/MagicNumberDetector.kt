@@ -59,7 +59,7 @@ class MagicNumberDetector : Detector(), SourceCodeScanner {
             category = IssueCategory.CODE_HEALTH,
             tier = IssueTier.CONVENTION,
             owner = RuleOwner.PRODUCT,
-            architectureLaw = Law.LAW_001,
+            architectureLaw = Law.LAW_039,
             implementation = Implementation(MagicNumberDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )
     }

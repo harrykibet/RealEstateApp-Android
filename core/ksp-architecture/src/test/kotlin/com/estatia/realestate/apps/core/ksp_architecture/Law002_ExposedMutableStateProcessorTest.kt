@@ -34,7 +34,7 @@ class Law002_ExposedMutableStateProcessorTest {
             providers = listOf(Law002_ExposedMutableStateProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Law (LAW-002)"))
+        assertTrue(result.messages.contains("LAW-002"))
         assertTrue(result.messages.contains("exposes mutable state"))
     }
 
@@ -61,7 +61,7 @@ class Law002_ExposedMutableStateProcessorTest {
             providers = listOf(Law002_ExposedMutableStateProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Law (LAW-002)"))
+        assertTrue(result.messages.contains("LAW-002"))
         assertTrue(result.messages.contains("exposes mutable state"))
     }
 }

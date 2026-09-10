@@ -129,19 +129,52 @@ class DocParityTest {
             assertTrue("Issue '${issue.id}' explanation has wrong Enforcement.", explanation.contains("Enforcement: ${law.enforcement.name}"))
         }
 
-        // 2. Every L: or H: rule ID in the README must correspond to a registered issue
+        // 2. Every L: or H: rule ID in the README must correspond to a registered issue and correct Law
         // Match the "Enforcement Rule" column: | LAW-XXX | Description | Risk | Confidence | Enforcement | `L:Rule1`, `K:Rule2` |
-        val ruleColumnRegex = Regex("""\| \*\*LAW-\d+\*\* \| [^|]+ \| [^|]+ \| [^|]+ \| [^|]+ \| ([^|]+) \|""")
-        val mentionedLintRules = ruleColumnRegex.findAll(readmeContent).flatMap { match ->
-            match.groupValues[1].split(",")
+        val rowsRegex = Regex("""\| \*\*(${Law.entries.joinToString("|") { it.id }})\*\* \| [^|]+ \| [^|]+ \| [^|]+ \| [^|]+ \| ([^|]+) \|""")
+        
+        val mentionedInReadme = mutableSetOf<String>()
+
+        rowsRegex.findAll(readmeContent).forEach { match ->
+            val lawId = match.groupValues[1]
+            val ruleString = match.groupValues[2]
+            val rules = ruleString.split(",")
                 .map { it.trim().removeSurrounding("`") }
                 .filter { it.startsWith("L:") || it.startsWith("H:") }
-                .map { it.removePrefix("L:").removePrefix("H:") }
-        }.toSet()
+                .map { it.substring(2) }
 
-        val undocumentedInRegistry = mentionedLintRules - registeredIssueIds
+            rules.forEach { ruleId ->
+                mentionedInReadme.add(ruleId)
+                val issue = registry.issues.find { it.id == ruleId }
+                assertNotNull("Lint Rule '$ruleId' mentioned for $lawId in README not found in registry.", issue)
+                
+                val explanation = issue!!.getExplanation(TextFormat.TEXT)
+                assertTrue(
+                    "Semantic Mismatch: README links '$ruleId' to $lawId, but the issue metadata in code references a different law.\n" +
+                    "Check the 'architectureLaw' parameter in the detector's EstatiaIssue.create() call.",
+                    explanation.contains("Architecture Law: $lawId")
+                )
+            }
+        }
+
+        // 3. Every registered issue in code MUST be documented in the README for its Law
+        val allIssuesInCode = registry.issues
+        allIssuesInCode.forEach { issue ->
+            val explanation = issue.getExplanation(TextFormat.TEXT)
+            val lawMatch = Regex("""Architecture Law: (LAW-\d+)""").find(explanation) ?: return@forEach
+            val lawId = lawMatch.groupValues[1]
+            
+            assertTrue(
+                "Code -> README Violation: Lint Rule '${issue.id}' is linked to $lawId in code, but is NOT listed in the README table for that law.\n" +
+                "Update the 'Enforcement Rule(s)' column for $lawId in lint/README.md.",
+                readmeContent.contains("L:${issue.id}") || readmeContent.contains("H:${issue.id}")
+            )
+        }
+
+        // 4. Verify that all L:/H: prefixes are actually in the registry (Reverse check)
+        val undocumentedInRegistry = mentionedInReadme - registeredIssueIds
         assertTrue(
-            "The following Lint rules are documented in README.md (with L: or H: prefix) but have NO implementation in EstatiaIssueRegistry:\n" +
+            "The following Lint rules are documented in README.md but have NO implementation in EstatiaIssueRegistry:\n" +
             undocumentedInRegistry.joinToString("\n"),
             undocumentedInRegistry.isEmpty()
         )

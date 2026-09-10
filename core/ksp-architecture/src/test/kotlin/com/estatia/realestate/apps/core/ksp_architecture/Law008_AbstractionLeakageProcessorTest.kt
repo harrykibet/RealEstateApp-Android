@@ -37,6 +37,6 @@ class Law008_AbstractionLeakageProcessorTest {
             providers = listOf(Law008_AbstractionLeakageProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Law (LAW-008)"))
+        assertTrue(result.messages.contains("LAW-008"))
     }
 }

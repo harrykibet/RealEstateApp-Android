@@ -34,7 +34,7 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Law (LAW-018)"))
+        assertTrue(result.messages.contains("LAW-018"))
     }
 
     @Test

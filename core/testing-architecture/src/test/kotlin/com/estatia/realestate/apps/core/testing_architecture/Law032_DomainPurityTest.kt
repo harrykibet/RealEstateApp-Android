@@ -27,11 +27,11 @@ class Law032_DomainPurityTest {
                 """.trimMargin()
             ) { file ->
                 file.imports.none { import ->
-                    val isForbidden = ArchitecturalPolicy.InfrastructurePackages.any { import.name.startsWith(it) } ||
+                    val isForbidden = ArchitecturalPolicy.Law003.InfrastructurePackages.any { import.name.startsWith(it) } ||
                                      import.name.startsWith("android.") ||
                                      import.name.startsWith("androidx.")
                     
-                    isForbidden && ArchitecturalPolicy.DomainAllowedPackages.none { allowed -> import.name.startsWith(allowed) }
+                    isForbidden && ArchitecturalPolicy.Layers.Domain.allowed.none { allowed -> import.name.startsWith(allowed) }
                 }
             }
     }
@@ -57,7 +57,7 @@ class Law032_DomainPurityTest {
                     val isForbidden = import.name.startsWith("android.") || 
                                      import.name.startsWith("androidx.")
                     
-                    isForbidden && ArchitecturalPolicy.ModelAllowedPackages.none { allowed -> import.name.startsWith(allowed) }
+                    isForbidden && ArchitecturalPolicy.Layers.Model.allowed.none { allowed -> import.name.startsWith(allowed) }
                 }
             }
     }

@@ -37,7 +37,7 @@ class ImplementationTypeDetector : Detector(), SourceCodeScanner {
         }
 
         private fun checkType(qualifiedName: String, node: UElement) {
-            if (ArchitecturalPolicy.InfrastructurePackages.any { qualifiedName.startsWith(it) }) {
+            if (ArchitecturalPolicy.Law003.InfrastructurePackages.any { qualifiedName.startsWith(it) }) {
                 context.report(
                     ISSUE,
                     node,

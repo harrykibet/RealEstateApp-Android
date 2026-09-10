@@ -15,7 +15,7 @@ class Law008_AbstractionLeakageProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val forbiddenInfrastructure = ArchitecturalPolicy.InfrastructurePackages
+    private val forbiddenInfrastructure = ArchitecturalPolicy.Law003.InfrastructurePackages
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.common.annotations.UseCase") +

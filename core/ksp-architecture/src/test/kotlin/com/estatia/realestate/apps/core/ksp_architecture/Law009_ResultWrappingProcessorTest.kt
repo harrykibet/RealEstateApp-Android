@@ -38,7 +38,7 @@ class Law009_ResultWrappingProcessorTest {
         )
         // Rule is now a CONVENTION (Warning), so compilation should pass
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        assertTrue(result.messages.contains("Architecture Convention (LAW-009)"))
+        assertTrue(result.messages.contains("LAW-009"))
     }
 
     @Test
@@ -68,7 +68,7 @@ class Law009_ResultWrappingProcessorTest {
         )
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         // Should NOT contain warning because they are exempt simple types
-        assertTrue(!result.messages.contains("Architecture Convention (LAW-009)"))
+        assertTrue(!result.messages.contains("LAW-009"))
     }
 
     @Test
