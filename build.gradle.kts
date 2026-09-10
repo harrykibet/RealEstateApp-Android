@@ -117,6 +117,16 @@ object EstatiaArch {
         return null
     }
 
+    fun getAllProjects(root: Project): Set<Project> {
+        val result = mutableSetOf<Project>()
+        fun traverse(p: Project) {
+            result.add(p)
+            p.childProjects.values.forEach { traverse(it) }
+        }
+        root.childProjects.values.forEach { traverse(it) }
+        return result
+    }
+
     fun findImpactedModules(rootDir: File, changedFiles: List<String>, modulePaths: Set<String>, edges: Set<ModuleEdge>): Set<String> {
         val directlyAffected = mutableSetOf<String>()
         changedFiles.forEach { path ->

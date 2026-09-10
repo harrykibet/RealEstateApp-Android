@@ -1,8 +1,0 @@
-digraph {
-  graph [label=":lint Dependencies", labelloc=t, fontsize=24, ranksep=1.4];
-  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];
-  ":lint" [fillcolor="#BDB2FF"];
-  ":core:architecture" [fillcolor="#9BF6FF"];
-  ":lint" -> ":core:architecture" [color="#1A237E", style=solid]
-  ":lint" -> ":core:architecture" [color="#757575", style=dashed]
-}
