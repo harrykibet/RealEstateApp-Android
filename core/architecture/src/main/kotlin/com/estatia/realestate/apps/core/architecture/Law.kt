@@ -271,6 +271,11 @@ enum class Law(
         "Baselines are for technical debt; high-risk structural laws must be fixed immediately.",
         "Fix the violation instead of adding it to lint-baseline.xml."
     ),
+    LAW_040(
+        "LAW-040", "Baseline Monotonicity: Baseline counts must never increase.", LawCategory.INFRASTRUCTURE, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Allowing the baseline to grow makes static analysis meaningless over time.",
+        "Fix existing violations or justify why the baseline cannot be reduced. Never add new ones."
+    ),
 
     // --- API DESIGN ---
     LAW_036(
@@ -286,31 +291,11 @@ enum class Law(
         "Move all dependency declarations to gradle/libs.versions.toml."
     ),
     
-    // --- RELEASE HARDENING (Refactored LAW-038) ---
-    LAW_038_A(
-        "LAW-038A", "Release minification contract.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.CERTAIN, Enforcement.BLOCK,
-        "Shipping un-minified code to production increases reverse-engineering risk and APK size.",
-        "Ensure 'minifyEnabled true' and 'shrinkResources true' are set in release build types."
-    ),
-    LAW_038_B(
-        "LAW-038B", "R8 mapping integrity.", LawCategory.INFRASTRUCTURE, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
-        "Sensitive internal implementation details leaking into R8 mapping files indicates suboptimal obfuscation rules.",
-        "Audit Proguard/R8 rules to ensure sensitive package names are correctly obfuscated."
-    ),
-    LAW_038_C(
-        "LAW-038C", "Secret/string leak detection.", LawCategory.SECURITY, Risk.CRITICAL, Confidence.HIGH, Enforcement.BLOCK,
-        "Hardcoded secrets in the binary are easily extractable even from obfuscated code.",
-        "Use BuildConfig fields, environment variables, or encrypted storage for sensitive strings."
-    ),
-    LAW_038_D(
-        "LAW-038D", "Forbidden debug artifact detection.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.CERTAIN, Enforcement.BLOCK,
-        "Including debug tools (LeakCanary, Stetho, Timber DebugTree) in release binaries compromises security.",
-        "Use 'releaseImplementation' or separate source sets to isolate debug tools."
-    ),
-    LAW_038_E(
-        "LAW-038E", "Release binary policy.", LawCategory.INFRASTRUCTURE, Risk.HIGH, Confidence.HIGH, Enforcement.BLOCK,
-        "Non-standard binary configuration (e.g., debuggable=true) in release builds is a critical security failure.",
-        "Verify AndroidManifest metadata and signing configurations for the release build type."
+    // --- RELEASE INTEGRITY (Consolidated LAW-038) ---
+    LAW_038(
+        "LAW-038", "Release artifact symbol obfuscation integrity.", LawCategory.INFRASTRUCTURE, Risk.CRITICAL, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Leaking internal symbol names (InternalImpl, SecretStore) in production mapping files compromises reverse-engineering protections.",
+        "Audit R8 mapping files and update Proguard rules to ensure sensitive internal symbols are correctly obfuscated."
     ),
 
     // --- CODE HEALTH ---

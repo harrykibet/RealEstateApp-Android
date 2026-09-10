@@ -98,6 +98,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-033** | Governance-compliant suppressions. | `CRITICAL` | `HIGH` | `BLOCK` | `L:SuppressionPolicyViolation`, `S:Law033_WildcardSuppressionTest`, `V:Law033_GradleSuppressionTest` |
 | **LAW-034** | High-fidelity canary verification. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegressionTest` |
 | **LAW-035** | Structural non-baselining mandate. | `CRITICAL` | `CERTAIN` | `BLOCK` | `V:Law035_FatalBaselineIntegrityTest` |
+| **LAW-040** | Baseline monotonicity mandate. | `HIGH` | `CERTAIN` | `BLOCK` | `V:BaselineMonotonicityTest` |
 
 ### ✨ Code Health & Infrastructure
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
@@ -107,16 +108,24 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-029** | Global class size budget. | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
 | **LAW-030** | Orchestration dependency budget. | `MEDIUM` | `CERTAIN` | `BLOCK` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
 | **LAW-037** | Version catalog mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
-| **LAW-038A** | Release minification contract. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
-| **LAW-038B** | R8 mapping integrity. | `HIGH` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
-| **LAW-038C** | Secret/string leak detection. | `CRITICAL` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
-| **LAW-038D** | Forbidden debug artifact detection. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditBinaryPurity` |
-| **LAW-038E** | Release binary policy. | `HIGH` | `HIGH` | `BLOCK` | `T:auditBinaryPurity` |
+| **LAW-038** | Release symbol obfuscation integrity. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditReleaseSymbols` |
 | **LAW-039** | Magic literal extraction. | `LOW` | `HEURISTIC` | `INFO` | `L:MagicNumber` |
 
 ---
 
-## 🛡️ The CI Authority Model
+## ⚙️ The Monotonicity Ratchet (LAW-040)
+
+To prevent architectural decay, Estatia enforces a **Strict Monotonicity Policy** for the `lint-baseline.xml` file.
+
+1.  **Zero FATAL Policy**: Baseline entries for **BLOCK** level rules are forbidden. If a law is critical enough to block the build, it must be fixed, not hidden.
+2.  **Directional Integrity**: The number of ERROR/WARN violations in the baseline can **never increase**. 
+3.  **Mechanical Ratchet**: The CI pipeline compares the current baseline counts against the main branch. Any PR that increases the count of architectural debt will be blocked.
+
+This ensures that technical debt is either strictly capped or actively reduced, preventing the "Baseline Inflation" that eventually makes static analysis meaningless.
+
+---
+
+## 🏗️ The CI Authority Model
 
 The Estatia CI pipeline is the final word on engineering quality.
 

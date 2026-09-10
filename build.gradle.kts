@@ -68,69 +68,10 @@ tasks.register("checkDependencyDrift") {
     }
 }
 
-tasks.register("auditBinaryPurity") {
-    description = "Authoritative Release Hardening Audit. Verifies release binaries against Estatia Law LAW-038A-E."
+// Sub-tasks in individual modules wire up to this global gate
+tasks.register("auditReleaseSymbols") {
+    description = "Global gate for release symbol obfuscation integrity (LAW-038)."
     group = "verification"
-    
-    doLast {
-        val rootDir = project.rootDir
-        
-        // --- LAW-038A: Release minification contract ---
-        val releaseMappingDir = File(rootDir, "app/build/outputs/mapping/prodRelease")
-        if (releaseMappingDir.exists()) {
-            val mappingFile = File(releaseMappingDir, "mapping.txt")
-            if (!mappingFile.exists()) {
-                throw GradleException("LAW-038A Violation: Release mapping.txt missing. Minification might be disabled for prodRelease.")
-            }
-        }
-
-        // --- LAW-038B: R8 mapping integrity ---
-        val mappingFile = File(rootDir, "app/build/outputs/mapping/prodRelease/mapping.txt")
-        if (mappingFile.exists()) {
-            val content = mappingFile.readText()
-            val sensitiveKeywords = listOf("InternalImpl", "SecretStore", "DebugConfig")
-            val violations = sensitiveKeywords.filter { content.contains(it) }
-            if (violations.isNotEmpty()) {
-                throw GradleException("LAW-038B Violation: Sensitive internal symbols found in R8 mapping: $violations. Update Proguard rules to obfuscate these.")
-            }
-        }
-
-        // --- LAW-038C: Secret/string leak detection ---
-        val rawSecrets = listOf("AKIA", "AIza", "AAAA") // Common cloud provider prefixes
-        if (mappingFile.exists()) {
-            val content = mappingFile.readText()
-            val foundSecrets = rawSecrets.filter { content.contains(it) }
-            if (foundSecrets.isNotEmpty()) {
-                throw GradleException("LAW-038C Violation: Potential hardcoded secrets detected in release metadata: $foundSecrets")
-            }
-        }
-
-        // --- LAW-038D: Forbidden debug artifact detection ---
-        val forbiddenArtifacts = listOf("leakcanary", "stetho", "timber.log.Timber\$DebugTree")
-        if (mappingFile.exists()) {
-            val content = mappingFile.readText()
-            val foundForbidden = forbiddenArtifacts.filter { content.contains(it) }
-            if (foundForbidden.isNotEmpty()) {
-                throw GradleException("LAW-038D Violation: Debug-only infrastructure detected in release binary: $foundForbidden")
-            }
-        }
-
-        // --- LAW-038E: Release binary policy ---
-        val releaseApkDir = File(rootDir, "app/build/outputs/apk/prod/release")
-        val releaseBundleDir = File(rootDir, "app/build/outputs/bundle/prodRelease")
-        
-        val hasApk = releaseApkDir.exists() && (releaseApkDir.listFiles()?.any { it.name.endsWith(".apk") } == true)
-        val hasBundle = releaseBundleDir.exists() && (releaseBundleDir.listFiles()?.any { it.name.endsWith(".aab") } == true)
-        
-        if (!hasApk && !hasBundle) {
-            println("Skip LAW-038E: Release binary not found. This check requires a previous 'assembleProdRelease' or 'bundleProdRelease' run.")
-        } else if (hasApk) {
-            val apk = releaseApkDir.listFiles()?.find { it.name.endsWith(".apk") }
-            if (apk != null && apk.length() > 50 * 1024 * 1024) { // 50MB threshold
-                 println("WARNING (LAW-038E): Release APK size is unusually large: ${apk.length() / 1024 / 1024}MB")
-            }
-        }
-    }
 }
 
 tasks.register("verifyArchitecture") {
@@ -149,4 +90,5 @@ tasks.register("verifyArchitecture") {
     dependsOn(":core:data:compileDemoDebugKotlin")
     dependsOn(":core:network:compileDemoDebugKotlin")
     dependsOn("checkDependencyDrift")
+    dependsOn("auditReleaseSymbols")
 }

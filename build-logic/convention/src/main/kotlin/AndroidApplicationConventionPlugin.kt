@@ -1,4 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.artifact.SingleArtifact
+import com.estatia.realestate.apps.release.AuditSymbolObfuscationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -142,6 +145,26 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             }
 
+        }
+
+        extensions.configure<ApplicationAndroidComponentsExtension>("androidComponents") {
+            onVariants(selector().withBuildType("release")) { variant ->
+                val mappingFile = variant.artifacts.get(SingleArtifact.OBFUSCATION_MAPPING_FILE)
+                
+                val auditTask = tasks.register("audit${variant.name.replaceFirstChar { it.uppercase() }}ReleaseSymbols", AuditSymbolObfuscationTask::class.java) {
+                    group = "verification"
+                    description = "Audits release symbols for variant ${variant.name} (LAW-038)."
+                    this.mappingFile.set(mappingFile)
+                    this.forbiddenPatterns.set(listOf("""\bSecret\w*""", """\bInternalImpl\w*""", """\bSecretStore\w*""", """\bDebugConfig\w*"""))
+                    this.allowlist.set(listOf("ApiKeyValidator", "IApiKeyValidator", "ApiKeyValidatorModule"))
+                    this.reportFile.set(layout.buildDirectory.file("reports/architecture/obfuscation/${variant.name}.txt"))
+                }
+                
+                // Wire up to the global root gate if it exists
+                rootProject.tasks.matching { it.name == "auditReleaseSymbols" }.configureEach {
+                    dependsOn(auditTask)
+                }
+            }
         }
     }
 }
