@@ -1,80 +1,62 @@
 # Estatia Architectural Guard - Konsist Phase (`:core:testing-architecture`)
 
-This module houses the **Architectural Source of Truth** and global structural verification tests for the Estatia project. It leverages **Konsist** to perform deep static analysis across the entire project graph.
+This module houses global structural verification tests for the Estatia project. It leverages **Konsist** to perform topological analysis across the entire multi-module graph.
 
 ## 🎯 Purpose
 
-While Android Lint focuses on local file-level patterns and KSP enforces high-precision semantic rules during compilation, `:core:testing-architecture` provides **Level 2 (Global Structural)** enforcement. It ensures that the project's macro-architecture (module boundaries, layer purity, and naming conventions) remains intact as the codebase grows.
+While KSP enforces local component contracts, `:core:testing-architecture` provides **Macro-Architecture** enforcement. It ensures that the project's high-level boundaries (module dependencies, layer purity, and naming conventions) remain intact.
 
-### The Hybrid Enforcement Model
-- **Level 1 (Lint)**: Fast, IDE-integrated feedback for common coding mistakes.
-- **Level 2 (Konsist)**: Global structural tests that view the project as a single graph.
-- **Level 3 (KSP)**: 100% precise compiler errors for mission-critical architectural boundaries.
+### High-Fidelity Diagnostics
+All tests share a unified reporting format that provides the **WHAT**, **WHY**, and **HOW** for every violation, ensuring consistency with the KSP and Lint layers.
 
 ---
 
-## ⚠️ Known Limitations (Syntactic vs. Semantic Analysis)
+## ⚖️ Enforcement Categories
 
-It is important to understand that **Konsist checks in this module are syntactic**, meaning they operate on code structure and string matching, not full semantic resolution.
+### 1. Layer Purity (LAW-032 / LAW-031)
+- **Problem**: Android frameworks or UI logic leaking into pure domain/model layers.
+- **Enforcement**: strictly forbids `android.*` or `androidx.compose.*` imports in domain packages.
 
-### Implications:
-1.  **Resolution Blindness**: Konsist may not catch violations hidden behind `typealias`, star imports (`import .*`), or fully qualified names used inline without an import statement.
-2.  **String Matching**: Some rules use substring matching (e.g., `contains("HashMap")`). This can lead to **false positives** if a class name contains a forbidden string but is legitimately architected (e.g., `UserHashMapAdapter`).
-3.  **Severity Policy**: Due to these limitations, **Konsist rules should generally not be used for FATAL enforcement** if a high degree of precision is required. Mission-critical, non-bypassable laws are instead enforced via **KSP** or **Android Lint** with full UAST resolution.
+### 2. Feature Isolation (LAW-003 / LAW-004)
+- **Problem**: Feature modules depending on each other, causing massive build times and circular graphs.
+- **Enforcement**: prevents direct coupling between feature modules; communication must happen via core abstractions.
 
----
-
-## ⚖️ Enforced Laws
-
-The following laws (as defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) enum) are primary targets for Konsist enforcement:
-
-### Layer Purity & Isolation
-- **LAW-032 (Pure Domain/Model)**: Enforces that `:core:domain` and `:core:model` remain pure Kotlin/Java, strictly forbidding dependencies on Android Frameworks or infrastructure libraries.
-- **LAW-003 (Feature Isolation)**: Prevents feature modules from depending on other feature modules (except for shared utilities) or direct infrastructure implementations.
-- **LAW-031 (Layer Mixing)**: Ensures that business logic components and ViewModels do not reference UI frameworks like Compose or Android Views.
-
-### API & State Integrity
-- **LAW-008 / LAW-002 (Public API Purity)**: Scans all public properties and functions to ensure they do not expose mutable containers or implementation-specific types.
-- **LAW-004 (Naming Consistency)**: Validates that package names strictly follow the module structure.
-
-### CI Governance
-- **LAW-034 (Canary Regression)**: Runs against a deliberate "violation module" to ensure the enforcement system hasn't regressed.
-- **LAW-035 (Baseline Integrity)**: Ensures that FATAL violations are never allowed to be grandfathered into `lint-baseline.xml`.
+### 3. High-Fidelity Canary Oracle (LAW-034)
+- **Problem**: Static analysis tools can silently stop working due to classpath regressions.
+- **Verification**: The `Law034_LintCanaryRegressionTest` scans the `:core:canary-violations` module to verify that every registered rule still detects its intended target on the exact line.
 
 ---
 
-## 🏗️ System Components
+## 🛡️ Technical Limitations & Confidence Policy
 
-### 1. The Canonical Policy ([`ArchitecturalPolicy.kt`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/ArchitecturalPolicy.kt))
-This object in `:core:architecture` is the **Single Source of Truth**. It defines forbidden packages, layer patterns, and technical debt baselines used by both Konsist and Lint.
+Konsist checks are **Topological**, not semantic. They operate on imports and name patterns.
 
-### 2. Specialized Law Tests
-Tests are organized by law ID in `src/test/kotlin/...`:
-- `Law031_LayerMixingTest.kt`: Enforces separation of concerns.
-- `Law032_DomainPurityTest.kt`: Guarantees pure Kotlin domain logic.
-- `Law034_LintCanaryRegressionTest.kt`: High-fidelity regression verification.
-- ... and more.
+| Scenario | Enforcement Status |
+| :--- | :--- |
+| Standard Import | **DETECTED** (HIGH Confidence) |
+| Star Import (`.*`) | **DETECTED** (HIGH Confidence) |
+| Alias / Typealias | **BYPASSABLE** (HEURISTIC) |
+| Fully Qualified Name inline | **BYPASSABLE** (HEURISTIC) |
+
+Due to these limitations, mission-critical laws that must be **NON-BYPASSABLE** are duplicated in the **KSP** or **Semantic Lint** layers.
 
 ---
 
-## ⚙️ Usage & Ratchet Policy
+## ⚙️ Usage: The Architectural Ratchet
 
 ### Running Verification
-These tests run as standard JUnit tests and are integrated into the PR Gate.
 ```bash
 ./gradlew :core:testing-architecture:test
 ```
 
-### The Ratchet (Continuous Improvement)
-If you are refactoring a class that is currently listed in `ArchitecturalPolicy.TechnicalDebt`, you are expected to:
-1. Fix the architectural violation.
-2. Remove the class from the debt baseline.
-3. Verify that the tests still pass.
+### The Technical Debt Baseline
+Existing structural violations are grandfathered in `ArchitecturalPolicy.TechnicalDebt`. 
+- **Requirement**: If you touch a baselined file, you are encouraged to resolve the violation and remove it from the debt list.
+- **Integrity**: New violations are NEVER allowed to enter the debt list.
 
 ---
 
 ## 🧪 Development
-To add a new architectural rule:
-1. Update `ArchitecturalPolicy.kt` if the rule involves new forbidden packages or layer definitions.
-2. Implement the test using the Konsist API in `ArchitectureConsistencyTest.kt` or `LayerPurityTest.kt`.
-3. If the project has existing violations that cannot be fixed immediately, add them to `ArchitecturalPolicy.TechnicalDebt` to baseline them.
+1. Update `ArchitecturalPolicy.kt` with any new layer definitions or forbidden packages.
+2. Implement the test using Konsist's DSL in a new `LawXXX_...Test.kt` file.
+3. Add a corresponding spec to `:core:canary-violations` to verify the test's detection logic.

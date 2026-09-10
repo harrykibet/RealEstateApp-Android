@@ -1,83 +1,58 @@
 # Estatia Architectural Guard - KSP Phase (`:core:ksp-architecture`)
 
-This module provides **High-Precision Compiler Enforcement** for Estatia's most critical architectural laws. It uses Kotlin Symbol Processing (KSP) to intercept the compilation process and fail the build if fundamental structural rules are violated.
+This module provides **High-Precision Compiler Enforcement** for Estatia's most critical architectural laws. It uses Kotlin Symbol Processing (KSP) to intercept compilation and fail the build if structural boundaries are breached.
 
 ## 🎯 Purpose
 
-While the `:lint` module provides broad, real-time feedback in the IDE, `:core:ksp-architecture` acts as the **final authority**. It handles rules that require 100% precision and zero tolerance for bypass.
-
-### The Hybrid Enforcement Model
-- **Level 1 (Lint)**: High-speed, mid-precision rules with IDE highlighting and auto-fixes.
-- **Level 2 (Konsist)**: Global structural tests (module graph, naming conventions).
-- **Level 3 (KSP)**: Semantic, compile-time errors for "mission-critical" architectural boundaries.
+While Android Lint provides real-time feedback in the IDE, `:core:ksp-architecture` acts as the **Final Oracle**. It enforces rules that require 100% precision (e.g., symbol resolution) with zero tolerance for bypass.
 
 ---
 
-## ⚖️ Enforced Laws
+## 🚦 Actionable Diagnostics
 
-All processors in this module reference the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) enum to ensure error messages are standardized across the entire project.
+KSP diagnostics in Estatia do more than just report errors; they provide **Guided Refactoring**. Every error follows a structured format:
 
-### 1. Mandatory Result Wrapping (LAW-009)
-- **Problem**: Public methods in repositories or services returning raw implementation types allow failures to be discarded silently.
-- **Enforcement**: Classes annotated with `@Repository`, `@Service`, or `@UseCase` must return `AppResult<T>`, `Flow<T>`, or `Unit`.
-- **Processor**: `Law009_ResultWrappingProcessor`
+```text
+FATAL Architecture Law: LAW-008 [CRITICAL / CERTAIN]
 
-### 2. Contractual Consistency (LAW-008)
-- **Problem**: Direct implementation leakage.
-- **Enforcement**: Every class annotated with `@Repository` or `@UseCase` **must** implement an interface.
-- **Processor**: `Law008_InterfaceContractProcessor`
+WHAT: Repository 'PropertyRepository' exposes implementation type 'HashMap'.
 
-### 3. Abstraction Boundaries (LAW-008)
-- **Problem**: Domain components leaking infrastructure types (e.g., Firebase, Room, OkHttp).
-- **Enforcement**: Verifies that public APIs of `@UseCase` and `@Repository` do not expose infrastructure types defined in `ArchitecturalPolicy`.
-- **Processor**: `Law008_AbstractionLeakageProcessor`
+WHY: Exposing implementation types couples consumers to internal choices 
+     and prevents the swap-ability of underlying infrastructure.
+
+RECOMMENDED: Use interfaces and standard Kotlin collection types 
+             (e.g. Map<K, V>) in public signatures.
+```
+
+---
+
+## ⚖️ Semantic Enforcement Families
+
+All processors reference the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) registry for technical guidance.
+
+### 1. ViewModel Integrity (LAW-018)
+- **Problem**: ViewModels becoming "Property Soup" with multiple conflicting state sources.
+- **Enforcement**: exactly one canonical UI-state owner (inheriting from `StateFlow`) per ViewModel.
+- **Precision**: Uses semantic inheritance matching, allowing custom state wrappers while blocking multiple authorities.
+
+### 2. Abstraction Boundaries (LAW-008)
+- **Problem**: Infrastructure types (Retrofit, Room, Firebase) leaking into the domain layer.
+- **Enforcement**: Public signatures of repositories/services must only expose domain models or safe primitives.
+
+### 3. State Ownership (LAW-002)
+- **Problem**: Exposing mutable state containers (`MutableStateFlow`) to external consumers.
+- **Enforcement**: Blocks all public properties using mutable container types.
 
 ### 4. Constructor Purity (LAW-030)
-- **Problem**: Injecting concrete implementations instead of abstractions.
-- **Enforcement**: Primary constructors of architectural components must only accept interfaces (starting with 'I') or pure Data Models.
-- **Processor**: `Law030_ConstructorPurityProcessor`
-
-### 5. ViewModel Integrity (LAW-018 & LAW-002)
-- **Problem**: "Property soup" (multiple StateFlows) and mutable state leakage.
-- **Enforcement**:
-    - Exactly one public `StateFlow` allowed per `@ViewModelMarker` (Single Source of Truth).
-    - Zero public mutable containers allowed (`MutableStateFlow`, `MutableState`).
-- **Processors**: `Law018_ViewModelSsotProcessor`, `Law002_ExposedMutableStateProcessor`
-
-### 6. Domain Expressiveness (LAW-036)
-- **Problem**: Returning raw `Boolean` or `Int` in `AppResult` obscures business meaning.
-- **Enforcement**: Warns when UseCases return primitives, encouraging enums or sealed classes.
-- **Processor**: `Law036_DomainExpressivenessProcessor`
+- **Problem**: Injecting concrete classes instead of interfaces, hindering test double injection.
+- **Enforcement**: Constructors of marked components must only accept interfaces or pure value models.
 
 ---
 
-## 🛠️ Usage
+## 🧪 Development & Spec-First Verification
 
-### 1. Annotate your component
-Mark your class with the appropriate architectural annotation from `:core:common`:
-
-```kotlin
-import com.estatia.realestate.apps.core.common.annotations.Repository
-
-@Repository
-class PropertyRepositoryImpl(...) : IPropertyRepository {
-    // KSP will verify every public function here
-}
-```
-
-### 2. Apply the processor
-Add the processor to the module's `build.gradle.kts`:
-
-```kotlin
-dependencies {
-    ksp(project(":core:ksp-architecture"))
-}
-```
-
----
-
-## 🧪 Development
-To add a new architectural rule:
-1. Define a marker annotation in `:core:common`.
-2. Create a new `SymbolProcessor` class in `src/main/kotlin`.
-3. Register the `SymbolProcessorProvider` in `META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider`.
+To add a new compiler-enforced rule:
+1.  **Define the Law** in `:core:architecture`.
+2.  **Create a Modular Spec** in `:core:canary-violations`. Add a `[CANARY:POSITIVE:...]` tag to a failing case and a `[CANARY:NEGATIVE:...]` tag to a passing one.
+3.  **Implement the Processor** using the KSP API.
+4.  **Verify**: Run `./gradlew :core:canary-violations:ksp...` to ensure the processor identifies the spec correctly.

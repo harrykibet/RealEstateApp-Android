@@ -19,6 +19,17 @@ Estatia uses a multi-dimensional model to evaluate and enforce architectural law
 
 ---
 
+## 🚦 Actionable Diagnostics
+
+Diagnostics in the Estatia system are designed to be **Engineering Assistants**. Every report answers:
+
+- **WHAT**: The specific technical violation detected.
+- **WHY**: The underlying architectural rationale and production risk.
+- **HOW**: Authoritative recommended steps for resolution.
+- **METADATA**: Real-time evaluation of Risk and Confidence.
+
+---
+
 ## ⚖️ The Laws of the Codebase
 
 Every detector in this module enforces a rule defined in the central [`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt) registry. 
