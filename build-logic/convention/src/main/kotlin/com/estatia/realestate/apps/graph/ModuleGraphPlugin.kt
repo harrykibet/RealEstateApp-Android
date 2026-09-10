@@ -35,6 +35,7 @@ class ModuleGraphPlugin : Plugin<Project> {
             val allSubprojects = target.subprojects
             val modules = allSubprojects.map { it.path }.toSet()
             val edges = ModuleGraphExtractor.extractEdges(allSubprojects)
+            val rootDir = target.projectDir // Capture here during configuration
             
             generateModuleGraphs.configure {
                 this.modules.set(modules)
@@ -52,7 +53,7 @@ class ModuleGraphPlugin : Plugin<Project> {
                         return@doLast
                     }
 
-                    val fullImpact = ModuleGraphExtractor.findImpactedModules(diffOutput, modules, edges, target.projectDir)
+                    val fullImpact = ModuleGraphExtractor.findImpactedModules(diffOutput, modules, edges, rootDir)
                     val tasks = fullImpact.flatMap { listOf("$it:lintDemoDebug", "$it:testDemoDebugUnitTest") }
                     println("IMPACT_TASKS=" + tasks.joinToString(" "))
                 }

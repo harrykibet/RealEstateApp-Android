@@ -10,58 +10,115 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
 import java.io.File
 
-enum class DependencyType { API, IMPLEMENTATION, TEST, ANDROID_TEST, TEST_FIXTURES, KSP, LINT, OTHER }
+enum class DependencyType { API, IMPLEMENTATION, TEST, ANDROID_TEST, TEST_FIXTURES, KSP, LINT, IMPLICIT, OTHER }
 
 data class ModuleEdge(val from: String, val to: String, val type: DependencyType)
 
 object ModuleGraphExtractor {
 
     /**
-     * Reads the *resolved* declared dependencies straight from each subproject's
-     * configurations.
+     * Files that, if changed, invalidate all optimizations and require a full test run.
      */
+    private val GLOBAL_IMPACT_PATTERNS = listOf(
+        "gradle/libs.versions.toml",
+        "build-logic/",
+        "settings.gradle.kts",
+        "gradle.properties",
+        "build.gradle.kts", // Root
+        "core/architecture/", // The SSoT for all enforcement
+        "lint/" // Changes to the enforcement engine itself
+    )
+
+    fun discoverModules(root: Project): Set<String> =
+        root.subprojects.map { it.path }.toSet()
+
     fun extractEdges(subprojects: Collection<Project>): Set<ModuleEdge> {
         val edges = mutableSetOf<ModuleEdge>()
-        subprojects.forEach { sub ->
-            sub.configurations.forEach { config ->
+        val implicitDeps = setOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system")
+        val featurePluginId = "com.estatia.realestate.apps.android.feature"
+
+        subprojects.forEach { p ->
+            val hasFeaturePlugin = p.plugins.hasPlugin(featurePluginId)
+
+            p.configurations.forEach { config ->
                 val type = classify(config.name) ?: return@forEach
-                config.dependencies
-                    .filterIsInstance<ProjectDependency>()
-                    .forEach { dep ->
-                        val targetPath = dep.path
-                        if (targetPath != sub.path) {
-                            edges.add(ModuleEdge(sub.path, targetPath, type))
-                        }
+
+                config.dependencies.withType(ProjectDependency::class.java).forEach { dep ->
+                    val from = p.path
+                    val to = dep.path
+                    if (from == to) return@forEach
+
+                    var actualType = type
+                    if (hasFeaturePlugin && implicitDeps.contains(to) && type == DependencyType.IMPLEMENTATION) {
+                        actualType = DependencyType.IMPLICIT
                     }
+
+                    edges.add(ModuleEdge(from, to, actualType))
+                }
             }
         }
-        return edges
+
+        return edges.groupBy { it.from to it.to }.map { (_, list) ->
+            list.maxByOrNull { getPriority(it.type) }!!
+        }.toSet()
     }
 
-    private fun classify(configName: String): DependencyType? = when {
-        configName.contains("TestFixtures", ignoreCase = true) -> DependencyType.TEST_FIXTURES
-        configName.contains("AndroidTest") -> DependencyType.ANDROID_TEST
-        configName.contains("Test") -> DependencyType.TEST
-        configName.contains("ksp", ignoreCase = true) -> DependencyType.KSP
-        configName.contains("lint", ignoreCase = true) -> DependencyType.LINT
-        configName.equals("api", true) || configName.endsWith("Api") -> DependencyType.API
-        configName.equals("implementation", true) || configName.endsWith("Implementation") -> DependencyType.IMPLEMENTATION
-        else -> null
+    private fun getPriority(type: DependencyType): Int = when (type) {
+        DependencyType.API -> 10
+        DependencyType.IMPLEMENTATION -> 9
+        DependencyType.TEST_FIXTURES -> 8
+        DependencyType.IMPLICIT -> 7
+        DependencyType.KSP -> 6
+        DependencyType.LINT -> 5
+        DependencyType.ANDROID_TEST -> 4
+        DependencyType.TEST -> 3
+        DependencyType.OTHER -> 0
     }
 
-    fun findImpactedModules(diffFiles: List<String>, modules: Set<String>, edges: Set<ModuleEdge>, rootDir: File): Set<String> {
+    private fun classify(configName: String): DependencyType? {
+        val lower = configName.lowercase()
+        if (lower == "testfixturesapi") return DependencyType.TEST_FIXTURES
+        if (lower.contains("ksp")) return DependencyType.KSP
+        if (lower.contains("lint")) return DependencyType.LINT
+
+        if (lower.endsWith("implementation") || lower == "implementation") {
+            return if (lower.contains("test")) DependencyType.TEST else DependencyType.IMPLEMENTATION
+        }
+        if (lower.endsWith("api") || lower == "api") {
+            return if (lower.contains("test")) DependencyType.TEST else DependencyType.API
+        }
+
+        return null
+    }
+
+    /**
+     * Pessimistic Impact Calculation.
+     * Returns the set of all modules that must be tested based on the diff.
+     */
+    fun findImpactedModules(diffFiles: List<String>, allModules: Set<String>, edges: Set<ModuleEdge>, rootDir: File): Set<String> {
+        // 1. Check for Tier 0: Global Atomic Triggers
+        val hasGlobalChange = diffFiles.any { path -> 
+            GLOBAL_IMPACT_PATTERNS.any { pattern -> path.startsWith(pattern) } 
+        }
+
+        if (hasGlobalChange) {
+            println("INFO: Global trigger detected. Optimization bypassed. Running full test suite.")
+            return allModules
+        }
+
+        // 2. Identify directly affected modules
         val directlyAffected = mutableSetOf<String>()
         diffFiles.forEach { path ->
             val file = File(rootDir, path)
             if (!file.exists()) return@forEach
-            
+
             var dir = file.parentFile
             while (dir != null && dir != rootDir) {
                 val buildFile = File(dir, "build.gradle.kts")
                 if (buildFile.exists()) {
                     val relativePath = dir.relativeTo(rootDir).path.replace(File.separator, ":")
                     val modulePath = if (relativePath.isEmpty()) ":" else ":$relativePath"
-                    if (modules.contains(modulePath)) {
+                    if (allModules.contains(modulePath)) {
                         directlyAffected.add(modulePath)
                         break
                     }
@@ -70,6 +127,7 @@ object ModuleGraphExtractor {
             }
         }
 
+        // 3. Propagate impact to all downstream consumers (Transitive Closure)
         val fullImpact = mutableSetOf<String>()
         fun addWithConsumers(module: String) {
             if (fullImpact.add(module)) {
@@ -77,6 +135,7 @@ object ModuleGraphExtractor {
             }
         }
         directlyAffected.forEach { addWithConsumers(it) }
+
         return fullImpact
     }
 }
@@ -117,20 +176,22 @@ abstract class GenerateModuleGraphsTask : DefaultTask() {
             target.printWriter().use { w ->
                 w.println("digraph {")
                 w.println("""  graph [label="$label Dependencies", labelloc=t, fontsize=24, ranksep=1.4];""")
-                w.println("""  node [style="rounded,filled", fontname="sans-serif", shape=box];""")
-                include.sorted().forEach { m ->
+                w.println("""  node [style=filled, fillcolor="#bbdefb", fontname="sans-serif", shape=box, style="rounded,filled"];""")
+                include.sorted().forEach { module ->
                     val color = when {
-                        m == ":app" -> "#CAFFBF"
-                        m.startsWith(":feature") -> "#FFD6A5"
-                        m.startsWith(":core") -> "#9BF6FF"
+                        module == ":app" -> "#CAFFBF"
+                        module.startsWith(":feature") -> "#FFD6A5"
+                        module.startsWith(":core") -> "#9BF6FF"
                         else -> "#BDB2FF"
                     }
-                    w.println("""  "$m" [fillcolor="$color"];""")
+                    w.println("""  "$module" [fillcolor="$color"];""")
                 }
                 parsedEdges
                     .filter { it.from in include && it.to in modules.get() }
                     .sortedWith(compareBy({ it.from }, { it.to }, { it.type }))
-                    .forEach { w.println("""  "${it.from}" -> "${it.to}" [${style(it.type)}]""") }
+                    .forEach { edge ->
+                        w.println("""  "${edge.from}" -> "${edge.to}" [${getEdgeStyle(edge.type)}]""")
+                    }
                 w.println("}")
             }
             if (hasDot && bin != null) {
@@ -158,13 +219,14 @@ abstract class GenerateModuleGraphsTask : DefaultTask() {
         }
     }
 
-    private fun style(type: DependencyType) = when (type) {
-        DependencyType.API -> """color="#1A237E", penwidth=2.5, label="api""""
-        DependencyType.IMPLEMENTATION -> """color="#1A237E", style=solid"""
-        DependencyType.TEST, DependencyType.ANDROID_TEST -> """color="#757575", style=dashed"""
-        DependencyType.TEST_FIXTURES -> """color="#FF9800", style=dashed, label="fixtures""""
-        DependencyType.KSP -> """color="#9C27B0", style=dotted, label="ksp""""
-        DependencyType.LINT -> """color="#607D8B", style=dotted, label="lint""""
-        DependencyType.OTHER -> """color="#607D8B", style=dotted"""
+    private fun getEdgeStyle(type: DependencyType): String = when (type) {
+        DependencyType.API -> "color=\"#1A237E\", penwidth=2.5, label=\"api\""
+        DependencyType.IMPLEMENTATION -> "color=\"#1A237E\", style=solid"
+        DependencyType.TEST, DependencyType.ANDROID_TEST -> "color=\"#757575\", style=dashed"
+        DependencyType.TEST_FIXTURES -> "color=\"#FF9800\", style=dashed, label=\"fixtures\""
+        DependencyType.KSP -> "color=\"#9C27B0\", style=dotted, label=\"ksp\""
+        DependencyType.LINT -> "color=\"#607D8B\", style=dotted, label=\"lint\""
+        DependencyType.IMPLICIT -> "color=\"#4CAF50\", style=dotted, label=\"implicit\""
+        DependencyType.OTHER -> "color=\"#000000\", style=dotted"
     }
 }

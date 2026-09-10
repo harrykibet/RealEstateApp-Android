@@ -1,5 +1,4 @@
 import com.jraska.module.graph.assertion.GraphRulesExtension
-import org.gradle.api.artifacts.ProjectDependency
 import java.io.File
 
 buildscript {
