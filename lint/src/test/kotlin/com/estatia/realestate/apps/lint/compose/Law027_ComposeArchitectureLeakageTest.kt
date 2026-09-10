@@ -16,10 +16,14 @@ class Law027_ComposeArchitectureLeakageTest {
             .allowMissingSdk()
             .files(
                 Stubs.COMPOSE,
+                Stubs.ESTATIA_ARCH,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import androidx.compose.runtime.Composable
+                    import com.estatia.realestate.apps.core.common.annotations.Repository
+
+                    @Repository
                     class MyRepository { fun load() {} }
                     @Composable
                     fun MyUI(repo: MyRepository) {

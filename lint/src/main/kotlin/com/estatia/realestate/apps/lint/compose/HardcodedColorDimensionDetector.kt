@@ -18,8 +18,9 @@ class HardcodedColorDimensionDetector : Detector(), SourceCodeScanner {
     override fun getApplicableMethodNames() = listOf("Color", "dp", "sp")
 
     override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
-        val path = context.file.path.replace("\\", "/")
-        if (path.contains("/designsystem/")) return
+        // 🛡️ SEMANTIC RESOLUTION: Check package name instead of raw file path
+        val packageName = context.uastFile?.packageName ?: ""
+        if (packageName.contains(".core.designsystem") || packageName.contains(".core.design_system")) return
 
         context.report(
             ISSUE,

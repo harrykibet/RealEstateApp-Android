@@ -3,6 +3,7 @@ package com.estatia.realestate.apps.lint.concurrency
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
+import com.estatia.realestate.apps.lint.Stubs
 import org.junit.Test
 
 class ChaosSynchronizationDetectorTest {
@@ -13,10 +14,13 @@ class ChaosSynchronizationDetectorTest {
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
+                Stubs.CHAOS,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class NetworkChaosController {
+                    import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+
+                    class NetworkChaosController : ChaosContract() {
                         var isEnabled = false
                     }
                     """.trimIndent()
@@ -33,10 +37,13 @@ class ChaosSynchronizationDetectorTest {
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
             .files(
+                Stubs.CHAOS,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    class FakeAuthSource {
+                    import com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract
+
+                    class FakeAuthSource : ChaosContract() {
                         var currentUser = "none"
                     }
                     """.trimIndent()

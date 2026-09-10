@@ -53,7 +53,7 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
 
     private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
         val qualifiedName = method.containingClass?.qualifiedName ?: return false
-        return qualifiedName.startsWith("$packageName.")
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
     companion object {

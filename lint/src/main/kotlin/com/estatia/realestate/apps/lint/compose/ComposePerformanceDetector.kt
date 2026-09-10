@@ -7,6 +7,7 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 
 /**
@@ -28,14 +29,14 @@ class ComposePerformanceDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitCallExpression(node: UCallExpression) {
-            if (!isInsideComposable(node)) return
+            if (!isInsideComposable(context, node)) return
 
             // Check if it's a constructor call or an expensive factory method
             val method = node.resolve() ?: return
             if (method.isConstructor) {
                 val type = method.containingClass?.qualifiedName ?: ""
                 if (expensiveTypes.contains(type)) {
-                    if (!isInsideRemember(node)) {
+                    if (!isInsideRemember(context, node)) {
                         context.report(
                             EXPENSIVE_RECOMPOSITION_ISSUE,
                             node,
@@ -48,21 +49,30 @@ class ComposePerformanceDetector : Detector(), SourceCodeScanner {
         }
     }
 
-    private fun isInsideComposable(node: UElement): Boolean {
+    private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
         val method = node.getParentOfType<UMethod>() ?: return false
-        return method.javaPsi.annotations.any { it.qualifiedName?.contains("Composable") == true }
+        return context.evaluator.getAnnotations(method.javaPsi, false)
+            .any { it.qualifiedName == "androidx.compose.runtime.Composable" }
     }
 
-    private fun isInsideRemember(node: UElement): Boolean {
+    private fun isInsideRemember(context: JavaContext, node: UElement): Boolean {
         var current = node.uastParent
         while (current != null && current !is UMethod) {
             if (current is UCallExpression) {
-                val name = current.methodName ?: ""
-                if (name.startsWith("remember")) return true
+                val method = current.resolve()
+                if (method != null && isMemberInPackage(method, "androidx.compose.runtime") &&
+                    method.name.startsWith("remember")) {
+                    return true
+                }
             }
             current = current.uastParent
         }
         return false
+    }
+
+    private fun isMemberInPackage(method: PsiMethod, packageName: String): Boolean {
+        val qualifiedName = method.containingClass?.qualifiedName ?: return false
+        return qualifiedName.startsWith("$packageName.") || qualifiedName == packageName
     }
 
     companion object {

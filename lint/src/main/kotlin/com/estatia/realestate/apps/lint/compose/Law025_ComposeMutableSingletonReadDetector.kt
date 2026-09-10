@@ -21,26 +21,18 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitSimpleNameReferenceExpression(node: USimpleNameReferenceExpression) {
-            checkElement(node)
+            checkElement(context, node)
         }
 
         override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
-            checkElement(node)
+            checkElement(context, node)
         }
 
-        private fun checkElement(node: UElement) {
+        private fun checkElement(context: JavaContext, node: UElement) {
             if (!isInsideComposable(context, node)) return
 
             // Avoid double reporting
             if (node is USimpleNameReferenceExpression && node.uastParent is UQualifiedReferenceExpression) return
-
-            // 🧪 Canary Support: Robust detection for deliberate violations
-            // Use sourcePsi.text for K2 compatibility
-            val source = node.sourcePsi?.text ?: ""
-            if (source.contains("CanaryConfig.mutableValue")) {
-                report(node)
-                return
-            }
 
             val resolved = when (node) {
                 is USimpleNameReferenceExpression -> node.resolve()
@@ -51,7 +43,7 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
             val member = resolved as? PsiMember ?: return
             val containingClass = member.containingClass ?: return
             
-            if (isKotlinObject(containingClass)) {
+            if (isKotlinObject(context, containingClass)) {
                 if (isMutable(member)) {
                     report(node)
                 }
@@ -66,45 +58,46 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
                 "Reading mutable singleton state inside Composable (LAW-025)."
             )
         }
-    }
 
-    private fun isMutable(member: PsiMember): Boolean {
-        return when (member) {
-            is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
-            is PsiMethod -> {
-                val name = member.name
-                if (name.startsWith("set")) return true
-                if (name.startsWith("get")) {
-                    val containingClass = member.containingClass ?: return false
-                    val setterName = name.replaceFirst("get", "set")
-                    val hasSetter = containingClass.findMethodsByName(setterName, false).isNotEmpty()
-                    return hasSetter
+        private fun isMutable(member: PsiMember): Boolean {
+            return when (member) {
+                is PsiField -> !member.hasModifierProperty(PsiModifier.FINAL)
+                is PsiMethod -> {
+                    val name = member.name
+                    if (name.startsWith("set")) return true
+                    if (name.startsWith("get")) {
+                        val containingClass = member.containingClass ?: return false
+                        val setterName = name.replaceFirst("get", "set")
+                        val hasSetter = containingClass.findMethodsByName(setterName, false).isNotEmpty()
+                        return hasSetter
+                    }
+                    false
                 }
-                false
+                else -> false
             }
-            else -> false
         }
-    }
 
-    private fun isKotlinObject(clazz: PsiClass): Boolean {
-        val name = clazz.qualifiedName ?: ""
-        return clazz.fields.any { it.name == "INSTANCE" } || 
-               name.endsWith(".Companion") || 
-               clazz.name == "CanaryConfig"
-    }
+        private fun isKotlinObject(context: JavaContext, clazz: PsiClass): Boolean {
+            // 🛡️ SEMANTIC RESOLUTION: Detect Kotlin Singleton Objects or Companions
+            val qualifiedName = clazz.qualifiedName ?: ""
+            return clazz.fields.any { it.name == "INSTANCE" } || 
+                   qualifiedName.endsWith(".Companion") ||
+                   context.evaluator.getAnnotations(clazz, false).any { it.qualifiedName?.contains("Singleton") == true }
+        }
 
-    private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
-        var current: UElement? = node
-        while (current != null) {
-            if (current is UMethod) {
-                if (context.evaluator.getAnnotations(current.javaPsi, false)
-                    .any { it.qualifiedName == "androidx.compose.runtime.Composable" }) {
-                    return true
+        private fun isInsideComposable(context: JavaContext, node: UElement): Boolean {
+            var current: UElement? = node
+            while (current != null) {
+                if (current is UMethod) {
+                    if (context.evaluator.getAnnotations(current.javaPsi, false)
+                        .any { it.qualifiedName == "androidx.compose.runtime.Composable" }) {
+                        return true
+                    }
                 }
+                current = current.uastParent
             }
-            current = current.uastParent
+            return false
         }
-        return false
     }
 
     companion object {

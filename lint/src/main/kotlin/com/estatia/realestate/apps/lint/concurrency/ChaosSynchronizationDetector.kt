@@ -22,7 +22,10 @@ class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
         override fun visitClass(node: UClass) {
             // 🛡️ SEMANTIC RESOLUTION: Rely on contract inheritance or specific annotations
             val isChaosComponent = context.evaluator.inheritsFrom(node, "com.estatia.realestate.apps.core.testing.chaos.contracts.ChaosContract", false) ||
-                                   context.evaluator.getAnnotations(node.javaPsi, false).any { it.qualifiedName?.contains("Chaos") == true }
+                                   context.evaluator.getAnnotations(node.javaPsi, false).any { 
+                                       val qn = it.qualifiedName ?: ""
+                                       qn.contains("Chaos") || qn.contains("Mock") || qn.contains("Fake")
+                                   }
             
             if (!isChaosComponent) return
 

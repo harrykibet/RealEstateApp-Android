@@ -66,11 +66,14 @@ class ThreadSafetyDetectorTest {
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
+                Stubs.ESTATIA_ARCH,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
+                    import com.estatia.realestate.apps.core.common.annotations.Repository
                     import java.util.ArrayList
                     
+                    @Repository
                     class PropertyRepository {
                         private var observers = ArrayList<String>()
                     }

@@ -14,9 +14,10 @@ import javax.inject.Inject
 public interface ICanaryRepo
 
 // [CANARY:POSITIVE:MissingVisibilityModifier]
+@Repository
 class PositiveRepository : ICanaryRepo {
     // [CANARY:POSITIVE:ImplementationTypeInPublicApi] [CANARY:POSITIVE:MissingVisibilityModifier]
-    fun leak(retrofit: Retrofit?): String = ""
+    public fun leak(retrofit: Retrofit?): String = ""
 }
 
 @Repository

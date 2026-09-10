@@ -128,6 +128,23 @@ object Stubs {
         """.trimIndent()
     )
 
+    val ESTATIA_ARCH = kotlin(
+        """
+        package com.estatia.realestate.apps.core.common.annotations
+        annotation class Repository
+        annotation class Service
+        annotation class UseCase
+        annotation class ViewModelMarker
+        """.trimIndent()
+    )
+
+    val CHAOS = kotlin(
+        """
+        package com.estatia.realestate.apps.core.testing.chaos.contracts
+        abstract class ChaosContract
+        """.trimIndent()
+    )
+
     val ANDROID_APP = kotlin(
         """
         package android.app
