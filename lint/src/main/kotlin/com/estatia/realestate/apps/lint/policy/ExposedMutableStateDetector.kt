@@ -14,7 +14,7 @@ import org.jetbrains.uast.UField
 
 /**
  * LAW-002: Mutable state never crosses an ownership boundary.
- * Enforces that ViewModels, Repositories, and Services do not expose mutable state containers.
+ * Enforces that ViewModels, Repositories, UseCases, Managers and Services do not expose mutable state containers.
  */
 class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
 
@@ -26,7 +26,9 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
     private val targetAnnotations = setOf(
         "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker",
         "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-        "com.estatia.realestate.apps.core.architecture.annotations.Service"
+        "com.estatia.realestate.apps.core.architecture.annotations.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.Manager"
     )
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UField::class.java)

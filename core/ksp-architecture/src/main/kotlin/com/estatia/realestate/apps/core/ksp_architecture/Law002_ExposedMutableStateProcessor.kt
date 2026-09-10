@@ -19,7 +19,13 @@ class Law002_ExposedMutableStateProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
-        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker"
+        val archAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker",
+            "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Service",
+            "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
+            "com.estatia.realestate.apps.core.architecture.annotations.Manager"
+        )
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
 
@@ -27,9 +33,11 @@ class Law002_ExposedMutableStateProcessor(
             .flatMap { it.declarations }
             .filterIsInstance<KSClassDeclaration>()
             .filter { clazz ->
-                val hasMarker = clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == viewModelMarkerFqn }
+                val hasArchAnnotation = clazz.annotations.any { ann ->
+                    archAnnotations.contains(ann.annotationType.resolve().declaration.qualifiedName?.asString())
+                }
                 val isViewModel = viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
-                hasMarker || isViewModel
+                hasArchAnnotation || isViewModel
             }
 
         symbols.forEach { clazz ->

@@ -133,7 +133,9 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
             qn.contains("Repository") || 
             qn.contains("Service") || 
             qn.contains("UseCase") ||
-            qn.contains("Manager")
+            qn.contains("Manager") ||
+            qn.contains("Coordinator") ||
+            qn.contains("DataSource")
         }
             
         return isSharedComponent

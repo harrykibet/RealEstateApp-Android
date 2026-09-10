@@ -18,7 +18,9 @@ class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner 
     private val targetAnnotations = setOf(
         "com.estatia.realestate.apps.core.architecture.annotations.Repository",
         "com.estatia.realestate.apps.core.architecture.annotations.Service",
-        "com.estatia.realestate.apps.core.architecture.annotations.UseCase"
+        "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
+        "com.estatia.realestate.apps.core.architecture.annotations.Manager"
     )
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UCallExpression::class.java)

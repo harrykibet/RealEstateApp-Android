@@ -18,8 +18,18 @@ class Law030_ConstructorPurityProcessor(
     private val allowedInfrastructure = ArchitecturalPolicy.Law030.AllowedInfrastructureInConstructors
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.Repository") +
-                      resolver.getSymbolsWithAnnotation("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
+        val archAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Service",
+            "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
+            "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
+            "com.estatia.realestate.apps.core.architecture.annotations.Manager",
+            "com.estatia.realestate.apps.core.architecture.annotations.Coordinator",
+            "com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper",
+            "com.estatia.realestate.apps.core.architecture.annotations.Helper"
+        )
+
+        val symbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.primaryConstructor?.parameters?.forEach { param ->
