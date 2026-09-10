@@ -72,4 +72,27 @@ class SuppressionPolicyDetectorTest {
             .run()
             .expectClean()
     }
+
+    @Test
+    fun `multiple suppressions with multiple justifications in a block is clean`() {
+        lint()
+            .allowCompilationErrors()
+            .allowMissingSdk()
+            .files(
+                Stubs.COROUTINES,
+                Stubs.RESULT,
+                kotlin(
+                    """
+                    package com.estatia.realestate.apps
+                    // Justification: ExposedMutableState - legacy interop
+                    // Justification: MissingResultWrapper - legacy interop
+                    @Suppress("ExposedMutableState", "MissingResultWrapper")
+                    class Good
+                    """.trimIndent()
+                )
+            )
+            .issues(SuppressionPolicyDetector.ISSUE, ExposedMutableStateDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
+            .run()
+            .expectClean()
+    }
 }

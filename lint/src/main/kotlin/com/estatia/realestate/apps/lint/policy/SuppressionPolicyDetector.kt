@@ -106,12 +106,21 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
         val contents = context.getContents() ?: return false
         val startOffset = node.sourcePsi?.textRange?.startOffset ?: return false
         
+        // Scan backwards through the contiguous comment block immediately preceding the annotation
         val prefix = contents.substring(0, startOffset).trimEnd()
-        val lastNewline = prefix.lastIndexOf('\n')
-        val lastLine = if (lastNewline != -1) prefix.substring(lastNewline + 1).trim() else prefix
+        val lines = prefix.lines()
         
         val pattern = Regex("""//\s*Justification:\s*$issueId\s*-.*""", RegexOption.IGNORE_CASE)
-        return pattern.matches(lastLine)
+        
+        for (i in lines.indices.reversed()) {
+            val line = lines[i].trim()
+            if (line.isEmpty()) continue
+            if (!line.startsWith("//")) break // End of contiguous comment block
+            
+            if (pattern.matches(line)) return true
+        }
+        
+        return false
     }
 
     companion object {
