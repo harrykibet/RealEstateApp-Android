@@ -1,4 +1,5 @@
 import com.jraska.module.graph.assertion.GraphRulesExtension
+import org.gradle.api.artifacts.ProjectDependency
 import java.io.File
 
 buildscript {
@@ -39,7 +40,7 @@ plugins {
 extensions.configure<GraphRulesExtension>("moduleGraphAssert") {
     maxHeight = 10
     configurations = setOf("api", "implementation")
-    
+
     restricted = arrayOf(
         ":core:(?!canary-violations).* -X> :feature.*",
         ":feature.* -X> :feature:(?!shared-ui).*",
@@ -56,77 +57,81 @@ data class ModuleEdge(val from: String, val to: String, val type: DependencyType
 
 /**
  * Authoritative Architectural Analysis Engine.
+ * Uses Gradle's native Project and Configuration APIs instead of fragile Regex.
  */
 object EstatiaArch {
-    fun discoverModules(rootDir: File): Set<String> {
-        val settingsFile = File(rootDir, "settings.gradle.kts")
-        val modules = mutableSetOf<String>()
-        if (settingsFile.exists()) {
-            Regex("""include\s*\(\s*["']([^"']+)["']\s*\)""").findAll(settingsFile.readText()).forEach { match ->
-                modules.add(match.groupValues[1])
-            }
-        }
-        return modules
-    }
-
-    fun extractEdges(rootDir: File, modules: Set<String>): Set<ModuleEdge> {
+    fun extractEdges(subprojects: Collection<Project>): Set<ModuleEdge> {
         val edges = mutableSetOf<ModuleEdge>()
-        modules.forEach { modulePath ->
-            val relativePath = modulePath.removePrefix(":").replace(":", "/")
-            val moduleDir = File(rootDir, relativePath)
-            val buildFile = File(moduleDir, "build.gradle.kts")
-            
-            if (buildFile.exists()) {
-                val content = buildFile.readText()
-                
-                fun addEdge(rawDep: String, type: DependencyType) {
-                    var dep = rawDep
-                    if (!dep.startsWith(":")) {
-                        dep = ":" + dep.replace(".", ":")
-                            .replace(Regex("([a-z])([A-Z])"), "$1-$2")
-                            .lowercase()
-                    }
-                    val actualDep = modules.find { 
-                        it.replace("-", "").replace(":", "") == dep.replace("-", "").replace(":", "") 
-                    } ?: dep
-                    if (modulePath != actualDep) {
-                        edges.add(ModuleEdge(modulePath, actualDep, type))
-                    }
-                }
+        val implicitDeps = setOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system")
+        val featurePluginId = "com.estatia.realestate.apps.android.feature"
 
-                Regex("""(?:api|compile)\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.API) }
-                Regex("""implementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.IMPLEMENTATION) }
-                Regex("""testImplementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.TEST) }
-                Regex("""androidTestImplementation\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.TEST) }
-                Regex("""testFixturesApi\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.TEST_FIXTURES) }
-                Regex("""ksp\s*\(?\s*(?:projects\.|project\s*\(\s*["'])([^"'\)]+)""").findAll(content).forEach { addEdge(it.groupValues[1], DependencyType.KSP) }
+        subprojects.forEach { p ->
+            val hasFeaturePlugin = p.plugins.hasPlugin(featurePluginId)
 
-                if (content.contains("estatia.android.feature")) {
-                    listOf(":core:ui", ":core:common", ":core:domain", ":core:navigation", ":core:model", ":core:design-system").forEach {
-                        if (modulePath != it) edges.add(ModuleEdge(modulePath, it, DependencyType.IMPLICIT))
+            p.configurations.forEach { config ->
+                val type = mapConfigurationToType(config.name) ?: return@forEach
+
+                config.dependencies.withType(ProjectDependency::class.java).forEach { dep ->
+                    val from = p.path
+                    val to = dep.path
+                    if (from == to) return@forEach
+
+                    var actualType = type
+                    if (hasFeaturePlugin && implicitDeps.contains(to) && type == DependencyType.IMPLEMENTATION) {
+                        actualType = DependencyType.IMPLICIT
                     }
-                }
-                if (content.contains("estatia.android.testing")) {
-                    edges.add(ModuleEdge(modulePath, ":core:testing", DependencyType.TEST))
-                    edges.add(ModuleEdge(modulePath, ":core:testing-network", DependencyType.TEST))
-                }
-                if (content.contains("estatia.android.core") || content.contains("estatia.android.application")) {
-                    edges.add(ModuleEdge(modulePath, ":core:testing", DependencyType.IMPLICIT))
+
+                    edges.add(ModuleEdge(from, to, actualType))
                 }
             }
         }
-        return edges
+
+        return edges.groupBy { it.from to it.to }.map { (_, list) ->
+            list.maxByOrNull { getPriority(it.type) }!!
+        }.toSet()
     }
-    
-    fun findImpactedModules(rootDir: File, changedFiles: List<String>, modules: Set<String>, edges: Set<ModuleEdge>): Set<String> {
+
+    private fun getPriority(type: DependencyType): Int = when (type) {
+        DependencyType.API -> 10
+        DependencyType.IMPLEMENTATION -> 9
+        DependencyType.TEST_FIXTURES -> 8
+        DependencyType.IMPLICIT -> 7
+        DependencyType.KSP -> 6
+        DependencyType.LINT -> 5
+        DependencyType.TEST -> 4
+    }
+
+    private fun mapConfigurationToType(name: String): DependencyType? {
+        val lower = name.lowercase()
+        if (lower == "testfixturesapi") return DependencyType.TEST_FIXTURES
+        if (lower.contains("ksp")) return DependencyType.KSP
+        if (lower.contains("lint")) return DependencyType.LINT
+
+        if (lower.endsWith("implementation") || lower == "implementation") {
+            return if (lower.contains("test")) DependencyType.TEST else DependencyType.IMPLEMENTATION
+        }
+        if (lower.endsWith("api") || lower == "api") {
+            return if (lower.contains("test")) DependencyType.TEST else DependencyType.API
+        }
+
+        return null
+    }
+
+    fun findImpactedModules(rootDir: File, changedFiles: List<String>, modulePaths: Set<String>, edges: Set<ModuleEdge>): Set<String> {
         val directlyAffected = mutableSetOf<String>()
         changedFiles.forEach { path ->
-            var dir = File(rootDir, path).parentFile
+            val file = File(rootDir, path)
+            if (!file.exists()) return@forEach
+
+            var dir = file.parentFile
             while (dir != null && dir != rootDir) {
-                val modulePath = ":" + dir.relativeTo(rootDir).path.replace(File.separator, ":")
-                if (modules.contains(modulePath)) {
-                    directlyAffected.add(modulePath)
-                    break
+                val buildFile = File(dir, "build.gradle.kts")
+                if (buildFile.exists()) {
+                    val modulePath = ":" + dir.relativeTo(rootDir).path.replace(File.separator, ":")
+                    if (modulePaths.contains(modulePath)) {
+                        directlyAffected.add(modulePath)
+                        break
+                    }
                 }
                 dir = dir.parentFile
             }
@@ -148,7 +153,7 @@ tasks.register("generateModuleGraphs") {
     group = "reporting"
     doLast {
         val rootDir = project.projectDir
-        
+
         val dotBinary = project.findProperty("estatia.graphviz.dot")?.toString()
             ?: System.getenv("GRAPHVIZ_DOT")
             ?: listOf(
@@ -179,8 +184,9 @@ tasks.register("generateModuleGraphs") {
             )
         }
 
-        val modules = EstatiaArch.discoverModules(rootDir)
-        val allEdges = EstatiaArch.extractEdges(rootDir, modules)
+        val allSubprojects = project.rootProject.allprojects.filter { it != project.rootProject }
+        val modules = allSubprojects.map { it.path }.toSet()
+        val allEdges = EstatiaArch.extractEdges(allSubprojects)
 
         fun getEdgeStyle(type: DependencyType): String = when (type) {
             DependencyType.API -> "color=\"#1A237E\", penwidth=2.5, label=\"api\""
@@ -226,7 +232,7 @@ tasks.register("generateModuleGraphs") {
         modules.forEach { modulePath ->
             val relativePath = modulePath.removePrefix(":").replace(":", "/")
             val outputFile = File(File(rootDir, relativePath), "module_graph.gv")
-            
+
             val reachable = mutableSetOf<String>()
             fun collectReachable(current: String) {
                 if (reachable.add(current)) {
@@ -263,9 +269,10 @@ tasks.register("calculateImpact") {
     group = "verification"
     doLast {
         val rootDir = project.projectDir
-        val modules = EstatiaArch.discoverModules(rootDir)
-        val allEdges = EstatiaArch.extractEdges(rootDir, modules)
-        
+        val allSubprojects = project.rootProject.allprojects.filter { it != project.rootProject }
+        val modules = allSubprojects.map { it.path }.toSet()
+        val allEdges = EstatiaArch.extractEdges(allSubprojects)
+
         val diffOutput = try {
             ProcessBuilder("git", "diff", "--name-only", "origin/main").start().inputStream.bufferedReader().readText().lines().filter { it.isNotBlank() }
         } catch (_: Exception) { emptyList<String>() }
