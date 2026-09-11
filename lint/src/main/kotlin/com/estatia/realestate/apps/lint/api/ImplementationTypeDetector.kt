@@ -17,11 +17,11 @@ import org.jetbrains.uast.*
 class ImplementationTypeDetector : Detector(), SourceCodeScanner {
 
     private val targetAnnotations = setOf(
-        "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-        "com.estatia.realestate.apps.core.architecture.annotations.Service",
-        "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-        "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
-        "com.estatia.realestate.apps.core.architecture.annotations.Contract"
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract"
     )
 
     private val targetSimpleNames = targetAnnotations.map { it.substringAfterLast(".") }.toSet()

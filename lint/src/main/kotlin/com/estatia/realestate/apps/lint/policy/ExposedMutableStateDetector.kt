@@ -24,11 +24,11 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
     )
 
     private val targetAnnotations = setOf(
-        "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker",
-        "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-        "com.estatia.realestate.apps.core.architecture.annotations.Service",
-        "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-        "com.estatia.realestate.apps.core.architecture.annotations.Manager"
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager"
     )
 
     private val targetSimpleNames = targetAnnotations.map { it.substringAfterLast(".") }.toSet()

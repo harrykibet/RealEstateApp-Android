@@ -16,11 +16,11 @@ import org.jetbrains.uast.*
 class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner {
 
     private val targetAnnotations = setOf(
-        "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-        "com.estatia.realestate.apps.core.architecture.annotations.Service",
-        "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-        "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
-        "com.estatia.realestate.apps.core.architecture.annotations.Manager"
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager"
     )
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UCallExpression::class.java)

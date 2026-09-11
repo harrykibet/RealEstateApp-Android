@@ -9,10 +9,10 @@ import io.mockk.mockk
  */
 
 public class Environment_Positive_Spec {
-    // [CANARY:POSITIVE:DirectSystemTimeUsage]
+    // [CANARY:POSITIVE:DirectSystemTimeUsage:WARN:Production code does not use wall-clock]
     public fun now(): Long = System.currentTimeMillis()
     
-    // [CANARY:POSITIVE:MockInProduction]
+    // [CANARY:POSITIVE:MockInProduction:BLOCK:Tests must strictly remain]
     public fun mock(): String = mockk<String>()
 }
 

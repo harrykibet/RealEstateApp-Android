@@ -9,28 +9,27 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * State and Concurrency Enforcement
+ * State and Concurrency Enforcement [CANARY:POSITIVE:GodObjectFatal:BLOCK:violates Mutable State Budget]
  */
 
 @ViewModelMarker
 public class PositiveStateViewModel : ViewModel() {
-    // [CANARY:POSITIVE:GodObjectFatal]
     
     public val s1: StateFlow<Int> = MutableStateFlow(0)
     
     // KSP RULE: [CANARY:POSITIVE:ViewModelSsot]
     public val s2: StateFlow<String> = MutableStateFlow("")
     
-    // [CANARY:POSITIVE:ExposedMutableState] [CANARY:POSITIVE:BackingPropertyConvention]
+    // [CANARY:POSITIVE:ExposedMutableState:ERROR:Exposing mutable state container] [CANARY:POSITIVE:BackingPropertyConvention:INFO:Mutable state must follow]
     public val mutableState: MutableStateFlow<Int> = MutableStateFlow(0)
     
-    // [CANARY:POSITIVE:ThreadSafetyViolation]
+    // [CANARY:POSITIVE:ThreadSafetyViolation:BLOCK:Using standard collections]
     public var unsafeMap: HashMap<String, String> = HashMap()
     
-    // [CANARY:POSITIVE:LifecycleLeak]
+    // [CANARY:POSITIVE:LifecycleLeak:BLOCK:Storing Activities in ViewModels]
     public var leakedActivity: Activity? = null
     
-    // [CANARY:POSITIVE:UnsafeStateCollection]
+    // [CANARY:POSITIVE:UnsafeStateCollection:ERROR:State containers inside collections]
     public val collectedState: List<MutableStateFlow<Int>> = listOf(MutableStateFlow(0))
     
     // God Object State Trigger (LAW-029)

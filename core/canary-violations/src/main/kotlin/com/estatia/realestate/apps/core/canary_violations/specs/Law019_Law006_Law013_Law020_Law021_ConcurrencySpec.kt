@@ -8,22 +8,22 @@ import kotlin.coroutines.CoroutineContext
  */
 
 public class PositiveConcurrencySpec : CoroutineScope {
-    // [CANARY:POSITIVE:HardcodedDispatcher]
+    // [CANARY:POSITIVE:HardcodedDispatcher:BLOCK:Hardcoded dispatcher]
     override val coroutineContext: CoroutineContext = Dispatchers.Main
     
     public suspend fun doTrickyWork() {
-        // [CANARY:POSITIVE:SecretConcurrency]
+        // [CANARY:POSITIVE:SecretConcurrency:BLOCK:independent work]
         launch { }
         
-        // [CANARY:POSITIVE:UnusedAsync]
+        // [CANARY:POSITIVE:UnusedAsync:BLOCK:Async results]
         async { 1 }
         
-        // [CANARY:POSITIVE:MisplacedCoroutineExceptionHandler] [CANARY:POSITIVE:HardcodedDispatcher]
+        // [CANARY:POSITIVE:MisplacedCoroutineExceptionHandler:WARN:Exception handlers must be placed] [CANARY:POSITIVE:HardcodedDispatcher:BLOCK:Hardcoded dispatcher]
         withContext(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) { }
     }
     
     public suspend fun zombieLoop() {
-        // [CANARY:POSITIVE:MissingCoroutineCancellation]
+        // [CANARY:POSITIVE:MissingCoroutineCancellation:BLOCK:cancellable]
         while(true) {
             println("zombie")
         }

@@ -7,14 +7,14 @@ package com.estatia.realestate.apps.core.canary_violations.specs
 
 public class Law028_Positive_Spec {
     public fun spaghetti() {
-        // [CANARY:POSITIVE:SpaghettiMethodFatal]
+        // [CANARY:POSITIVE:SpaghettiMethodFatal:BLOCK:Spaghetti Method detected]
         if (true) { if (true) { if (true) { if (true) { if (true) { if (true) {
-            println(12345) // [CANARY:POSITIVE:MagicNumber]
+            println(12345) // [CANARY:POSITIVE:MagicNumber:INFO:Magic number detected]
         } } } } } }
     }
 }
 
-// [CANARY:POSITIVE:OrchestrationMonsterError]
+// [CANARY:POSITIVE:OrchestrationMonsterError:BLOCK:Orchestration Monster detected]
 public class Law030_Positive_Spec(
     public val r1: PositiveStateViewModel,
     public val r2: PositiveStateViewModel,
