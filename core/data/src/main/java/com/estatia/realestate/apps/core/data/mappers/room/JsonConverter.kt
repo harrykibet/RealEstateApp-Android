@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.mappers.room
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Surfaces an empty list as a fallback for malformed JSON.
  */
-@Helper
+@Utility
 internal object JsonConverter {
     private val json = Json { ignoreUnknownKeys = true }
 

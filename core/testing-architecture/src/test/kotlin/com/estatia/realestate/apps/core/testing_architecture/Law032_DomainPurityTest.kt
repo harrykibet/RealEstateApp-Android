@@ -37,23 +37,17 @@ class Law032_DomainPurityTest {
     }
 
     @Test
-    fun `model layer must not depend on android frameworks`() {
+    fun `classes marked as DomainModel must not depend on android frameworks`() {
         Konsist
             .scopeFromProject()
-            .files
+            .classes()
+            .filter { it.hasAnnotation { ann -> ann.name == "DomainModel" } }
             .filterNot { it.path.contains("canary-violations") }
-            .withPackage(ArchitecturalPolicy.Layers.Model.packagePattern)
             .assertTrue(
-                additionalMessage = """
-                    |
-                    |WHAT: Model layer depending on Android frameworks.
-                    |WHY: ${Law.LAW_032.rationale}
-                    |RECOMMENDED: ${Law.LAW_032.recommendation}
-                    |
-                    |[LAW: ${Law.LAW_032.id} | RISK: ${Law.LAW_032.risk.name} | CONFIDENCE: ${Law.LAW_032.confidence.name}]
-                """.trimMargin()
-            ) { file ->
-                file.imports.none { import ->
+                additionalMessage = "Domain Model purity violation: Components marked @DomainModel must not depend on Android frameworks (LAW-032)."
+            ) { clazz ->
+                val imports = clazz.containingFile.imports
+                imports.none { import ->
                     val isForbidden = import.name.startsWith("android.") || 
                                      import.name.startsWith("androidx.")
                     

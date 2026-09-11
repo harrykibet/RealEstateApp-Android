@@ -2,9 +2,9 @@ package com.estatia.realestate.apps.core.player_ui.state
 
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
 
-@Helper
+@PlayerState
 data class FeedMediaContext(
     val mediaId: String,
     val uri: MediaReference,

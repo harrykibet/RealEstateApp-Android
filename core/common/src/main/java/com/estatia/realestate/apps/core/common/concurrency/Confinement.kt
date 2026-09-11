@@ -1,12 +1,12 @@
 package com.estatia.realestate.apps.core.common.concurrency
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import android.os.Looper
 
 /**
  * Utility for enforcing thread confinement across architectural layers.
  */
-@Helper
+@Utility
 object Confinement {
     /**
      * Throws an [IllegalStateException] if called from any thread other than the Main thread.

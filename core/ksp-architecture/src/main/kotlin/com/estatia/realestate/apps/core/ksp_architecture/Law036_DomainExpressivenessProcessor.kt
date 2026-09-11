@@ -17,6 +17,7 @@ class Law036_DomainExpressivenessProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val archAnnotations = listOf(
             "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Service",
             "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
             "com.estatia.realestate.apps.core.architecture.annotations.Contract"
         )

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.UserException
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Mapper
 import javax.inject.Inject
 
 /**
@@ -11,7 +11,7 @@ import javax.inject.Inject
  * - Responsibility: Map platform errors to [UserException] domain failures.
  * - Concurrency: Stateless and thread-safe.
  */
-@Helper
+@Mapper
 internal class UserExceptionMapper @Inject constructor() : BaseInfraExceptionMapper<UserException>(
     notFound = { UserException.UserNotFound },
     permissionDenied = { UserException.PermissionDenied },

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.sources.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
@@ -31,7 +31,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Resilience: Delegates execution and error mapping to [networkClient].
  * - Observability: Tracks search latency and result count for SLIs.
  */
-@EntityModel
+@Utility
 internal class FirestoreSearch @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

@@ -39,11 +39,11 @@ import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 abstract class SecurityModule {
 
     @Binds

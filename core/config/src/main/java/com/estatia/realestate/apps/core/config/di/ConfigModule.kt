@@ -14,11 +14,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 abstract class ConfigModule {
 
     @Binds

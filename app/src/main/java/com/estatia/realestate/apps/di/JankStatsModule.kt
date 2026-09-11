@@ -10,11 +10,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(ActivityComponent::class)
-@Helper
+@Utility
 object JankStatsModule {
     @Provides
     fun providesOnFrameListener(

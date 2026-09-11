@@ -2,12 +2,12 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.core.RetryConfig
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Interface for executing network requests with built-in retry logic and error handling.
  */
-@Contract
+@DataSource
 interface INetworkClient {
 
     /**

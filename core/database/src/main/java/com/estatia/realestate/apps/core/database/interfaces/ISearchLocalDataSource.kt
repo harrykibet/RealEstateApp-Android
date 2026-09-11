@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.database.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.database.entities.SearchCacheEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Interface for the local search data source.
@@ -11,7 +11,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Contract
  * - Responsibility: Manage the persistence of search history and transient query results.
  * - Concurrency: Implementations must be thread-safe.
  */
-@Contract
+@DataSource
 interface ISearchLocalDataSource {
 
     suspend fun saveSearchQuery(

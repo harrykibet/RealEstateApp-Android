@@ -1,27 +1,27 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class CommentException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data object UserNotAuthenticated :
         CommentException(
             "User must be authenticated to comment"
         )
 
-@Helper
+@DomainModel
     data object CommentNotFound :
         CommentException(
             "Comment not found"
         )
 
-@Helper
+@DomainModel
     data class UserLookupFailed(
         val exception: AppException
     ): CommentException(
@@ -29,17 +29,17 @@ sealed class CommentException(
         exception
     )
 
-@Helper
+@DomainModel
     data class InvalidComment(val reason: String) : CommentException(reason)
 
 
-@Helper
+@DomainModel
     data object PermissionDenied :
         CommentException(
             "Permission denied"
         )
 
-@Helper
+@DomainModel
     data class Unknown(
         val throwable:Throwable
     ): CommentException(
@@ -48,21 +48,21 @@ sealed class CommentException(
     )
 
 
-@Helper
+@DomainModel
     data object UserProfileMissing :
         CommentException(
             "User profile required"
         )
 
 
-@Helper
+@DomainModel
     data object EmptyComment :
         CommentException(
             "Comment cannot be empty"
         )
 
 
-@Helper
+@DomainModel
     data object CommentSubmissionFailed :
         CommentException(
             "Failed to submit comment"

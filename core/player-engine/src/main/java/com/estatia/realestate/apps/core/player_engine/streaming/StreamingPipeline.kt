@@ -9,13 +9,13 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 internal class StreamingPipeline @Inject constructor(
     private val cacheWarmer: MediaCacheWarmer,
     private val mediaSourceFactory: MediaSource.Factory,

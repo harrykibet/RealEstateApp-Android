@@ -7,12 +7,12 @@ import androidx.media3.session.MediaSession
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Foundation
 class MediaSessionProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IMediaSessionProvider {

@@ -1,101 +1,101 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class AuthException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data object InvalidCredentials :
         AuthException(
             "Invalid credentials"
         )
 
 
-@Helper
+@DomainModel
     data object UserAlreadyExists :
         AuthException(
             "User already exists"
         )
 
 
-@Helper
+@DomainModel
     data object UserNotFound :
         AuthException(
             "User not found"
         )
 
 
-@Helper
+@DomainModel
     data object InvalidEmail :
         AuthException(
             "Invalid email"
         )
 
 
-@Helper
+@DomainModel
     data object MultiFactorRequired :
         AuthException(
             "Multi-factor authentication required"
         )
 
 
-@Helper
+@DomainModel
     data object SignUpFailed :
         AuthException(
             "Sign up failed"
         )
 
 
-@Helper
+@DomainModel
     data object SignInFailed :
         AuthException(
             "Sign in failed"
         )
 
 
-@Helper
+@DomainModel
     data object EmailVerificationRequired :
         AuthException(
             "Email verification required"
         )
 
 
-@Helper
+@DomainModel
     data object UserNotAuthenticated :
         AuthException(
             "User is not authenticated"
         )
 
-@Helper
+@DomainModel
     data object TooManyRequests :
         AuthException(
             "Too many requests"
         )
 
-@Helper
+@DomainModel
     data object InvalidPhoneNumber :
         AuthException(
             "Invalid phone number"
         )
 
-@Helper
+@DomainModel
     data object SessionExpired :
         AuthException(
             "Session expired"
         )
 
-@Helper
+@DomainModel
     data object OperationNotAllowed :
         AuthException(
             "Operation not allowed"
         )
 
-@Helper
+@DomainModel
     data class Unknown(
         val original: Throwable
     ) : AuthException(
@@ -103,13 +103,13 @@ sealed class AuthException(
         original
     )
 
-@Helper
+@DomainModel
     data object ActionCodeInvalid :
         AuthException(
             "Action code is invalid"
         )
 
-@Helper
+@DomainModel
     data class TokenError(val msg: String) :
         AuthException(
             "Token error: $msg"

@@ -1,14 +1,14 @@
 package com.estatia.realestate.apps.core.network.db_names
 
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
-@EntityModel
+@Utility
 object FirestoreCollections {
     const val USERS = "users"
     const val PROPERTIES = "properties"
     const val ANALYTICS = "analytics"
 
-@EntityModel
+@Utility
     object SubCollections {
         const val LIKES = "likes"
         const val COMMENTS = "comments"

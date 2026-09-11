@@ -7,7 +7,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Interceptor that injects a distributed trace ID into outgoing network requests.
@@ -20,7 +20,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Observability: Records HTTP status codes and exceptions into the trace span.
  */
 @Singleton
-@EntityModel
+@Utility
 class TracingInterceptor @Inject constructor() : Interceptor {
 
     private val tracer: Tracer by lazy {

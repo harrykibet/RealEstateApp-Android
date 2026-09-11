@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-@EntityModel
+@Utility
 class ProductionNetworkClientChaosTest {
 
     private lateinit var retryPolicy: IRetryPolicy

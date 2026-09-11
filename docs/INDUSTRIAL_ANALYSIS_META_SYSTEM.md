@@ -8,6 +8,22 @@ The **Industrial Analysis Meta-System** is Estatia's automated governance engine
 
 The foundation of this system is the **Identity Mandate**. Every top-level functional component (class, object, or interface) in governed modules **must** explicitly declare its architectural role via a recognized annotation.
 
+### Identity vs. Truth: Verification Invariants
+
+A critical design principle of Estatia is that **Identity requires Verification**. Claiming a role is mandatory, but that claim must be consistent with the component's structural reality.
+
+The Meta-System automatically enforces **Structural Invariants** for each role:
+- **Path Verification**: A `@Repository` must live in `:core:data`. A `@UseCase` must live in `:core:domain`.
+- **Inheritance Verification**: A `@ViewModelMarker` must inherit from `androidx.lifecycle.ViewModel`.
+- **Contract Verification**: A `@Contract` must be an `interface`.
+- **Model Verification**: A `@DomainModel` must be a `data`, `sealed`, or `value class`. An `@EntityModel` must be a `data class`.
+- **Helper Purity**: The `@Helper` role is reserved ONLY for passive constant holders (no functions allowed). Components with logic must use `@Utility`, `@Service`, or `@Foundation`.
+
+This creates a "Failure-Closed" loop:
+1.  **Declaration**: Developer claims a role (Mandatory).
+2.  **Validation**: System verifies the claim matches structural Implementation (Automatic).
+3.  **Governance**: Specific laws (Purity, Thread-Safety) activate based on the verified role.
+
 ### Rationale: Trading DX for Precision
 
 The decision to mandate annotations was a deliberate engineering trade-off. While it adds a minor step to component creation (reduced Developer Experience), it provides industrial-grade benefits to the system's safety and maintainability.

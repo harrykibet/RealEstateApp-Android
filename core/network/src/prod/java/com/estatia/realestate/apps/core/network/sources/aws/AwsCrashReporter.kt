@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.sources.aws
 import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * AWS implementation of [ICrashReporter] using Amazon CloudWatch.
@@ -14,7 +14,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Performance: Minimal overhead; uses the Amplify Logging asynchronous pipe.
  * - Security: Does NOT filter sensitive data; callers must ensure message safety.
  */
-@EntityModel
+@Utility
 internal class AwsCrashReporter @Inject constructor() : ICrashReporter {
 
     override fun log(message: String) {

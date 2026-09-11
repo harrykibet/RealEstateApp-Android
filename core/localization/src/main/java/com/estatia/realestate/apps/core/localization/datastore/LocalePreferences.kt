@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "locale_prefs")
 
 @Singleton
 @AllowedArchitectureDependency(reason = "Common local persistence orchestrator for localization.")
-@Helper
+@Utility
 class LocalePreferences @Inject constructor(
     @ApplicationContext private val context: Context
 ) {

@@ -1,26 +1,26 @@
 package com.estatia.realestate.apps.feature.auth.state
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 @Contract
 sealed interface EmailVerificationUiState {
 
-@Helper
+@UiState
     object Idle : EmailVerificationUiState
 
-@Helper
+@UiState
     object Sending : EmailVerificationUiState
 
-@Helper
+@UiState
     object EmailSent : EmailVerificationUiState
 
-@Helper
+@UiState
     object Checking : EmailVerificationUiState
 
-@Helper
+@UiState
     object Verified : EmailVerificationUiState
 
-@Helper
+@UiState
     data class Error(val message: String) : EmailVerificationUiState
 }

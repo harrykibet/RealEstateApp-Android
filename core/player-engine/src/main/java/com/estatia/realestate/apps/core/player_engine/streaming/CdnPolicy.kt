@@ -6,11 +6,11 @@ import com.estatia.realestate.apps.core.player_engine.utils.EnvironmentCoordinat
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import kotlin.random.Random
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Policy
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Policy
 class CdnPolicy @Inject constructor(
     private val environmentCoordinator: EnvironmentCoordinator,
     private val random: Random,

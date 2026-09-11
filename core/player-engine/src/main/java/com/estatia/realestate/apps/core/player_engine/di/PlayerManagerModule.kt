@@ -39,7 +39,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -61,7 +61,7 @@ annotation class BackgroundEngineScope
 @UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 abstract class PlayerManagerModule {
 
     // -------------------------------------------------------

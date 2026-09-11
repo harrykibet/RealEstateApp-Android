@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
@@ -106,7 +106,7 @@ fun IconButtonPreviewUnchecked() {
 /**
  * Estatia icon button default values.
  */
-@Helper
+@UiPrimitive
 object EstatiaIconButtonDefaults {
     // TODO: File bug
     // IconToggleButton disabled container alpha not exposed by IconButtonDefaults

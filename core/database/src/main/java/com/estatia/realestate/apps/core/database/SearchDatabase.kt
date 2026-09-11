@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.database
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import android.content.Context
 import androidx.room.Database
@@ -19,7 +19,7 @@ import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
     version = 2,
     exportSchema = false
 )
-@Helper
+@Utility
 abstract class SearchDatabase : RoomDatabase() {
 
     // Abstract function to get the SearchHistoryDao

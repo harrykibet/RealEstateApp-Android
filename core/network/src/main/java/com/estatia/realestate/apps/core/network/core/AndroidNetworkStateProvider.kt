@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
-
+import com.estatia.realestate.apps.core.architecture.annotations.Service
+import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.model.system.NetworkState
 
 /**
  * Android implementation of [INetworkStateProvider] using [ConnectivityManager].
@@ -22,8 +23,9 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Resilience: Performs validation checks (NET_CAPABILITY_VALIDATED) to distinguish between 
  *   connected-but-offline (e.g., captive portal) and true internet connectivity.
  */
-@EntityModel
+@Service
 internal class AndroidNetworkStateProvider @Inject constructor(
+    @AllowedArchitectureDependency("System network monitor")
     private val connectivityManager: ConnectivityManager
 ) : INetworkStateProvider {
 

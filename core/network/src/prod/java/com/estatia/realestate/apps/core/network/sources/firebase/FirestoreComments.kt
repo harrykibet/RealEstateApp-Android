@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.sources.firebase
 
-import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.COMMENTS_COUNT
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -32,7 +32,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Safety: Enforces atomic comment count increments via [runBatch].
  * - Observability: Tracks comment observation stream health and submission latency.
  */
-@EntityModel
+@Utility
 internal class FirestoreComments @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

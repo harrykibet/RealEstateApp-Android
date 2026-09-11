@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
@@ -27,7 +27,7 @@ annotation class ApplicationScope
  */
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 internal object CoroutineScopesModule {
     @Provides
     @Singleton

@@ -23,6 +23,16 @@ class UnsafeStateCollectionDetector : Detector(), SourceCodeScanner {
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
+            val containingClass = node.containingClass ?: return
+            val annotations = context.evaluator.getAnnotations(containingClass, false)
+                .mapNotNull { it.qualifiedName }
+            
+            val isArchComponent = annotations.any {
+                it.contains(".ViewModelMarker") || it.contains(".Repository") || it.contains(".UseCase") || it.contains(".Manager")
+            }
+            
+            if (!isArchComponent) return
+
             val type = node.type
             if (type !is PsiClassType) return
             

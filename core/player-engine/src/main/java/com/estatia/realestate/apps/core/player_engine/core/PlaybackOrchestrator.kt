@@ -7,7 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.model.system.NetworkState
 import com.estatia.realestate.apps.core.player_engine.configuration.DynamicBitrateController
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 import java.util.WeakHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * The core implementation of playback operations, including listener translation and resource allocation.
@@ -30,7 +30,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 class PlaybackOrchestrator @Inject constructor(
     private val pool: PlayerPool,
     private val bitrateController: DynamicBitrateController,

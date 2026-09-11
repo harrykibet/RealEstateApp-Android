@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Manager
 
 /**
  * Orchestrates player pool adjustments and bitrate strategy based on environment changes.
@@ -24,7 +24,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Manager
 class PlayerEnvironmentManager @Inject constructor(
     private val pool: PlayerPool,
     private val environmentCoordinator: EnvironmentCoordinator,

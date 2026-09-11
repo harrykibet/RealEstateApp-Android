@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.Orientation.Horizontal
@@ -58,7 +58,7 @@ private const val SCROLLBAR_PRESS_DELAY_MS = 10L
  */
 private const val SCROLLBAR_PRESS_DELTA_PCT = 0.02f
 
-@UiState
+@UiPrimitive
 class ScrollbarState {
     private var packedValue by mutableLongStateOf(0L)
 
@@ -107,7 +107,7 @@ private fun ScrollbarTrack.thumbPosition(
 /**
  * Class definition for the core properties of a scroll bar
  */
-@UiState
+@UiPrimitive
 @Immutable
 @JvmInline
 value class ScrollbarStateValue internal constructor(
@@ -117,7 +117,7 @@ value class ScrollbarStateValue internal constructor(
 /**
  * Class definition for the core properties of a scroll bar track
  */
-@UiState
+@UiPrimitive
 @Immutable
 @JvmInline
 private value class ScrollbarTrack(

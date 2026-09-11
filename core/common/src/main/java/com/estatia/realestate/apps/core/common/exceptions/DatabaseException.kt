@@ -1,76 +1,76 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class DatabaseException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause), InfrastructureException {
 
 
-@Helper
+@DomainModel
     data object PermissionDenied :
         DatabaseException(
             "Database permission denied"
         )
 
 
-@Helper
+@DomainModel
     data object NotFound :
         DatabaseException(
             "Database record not found"
         )
 
 
-@Helper
+@DomainModel
     data object AlreadyExists :
         DatabaseException(
             "Database record already exists"
         )
 
 
-@Helper
+@DomainModel
     data object TransactionFailed :
         DatabaseException(
             "Database transaction failed"
         )
 
-@Helper
+@DomainModel
     data class InvalidData(val msg: String) :
         DatabaseException(
             "Database invalid data : $msg"
         )
 
 
-@Helper
+@DomainModel
     data object ResourceExhausted :
         DatabaseException(
             "Database resource exhausted"
         )
 
 
-@Helper
+@DomainModel
     data object Unavailable :
         DatabaseException(
             "Database unavailable"
         ), RetryableException
 
 
-@Helper
+@DomainModel
     data object Timeout :
         DatabaseException(
             "Database timeout"
         ), RetryableException
 
 
-@Helper
+@DomainModel
     data class LocalDatabaseError(val msg: String) :
         DatabaseException(
             "Local database error : $msg"
         )
 
-@Helper
+@DomainModel
     data class ConstraintViolation(
         override val cause: Throwable
     ) : DatabaseException(
@@ -78,7 +78,7 @@ sealed class DatabaseException(
         cause
     )
 
-@Helper
+@DomainModel
     data class CorruptedDatabase(
         override val cause: Throwable
     ) : DatabaseException(
@@ -86,7 +86,7 @@ sealed class DatabaseException(
         cause
     )
 
-@Helper
+@DomainModel
     data class DiskIO(
         override val cause: Throwable
     ) : DatabaseException(
@@ -94,7 +94,7 @@ sealed class DatabaseException(
         cause
     )
 
-@Helper
+@DomainModel
     data class StorageFull(
         override val cause: Throwable
     ) : DatabaseException(
@@ -102,7 +102,7 @@ sealed class DatabaseException(
         cause
     )
 
-@Helper
+@DomainModel
     data class QueryFailed(
         override val cause: Throwable
     ) : DatabaseException(
@@ -110,7 +110,7 @@ sealed class DatabaseException(
         cause
     )
 
-@Helper
+@DomainModel
     data class Unknown(
         val original: Throwable
     ) : DatabaseException(

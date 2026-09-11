@@ -5,3 +5,4 @@ com.estatia.realestate.apps.core.ksp_architecture.Law008_AbstractionLeakageProce
 com.estatia.realestate.apps.core.ksp_architecture.Law030_ConstructorPurityProcessorProvider
 com.estatia.realestate.apps.core.ksp_architecture.Law018_ViewModelSsotProcessorProvider
 com.estatia.realestate.apps.core.ksp_architecture.Law002_ExposedMutableStateProcessorProvider
+com.estatia.realestate.apps.core.ksp_architecture.Law041_IdentityIntegrityProcessorProvider

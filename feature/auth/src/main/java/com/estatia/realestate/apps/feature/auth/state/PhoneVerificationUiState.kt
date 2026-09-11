@@ -1,35 +1,35 @@
 package com.estatia.realestate.apps.feature.auth.state
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 @Contract
 sealed interface PhoneVerificationUiState {
 
-@Helper
+@UiState
     object Idle : PhoneVerificationUiState
 
-@Helper
+@UiState
     object SendingCode : PhoneVerificationUiState
 
-@Helper
+@UiState
     data class CodeSent(val verificationId: String) : PhoneVerificationUiState
 
-@Helper
+@UiState
     data class Countdown(
         val secondsLeft: Int
     ) : PhoneVerificationUiState
 
-@Helper
+@UiState
     object Verifying : PhoneVerificationUiState
 
-@Helper
+@UiState
     object Expired : PhoneVerificationUiState
 
-@Helper
+@UiState
     object Success : PhoneVerificationUiState
 
-@Helper
+@UiState
     data class Error(
         val message: String
     ) : PhoneVerificationUiState

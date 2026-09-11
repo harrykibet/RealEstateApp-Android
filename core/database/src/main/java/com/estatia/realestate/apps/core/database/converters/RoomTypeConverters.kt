@@ -1,12 +1,12 @@
 package com.estatia.realestate.apps.core.database.converters
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-@Helper
+@Utility
 class RoomTypeConverters {
     private val json = Json { ignoreUnknownKeys = true }
 

@@ -1,15 +1,15 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class RemoteServiceException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data class FirebaseUnknown(
         val original: Throwable
     ) : RemoteServiceException(
@@ -18,7 +18,7 @@ sealed class RemoteServiceException(
     )
 
 
-@Helper
+@DomainModel
     data class Unknown(
         val original: Throwable
     ) : RemoteServiceException(

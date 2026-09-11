@@ -37,11 +37,75 @@ annotation class ViewModelMarker
 
 /**
  * Marks a data class or sealed class as a formal UI State container.
- * Enforced by KSP to ensure ViewModels follow the Single Source of Truth pattern (LAW-018).
+ * Used exclusively for state owned by a ViewModel and projected to the UI.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class UiState
+
+/**
+ * Marks a component as a Battery State container.
+ * Used for system-level battery and thermal status tracking.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class BatteryState
+
+/**
+ * Marks a component as a Network State container.
+ * Used for system-level connectivity and bandwidth tracking.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class NetworkState
+
+/**
+ * Marks a component as an Environment State container.
+ * Used for tracking device-wide conditions like thermal, memory, and visibility.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class EnvironmentState
+
+/**
+ * Marks a component as an Analytics Event/State container.
+ * Used for structured tracking and observability data.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class AnalyticsState
+
+/**
+ * Marks a component as an Authentication State container.
+ * Used for login, registration, and MFA verification flows.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthState
+
+/**
+ * Marks a component as a Media Player State container.
+ * Used for tracking playback progress, buffering, and hardware status.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class PlayerState
+
+/**
+ * Marks a component as a UI Action or Intent container.
+ * Used for transient user interactions that trigger state changes.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiAction
+
+/**
+ * Marks a component as a UI Event or Effect container.
+ * Used for transient one-off messages (e.g. snackbars, navigation) from ViewModel to UI.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiEvent
 
 /**
  * Explicitly allows a concrete type as a dependency in architectural components.
@@ -58,32 +122,70 @@ annotation class AllowedArchitectureDependency(
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class Coordinator
 
 /**
- * Marks a class as a long-lived Functional Manager.
+ * Marks a class as a Functional Manager.
+ * Responsible for managing high-risk system resources or multi-threaded state.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class Manager
 
 /**
- * Marks a class as a Functional Helper.
- * Used for internal logic, formatters, or math utilities.
+ * Marks a class as a Passive Helper.
+ * RESERVED for static constant holders, metadata registries, and logic-less objects.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class Helper
 
 /**
- * Marks a class as a Data Source (Network or Local).
+ * Marks a class as an Infrastructure Utility.
+ * Used for pure functional logic, extensions, and math utilities that carry logic but no state.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
+annotation class Utility
+
+/**
+ * Marks a class as a Data Mapper.
+ * Responsible for pure data-to-data transformation (Domain ↔ Entity).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Mapper
+
+/**
+ * Marks a class as a Strategic Policy.
+ * Used for algorithmic rules like Retry strategies, Cache eviction, or Bitrate scaling.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Policy
+
+/**
+ * Marks a class as a Foundation Abstraction.
+ * Used for system-level interfaces like Clocks, FileSystems, and Locale providers.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class Foundation
+
+/**
+ * Marks a class as a low-level UI Primitive.
+ * Used for custom gesture state, scrollbar logic, or canvas primitives.
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiPrimitive
+
+/**
+ * Marks a class or interface as a Data Source (Network or Local).
+ * Allowed to speak in infrastructure entities (LAW-008 exemption).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
 annotation class DataSource
 
 /**
@@ -92,7 +194,6 @@ annotation class DataSource
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class ErrorMapper
 
 /**
@@ -101,7 +202,6 @@ annotation class ErrorMapper
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class DomainModel
 
 /**
@@ -110,7 +210,6 @@ annotation class DomainModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class EntityModel
 
 /**
@@ -119,12 +218,12 @@ annotation class EntityModel
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-@Helper
 annotation class AppEntryPoint
 
 /**
  * Marks an interface as a formal Architectural Contract.
- * Used to define the behavior of Repositories, Services, and UseCases.
+ * Used to define the behavior of pure Domain/Business components.
+ * Enforced to remain free of infrastructure leakage (LAW-008).
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)

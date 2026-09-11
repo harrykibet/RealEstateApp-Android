@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -129,7 +129,7 @@ fun ViewTogglePreviewCompact() {
 /**
  * Estatia view toggle default values.
  */
-@Helper
+@UiPrimitive
 object EstatiaViewToggleDefaults {
     // TODO: File bug
     // Various default button padding values aren't exposed via ButtonDefaults

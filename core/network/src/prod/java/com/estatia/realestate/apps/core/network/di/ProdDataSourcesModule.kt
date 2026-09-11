@@ -29,7 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Module providing remote data source implementations for the production environment.
@@ -37,7 +37,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  */
 @Module
 @InstallIn(SingletonComponent::class)
-@EntityModel
+@Utility
 internal abstract class ProdDataSourcesModule {
 
     // --- Backend Initializers ---

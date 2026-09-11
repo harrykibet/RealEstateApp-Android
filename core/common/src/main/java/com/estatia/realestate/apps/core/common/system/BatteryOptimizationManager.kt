@@ -1,9 +1,5 @@
 package com.estatia.realestate.apps.core.common.system
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
-
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -25,24 +21,23 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 
-@UiState
+@com.estatia.realestate.apps.core.architecture.annotations.BatteryState
 sealed class BatteryState {
     abstract val level: Int
     abstract val isCharging: Boolean
     abstract val thermalStatus: Int
 
-@Helper
     data class Normal(
         override val level: Int,
         override val isCharging: Boolean,
         override val thermalStatus: Int = 0
     ) : BatteryState()
 
-@Helper
     data class Throttled(
         override val level: Int,
         override val isCharging: Boolean,
@@ -205,7 +200,7 @@ class BatteryOptimizationManager @Inject constructor(
         }
     }
 
-@Helper
+    @Utility
     class BatteryAwareWorker(
         context: Context,
         workerParams: WorkerParameters

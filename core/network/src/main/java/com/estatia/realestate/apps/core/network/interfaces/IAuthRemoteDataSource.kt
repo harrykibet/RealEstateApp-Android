@@ -6,12 +6,12 @@ import com.estatia.realestate.apps.core.common.interfaces.PhoneVerificationState
 import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Remote data source for handling user authentication and profile management.
  */
-@Contract
+@DataSource
 interface IAuthRemoteDataSource {
     /**
      * Returns a [Flow] that emits the current authentication status.

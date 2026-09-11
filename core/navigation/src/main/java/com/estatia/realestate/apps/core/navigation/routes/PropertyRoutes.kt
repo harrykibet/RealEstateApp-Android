@@ -1,20 +1,20 @@
 package com.estatia.realestate.apps.core.navigation.routes
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Serializable
-@Helper
+@Utility
 data class PropertyDetailRoute(val propertyId: String)
 
 @Serializable
-@Helper
+@Utility
 data object PropertyRoute
 
 @Serializable
-@Helper
+@Utility
 data object PropertyMediaCaptureRoute
 
 @Serializable
-@Helper
+@Utility
 data object PropertyBaseRoute

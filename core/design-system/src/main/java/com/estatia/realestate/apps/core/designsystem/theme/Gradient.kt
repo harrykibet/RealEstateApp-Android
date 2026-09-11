@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.designsystem.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 /**
  * A class to model gradient color values for Estatia.
@@ -13,7 +13,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * @param container The container gradient color over which the gradient will be rendered.
  */
 @Immutable
-@Helper
+@UiPrimitive
 data class GradientColors(
     val top: Color = Color.Unspecified,
     val bottom: Color = Color.Unspecified,

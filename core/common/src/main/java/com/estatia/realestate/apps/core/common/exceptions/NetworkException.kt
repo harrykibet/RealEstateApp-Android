@@ -1,29 +1,29 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class NetworkException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data object NoInternet :
         NetworkException(
             "No internet connection"
         ), RetryableException
 
 
-@Helper
+@DomainModel
     data object Timeout :
         NetworkException(
             "Request timeout"
         ), RetryableException
 
 
-@Helper
+@DomainModel
     data object ConnectionFailed :
         NetworkException(
             "Connection failed"
@@ -32,7 +32,7 @@ sealed class NetworkException(
 
     // HTTP/API failures
 
-@Helper
+@DomainModel
     data class ServerError(
         val code: Int
     ) : NetworkException(
@@ -40,7 +40,7 @@ sealed class NetworkException(
     ), RetryableException
 
 
-@Helper
+@DomainModel
     data class ClientError(
         val code: Int
     ) : NetworkException(
@@ -48,21 +48,21 @@ sealed class NetworkException(
     )
 
 
-@Helper
+@DomainModel
     data object Unauthorized :
         NetworkException(
             "Unauthorized"
         )
 
 
-@Helper
+@DomainModel
     data object RateLimited :
         NetworkException(
             "Rate limited"
         )
 
 
-@Helper
+@DomainModel
     data class Unknown(
         val original: Throwable
     ) : NetworkException(

@@ -7,12 +7,12 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 /**
  * An [androidx.datastore.core.Serializer] for the [UserPreferences] proto.
  */
-@Helper
+@Foundation
 class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
 

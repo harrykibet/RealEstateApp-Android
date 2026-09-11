@@ -28,12 +28,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 class MediaCacheWarmer @Inject constructor(
     @param:PlaybackCache private val playbackDataSourceFactory: DataSource.Factory,
     private val environmentCoordinator: EnvironmentCoordinator,

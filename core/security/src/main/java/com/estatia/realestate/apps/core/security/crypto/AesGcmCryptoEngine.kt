@@ -12,7 +12,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 
 private const val AES_KEY_ALIAS = "secure_app_key_v1"
@@ -37,7 +37,7 @@ private const val GCM_TAG_LENGTH =
  *   2. The underlying [AES_KEY_ALIAS] must exist in the hardware KeyStore.
  */
 @Singleton
-@Helper
+@Utility
 class AesGcmCryptoEngine @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,
     private val cryptoExecutor: ICryptoExecutor

@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import java.security.Signature
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Manager
 
 
 private const val SIGNATURE_ALGORITHM =
@@ -29,7 +29,7 @@ private const val SIGNATURE_ALGORITHM =
  * - Resilience: Translates crypto-provider exceptions to [SecurityException].
  */
 @Singleton
-@Helper
+@Manager
 class SignatureManager @Inject constructor(
     private val keyStoreManager: IKeyStoreManager,
     private val cryptoExecutor: ICryptoExecutor

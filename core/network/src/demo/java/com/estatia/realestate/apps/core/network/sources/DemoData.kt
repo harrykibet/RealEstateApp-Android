@@ -1,11 +1,11 @@
 package com.estatia.realestate.apps.core.network.sources
 
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
 import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
 
-@EntityModel
+@Utility
 object DemoData {
     val sampleProperties = listOf(
         PropertyEntityModel(

@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
@@ -14,18 +13,15 @@ sealed interface PrewarmResult {
     /**
      * Prewarm succeeded, and the player is ready in the pool.
      */
-@Helper
-    data class Success(val managed: ManagedPlayer) : PrewarmResult
+data class Success(val managed: ManagedPlayer) : PrewarmResult
 
     /**
      * Prewarm was rejected due to pool capacity constraints.
      */
-@Helper
-    data object Rejected : PrewarmResult
+data object Rejected : PrewarmResult
 
     /**
      * Prewarm failed due to an exception.
      */
-@Helper
-    data class Failure(val throwable: Throwable) : PrewarmResult
+data class Failure(val throwable: Throwable) : PrewarmResult
 }

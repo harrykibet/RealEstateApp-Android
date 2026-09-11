@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.domain.common.DataExceptionMapper
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Mapper
 
 /**
  * Base class for mapping infrastructure exceptions (Database and Storage) to domain-specific exceptions.
@@ -15,7 +15,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Concurrency: Stateless and thread-safe.
  * - Resilience: Provides comprehensive mapping for all [InfrastructureException] subtypes.
  */
-@Helper
+@Mapper
 abstract class BaseInfraExceptionMapper<T : AppException>(
     private val notFound: () -> T,
     private val permissionDenied: () -> T,

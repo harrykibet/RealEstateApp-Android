@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Standard executor for cryptographic operations.
@@ -21,7 +21,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Resilience: Provides consistent fallback [defaultException] when translation is ambiguous.
  */
 @Singleton
-@Helper
+@Utility
 class CryptoExecutor @Inject constructor(
     private val translator: ISecurityExceptionTranslator,
     private val metricsTracker: IMetricsTracker,

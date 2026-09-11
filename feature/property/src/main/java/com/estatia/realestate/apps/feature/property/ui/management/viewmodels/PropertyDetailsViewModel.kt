@@ -1,7 +1,4 @@
 package com.estatia.realestate.apps.feature.property.ui.management.viewmodels
-
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
-
 import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,10 +52,7 @@ class PropertyDetailsViewModel @Inject constructor(
 
 @Contract
 sealed interface PropertyDetailsUiState {
-@Helper
-    object Loading : PropertyDetailsUiState
-@Helper
-    data class Success(val property: PropertyDomainModel) : PropertyDetailsUiState
-@Helper
-    data class Error(val message: String) : PropertyDetailsUiState
+object Loading : PropertyDetailsUiState
+data class Success(val property: PropertyDomainModel) : PropertyDetailsUiState
+data class Error(val message: String) : PropertyDetailsUiState
 }

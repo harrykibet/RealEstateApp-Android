@@ -7,11 +7,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.LivePlaybackSpeedControl
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.MediaSource
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Utility
 data class PlayerConfiguration(
     val mediaItem: MediaItem,
     val mediaSourceFactory: MediaSource.Factory,

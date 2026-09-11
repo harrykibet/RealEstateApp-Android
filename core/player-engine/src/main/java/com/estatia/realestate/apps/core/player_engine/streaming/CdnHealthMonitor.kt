@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 /**
  * Monitors the health and latency of CDN endpoints to enable high-integrity failover.
@@ -25,7 +25,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Observability: Directly enables the 'CdnSelector' to make data-driven routing decisions.
  */
 @Singleton
-@Helper
+@Foundation
 class CdnHealthMonitor @Inject constructor(
     private val latencyMeasurer: ILatencyMeasurer,
     @param:EngineScope private val scope: CoroutineScope,

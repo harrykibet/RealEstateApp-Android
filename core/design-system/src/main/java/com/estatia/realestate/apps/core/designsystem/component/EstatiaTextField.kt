@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -160,7 +160,7 @@ private fun TextFieldPreviewContent() {
     }
 }
 
-@Helper
+@UiPrimitive
 object EstatiaTextFieldDefaults {
     val TextFieldCornerRadius = 12.dp
 }

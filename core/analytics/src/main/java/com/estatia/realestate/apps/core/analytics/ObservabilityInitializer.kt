@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import io.micrometer.core.instrument.MeterRegistry
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import javax.inject.Inject
 
 /**
@@ -21,7 +21,7 @@ import javax.inject.Inject
  * - Resilience: Blocks until [networkConfig] is ready to ensure correct OTLP URLs.
  * - Performance: Avoids blocking the main thread during heavy registry setup.
  */
-@Helper
+@Utility
 internal class ObservabilityInitializer @Inject constructor(
     private val crashReporter: ICrashReporter,
     private val deviceUtils: IDeviceUtils,

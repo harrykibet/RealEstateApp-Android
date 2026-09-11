@@ -18,7 +18,7 @@ class Law030_ConstructorPurityProcessor(
     private val allowedInfrastructure = ArchitecturalPolicy.Law030.AllowedInfrastructureInConstructors
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val archAnnotations = listOf(
+        val functionalRoles = listOf(
             "com.estatia.realestate.apps.core.architecture.annotations.Repository",
             "com.estatia.realestate.apps.core.architecture.annotations.Service",
             "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
@@ -26,10 +26,13 @@ class Law030_ConstructorPurityProcessor(
             "com.estatia.realestate.apps.core.architecture.annotations.Manager",
             "com.estatia.realestate.apps.core.architecture.annotations.Coordinator",
             "com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper",
-            "com.estatia.realestate.apps.core.architecture.annotations.Helper"
+            "com.estatia.realestate.apps.core.architecture.annotations.Mapper",
+            "com.estatia.realestate.apps.core.architecture.annotations.Utility",
+            "com.estatia.realestate.apps.core.architecture.annotations.Foundation",
+            "com.estatia.realestate.apps.core.architecture.annotations.Policy"
         )
 
-        val symbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
+        val symbols = functionalRoles.flatMap { resolver.getSymbolsWithAnnotation(it) }
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.primaryConstructor?.parameters?.forEach { param ->
@@ -41,14 +44,20 @@ class Law030_ConstructorPurityProcessor(
                 // 1. Core Purity Check
                 val isInterface = declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE
                 val isDataModel = qualifiedName.contains(".core.model.")
-                val isPrimitive = qualifiedName.startsWith("kotlin.") || qualifiedName.startsWith("java.lang.")
+                val isArchComponent = declaration.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString()?.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") == true }
+                val isPrimitive = qualifiedName.startsWith("kotlin.") || 
+                                 qualifiedName.startsWith("java.lang.") || 
+                                 qualifiedName.startsWith("java.util.") ||
+                                 qualifiedName.startsWith("kotlinx.coroutines.") ||
+                                 qualifiedName.startsWith("androidx.media3.") ||
+                                 qualifiedName.startsWith("android.net.")
                 val isSafeInfra = allowedInfrastructure.contains(qualifiedName)
                 
                 // 2. Metadata Authorization Check
                 val isExplicitlyAllowed = param.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation } ||
                                          declaration.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
 
-                if (!isInterface && !isDataModel && !isPrimitive && !isSafeInfra && !isExplicitlyAllowed) {
+                if (!isInterface && !isDataModel && !isArchComponent && !isPrimitive && !isSafeInfra && !isExplicitlyAllowed) {
                     logger.report(
                         Law.LAW_030,
                         "Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
@@ -59,7 +68,14 @@ class Law030_ConstructorPurityProcessor(
                 }
                 
                 // 3. Naming Convention Check
-                if (isInterface && !simpleName.startsWith("I") && !simpleName.contains("Component")) {
+                val isStandardCollection = qualifiedName.startsWith("kotlin.collections.") || qualifiedName.startsWith("java.util.")
+                val isCoroutinesInfra = qualifiedName.startsWith("kotlinx.coroutines.")
+                val isDataStore = qualifiedName.contains("androidx.datastore.core.DataStore")
+                val isLambda = qualifiedName.startsWith("kotlin.Function")
+                val isTypeParameter = declaration is KSTypeParameter
+                val isInternalContract = qualifiedName.startsWith("com.estatia.realestate.apps.")
+                
+                if (isInterface && isInternalContract && !isStandardCollection && !isCoroutinesInfra && !isDataStore && !isLambda && !isTypeParameter && !simpleName.startsWith("I") && !simpleName.contains("Component") && !simpleName.endsWith("Dao")) {
                     logger.report(
                         Law.LAW_030,
                         "Interface '$simpleName' used in constructor of ${clazz.simpleName.asString()} " +

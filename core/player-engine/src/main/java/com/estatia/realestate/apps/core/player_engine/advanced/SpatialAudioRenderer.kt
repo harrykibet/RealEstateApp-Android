@@ -8,7 +8,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioSink
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Handles Spatial / 3D audio capability detection.
@@ -19,7 +19,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  */
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Utility
 class SpatialAudioRenderer @Inject constructor(
     context: Context,
     private val logger: ILogger,

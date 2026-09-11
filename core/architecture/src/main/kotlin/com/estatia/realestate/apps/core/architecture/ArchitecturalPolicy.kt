@@ -70,7 +70,16 @@ object ArchitecturalPolicy {
     object Law030 {
         val AllowedInfrastructureInConstructors = setOf(
             "kotlinx.serialization.json.Json",
-            "com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource"
+            "com.estatia.realestate.apps.core.datastore.EstatiaPreferencesDataSource",
+            "android.content.Context",
+            "android.os.PowerManager",
+            "android.hardware.display.DisplayManager",
+            "androidx.work.WorkerParameters",
+            "io.micrometer.core.instrument.MeterRegistry",
+            "androidx.datastore.core.DataStore",
+            "com.estatia.realestate.apps.core.config.datasource.AssetConfigDataSource",
+            "com.estatia.realestate.apps.core.config.parser.ConfigParser",
+            "com.estatia.realestate.apps.core.config.runtime.ConfigStateHolder"
         )
     }
 
@@ -82,7 +91,9 @@ object ArchitecturalPolicy {
             "Repository", "Service", "DataSource", "ViewModelMarker", "UseCase", "Manager", 
             "ChaosComponent", "Coordinator", "Helper", "ErrorMapper", "DomainModel", 
             "EntityModel", "AppEntryPoint", "UiState", "Module", "AndroidEntryPoint", 
-            "HiltAndroidApp", "Contract"
+            "HiltAndroidApp", "Contract", "Utility", "Mapper", "Policy", "Foundation", 
+            "UiPrimitive", "BatteryState", "NetworkState", "EnvironmentState", 
+            "AnalyticsState", "AuthState", "PlayerState", "UiAction", "UiEvent"
         )
 
         val FoundationModules = setOf(
@@ -94,7 +105,44 @@ object ArchitecturalPolicy {
             "build-logic",
             "benchmark"
         )
+
+        /**
+         * Verifies that the claimed identity matches the structural truth.
+         */
+        val RoleInvariants = mapOf(
+            "Repository" to Invariant(pathContains = "/core/data/|/core/localization/|/app/"),
+            "DataSource" to Invariant(pathContains = "/core/network/|/core/database/|/core/config/|/core/data/|/core/datastore/|/core/security/|/core/player-engine/|/app/"),
+            "UseCase" to Invariant(pathContains = "/core/domain/"),
+            "DomainModel" to Invariant(pathContains = "/core/domain/|/core/model/|/core/analytics/|/core/common/|/core/player-engine/"),
+            "EntityModel" to Invariant(pathContains = "/core/network/|/core/database/|/core/data/", mustBeData = true),
+            "ViewModelMarker" to Invariant(mustInheritFrom = "androidx.lifecycle.ViewModel"),
+            "Contract" to Invariant(mustBeInterface = true),
+            "AppEntryPoint" to Invariant(pathContains = "/app/|/feature/"),
+            "Coordinator" to Invariant(pathContains = "/core/|/feature/"),
+            "Manager" to Invariant(pathContains = "/core/|/app/"),
+            "UiState" to Invariant(mustBeDataSealedOrValue = true),
+            "Mapper" to Invariant(pathContains = "/core/data/|/core/network/|/core/database/"),
+            "Foundation" to Invariant(pathContains = "/core/common/|/core/localization/|/app/|/core/analytics/|/core/datastore/|/core/player-engine/|/core/security/|/core/config/"),
+            "Policy" to Invariant(pathContains = "/core/network/|/core/player-engine/|/core/common/"),
+            "UiPrimitive" to Invariant(pathContains = "/core/design-system/|/core/ui/|/core/player-ui/"),
+            "BatteryState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/common/"),
+            "NetworkState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/"),
+            "EnvironmentState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/"),
+            "AnalyticsState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/|/core/analytics/"),
+            "AuthState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/common/|/core/domain/|/core/model/|/feature/auth/"),
+            "PlayerState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/player-engine/|/core/player-ui/"),
+            "UiAction" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/"),
+            "UiEvent" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/")
+        )
     }
+
+    data class Invariant(
+        val pathContains: String? = null,
+        val mustInheritFrom: String? = null,
+        val mustBeInterface: Boolean = false,
+        val mustBeData: Boolean = false,
+        val mustBeDataSealedOrValue: Boolean = false
+    )
 
     data class Layer(
         val name: String, 

@@ -21,7 +21,7 @@ import com.estatia.realestate.apps.core.notifications.R.drawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 private const val MAX_NUM_NOTIFICATIONS = 5
 private const val TARGET_ACTIVITY_NAME = "com.estatia.realestate.apps.MainActivity"
@@ -45,7 +45,7 @@ const val DEEP_LINK_URI_PATTERN = "$DEEP_LINK_BASE_PATH/{$DEEP_LINK_PROPERTIES_I
  * - Security: Uses [PendingIntent.FLAG_IMMUTABLE] for all intents.
  */
 @Singleton
-@Helper
+@Utility
 internal class SystemTrayNotifier @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : Notifier {

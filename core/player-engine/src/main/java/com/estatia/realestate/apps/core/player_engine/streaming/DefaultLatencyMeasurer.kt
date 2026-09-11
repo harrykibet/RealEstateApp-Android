@@ -7,10 +7,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration
 import androidx.core.net.toUri
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Singleton
-@Helper
+@Utility
 class DefaultLatencyMeasurer @Inject constructor() : ILatencyMeasurer {
     override suspend fun measure(host: String, timeout: Duration): Long {
         val start = System.currentTimeMillis()

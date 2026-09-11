@@ -6,7 +6,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
 
 /**
  * Manages the lifecycle and state of the [MediaSession] for the playback engine.
@@ -14,7 +14,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Coordinator
 class MediaSessionCoordinator @Inject constructor(
     private val mediaSessionProvider: IMediaSessionProvider
 ) {

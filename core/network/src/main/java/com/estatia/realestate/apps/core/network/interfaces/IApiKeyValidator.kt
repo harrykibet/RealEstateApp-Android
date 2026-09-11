@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.network.utils.ServiceNames
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
-@Contract
+@DataSource
 interface IApiKeyValidator {
     fun validate(apiKey: String, service: ServiceNames? = null)
     fun sanitizeForLogging(apiKey: String): String

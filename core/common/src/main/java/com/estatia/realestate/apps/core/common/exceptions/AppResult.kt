@@ -1,19 +1,19 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
 
-@Helper
+@DomainModel
 sealed class AppResult<out T> {
 
 
-@Helper
+@DomainModel
     data class Success<out T>(
         val data:T
     ):AppResult<T>()
 
 
-@Helper
+@DomainModel
     data class Error(
         val exception: AppException
     ):AppResult<Nothing>()

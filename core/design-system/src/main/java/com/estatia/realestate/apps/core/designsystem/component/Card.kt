@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
@@ -119,7 +119,7 @@ fun EstatiaSectionCardDarkPreview() {
     }
 }
 
-@Helper
+@UiPrimitive
 object EstatiaCardDefaults {
     val CardCornerRadius = 12.dp
 }

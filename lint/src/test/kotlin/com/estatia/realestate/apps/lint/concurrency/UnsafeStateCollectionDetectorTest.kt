@@ -14,11 +14,14 @@ class UnsafeStateCollectionDetectorTest {
             .allowMissingSdk()
             .files(
                 Stubs.FLOW,
+                Stubs.ESTATIA_ARCH,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import kotlinx.coroutines.flow.MutableStateFlow
+                    import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
                     
+                    @ViewModelMarker
                     class Test {
                         val states: List<MutableStateFlow<String>> = emptyList()
                     }
@@ -37,11 +40,14 @@ class UnsafeStateCollectionDetectorTest {
             .allowMissingSdk()
             .files(
                 Stubs.COMPOSE,
+                Stubs.ESTATIA_ARCH,
                 kotlin(
                     """
                     package com.estatia.realestate.apps
                     import androidx.compose.runtime.MutableState
+                    import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
                     
+                    @ViewModelMarker
                     class Test {
                         val stateMap: Map<String, MutableState<Int>> = emptyMap()
                     }

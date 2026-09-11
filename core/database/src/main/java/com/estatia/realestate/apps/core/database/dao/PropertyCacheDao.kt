@@ -5,10 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 @Dao
-@Contract
+@DataSource
 interface PropertyCacheDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

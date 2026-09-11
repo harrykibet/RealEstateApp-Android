@@ -1,16 +1,16 @@
 package com.estatia.realestate.apps.core.navigation.routes
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Serializable
-@Helper
+@Utility
 data object ChatsRoute
 
 @Serializable
-@Helper
+@Utility
 data object ChatsBaseRoute
 
 @Serializable
-@Helper
+@Utility
 data class ChatDetailRoute(val chatId: String)

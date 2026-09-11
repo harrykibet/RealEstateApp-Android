@@ -35,7 +35,7 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Hardware resource pool for [ExoPlayer] instances.
@@ -52,7 +52,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 class PlayerPool @Inject constructor(
     private val playerFactory: PlayerFactory,
     private val configurationFactory: IPlayerConfigurationFactory,
@@ -71,7 +71,7 @@ class PlayerPool @Inject constructor(
     // introduce a suspension point (yield) inside the fill loop.
     private var isFillingIdlePool = false
 
-@Helper
+@Utility
     private data class InFlightRequest(
         val deferred: CompletableDeferred<ManagedPlayer>,
         var isUrgent: Boolean

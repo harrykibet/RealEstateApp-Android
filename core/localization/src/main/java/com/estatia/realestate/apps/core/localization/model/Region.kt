@@ -1,10 +1,10 @@
 package com.estatia.realestate.apps.core.localization.model
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Represents a geographical region for localization purposes.
  */
-@Helper
+@Utility
 data class Region(
     val code: String,
     val name: String,

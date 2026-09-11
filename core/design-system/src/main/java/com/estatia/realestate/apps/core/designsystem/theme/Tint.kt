@@ -3,13 +3,13 @@ package com.estatia.realestate.apps.core.designsystem.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 /**
  * A class to model background color and tonal elevation values for Estatia.
  */
 @Immutable
-@Helper
+@UiPrimitive
 data class TintTheme(
     val iconTint: Color = Color.Unspecified,
 )

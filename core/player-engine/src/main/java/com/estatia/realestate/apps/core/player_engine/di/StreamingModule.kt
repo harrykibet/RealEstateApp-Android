@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -48,7 +48,7 @@ annotation class PlaybackCache
 @InstallIn(SingletonComponent::class)
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Utility
 object StreamingModule {
 
     @Provides

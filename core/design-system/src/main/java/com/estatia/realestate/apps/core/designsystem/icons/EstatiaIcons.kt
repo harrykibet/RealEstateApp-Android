@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.icons
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 /**
  * Estatia icons. Material icons are [ImageVector]s, custom icons are typically [ImageVector]s as well.
  */
-@Helper
+@UiPrimitive
 object EstatiaIcons {
     val Home: ImageVector = Icons.Rounded.Home
     val HomeBorder: ImageVector = Icons.Outlined.Home

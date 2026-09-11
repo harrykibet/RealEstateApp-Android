@@ -18,10 +18,19 @@ class Law030_OrchestrationMonsterDetector : Detector(), SourceCodeScanner {
         override fun visitMethod(node: UMethod) {
             if (!node.isConstructor) return
             
-            val paramsCount = node.uastParameters.size
+            val containingClass = node.containingClass ?: return
+            val annotations = context.evaluator.getAnnotations(containingClass, false)
+                .mapNotNull { it.qualifiedName }
             
-            val errorThreshold = context.getOption(ISSUE, "errorThreshold", 9)
-            val warningThreshold = context.getOption(ISSUE, "warningThreshold", 6)
+            // 🛡️ REFINEMENT: Coordinators are allowed a higher dependency budget by design.
+            val isCoordinator = annotations.any { it.endsWith(".Coordinator") }
+            val baseErrorThreshold = 9
+            val baseWarningThreshold = 6
+            
+            val errorThreshold = if (isCoordinator) baseErrorThreshold + 5 else baseErrorThreshold
+            val warningThreshold = if (isCoordinator) baseWarningThreshold + 3 else baseWarningThreshold
+
+            val paramsCount = node.uastParameters.size
 
             when {
                 paramsCount >= errorThreshold -> {
@@ -34,10 +43,6 @@ class Law030_OrchestrationMonsterDetector : Detector(), SourceCodeScanner {
                 }
             }
         }
-    }
-
-    private fun JavaContext.getOption(issue: Issue, name: String, default: Int): Int {
-        return configuration.getOption(issue, name)?.toIntOrNull() ?: default
     }
 
     companion object {

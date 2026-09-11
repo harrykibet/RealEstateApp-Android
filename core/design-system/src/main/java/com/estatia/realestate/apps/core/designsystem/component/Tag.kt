@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -61,7 +61,7 @@ fun TagPreview() {
 /**
  * Estatia tag default values.
  */
-@Helper
+@UiPrimitive
 object EstatiaTagDefaults {
     const val UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA = 0.5f
 

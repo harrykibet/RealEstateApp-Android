@@ -2,19 +2,19 @@ package com.estatia.realestate.apps.feature.payments
 
 import com.estatia.realestate.apps.core.model.feature.PaymentMethod
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 import com.estatia.realestate.apps.core.architecture.annotations.UiState
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 @Contract
 sealed interface PaymentsUiState {
-@Helper
+@UiState
     data object Idle : PaymentsUiState
-@Helper
+@UiState
     data object Processing : PaymentsUiState
-@Helper
+@UiState
     data class Success(val transactionId: String) : PaymentsUiState
-@Helper
+@UiState
     data class Error(val message: String) : PaymentsUiState
 }
 

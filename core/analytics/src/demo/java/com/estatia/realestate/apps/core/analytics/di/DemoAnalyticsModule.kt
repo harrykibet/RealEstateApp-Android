@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.analytics.di
 
-import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
-import com.estatia.realestate.apps.core.analytics.AnalyticsHelper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -11,11 +11,11 @@ import dagger.multibindings.IntoSet
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 abstract class DemoAnalyticsModule {
     @Binds
     @Singleton

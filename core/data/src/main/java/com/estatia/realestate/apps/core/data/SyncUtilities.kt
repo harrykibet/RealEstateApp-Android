@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data
 import com.estatia.realestate.apps.core.datastore.ChangeListVersions
 import com.estatia.realestate.apps.core.model.utils.NetworkChangeList
 import kotlin.coroutines.cancellation.CancellationException
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 /**
  * Global synchronization utilities for Estatia repositories.
@@ -14,16 +14,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Contract
  * - Resilience: Uses [suspendRunCatching] to safeguard against remote errors without breaking coroutine scopes.
  * - Lifecycle: Ensures cancellation propagates immediately to halt network I/O.
  */
-/**
- * Global synchronization utilities for Estatia repositories.
- * 
- * 🏗️ OPERATIONAL CONTRACT:
- * - Responsibility: Manage the pull-based synchronization of local data with remote change lists.
- * - Concurrency: Serialization of sync tasks must be handled by the [Synchronizer] implementation.
- * - Resilience: Uses [suspendRunCatching] to safeguard against remote errors without breaking coroutine scopes.
- * - Lifecycle: Ensures cancellation propagates immediately to halt network I/O.
- */
-@Contract
+@DataSource
 interface Synchronizer {
     suspend fun getChangeListVersions(): ChangeListVersions
 
@@ -40,7 +31,7 @@ interface Synchronizer {
  * Syncing MUST NOT be performed concurrently; it is the [Synchronizer]'s responsibility 
  * to ensure atomicity.
  */
-@Contract
+@DataSource
 interface Syncable {
     /**
      * Synchronizes the local database backing the repository with the network.

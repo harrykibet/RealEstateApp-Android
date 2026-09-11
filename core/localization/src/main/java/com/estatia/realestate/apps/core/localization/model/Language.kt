@@ -1,10 +1,10 @@
 package com.estatia.realestate.apps.core.localization.model
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Represents a supported language in the Estatia app.
  */
-@Helper
+@Utility
 data class Language(
     val code: String,
     val name: String,

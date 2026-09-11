@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.system.BatteryState
 import com.estatia.realestate.apps.core.common.system.ISystemResourcesMonitor
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
-import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.model.system.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -28,12 +28,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
 
 @Singleton
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Coordinator
 class EnvironmentCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
     private val batteryManager: IBatteryManager,

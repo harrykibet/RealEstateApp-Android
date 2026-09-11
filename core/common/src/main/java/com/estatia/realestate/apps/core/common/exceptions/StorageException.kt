@@ -1,77 +1,77 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class StorageException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause), InfrastructureException {
 
 
-@Helper
+@DomainModel
     data object PermissionDenied :
         StorageException(
             "Storage permission denied"
         )
 
 
-@Helper
+@DomainModel
     data object ObjectNotFound :
         StorageException(
             "Storage object not found"
         )
 
 
-@Helper
+@DomainModel
     data object BucketNotFound :
         StorageException(
             "Storage bucket not found"
         )
 
-@Helper
+@DomainModel
     data object UploadFailed :
         StorageException(
             "Storage upload failed"
         )
 
 
-@Helper
+@DomainModel
     data object QuotaExceeded :
         StorageException(
             "Storage quota exceeded"
         )
 
 
-@Helper
+@DomainModel
     data object Unauthenticated :
         StorageException(
             "Storage authentication required"
         )
 
 
-@Helper
+@DomainModel
     data object RetryLimitExceeded :
         StorageException(
             "Storage retry limit exceeded"
         )
 
 
-@Helper
+@DomainModel
     data object Cancelled :
         StorageException(
             "Storage operation cancelled"
         )
 
 
-@Helper
+@DomainModel
     data object Unavailable :
         StorageException(
             "Storage service unavailable"
         )
 
 
-@Helper
+@DomainModel
     data class Unknown(
         val original: Throwable
     ) : StorageException(

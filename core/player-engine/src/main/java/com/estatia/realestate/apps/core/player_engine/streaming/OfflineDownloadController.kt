@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.callbackFlow
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 class OfflineDownloadController @Inject constructor(
     private val downloadManager: DownloadManager,
     private val cacheKeyFactory: ICacheKeyFactory

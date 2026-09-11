@@ -1,7 +1,6 @@
 package com.estatia.realestate.apps.feature.settings
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
-
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * ViewModel for managing the user settings experience.
@@ -47,13 +45,11 @@ class SettingsViewModel @Inject constructor(
 /**
  * Represents the settings which the user can edit within the app.
  */
-@Helper
-class UserEditableSettings
+@UiState
+data class UserEditableSettings(val placeholder: String = "")
 
-@Contract
+@UiState
 sealed interface SettingsUiState {
-@Helper
     data object Loading : SettingsUiState
-@Helper
     data class Success(val settings: UserEditableSettings) : SettingsUiState
 }

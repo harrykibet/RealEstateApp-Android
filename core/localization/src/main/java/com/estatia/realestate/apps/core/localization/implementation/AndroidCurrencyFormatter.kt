@@ -5,9 +5,9 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
-@Helper
+@Foundation
 class AndroidCurrencyFormatter @Inject constructor() : CurrencyFormatter {
     override fun formatCurrency(amount: Number, currencyCode: String): String {
         val format = NumberFormat.getCurrencyInstance(Locale.getDefault())

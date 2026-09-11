@@ -2,10 +2,10 @@ package com.estatia.realestate.apps.core.database.dao
 
 import androidx.room.*
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 @Dao
-@Contract
+@DataSource
 interface SearchHistoryDao {
 
     // Insert a search query

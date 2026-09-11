@@ -1,7 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
-
+import androidx.annotation.OptIn
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
@@ -12,9 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
  * Reducer responsible for managing the logical playback state of a single player.
@@ -23,7 +22,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Contract
  * Includes a watchdog mechanism to prevent hanging in the "Buffering" state
  * when encountering corrupt or zero-duration media.
  */
-@Helper
+@Utility
 class PlaybackStateReducer(
     private val scope: CoroutineScope,
     private val watchdogTimeoutMs: Long = 7_000L,
@@ -33,48 +32,31 @@ class PlaybackStateReducer(
     /**
      * Represent the possible UI-visible states of a video player.
      */
-@Contract
+    @PlayerState
     sealed interface State {
-@Helper
         data object Idle : State
-@Helper
         data object Buffering : State
-@Helper
         data object Ready : State
-@Helper
         data object Playing : State
-@Helper
         data object Paused : State
-@Helper
         data object Ended : State
-@Helper
         data object Reconnecting : State
-@Helper
         data class Error(val error: PlaybackException) : State
     }
 
     /**
      * Represents events that trigger state transitions.
      */
-@Contract
+    @PlayerState
     sealed interface Event {
-@Helper
         data object Reset : Event
-@Helper
         data object BufferingStarted : Event
-@Helper
         data object BufferingCompleted : Event
-@Helper
         data object Play : Event
-@Helper
         data object Pause : Event
-@Helper
         data object PlaybackEnded : Event
-@Helper
         data object NetworkLost : Event
-@Helper
         data object NetworkRestored : Event
-@Helper
         data class PlaybackError(val error: PlaybackException) : Event
     }
 
@@ -117,7 +99,7 @@ class PlaybackStateReducer(
         }
     }
 
-    @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(UnstableApi::class)
     private fun startWatchdog() {
         stopWatchdog()
         watchdogJob = scope.launch {

@@ -11,7 +11,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.network.api.SecretApi
-import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.model.system.NetworkState
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.di.NetworkInterceptors
 import com.estatia.realestate.apps.core.network.error_mappers.NetworkErrorMapper
@@ -39,11 +39,11 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)
-@EntityModel
+@Utility
 object DemoNetworkModule {
 
     @Provides

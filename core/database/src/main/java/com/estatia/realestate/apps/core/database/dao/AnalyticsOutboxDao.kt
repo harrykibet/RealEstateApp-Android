@@ -5,10 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.estatia.realestate.apps.core.database.entities.AnalyticsOutboxEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
 @Dao
-@Contract
+@DataSource
 interface AnalyticsOutboxDao {
     @Insert
     suspend fun insert(event: AnalyticsOutboxEntity)

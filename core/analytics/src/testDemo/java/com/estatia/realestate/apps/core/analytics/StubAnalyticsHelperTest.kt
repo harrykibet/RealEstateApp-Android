@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.analytics
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 import android.util.Log
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
@@ -14,7 +14,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-@Helper
+@Utility
 class StubAnalyticsHelperTest {
 
     private lateinit var analyticsTracker: RecordingAnalyticsTracker

@@ -1,48 +1,48 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class UserException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data object UserNotFound :
         UserException(
             "User profile not found"
         )
 
 
-@Helper
+@DomainModel
     data object ProfileIncomplete :
         UserException(
             "User profile incomplete"
         )
 
 
-@Helper
+@DomainModel
     data object UserCreationFailed :
         UserException(
             "User creation failed"
         )
 
-@Helper
+@DomainModel
     data object PermissionDenied :
         UserException(
             "Permission denied"
         )
 
-@Helper
+@DomainModel
     data class Unknown(val throwable: Throwable) :
         UserException(
             "Unknown user error",
             throwable
         )
 
-@Helper
+@DomainModel
     data object AlreadyExists :
         UserException(
             "User already exists"
@@ -50,7 +50,7 @@ sealed class UserException(
 
 
 
-@Helper
+@DomainModel
     data object UserUpdateFailed :
         UserException(
             "User update failed"

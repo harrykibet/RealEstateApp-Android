@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Background worker for synchronizing the analytics outbox with the remote server.
@@ -19,7 +19,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Lifecycle: Enforces a maximum of 3 retries before marking the batch as terminal failure.
  */
 @HiltWorker
-@Helper
+@Utility
 class AnalyticsSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,

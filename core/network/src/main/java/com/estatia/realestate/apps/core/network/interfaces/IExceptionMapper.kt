@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppException
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.DataSource
 
-@Contract
+@DataSource
 interface IExceptionMapper {
 
     fun map(

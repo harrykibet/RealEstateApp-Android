@@ -19,20 +19,20 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 // PlayerFactory.kt — request a fresh listener instance per player via Provider<T>
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@Helper
+@Utility
 class PlayerFactory @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val bandwidthMeter: BandwidthMeter,
     private val analyticsListenerProvider: Provider<PlaybackAnalyticsListener>,
     private val spatialAudioRendererProvider: Provider<SpatialAudioRenderer>
 ) {
-@Helper
+@Utility
     data class CreatedPlayer(
         val player: ExoPlayer,
         val analyticsListener: PlaybackAnalyticsListener

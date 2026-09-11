@@ -1,13 +1,13 @@
 package com.estatia.realestate.apps.feature.auth.state
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiAction
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 @Contract
 sealed interface ForgotPasswordAction {
-@Helper
+@UiAction
     data class EmailChanged(val value: String) : ForgotPasswordAction
-@Helper
+@UiAction
     data object Submit : ForgotPasswordAction
-@Helper
+@UiAction
     data object Retry : ForgotPasswordAction
 }

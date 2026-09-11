@@ -10,9 +10,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
-@Helper
+@Foundation
 class AndroidDateFormatter @Inject constructor() : DateFormatter {
     override fun formatDate(date: LocalDate): String {
         val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)

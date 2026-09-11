@@ -28,10 +28,10 @@ import kotlinx.datetime.toKotlinTimeZone
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 @Singleton
-@Helper
+@Foundation
 class AndroidTimeZoneMonitor @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope appScope: CoroutineScope,

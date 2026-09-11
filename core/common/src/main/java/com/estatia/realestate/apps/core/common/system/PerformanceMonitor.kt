@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 /**
  * Tracks real-time UI performance (jank) and exposes it as a reactive signal.
@@ -17,7 +17,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Observability: Provides the [isJanking] signal for real-time responsiveness tuning.
  */
 @Singleton
-@Helper
+@Foundation
 class PerformanceMonitor @Inject constructor() {
 
     private val _isJanking = MutableStateFlow(false)

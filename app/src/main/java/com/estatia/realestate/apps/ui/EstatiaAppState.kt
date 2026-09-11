@@ -17,7 +17,7 @@ import androidx.tracing.trace
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
 import com.estatia.realestate.apps.core.localization.api.TimeZoneMonitor
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
-import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.model.system.NetworkState
 import com.estatia.realestate.apps.core.ui.TrackDisposableJank
 import com.estatia.realestate.apps.feature.home.navigation.navigateToHome
 import com.estatia.realestate.apps.navigation.TopLevelDestination
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 @Composable
 fun rememberEstatiaAppState(
@@ -64,7 +64,7 @@ fun rememberEstatiaAppState(
 }
 
 @Stable
-@UiState
+@Foundation
 class EstatiaAppState(
     val navController: NavHostController,
     private val coroutineScope: CoroutineScope,

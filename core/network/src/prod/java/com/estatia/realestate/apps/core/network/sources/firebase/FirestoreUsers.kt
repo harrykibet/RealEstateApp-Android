@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.network.db_entities.UserEntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
@@ -23,7 +23,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Resilience: Surfaces [DatabaseException.NotFound] if the profile doesn't exist.
  * - Observability: Tracks profile fetch latency and cache performance.
  */
-@EntityModel
+@Utility
 internal class FirestoreUsers @Inject constructor(
     private val database: FirebaseFirestore,
     private val networkClient: INetworkClient,

@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
@@ -56,11 +55,9 @@ class MainActivityViewModel @Inject constructor(
 
 @Contract
     sealed interface MainActivityUiState {
-@Helper
-        data object Loading : MainActivityUiState
+data object Loading : MainActivityUiState
 
-@Helper
-        data class Success(
+data class Success(
             val userData: UserData,
             val isAuthenticated: Boolean
         ) : MainActivityUiState

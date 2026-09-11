@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import com.estatia.realestate.apps.core.common.interfaces.IClock
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.USERS
 import com.estatia.realestate.apps.core.network.core.ExponentialRetryPolicy
@@ -25,7 +25,7 @@ import java.io.IOException
 import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@EntityModel
+@Utility
 class FirestorePropertiesTest {
 
     private lateinit var database: FirebaseFirestore

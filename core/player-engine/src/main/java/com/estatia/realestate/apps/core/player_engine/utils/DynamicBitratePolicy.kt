@@ -7,9 +7,9 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject
 import kotlin.math.roundToInt
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Policy
 
-@Helper
+@Policy
 class DynamicBitratePolicy @Inject constructor(
     private val deviceUtils: IDeviceUtils,
     private val config: IPlayerTuningConfig

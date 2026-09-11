@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
@@ -159,7 +159,7 @@ private fun Modifier.scrollThumb(
     return this then ScrollThumbElement { colorState.value }
 }
 
-@Helper
+@UiPrimitive
 private data class ScrollThumbElement(val colorProducer: ColorProducer) :
     ModifierNodeElement<ScrollThumbNode>() {
     override fun create(): ScrollThumbNode = ScrollThumbNode(colorProducer)
@@ -169,7 +169,7 @@ private data class ScrollThumbElement(val colorProducer: ColorProducer) :
     }
 }
 
-@Helper
+@UiPrimitive
 private class ScrollThumbNode(var colorProducer: ColorProducer) : DrawModifierNode, Modifier.Node() {
     private val shape = RoundedCornerShape(16.dp)
 

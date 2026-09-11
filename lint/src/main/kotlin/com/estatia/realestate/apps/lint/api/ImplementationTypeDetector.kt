@@ -17,9 +17,14 @@ import org.jetbrains.uast.*
 class ImplementationTypeDetector : Detector(), SourceCodeScanner {
 
     private val targetAnnotations = setOf(
+        "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Service",
         "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
         "com.estatia.realestate.apps.core.architecture.annotations.Contract"
     )
+
+    private val targetSimpleNames = targetAnnotations.map { it.substringAfterLast(".") }.toSet()
 
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UMethod::class.java)
 
@@ -29,8 +34,11 @@ class ImplementationTypeDetector : Detector(), SourceCodeScanner {
             
             val containingClass = node.containingClass ?: return
             
-            val hasTargetAnnotation = context.evaluator.getAnnotations(containingClass, false)
-                .any { targetAnnotations.contains(it.qualifiedName) }
+            val annotations = context.evaluator.getAnnotations(containingClass, false)
+            val hasTargetAnnotation = annotations.any { ann ->
+                val qn = ann.qualifiedName ?: ""
+                targetAnnotations.contains(qn) || targetSimpleNames.any { qn.endsWith(".$it") }
+            }
             
             if (hasTargetAnnotation) {
                 // 1. Check Return Type

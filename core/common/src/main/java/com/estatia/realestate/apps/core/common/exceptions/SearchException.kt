@@ -1,35 +1,35 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class SearchException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
 
-@Helper
+@DomainModel
     data object EmptyQuery :
         SearchException(
             "Search query is empty"
         )
 
 
-@Helper
+@DomainModel
     data object InvalidQuery :
         SearchException(
             "Invalid search query"
         )
 
 
-@Helper
+@DomainModel
     data object SearchFailed :
         SearchException(
             "Search failed"
         )
 
-@Helper
+@DomainModel
     data object QueryFailed:
         SearchException(
             "Search failed"
@@ -37,14 +37,14 @@ sealed class SearchException(
 
 
 
-@Helper
+@DomainModel
     data object NoResults:
         SearchException(
             "No search results"
         )
 
 
-@Helper
+@DomainModel
     data class Unknown(
         val throwable:Throwable
     ):SearchException(

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
-@Helper
+@Utility
 data class CdnHealth(
     val latencyMs: Long?,
     val failureCount: Int,

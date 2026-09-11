@@ -31,14 +31,19 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
         "com.estatia.realestate.apps.core.architecture.annotations.Manager"
     )
 
+    private val targetSimpleNames = targetAnnotations.map { it.substringAfterLast(".") }.toSet()
+
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UField::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
             val containingClass = node.containingClass ?: return
             
-            val hasTargetAnnotation = context.evaluator.getAnnotations(containingClass, false)
-                .any { targetAnnotations.contains(it.qualifiedName) }
+            val annotations = context.evaluator.getAnnotations(containingClass, false)
+            val hasTargetAnnotation = annotations.any { ann ->
+                val qn = ann.qualifiedName ?: ""
+                targetAnnotations.contains(qn) || targetSimpleNames.any { qn.endsWith(".$it") }
+            }
             
             val isViewModel = context.evaluator.inheritsFrom(containingClass, "androidx.lifecycle.ViewModel", false)
             

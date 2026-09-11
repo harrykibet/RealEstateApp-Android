@@ -12,10 +12,10 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Singleton
-@Helper
+@Utility
 class SecurityExceptionTranslator @Inject constructor() : ISecurityExceptionTranslator {
 
     override fun translate(throwable: Throwable, default: SecurityException): SecurityException {

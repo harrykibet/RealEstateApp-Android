@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.analytics.di
 
-import com.estatia.realestate.apps.core.analytics.FirebaseAnalyticsHelper
-import com.estatia.realestate.apps.core.analytics.IAnalyticsHelper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import dagger.Binds
 import dagger.Module
@@ -14,11 +14,11 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.registry.otlp.OtlpConfig
 import io.micrometer.registry.otlp.OtlpMeterRegistry
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Helper
+@Utility
 abstract class ProdAnalyticsModule {
     @Binds
     @Singleton

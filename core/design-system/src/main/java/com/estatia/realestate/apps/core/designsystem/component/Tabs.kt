@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 
 import androidx.compose.foundation.layout.Box
@@ -112,7 +112,7 @@ fun TabsPreview() {
     }
 }
 
-@Helper
+@UiPrimitive
 object EstatiaTabDefaults {
     val TabTopPadding = 7.dp
 }

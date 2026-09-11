@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 /**
  * Diagnostics utility for monitoring hardware pressure and application visibility.
@@ -31,7 +31,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.Helper
  * - Resilience: Surfaces OOM pressure signals via [memoryTrimLevel] to allow caches to shed load.
  */
 @Singleton
-@Helper
+@Foundation
 class SystemResourcesMonitor @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ISystemResourcesMonitor, ComponentCallbacks2, DefaultLifecycleObserver {

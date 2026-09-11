@@ -12,10 +12,10 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.analytics.FirebaseAnalytics
 import java.util.UUID
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 
-@EntityModel
+@Utility
 internal class FirestoreAnalytics @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val deviceUtils: IDeviceUtils,

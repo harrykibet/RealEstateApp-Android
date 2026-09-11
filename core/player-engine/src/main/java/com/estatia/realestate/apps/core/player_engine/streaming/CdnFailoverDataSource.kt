@@ -9,7 +9,7 @@ import androidx.core.net.toUri
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import com.estatia.realestate.apps.core.model.cdn.CdnEndpoint
 import java.io.IOException
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * A [DataSource] decorator that implements segment-level CDN failover.
@@ -96,7 +96,7 @@ class CdnFailoverDataSource(
  */
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
-@Helper
+@Utility
 class CdnFailoverDataSourceFactory(
     private val baseFactory: DataSource.Factory,
     private val cdnSelector: CdnSelector,

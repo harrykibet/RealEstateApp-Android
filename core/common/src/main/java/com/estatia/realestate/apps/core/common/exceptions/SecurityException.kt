@@ -1,106 +1,106 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
 
-@Helper
+@DomainModel
 sealed class SecurityException(
     message: String,
     cause: Throwable? = null
 ) : AppException(message, cause) {
 
-@Helper
+@DomainModel
     data class HashGenerationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Hash generation failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class HashVerificationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Hash verification failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data object KeyGenerationRequired :
         SecurityException(
             "Key generation required"
         )
 
-@Helper
+@DomainModel
     data object KeyRetrievalFailed :
         SecurityException(
             "Key retrieval failed"
         )
 
-@Helper
+@DomainModel
     data object KeyGenerationFailed :
         SecurityException(
             "Key generation failed"
         )
 
-@Helper
+@DomainModel
     data object InvalidKey :
         SecurityException(
             "Invalid key"
         )
 
-@Helper
+@DomainModel
     data object InvalidCredentials :
         SecurityException(
             "Invalid credentials"
         )
 
-@Helper
+@DomainModel
     data object InvalidPassword :
         SecurityException(
             "Invalid password"
         )
 
-@Helper
+@DomainModel
     data class SignatureGenerationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Signature generation failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class SignatureVerificationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Signature verification failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class DecryptionFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Decryption failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class EncryptionFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Encryption failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class KeyRotationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "Key rotation failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class HmacGenerationFailed(val throwable: Throwable? = null) :
         SecurityException(
             "HMAC generation failed",
             throwable
         )
 
-@Helper
+@DomainModel
     data class InvalidApiKey(
         val msg: String,
         val throwable: Throwable? = null

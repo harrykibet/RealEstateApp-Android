@@ -1,11 +1,11 @@
 package com.estatia.realestate.apps.feature.profile.ui.state
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.architecture.annotations.UiState
 
 /**
  * Data class to model profile statistics.
  */
-@Helper
+@Utility
 data class ProfileStats(
     val propertyCount: Int = 0,
     val followerCount: Int = 0,

@@ -2,9 +2,11 @@ package com.estatia.realestate.apps.core.testing_architecture
 
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.core.architecture.ArchitecturalPolicy
+import com.lemonappdev.konsist.api.KoModifier
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
+import com.lemonappdev.konsist.api.declaration.KoInterfaceDeclaration
 import org.junit.Test
 
 /**
@@ -28,7 +30,9 @@ class Law041_IdentityMandateTest {
                 ArchitecturalPolicy.Law041.FoundationModules.any { path.contains(it) } ||
                 path.contains("/test/") || 
                 path.contains("/androidTest/") ||
-                path.contains("/testFixtures/")
+                path.contains("/testFixtures/") ||
+                path.contains("/build/generated/") ||
+                path.contains("/build/kspCaches/")
             }
             // 3. Exclude passive types: enums, annotation classes
             .filterNot { 
@@ -46,10 +50,72 @@ class Law041_IdentityMandateTest {
                     |[LAW: ${Law.LAW_041.id} | RISK: ${Law.LAW_041.risk.name} | CONFIDENCE: ${Law.LAW_041.confidence.name}]
                 """.trimMargin()
             ) { decl ->
-                decl.hasAnnotation { ann -> 
+                decl.annotations.any { ann -> 
                     val name = ann.name.substringAfterLast(".")
                     ArchitecturalPolicy.Law041.RecognizedArchitecturalAnnotations.contains(name)
                 }
+            }
+    }
+
+    @Test
+    fun `architectural identity must match structural truth`() {
+        val classes = Konsist.scopeFromProject().classes()
+        val interfaces = Konsist.scopeFromProject().interfaces()
+
+        (classes + interfaces)
+            .filter { it.isTopLevel }
+            .filterNot { decl ->
+                val path = decl.path.replace("\\", "/")
+                // Canary violations and testing components are allowed to "pretend" for testing purposes
+                path.contains("canary-violations") || path.contains("/testing/")
+            }
+            .assertTrue(
+                additionalMessage = "Identity/Truth Mismatch: The claimed architectural role is inconsistent with the structural implementation (LAW-041)."
+            ) { decl ->
+                val annotations = decl.annotations.map { it.name.substringAfterLast(".") }
+                val claimedRole = annotations.find { ArchitecturalPolicy.Law041.RoleInvariants.containsKey(it) }
+                
+                if (claimedRole == null) return@assertTrue true
+
+                val invariant = ArchitecturalPolicy.Law041.RoleInvariants[claimedRole]!!
+                val path = decl.path.replace("\\", "/")
+
+                // 1. Path Invariant
+                val pathPattern = invariant.pathContains
+                if (pathPattern != null) {
+                    val patterns = pathPattern.split("|")
+                    if (patterns.none { path.contains(it) }) return@assertTrue false
+                }
+
+                // 2. Interface Invariant
+                if (invariant.mustBeInterface && decl !is KoInterfaceDeclaration) {
+                    return@assertTrue false
+                }
+
+                // 3. Data Class Invariant
+                if (invariant.mustBeData && decl is KoClassDeclaration && !decl.hasDataModifier) {
+                    return@assertTrue false
+                }
+
+                // 4. Data, Sealed or Value Class Invariant
+                if (invariant.mustBeDataSealedOrValue && decl is KoClassDeclaration) {
+                    val isValueClass = decl.hasModifier(KoModifier.VALUE) || decl.hasAnnotation { it.name == "JvmInline" }
+                    if (!decl.hasDataModifier && !decl.hasSealedModifier && !isValueClass) return@assertTrue false
+                }
+
+                // 5. Inheritance Invariant
+                val parentName = invariant.mustInheritFrom
+                if (parentName != null && decl is KoClassDeclaration) {
+                    val expectedParent = parentName.substringAfterLast(".")
+                    val hasDirectParent = decl.hasParentWithName(expectedParent)
+                    val hasIndirectParent = decl.parents().any { it.name.contains(expectedParent) }
+                    
+                    if (!hasDirectParent && !hasIndirectParent) {
+                        return@assertTrue false
+                    }
+                }
+
+                true
             }
     }
 

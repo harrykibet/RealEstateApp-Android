@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.media.MediaFormat
 import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
-import com.estatia.realestate.apps.core.network.db_entities.PropertyEntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.CONTACT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
@@ -48,7 +48,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Performance: Offloads HLS generation to server-side; performs only direct VOD/Image uploads.
  * - Observability: Tracks upload and fetch latency for property management.
  */
-@EntityModel
+@Utility
 internal class FirestoreProperties @Inject constructor(
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage,

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.search.ui
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.UiState
 
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
@@ -10,20 +10,20 @@ sealed interface SearchUiState {
     val initialPage: Int
         get() = 0
 
-@Helper
+@UiState
     object Initial : SearchUiState
-@Helper
+@UiState
     object Loading : SearchUiState
-@Helper
+@UiState
     data class Success(
         val results: List<PropertyDomainModel>,
         val query: String,
         override val initialPage: Int = 0
     ) : SearchUiState
-@Helper
+@UiState
     data class History(
         val history: List<String>
     ) : SearchUiState
-@Helper
+@UiState
     data class Error(val message: String) : SearchUiState
 }

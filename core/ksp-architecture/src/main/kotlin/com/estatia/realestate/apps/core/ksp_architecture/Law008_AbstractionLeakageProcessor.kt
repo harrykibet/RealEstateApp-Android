@@ -18,30 +18,49 @@ class Law008_AbstractionLeakageProcessor(
     private val forbiddenInfrastructure = ArchitecturalPolicy.Law003.InfrastructurePackages
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val archAnnotations = listOf(
+        val pureArchitecturalAnnotations = listOf(
             "com.estatia.realestate.apps.core.architecture.annotations.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Service",
             "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
             "com.estatia.realestate.apps.core.architecture.annotations.Contract"
         )
 
-        val symbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
+        val symbols = pureArchitecturalAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
 
         symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
-            clazz.getDeclaredProperties().forEach { prop ->
-                if (isPublic(prop)) {
-                    checkForbiddenType(prop.type.resolve(), prop, "property", clazz.simpleName.asString())
-                }
-            }
-            clazz.getDeclaredFunctions().forEach { func ->
-                if (isPublic(func) && func.simpleName.asString() != "<init>") {
-                    checkForbiddenType(func.returnType?.resolve(), func, "return type", clazz.simpleName.asString())
-                    func.parameters.forEach { param ->
-                        checkForbiddenType(param.type.resolve(), param, "parameter", clazz.simpleName.asString())
-                    }
-                }
+            // 🛡️ REFINEMENT: Identity Integrity (Verifying the claim)
+            // If a component claims to be a pure business role, we enforce purity.
+            val annotations = clazz.annotations.map { it.annotationType.resolve().declaration.qualifiedName?.asString() }.toSet()
+            
+            val isContract = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Contract")
+            val isRepository = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Repository")
+            val isUseCase = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
+            val isService = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Service")
+            
+            // 💡 DataSources are EXEMPT from LAW-008 as they are infrastructure-facing by definition.
+            val isDataSource = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.DataSource")
+
+            if ((isContract || isRepository || isUseCase || isService) && !isDataSource) {
+                auditDeclaration(clazz)
             }
         }
         return emptyList()
+    }
+
+    private fun auditDeclaration(clazz: KSClassDeclaration) {
+        clazz.getDeclaredProperties().forEach { prop ->
+            if (isPublic(prop)) {
+                checkForbiddenType(prop.type.resolve(), prop, "property", clazz.simpleName.asString())
+            }
+        }
+        clazz.getDeclaredFunctions().forEach { func ->
+            if (isPublic(func) && func.simpleName.asString() != "<init>") {
+                checkForbiddenType(func.returnType?.resolve(), func, "return type", clazz.simpleName.asString())
+                func.parameters.forEach { param ->
+                    checkForbiddenType(param.type.resolve(), param, "parameter", clazz.simpleName.asString())
+                }
+            }
+        }
     }
 
     private fun checkForbiddenType(type: KSType?, node: KSNode, nodeType: String, className: String) {

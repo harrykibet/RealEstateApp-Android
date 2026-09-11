@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.interfaces
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 import com.estatia.realestate.apps.core.architecture.annotations.Contract
 
 /**
@@ -17,7 +17,7 @@ fun interface IClock {
 /**
  * Production implementation of [IClock] using system time.
  */
-@Helper
+@Foundation
 class SystemClock : IClock {
     override fun currentTimeMillis(): Long = System.currentTimeMillis()
 }

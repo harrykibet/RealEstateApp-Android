@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IApiKeyValidator
 import com.estatia.realestate.apps.core.network.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Utility
 
 /**
  * Validator for managing the integrity of application API keys.
@@ -19,7 +19,7 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
  * - Resilience: Surfaces [SecurityException.InvalidApiKey] for malformed or missing keys.
  */
 @Singleton
-@EntityModel
+@Utility
 internal class ApiKeyValidator @Inject constructor(
     private val logger: ILogger,
     private val config: ISecurityConfig,

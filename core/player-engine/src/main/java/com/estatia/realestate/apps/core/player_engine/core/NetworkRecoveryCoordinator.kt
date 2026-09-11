@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.network.core.NetworkState
+import com.estatia.realestate.apps.core.model.system.NetworkState
 import com.estatia.realestate.apps.core.network.interfaces.INetworkStateProvider
 import com.estatia.realestate.apps.core.player_engine.di.EngineScope
 import com.estatia.realestate.apps.core.player_engine.di.PlayerDispatcher
@@ -13,7 +13,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
+import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
 
 /**
  * Handles automatic recovery of playback when network connection is restored.
@@ -21,9 +22,10 @@ import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi
 @Singleton
-@EntityModel
+@Coordinator
 class NetworkRecoveryCoordinator @Inject constructor(
     private val networkStateProvider: INetworkStateProvider,
+    @AllowedArchitectureDependency("Engine internal resource pool")
     private val pool: PlayerPool,
     @param:EngineScope private val engineScope: CoroutineScope,
     @param:PlayerDispatcher private val playerDispatcher: CoroutineDispatcher

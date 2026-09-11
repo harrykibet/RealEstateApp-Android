@@ -24,7 +24,12 @@ class Law002_ExposedMutableStateProcessor(
             "com.estatia.realestate.apps.core.architecture.annotations.Repository",
             "com.estatia.realestate.apps.core.architecture.annotations.Service",
             "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-            "com.estatia.realestate.apps.core.architecture.annotations.Manager"
+            "com.estatia.realestate.apps.core.architecture.annotations.Manager",
+            "com.estatia.realestate.apps.core.architecture.annotations.Coordinator",
+            "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
+            "com.estatia.realestate.apps.core.architecture.annotations.Utility",
+            "com.estatia.realestate.apps.core.architecture.annotations.Foundation",
+            "com.estatia.realestate.apps.core.architecture.annotations.Policy"
         )
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()

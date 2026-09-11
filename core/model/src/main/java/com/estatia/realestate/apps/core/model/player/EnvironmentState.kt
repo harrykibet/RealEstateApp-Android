@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.player
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.EnvironmentState
 
-@UiState
+@EnvironmentState
 data class EnvironmentState(
     val isMetered: Boolean,
     val shouldThrottlePerformance: Boolean,

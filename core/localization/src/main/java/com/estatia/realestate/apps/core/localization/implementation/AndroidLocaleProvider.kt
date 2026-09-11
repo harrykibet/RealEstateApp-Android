@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Foundation
 
 @Singleton
-@Helper
+@Foundation
 class AndroidLocaleProvider @Inject constructor() : LocaleProvider {
     
     private val _currentLocale = MutableStateFlow(Locale.getDefault())
