@@ -8,7 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.architecture)
     implementation(libs.bundles.media3)
     implementation(libs.google.accompanist)
 
