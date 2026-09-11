@@ -62,6 +62,30 @@ class Law030_ConstructorPurityProcessorTest {
     }
 
     @Test
+    fun `LAW-030 Constructor accepts interface without I-prefix and passes`() {
+        val source = SourceFile.kotlin(
+            "TestUseCase.kt",
+            """
+            package com.estatia.realestate.apps.core.domain.usecase
+            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+            
+            interface UseCaseContract
+            interface RepositoryAbstraction
+            
+            @UseCase
+            class TestUseCase(val repo: RepositoryAbstraction) : UseCaseContract
+            """.trimIndent()
+        )
+
+        val result = KspTestUtils.compile(
+            KspTestUtils.annotationsSource, 
+            source,
+            providers = listOf(Law030_ConstructorPurityProcessorProvider())
+        )
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    @Test
     fun `LAW-030 Constructor accepts explicitly authorized dependency`() {
         val source = SourceFile.kotlin(
             "TestUseCase.kt",

@@ -164,9 +164,9 @@ enum class Law(
 
     // --- UI GOVERNANCE ---
     LAW_018(
-        "LAW-018", "ViewModels must expose a single canonical persistent UI-state owner.", LawCategory.UI_GOVERNANCE, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
-        "Multiple state flows in a ViewModel create 'Source of Truth' confusion and desynchronized UI.",
-        "Consolidate multiple StateFlows into a single UI State data class."
+        "LAW-018", "ViewModels must expose a single canonical persistent UI-state authority.", LawCategory.UI_GOVERNANCE, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
+        "Multiple persistent state authorities in a ViewModel create 'Source of Truth' confusion and desynchronized UI.",
+        "Consolidate multiple persistent StateFlows into a single UI State data class."
     ),
 
     // --- CONCURRENCY ---

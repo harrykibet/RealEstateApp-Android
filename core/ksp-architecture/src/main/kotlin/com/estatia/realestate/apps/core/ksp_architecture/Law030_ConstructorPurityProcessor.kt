@@ -66,23 +66,6 @@ class Law030_ConstructorPurityProcessor(
                         param
                     )
                 }
-                
-                // 3. Naming Convention Check
-                val isStandardCollection = qualifiedName.startsWith("kotlin.collections.") || qualifiedName.startsWith("java.util.")
-                val isCoroutinesInfra = qualifiedName.startsWith("kotlinx.coroutines.")
-                val isDataStore = qualifiedName.contains("androidx.datastore.core.DataStore")
-                val isLambda = qualifiedName.startsWith("kotlin.Function")
-                val isTypeParameter = declaration is KSTypeParameter
-                val isInternalContract = qualifiedName.startsWith("com.estatia.realestate.apps.")
-                
-                if (isInterface && isInternalContract && !isStandardCollection && !isCoroutinesInfra && !isDataStore && !isLambda && !isTypeParameter && !simpleName.startsWith("I") && !simpleName.contains("Component") && !simpleName.endsWith("Dao")) {
-                    logger.report(
-                        Law.LAW_030,
-                        "Interface '$simpleName' used in constructor of ${clazz.simpleName.asString()} " +
-                        "should follow the 'I' prefix convention for clear abstraction visibility.",
-                        param
-                    )
-                }
             }
         }
         return emptyList()

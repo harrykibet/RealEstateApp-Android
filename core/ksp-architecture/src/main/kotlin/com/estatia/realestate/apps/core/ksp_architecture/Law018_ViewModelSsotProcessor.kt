@@ -7,17 +7,17 @@ import com.google.devtools.ksp.symbol.*
 /**
  * LAW-018: ViewModel SSoT (Single Source of Truth).
  * 
- * Enforces that a ViewModel has exactly one canonical persistent UI-state owner (StateFlow).
+ * Enforces that a ViewModel has exactly one canonical persistent UI-state authority (StateFlow).
  */
 class Law018_ViewModelSsotProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency"
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency"
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
-        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker"
+        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker"
         val stateFlowFqn = "kotlinx.coroutines.flow.StateFlow"
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
@@ -41,7 +41,7 @@ class Law018_ViewModelSsotProcessor(
                 prop.isPublic() && !isFromBaseViewModel(prop)
             }
 
-            // 🛡️ REFINEMENT: Identify canonical state owners (StateFlow or subtypes).
+            // 🛡️ REFINEMENT: Identify canonical state authorities (StateFlow or subtypes).
             // This is more semantic than literal FQN matching as it supports custom state wrappers
             // that inherit from StateFlow.
             val stateFlows = publicProperties.filter { prop ->
@@ -52,23 +52,23 @@ class Law018_ViewModelSsotProcessor(
                 isStateFlow && !isAuthorized
             }.toList()
 
-            // 1. Enforce SSoT: Multiple state authorities indicate a "Bag of State" smell.
+            // 1. Enforce SSoT: Multiple persistent state authorities indicate a "Bag of State" smell.
             // This prevents the ViewModel from becoming an uncoordinated collection of state pieces.
             if (stateFlows.size > 1) {
                 logger.report(
                     Law.LAW_018,
-                    "Multiple state authorities detected in '${clazz.simpleName.asString()}' (${stateFlows.joinToString { it.simpleName.asString() }}). " +
-                    "A ViewModel must expose exactly one canonical persistent UI-state owner to maintain Single Source of Truth.",
+                    "Multiple persistent state authorities detected in '${clazz.simpleName.asString()}' (${stateFlows.joinToString { it.simpleName.asString() }}). " +
+                    "A ViewModel must expose exactly one canonical persistent UI-state authority to maintain Single Source of Truth.",
                     clazz
                 )
             }
 
-            // 2. Enforce Presence: A ViewModel should have a state owner unless authorized.
+            // 2. Enforce Presence: A ViewModel should have a persistent state authority unless authorized.
             if (stateFlows.isEmpty() && !clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }) {
                 logger.report(
                     Law.LAW_018,
-                    "ViewModel '${clazz.simpleName.asString()}' has no public StateFlow. " +
-                    "ViewModels must expose a canonical persistent UI-state owner.",
+                    "ViewModel '${clazz.simpleName.asString()}' has no public persistent UI-state authority (StateFlow). " +
+                    "ViewModels must expose a canonical persistent UI-state authority.",
                     clazz
                 )
             }

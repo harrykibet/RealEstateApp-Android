@@ -15,6 +15,7 @@ A critical design principle of Estatia is that **Identity requires Verification*
 The Meta-System automatically enforces **Structural Invariants** for each role:
 - **Path Verification**: A `@Repository` must live in `:core:data`. A `@UseCase` must live in `:core:domain`.
 - **Inheritance Verification**: A `@ViewModelMarker` must inherit from `androidx.lifecycle.ViewModel`.
+- **SSoT Verification**: ViewModels must expose exactly one canonical persistent UI-state authority (StateFlow).
 - **Contract Verification**: A `@Contract` must be an `interface`.
 - **Model Verification**: A `@DomainModel` must be a `data`, `sealed`, or `value class`. An `@EntityModel` must be a `data class`.
 - **Helper Purity**: The `@Helper` role is reserved ONLY for passive constant holders (no functions allowed). Components with logic must use `@Utility`, `@Service`, or `@Foundation`.
