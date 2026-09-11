@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.network.core.RetryConfig
 import com.estatia.realestate.apps.core.network.core.RetryConfigs
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 @DataSource
 interface IRetryPolicy {

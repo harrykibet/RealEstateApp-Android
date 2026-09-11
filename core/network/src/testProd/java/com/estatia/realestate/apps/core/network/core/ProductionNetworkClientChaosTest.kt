@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.core
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException

@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.model.player
-import com.estatia.realestate.apps.core.architecture.annotations.EnvironmentState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EnvironmentState
 
 @EnvironmentState
 data class EnvironmentState(

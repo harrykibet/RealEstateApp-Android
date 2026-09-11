@@ -14,7 +14,7 @@ import android.os.StatFs
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Android implementation of [IDeviceUtils] for hardware capability detection.

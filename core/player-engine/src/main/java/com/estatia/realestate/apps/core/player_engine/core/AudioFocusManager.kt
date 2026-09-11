@@ -17,7 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 
 /**
  * Handles Android audio focus requests and transitions.

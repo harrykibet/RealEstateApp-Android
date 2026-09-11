@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * High-integrity local storage for authentication tokens.

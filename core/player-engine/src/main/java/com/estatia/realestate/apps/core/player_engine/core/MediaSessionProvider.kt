@@ -7,7 +7,7 @@ import androidx.media3.session.MediaSession
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi

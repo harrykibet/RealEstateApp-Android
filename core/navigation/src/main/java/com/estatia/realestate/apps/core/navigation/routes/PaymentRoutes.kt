@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.navigation.routes
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import com.estatia.realestate.apps.core.model.feature.PaymentContext
 import kotlinx.serialization.Serializable

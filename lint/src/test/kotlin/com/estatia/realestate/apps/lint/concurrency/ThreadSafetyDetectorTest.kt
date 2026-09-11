@@ -70,7 +70,7 @@ class ThreadSafetyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    import com.estatia.realestate.apps.core.architecture.annotations.Repository
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
                     import java.util.ArrayList
                     
                     @Repository

@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 /**
  * Robust entry point for error mapping.

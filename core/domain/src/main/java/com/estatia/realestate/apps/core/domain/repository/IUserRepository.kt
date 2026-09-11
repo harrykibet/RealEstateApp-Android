@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Domain-level repository for user profile and preference management.

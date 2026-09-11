@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.player_engine.state
 
 import androidx.annotation.OptIn
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
-import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Data.PlayerState
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi

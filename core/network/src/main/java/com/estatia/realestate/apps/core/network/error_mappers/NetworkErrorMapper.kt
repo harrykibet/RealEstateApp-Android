@@ -6,7 +6,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 /**
  * Standard implementation of [INetworkErrorMapper] for translating platform-level network failures.

@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.localization.api.NumberFormatter
 import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 @Foundation
 class AndroidNumberFormatter @Inject constructor() : NumberFormatter {

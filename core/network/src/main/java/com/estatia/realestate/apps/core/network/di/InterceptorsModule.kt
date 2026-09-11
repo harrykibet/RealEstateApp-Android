@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import dagger.multibindings.ElementsIntoSet
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 @Module
 @InstallIn(SingletonComponent::class)

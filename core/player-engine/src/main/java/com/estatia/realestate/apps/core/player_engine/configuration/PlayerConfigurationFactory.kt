@@ -10,7 +10,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.HdrConfiguration
 import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.player_engine.streaming.StreamingUriResolver
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 // Justification: Required for low-level Media3 playback orchestration.
 @UnstableApi

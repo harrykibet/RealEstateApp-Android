@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 
 /**
  * Facade implementation of [IPlayerManager].

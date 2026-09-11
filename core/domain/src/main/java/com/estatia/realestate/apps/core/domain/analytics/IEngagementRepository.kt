@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.domain.analytics
 
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Domain-level contract for reporting personalized engagement signals.

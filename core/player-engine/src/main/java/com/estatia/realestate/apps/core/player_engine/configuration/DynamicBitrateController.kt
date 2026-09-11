@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.player_engine.utils.DynamicBitratePolicy
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import kotlin.math.roundToInt
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 // Justification: Relies on Unstable Media3 APIs for performance optimization.
 @UnstableApi

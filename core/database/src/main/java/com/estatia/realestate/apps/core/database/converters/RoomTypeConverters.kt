@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.database.converters
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString

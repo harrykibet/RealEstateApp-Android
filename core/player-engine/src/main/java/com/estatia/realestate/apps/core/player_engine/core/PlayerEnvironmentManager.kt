@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 
 /**
  * Orchestrates player pool adjustments and bitrate strategy based on environment changes.

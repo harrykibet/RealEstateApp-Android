@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.model.user
 
 import com.estatia.realestate.apps.core.model.utils.DarkThemeConfig
 import com.estatia.realestate.apps.core.model.utils.ThemeBrand
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 /**
  * Class summarizing user interest data

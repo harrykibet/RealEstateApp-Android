@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.network.interfaces.IDatabaseErrorMapper
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 @Singleton
 @ErrorMapper

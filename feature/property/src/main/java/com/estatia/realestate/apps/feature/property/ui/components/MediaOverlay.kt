@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.property.ui.components
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiComponent
 
 import android.net.Uri
 import androidx.compose.foundation.background

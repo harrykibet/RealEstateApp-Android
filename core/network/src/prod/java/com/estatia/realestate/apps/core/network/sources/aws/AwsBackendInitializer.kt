@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * AWS implementation of [IBackendInitializer].

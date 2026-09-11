@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.domain.config.IConfigProvider
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.estatia.realestate.apps.core.common.interfaces.IBackendInitializer
 import com.estatia.realestate.apps.core.common.di.ApplicationScope
-import com.estatia.realestate.apps.core.architecture.annotations.AppEntryPoint
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.AppEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

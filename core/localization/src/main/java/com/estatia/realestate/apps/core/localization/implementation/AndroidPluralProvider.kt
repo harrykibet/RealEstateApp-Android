@@ -4,7 +4,7 @@ import android.content.Context
 import com.estatia.realestate.apps.core.localization.api.PluralProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 @Foundation
 class AndroidPluralProvider @Inject constructor(

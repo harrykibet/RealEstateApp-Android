@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IFirebaseAppCheckProx
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Firebase implementation of [IBackendInitializer].

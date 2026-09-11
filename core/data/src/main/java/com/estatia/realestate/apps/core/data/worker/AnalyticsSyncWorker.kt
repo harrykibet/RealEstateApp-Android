@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import com.estatia.realestate.apps.core.domain.analytics.IAnalyticsTracker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Background worker for synchronizing the analytics outbox with the remote server.

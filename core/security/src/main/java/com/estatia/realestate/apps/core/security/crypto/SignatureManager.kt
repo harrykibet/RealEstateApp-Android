@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import java.security.Signature
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 
 
 private const val SIGNATURE_ALGORITHM =

@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.engagement.SafetyResult
 import com.estatia.realestate.apps.core.model.engagement.SensitiveEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Service for proactive content moderation and platform integrity checks.

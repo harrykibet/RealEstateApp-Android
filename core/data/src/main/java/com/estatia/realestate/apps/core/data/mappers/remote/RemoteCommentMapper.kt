@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.mappers.remote
 
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 import com.estatia.realestate.apps.core.model.feature.CommentDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel

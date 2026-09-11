@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import kotlin.time.Duration
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Utility for measuring network latency to a specific host.

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.intelligence
 import com.estatia.realestate.apps.core.domain.analytics.IEngagementRepository
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * High-level processor for aggregating and prioritizing user engagement signals.

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.security
 
 import com.estatia.realestate.apps.core.model.utils.SemanticVersion
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 @DomainModel
 data class CacheKey(

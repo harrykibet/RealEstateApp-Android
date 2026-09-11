@@ -40,7 +40,7 @@ import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.player_ui.core.LocalEnvironmentState
 import com.estatia.realestate.apps.core.player_ui.core.LocalPlayerManager
 import com.estatia.realestate.apps.util.isSystemInDarkTheme
-import com.estatia.realestate.apps.core.architecture.annotations.AppEntryPoint
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.AppEntryPoint
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged

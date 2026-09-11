@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.viewModels
 
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.common.exceptions.AppResult

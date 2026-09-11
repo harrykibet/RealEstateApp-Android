@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 @Entity(tableName = "properties_cache")
 @EntityModel

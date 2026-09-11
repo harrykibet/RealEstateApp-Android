@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.sources.aws
 import com.amplifyframework.core.Amplify
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * AWS implementation of [ICrashReporter] using Amazon CloudWatch.

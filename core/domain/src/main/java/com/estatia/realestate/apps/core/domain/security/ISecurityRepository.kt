@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.domain.security
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Defines security-related operations such as encryption, decryption, signing, and verification.

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.error_mappers.aws
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.NetworkException
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 /**
  * AWS implementation of error mapping (Skeleton).

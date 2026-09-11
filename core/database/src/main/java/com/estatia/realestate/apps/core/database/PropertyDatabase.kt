@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.database.converters.RoomTypeConverters
 import com.estatia.realestate.apps.core.database.entities.CommentCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.database.entities.PropertyDraftEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 
 @Database(

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.data
 import com.estatia.realestate.apps.core.datastore.ChangeListVersions
 import com.estatia.realestate.apps.core.model.utils.NetworkChangeList
 import kotlin.coroutines.cancellation.CancellationException
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * Global synchronization utilities for Estatia repositories.

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.property
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 /**
  * Represents an allowlisted set of fields that can be updated on a property listing.

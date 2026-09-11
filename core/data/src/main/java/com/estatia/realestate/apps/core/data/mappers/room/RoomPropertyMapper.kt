@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.mappers.room
 
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 import com.estatia.realestate.apps.core.database.entities.PropertyCacheEntity
 import com.estatia.realestate.apps.core.model.property.ContactInfo

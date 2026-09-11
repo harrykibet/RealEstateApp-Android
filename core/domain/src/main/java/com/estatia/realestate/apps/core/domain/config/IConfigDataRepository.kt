@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.domain.config
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 interface IConfigDataRepository {

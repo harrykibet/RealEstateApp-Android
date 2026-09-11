@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.user
 
 import com.estatia.realestate.apps.core.model.property.PriceRange
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 @DomainModel
 data class UserPreferences(

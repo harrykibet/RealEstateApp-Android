@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * AWS implementation of [ICommentsRemoteDataSource] using AppSync Subscriptions.

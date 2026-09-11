@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 
 import com.estatia.realestate.apps.core.model.system.NetworkState
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * Utility for monitoring the device's network connectivity state.

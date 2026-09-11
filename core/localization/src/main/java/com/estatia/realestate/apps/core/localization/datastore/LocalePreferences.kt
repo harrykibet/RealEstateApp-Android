@@ -6,13 +6,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "locale_prefs")
 

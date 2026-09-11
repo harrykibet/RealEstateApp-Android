@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiRoute
 
 import android.content.Context
 import android.widget.Toast

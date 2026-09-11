@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiComponent
 
 import android.net.Uri
 import androidx.annotation.OptIn
@@ -42,7 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.architecture.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import com.estatia.realestate.apps.core.model.property.MediaType

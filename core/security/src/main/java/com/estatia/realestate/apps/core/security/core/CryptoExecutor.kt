@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Standard executor for cryptographic operations.

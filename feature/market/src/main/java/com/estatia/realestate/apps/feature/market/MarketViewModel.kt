@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.market
 
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import com.estatia.realestate.apps.core.model.feature.MarketCategory
 import com.estatia.realestate.apps.core.model.feature.MarketItem

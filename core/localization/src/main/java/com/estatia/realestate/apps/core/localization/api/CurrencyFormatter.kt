@@ -5,7 +5,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for localized currency formatting.

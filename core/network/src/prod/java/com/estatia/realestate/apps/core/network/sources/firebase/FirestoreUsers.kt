@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
@@ -11,7 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 
 /**

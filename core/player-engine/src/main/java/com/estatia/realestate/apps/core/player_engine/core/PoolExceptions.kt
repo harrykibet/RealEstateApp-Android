@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Helper
 
 import java.io.IOException
 

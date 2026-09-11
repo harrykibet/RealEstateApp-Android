@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.sources.firebase
 import com.estatia.realestate.apps.core.domain.analytics.ICrashReporter
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Firebase implementation of [ICrashReporter] using Crashlytics.

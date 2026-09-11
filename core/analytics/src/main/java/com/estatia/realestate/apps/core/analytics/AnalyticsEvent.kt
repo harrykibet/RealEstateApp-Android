@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.analytics
 
-import com.estatia.realestate.apps.core.architecture.annotations.AnalyticsState
-import com.estatia.realestate.apps.core.architecture.annotations.Helper
+import com.estatia.realestate.apps.core.architecture.annotations.Data.AnalyticsState
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Helper
 
 /**
  * Represents an analytics event.

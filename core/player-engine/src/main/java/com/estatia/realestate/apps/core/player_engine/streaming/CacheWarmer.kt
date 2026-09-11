@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
-import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.PlayerState
 
 enum class WarmPriority {
     VISIBLE,

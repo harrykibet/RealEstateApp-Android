@@ -54,8 +54,8 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaNavigation
 import kotlin.reflect.KClass
 import com.estatia.realestate.apps.feature.settings.R as settingsR
 import com.estatia.realestate.apps.R
-import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
-import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiScreen
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiComponent
 
 @UiScreen
 @Composable

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.misc
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 // Global constants and objects
 /**

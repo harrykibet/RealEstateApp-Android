@@ -27,7 +27,7 @@ import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * AWS implementation of [IPropertyRemoteDatasource] using AppSync (GraphQL) and S3.

@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.feature.property.utils
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
 
 @UiState
 data class AddPropertyUiState(

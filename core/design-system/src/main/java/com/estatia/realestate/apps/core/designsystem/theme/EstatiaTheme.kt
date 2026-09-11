@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.theme
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme

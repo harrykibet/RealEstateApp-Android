@@ -5,8 +5,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.player_engine.analytics.PlaybackAnalyticsListener
 import com.estatia.realestate.apps.core.player_engine.state.PlaybackStateReducer
-import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
-import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.Data.PlayerState
+import com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency
 
 /**
  * A wrapper around [ExoPlayer] that links it to a dedicated [PlaybackStateReducer].

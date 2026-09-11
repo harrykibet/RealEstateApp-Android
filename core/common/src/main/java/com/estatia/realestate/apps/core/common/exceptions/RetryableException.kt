@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.common.exceptions
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * A marker interface used to indicate that an exception represents a transient failure

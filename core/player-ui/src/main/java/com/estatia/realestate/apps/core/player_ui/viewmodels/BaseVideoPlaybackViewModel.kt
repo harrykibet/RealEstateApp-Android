@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.viewmodels
 
 import androidx.core.net.toUri
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player

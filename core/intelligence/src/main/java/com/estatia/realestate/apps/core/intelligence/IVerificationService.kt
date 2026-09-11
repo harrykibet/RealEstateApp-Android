@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.user.FaceMatchResult
 import com.estatia.realestate.apps.core.model.user.IdDocumentResult
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Service for handling identity and asset verification using on-device ML.

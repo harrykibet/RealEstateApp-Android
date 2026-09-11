@@ -13,7 +13,7 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 
 /**
  * Engine for performing cryptographic hashing and HMAC operations.

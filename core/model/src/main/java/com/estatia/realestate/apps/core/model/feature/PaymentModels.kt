@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Represents the status of a payment transaction.

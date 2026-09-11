@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.db_names
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 @Utility
 object FirestoreFields {

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.repositories
 
-import com.estatia.realestate.apps.core.architecture.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
 import android.app.Activity
 import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.AppResult

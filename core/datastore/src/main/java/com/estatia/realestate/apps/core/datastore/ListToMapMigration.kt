@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.datastore
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import androidx.datastore.core.DataMigration
 

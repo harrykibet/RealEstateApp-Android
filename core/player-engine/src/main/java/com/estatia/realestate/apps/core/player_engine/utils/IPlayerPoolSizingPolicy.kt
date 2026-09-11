@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Policy for determining the maximum number of player instances to keep in the pool.

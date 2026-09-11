@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.data.mappers.room
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

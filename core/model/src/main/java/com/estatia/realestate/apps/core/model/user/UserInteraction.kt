@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.model.user
-import com.estatia.realestate.apps.core.architecture.annotations.AnalyticsState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.AnalyticsState
 
 @AnalyticsState
 data class UserInteraction(

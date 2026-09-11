@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import kotlinx.serialization.Serializable
 import kotlinx.parcelize.Parcelize
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 @Serializable
 @Parcelize

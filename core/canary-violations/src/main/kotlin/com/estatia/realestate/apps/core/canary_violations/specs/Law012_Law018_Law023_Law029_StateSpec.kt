@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.canary_violations.specs
 
 import android.app.Activity
 import androidx.lifecycle.ViewModel
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.*

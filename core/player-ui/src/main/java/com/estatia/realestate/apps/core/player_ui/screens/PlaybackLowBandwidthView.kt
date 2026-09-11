@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiComponent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

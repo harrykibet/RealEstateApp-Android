@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.media.MediaFormat
 import com.estatia.realestate.apps.core.model.feature.LikesDomainModel
 import com.estatia.realestate.apps.core.network.db_entities.LikesEntity
 import com.estatia.realestate.apps.core.network.db_entities.PropertyContactEntity
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.PROPERTIES
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.CONTACT
 import com.estatia.realestate.apps.core.network.db_names.FirestoreCollections.SubCollections.LIKED_PROPERTIES
@@ -34,7 +34,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 
 /**

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Provider for creating and managing [MediaSession] instances.

@@ -21,7 +21,7 @@ class Law027_ComposeArchitectureLeakageTest {
                     """
                     package com.estatia.realestate.apps
                     import androidx.compose.runtime.Composable
-                    import com.estatia.realestate.apps.core.architecture.annotations.Repository
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
 
                     @Repository
                     class MyRepository { fun load() {} }

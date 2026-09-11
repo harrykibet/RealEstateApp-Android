@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.interfaces.IConfigRemoteDataSource
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * AWS implementation of [IConfigRemoteDataSource].

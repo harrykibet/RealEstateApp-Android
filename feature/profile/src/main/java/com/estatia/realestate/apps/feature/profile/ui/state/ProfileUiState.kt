@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.profile.ui.state
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
 
 /**
  * Data class to model profile statistics.

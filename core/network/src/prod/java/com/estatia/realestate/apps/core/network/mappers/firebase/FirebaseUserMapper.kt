@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.mappers.firebase
 
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 import com.estatia.realestate.apps.core.network.db_entities.NetworkUserEntity
 import com.google.firebase.auth.FirebaseUser

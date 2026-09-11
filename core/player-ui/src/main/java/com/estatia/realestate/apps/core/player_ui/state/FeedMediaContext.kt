@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.player_ui.state
 
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
-import com.estatia.realestate.apps.core.architecture.annotations.PlayerState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.PlayerState
 
 @PlayerState
 data class FeedMediaContext(

@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 /**
  * Monitors the health and latency of CDN endpoints to enable high-integrity failover.

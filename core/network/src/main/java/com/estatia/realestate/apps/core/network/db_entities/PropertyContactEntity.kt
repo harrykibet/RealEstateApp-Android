@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.network.db_entities
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 /**
  * Sensitive contact information for a property, stored in a gated subcollection.

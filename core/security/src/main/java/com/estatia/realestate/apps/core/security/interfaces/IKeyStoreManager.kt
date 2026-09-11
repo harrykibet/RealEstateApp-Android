@@ -5,7 +5,7 @@ import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
 import javax.crypto.SecretKey
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 interface IKeyStoreManager {

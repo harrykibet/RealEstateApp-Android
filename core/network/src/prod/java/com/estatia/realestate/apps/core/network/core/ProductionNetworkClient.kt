@@ -11,7 +11,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IExceptionMapper
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Standard implementation of [INetworkClient] for production environments.

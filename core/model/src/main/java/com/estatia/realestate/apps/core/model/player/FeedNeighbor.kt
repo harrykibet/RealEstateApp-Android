@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.player
 
 import com.estatia.realestate.apps.core.model.common.MediaReference
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 /**
  * Represents a neighboring video in a feed for prewarming/prefetching purposes.

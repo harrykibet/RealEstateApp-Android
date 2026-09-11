@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.ui
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.runtime.Composable

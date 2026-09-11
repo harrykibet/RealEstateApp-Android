@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.StorageException
 import com.estatia.realestate.apps.core.network.interfaces.IStorageErrorMapper
 import com.google.firebase.storage.StorageException as FirebaseStorageException
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 
 @ErrorMapper

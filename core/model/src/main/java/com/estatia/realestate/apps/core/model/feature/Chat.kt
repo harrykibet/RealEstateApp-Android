@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.feature
 
 import kotlin.time.Instant
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 @DomainModel
 data class Chat(

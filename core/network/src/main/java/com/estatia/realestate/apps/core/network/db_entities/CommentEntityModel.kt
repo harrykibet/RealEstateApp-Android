@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.network.db_entities
 
 import com.google.firebase.firestore.ServerTimestamp
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 @EntityModel
 data class CommentEntityModel(

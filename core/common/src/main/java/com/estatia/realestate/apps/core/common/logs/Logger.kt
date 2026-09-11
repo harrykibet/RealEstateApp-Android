@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.common.logs
 
 import android.util.Log
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

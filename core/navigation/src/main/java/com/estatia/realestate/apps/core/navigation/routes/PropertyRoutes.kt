@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.navigation.routes
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 @Serializable
 @Utility

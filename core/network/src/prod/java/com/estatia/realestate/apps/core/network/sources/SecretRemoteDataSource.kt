@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.model.security.SecretId
 import com.estatia.realestate.apps.core.network.api.SecretApi
 import com.estatia.realestate.apps.core.network.interfaces.INetworkClient
 import com.estatia.realestate.apps.core.network.interfaces.ISecretRemoteDataSource
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 import javax.inject.Inject
 
 /**

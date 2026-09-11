@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.icons
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitive
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat

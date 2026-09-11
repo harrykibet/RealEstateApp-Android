@@ -10,7 +10,7 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
-import com.estatia.realestate.apps.core.architecture.annotations.Policy
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy
 
 
 /**

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.events
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 @Utility
 object EventTypes {

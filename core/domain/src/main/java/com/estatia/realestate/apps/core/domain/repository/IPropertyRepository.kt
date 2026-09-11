@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.PropertyCursor
 import com.estatia.realestate.apps.core.model.property.PropertyDraftDomainModel
 import com.estatia.realestate.apps.core.model.property.PropertyPage
 import com.estatia.realestate.apps.core.model.property.PropertyUpdateFields
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Domain-level repository for property management.

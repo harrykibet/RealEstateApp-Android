@@ -19,7 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 // PlayerFactory.kt — request a fresh listener instance per player via Provider<T>
 // Justification: Required for low-level Media3 playback orchestration.

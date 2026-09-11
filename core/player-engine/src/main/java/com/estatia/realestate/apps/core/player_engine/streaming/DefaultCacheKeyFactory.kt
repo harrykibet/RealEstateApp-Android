@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Default implementation of [ICacheKeyFactory].

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.exceptions
 
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 @DomainModel
 sealed class AppException(

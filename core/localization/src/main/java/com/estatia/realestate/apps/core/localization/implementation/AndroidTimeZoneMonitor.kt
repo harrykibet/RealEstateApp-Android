@@ -28,7 +28,7 @@ import kotlinx.datetime.toKotlinTimeZone
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 @Singleton
 @Foundation

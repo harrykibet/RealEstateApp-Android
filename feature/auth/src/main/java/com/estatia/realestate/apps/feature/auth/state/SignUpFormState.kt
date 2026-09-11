@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.state
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
 
 @Serializable
 @UiState

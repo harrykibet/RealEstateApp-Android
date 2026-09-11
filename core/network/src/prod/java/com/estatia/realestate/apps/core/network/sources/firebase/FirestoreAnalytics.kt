@@ -12,7 +12,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IAuthRemoteDataSource
 import com.google.firebase.analytics.FirebaseAnalytics
 import java.util.UUID
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 
 @Utility

@@ -10,7 +10,7 @@ import com.estatia.realestate.apps.core.network.interfaces.IUserRemoteDataSource
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * AWS implementation of [IUserRemoteDataSource].

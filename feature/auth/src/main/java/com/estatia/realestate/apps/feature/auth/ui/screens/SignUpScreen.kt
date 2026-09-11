@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiScreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable

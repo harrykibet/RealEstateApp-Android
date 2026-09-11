@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.LazyListItemInfo

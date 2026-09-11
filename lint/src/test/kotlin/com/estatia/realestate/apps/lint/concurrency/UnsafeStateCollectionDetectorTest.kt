@@ -19,7 +19,7 @@ class UnsafeStateCollectionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import kotlinx.coroutines.flow.MutableStateFlow
-                    import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
                     
                     @ViewModelMarker
                     class Test {
@@ -45,7 +45,7 @@ class UnsafeStateCollectionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import androidx.compose.runtime.MutableState
-                    import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
                     
                     @ViewModelMarker
                     class Test {

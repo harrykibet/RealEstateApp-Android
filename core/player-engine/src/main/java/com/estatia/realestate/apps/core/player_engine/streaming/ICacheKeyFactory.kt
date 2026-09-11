@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.streaming
 
 import android.net.Uri
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for deriving stable cache keys and media IDs from media URIs.

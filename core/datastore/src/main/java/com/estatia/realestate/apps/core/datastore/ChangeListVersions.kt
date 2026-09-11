@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.datastore
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Class summarizing the local version of each model for sync.

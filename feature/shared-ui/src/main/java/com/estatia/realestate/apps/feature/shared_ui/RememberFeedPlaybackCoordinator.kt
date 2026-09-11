@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiComponent
 
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable

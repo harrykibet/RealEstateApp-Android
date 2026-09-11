@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.common.interfaces
 import android.content.Context
 import android.net.Uri
 import java.io.File
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 interface IMediaCompressor {

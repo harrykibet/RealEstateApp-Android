@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.mappers.exceptions
 
 import com.estatia.realestate.apps.core.common.exceptions.UserException
-import com.estatia.realestate.apps.core.architecture.annotations.Mapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Mapper
 import javax.inject.Inject
 
 /**

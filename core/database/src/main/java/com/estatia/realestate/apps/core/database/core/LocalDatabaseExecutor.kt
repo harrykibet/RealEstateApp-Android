@@ -8,7 +8,7 @@ import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import kotlinx.coroutines.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Standard executor for local database operations.

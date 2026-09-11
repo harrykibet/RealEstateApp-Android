@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.player_engine.core
 
 import androidx.media3.common.util.UnstableApi
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Result of a player prewarm operation.

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.data.util
 
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Reports on if synchronization is in progress

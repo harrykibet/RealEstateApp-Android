@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.network.interfaces
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.network.db_entities.CommentEntityModel
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 @DataSource
 interface ICommentsRemoteDataSource {

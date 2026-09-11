@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.security.interfaces
 
 import com.estatia.realestate.apps.core.model.security.SecretId
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for providing sensitive configuration and API keys.

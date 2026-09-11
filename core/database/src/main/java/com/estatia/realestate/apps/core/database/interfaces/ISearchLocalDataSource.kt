@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.database.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.database.entities.SearchCacheEntity
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * Interface for the local search data source.

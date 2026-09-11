@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.model.analytics
 import com.estatia.realestate.apps.core.model.system.DeviceInfo
 import com.estatia.realestate.apps.core.model.user.UserLocation
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.AnalyticsState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.AnalyticsState
 
 @Serializable
 @AnalyticsState

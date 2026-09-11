@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AuthException as Domai
 import com.estatia.realestate.apps.core.network.interfaces.IAuthExceptionMapper
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.ErrorMapper
 
 /**
  * AWS implementation of [IAuthExceptionMapper] for translating Cognito failures.

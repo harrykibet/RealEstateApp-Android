@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps
 
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * High-level ViewModel for the primary application Activity.

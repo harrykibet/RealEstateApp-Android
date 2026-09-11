@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitive
 
 /**
  * A class to model background color and tonal elevation values for Estatia.

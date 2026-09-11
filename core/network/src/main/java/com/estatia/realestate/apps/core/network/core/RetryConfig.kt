@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.network.core
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 @EntityModel
 data class RetryConfig(

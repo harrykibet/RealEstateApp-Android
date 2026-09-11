@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.domain.security
 
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.model.security.SecretId
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for retrieving sensitive API keys and secrets from various sources.

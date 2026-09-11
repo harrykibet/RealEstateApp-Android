@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.model.service.ServiceType
 import com.estatia.realestate.apps.core.model.system.Location
 import com.google.firebase.firestore.DocumentSnapshot
 import java.util.Date
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 @EntityModel
 data class ServiceProviderEntity(

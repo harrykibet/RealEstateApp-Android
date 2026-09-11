@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.common.interfaces
 
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
-import com.estatia.realestate.apps.core.architecture.annotations.AuthState
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.AuthState
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface PhoneVerificationState {

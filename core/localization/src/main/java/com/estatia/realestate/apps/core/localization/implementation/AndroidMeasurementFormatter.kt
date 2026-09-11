@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.localization.implementation
 import com.estatia.realestate.apps.core.localization.api.MeasurementFormatter
 import java.util.Locale
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 @Foundation
 class AndroidMeasurementFormatter @Inject constructor() : MeasurementFormatter {

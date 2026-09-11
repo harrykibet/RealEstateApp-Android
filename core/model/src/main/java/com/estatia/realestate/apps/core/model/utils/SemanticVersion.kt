@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.utils
 
 import java.lang.IllegalArgumentException
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 /**
  * Represents a semantic version following the SemVer 2.0.0 specification

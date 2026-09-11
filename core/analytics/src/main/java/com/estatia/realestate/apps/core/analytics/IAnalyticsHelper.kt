@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.analytics
 
 import androidx.compose.runtime.Composable
 import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as FirebaseAnalyticsEvent
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 
 @Contract

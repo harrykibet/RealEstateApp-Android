@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.property.utils
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 
 @Utility

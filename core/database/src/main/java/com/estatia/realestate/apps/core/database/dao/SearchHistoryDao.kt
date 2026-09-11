@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.database.dao
 
 import androidx.room.*
 import com.estatia.realestate.apps.core.database.entities.SearchHistoryEntity
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 @Dao
 @DataSource

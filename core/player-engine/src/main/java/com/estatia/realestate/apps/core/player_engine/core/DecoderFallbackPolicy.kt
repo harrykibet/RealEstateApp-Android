@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.core
 import com.estatia.realestate.apps.core.common.concurrency.Confinement
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Policy
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy
 
 /**
  * Tracks decoder failures and decides when to force legacy decoders for specific media.

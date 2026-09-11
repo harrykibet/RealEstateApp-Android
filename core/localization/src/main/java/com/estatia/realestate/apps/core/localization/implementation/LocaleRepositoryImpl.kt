@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.localization.implementation
 
-import com.estatia.realestate.apps.core.architecture.annotations.Repository
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
 import com.estatia.realestate.apps.core.localization.api.LocaleRepository
 import com.estatia.realestate.apps.core.localization.datastore.LocalePreferences
 import com.estatia.realestate.apps.core.localization.model.Language

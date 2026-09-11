@@ -35,8 +35,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
 @UiPrimitiveFunction
 @Composable

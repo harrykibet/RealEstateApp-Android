@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import com.estatia.realestate.apps.core.model.player.EnvironmentState
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Policy
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy
 
 @Singleton
 @Policy

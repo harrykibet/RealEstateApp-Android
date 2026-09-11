@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.exceptions.AppException
 import com.estatia.realestate.apps.core.common.exceptions.InfrastructureException
 import com.estatia.realestate.apps.core.domain.common.IExceptionTranslator
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Coordinator
 
 
 /**

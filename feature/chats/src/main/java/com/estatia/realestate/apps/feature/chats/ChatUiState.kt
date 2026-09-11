@@ -2,8 +2,8 @@ package com.estatia.realestate.apps.feature.chats
 
 import com.estatia.realestate.apps.core.model.feature.Chat
 import com.estatia.realestate.apps.core.model.feature.ChatUser
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface ChatUiState {

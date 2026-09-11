@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.common
 
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 import android.os.Parcelable
 import kotlin.jvm.JvmInline
 import kotlinx.serialization.Serializable

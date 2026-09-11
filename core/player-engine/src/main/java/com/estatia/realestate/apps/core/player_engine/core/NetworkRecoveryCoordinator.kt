@@ -13,8 +13,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
-import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Coordinator
+import com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency
 
 /**
  * Handles automatic recovery of playback when network connection is restored.

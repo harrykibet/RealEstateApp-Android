@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.model.utils
 
 import kotlinx.serialization.Serializable
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 
 /**

@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.designsystem.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitive
 
 /**
  * A class to model gradient color values for Estatia.

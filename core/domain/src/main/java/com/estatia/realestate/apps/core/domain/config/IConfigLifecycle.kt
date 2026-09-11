@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.domain.config
 
 import kotlinx.coroutines.flow.StateFlow
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 interface IConfigLifecycle {

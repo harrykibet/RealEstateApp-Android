@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.config.INetworkConfig
 import com.estatia.realestate.apps.core.domain.config.ISecurityConfig
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import io.micrometer.core.instrument.MeterRegistry
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import javax.inject.Inject
 
 /**

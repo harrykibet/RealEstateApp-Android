@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.network.interfaces
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * Proxy for initializing Firebase AppCheck, which has variant-specific implementations.

@@ -6,7 +6,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Coordinator
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Coordinator
 
 /**
  * Manages the lifecycle and state of the [MediaSession] for the playback engine.

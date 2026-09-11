@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.domain.analytics
 
 import kotlin.time.Duration
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for tracking structured performance metrics and counters.

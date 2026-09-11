@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.common.interfaces
 
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for time-related operations to allow for deterministic testing.

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.database
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import android.content.Context
 import androidx.room.Database

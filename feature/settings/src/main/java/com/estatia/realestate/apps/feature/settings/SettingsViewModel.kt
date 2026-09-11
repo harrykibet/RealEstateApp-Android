@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.feature.settings
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.estatia.realestate.apps.feature.settings.SettingsUiState.Loading

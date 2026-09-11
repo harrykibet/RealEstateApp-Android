@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.localization.api
 import com.estatia.realestate.apps.core.localization.model.Language
 import com.estatia.realestate.apps.core.localization.model.Region
 import kotlinx.coroutines.flow.Flow
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Interface for managing and persisting user locale preferences.

@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiRoute
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

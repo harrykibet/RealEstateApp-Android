@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.player_engine.configuration
 import androidx.media3.common.util.UnstableApi
 import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Factory for creating [PlayerConfiguration] instances based on media URI and type.

@@ -1,6 +1,8 @@
 package com.estatia.realestate.apps.core.model.system
 
-@com.estatia.realestate.apps.core.architecture.annotations.NetworkState
+import com.estatia.realestate.apps.core.architecture.annotations.Data
+
+@Data.NetworkState
 sealed class NetworkState {
 
     data object Connected : NetworkState()

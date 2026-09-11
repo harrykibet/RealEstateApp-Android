@@ -4,9 +4,9 @@ import com.estatia.realestate.apps.core.model.config.NetworkConfigModel
 import com.estatia.realestate.apps.core.model.config.PlayerTuningConfig
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import com.estatia.realestate.apps.core.model.config.SecurityConfigModel
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import kotlinx.serialization.json.Json
-import com.estatia.realestate.apps.core.architecture.annotations.AppEntryPoint
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.AppEntryPoint
 
 /**
  * Robust config parser using Kotlin Serialization.

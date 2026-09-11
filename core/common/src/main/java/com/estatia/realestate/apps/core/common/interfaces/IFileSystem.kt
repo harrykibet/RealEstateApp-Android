@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.common.interfaces
 
 import java.io.File
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Abstraction for file system operations to ensure framework independence

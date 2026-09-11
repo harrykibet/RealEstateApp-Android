@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.analytics
 
 import io.micrometer.core.instrument.MeterRegistry
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 import io.micrometer.core.instrument.Metrics
 import javax.inject.Inject
 import javax.inject.Singleton

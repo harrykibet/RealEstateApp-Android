@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.state
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface ForgotPasswordUiState {

@@ -14,19 +14,20 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.estatia.realestate.apps.core.architecture.annotations.Data
 import com.estatia.realestate.apps.core.common.interfaces.IBatteryManager
 import com.estatia.realestate.apps.core.common.interfaces.ILogger
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 
-@com.estatia.realestate.apps.core.architecture.annotations.BatteryState
+@Data.BatteryState
 sealed class BatteryState {
     abstract val level: Int
     abstract val isCharging: Boolean

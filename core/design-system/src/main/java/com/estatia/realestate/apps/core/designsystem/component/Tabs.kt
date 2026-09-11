@@ -1,8 +1,8 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitive
 
 
 import androidx.compose.foundation.layout.Box

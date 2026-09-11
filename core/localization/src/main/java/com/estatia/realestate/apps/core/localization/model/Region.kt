@@ -1,5 +1,5 @@
 package com.estatia.realestate.apps.core.localization.model
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Represents a geographical region for localization purposes.

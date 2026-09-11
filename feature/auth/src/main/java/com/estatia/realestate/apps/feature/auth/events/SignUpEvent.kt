@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.auth.events
-import com.estatia.realestate.apps.core.architecture.annotations.UiEvent
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiEvent
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface SignUpEvent {

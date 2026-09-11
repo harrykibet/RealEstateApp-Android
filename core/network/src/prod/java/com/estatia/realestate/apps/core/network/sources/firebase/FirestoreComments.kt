@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.network.sources.firebase
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields
 import com.estatia.realestate.apps.core.network.db_names.FirestoreFields.COMMENTS_COUNT
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.EntityModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.EntityModel
 
 /**
  * Firebase implementation of [ICommentsRemoteDataSource].

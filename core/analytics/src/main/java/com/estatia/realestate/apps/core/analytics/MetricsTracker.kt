@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.Tag
-import com.estatia.realestate.apps.core.architecture.annotations.Manager
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration

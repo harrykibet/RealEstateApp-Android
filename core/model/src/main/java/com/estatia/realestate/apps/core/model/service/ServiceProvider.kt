@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.core.model.service
 
 import com.estatia.realestate.apps.core.model.system.Location
 import java.util.Date
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
 
 @DomainModel
 data class ServiceProvider(

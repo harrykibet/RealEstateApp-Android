@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.common.media
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import android.content.ContentUris
 import android.content.Context

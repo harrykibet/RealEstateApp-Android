@@ -2,9 +2,9 @@ package com.estatia.realestate.apps.feature.payments
 
 import com.estatia.realestate.apps.core.model.feature.PaymentMethod
 import com.estatia.realestate.apps.core.model.feature.PaymentStatus
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface PaymentsUiState {

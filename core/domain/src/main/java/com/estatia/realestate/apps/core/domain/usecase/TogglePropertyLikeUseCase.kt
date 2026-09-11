@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.domain.usecase
 
-import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
 import com.estatia.realestate.apps.core.common.exceptions.AppResult
 import com.estatia.realestate.apps.core.common.exceptions.AuthException
 import com.estatia.realestate.apps.core.domain.security.IAuthRepository
@@ -9,7 +9,7 @@ import com.estatia.realestate.apps.core.domain.repository.IPropertyRepository
 import com.estatia.realestate.apps.core.model.engagement.EngagementAction
 import com.estatia.realestate.apps.core.common.exceptions.getOrNull
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 interface ITogglePropertyLikeUseCase {

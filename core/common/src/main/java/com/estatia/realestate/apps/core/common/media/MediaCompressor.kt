@@ -24,7 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import java.io.ByteArrayOutputStream
 import java.io.File
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 

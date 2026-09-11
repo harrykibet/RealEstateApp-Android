@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Service
-import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Service
+import com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency
 import com.estatia.realestate.apps.core.model.system.NetworkState
 
 /**

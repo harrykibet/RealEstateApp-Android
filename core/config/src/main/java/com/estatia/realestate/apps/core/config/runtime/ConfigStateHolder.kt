@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.config.runtime
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import com.estatia.realestate.apps.core.model.config.RemoteConfigModel
 import kotlinx.coroutines.flow.MutableStateFlow

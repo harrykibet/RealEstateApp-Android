@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.player_engine.utils
 
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 import android.graphics.PixelFormat
 import android.os.Build

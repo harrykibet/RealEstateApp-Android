@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.property.MediaType
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject
 import kotlin.math.roundToInt
-import com.estatia.realestate.apps.core.architecture.annotations.Policy
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy
 
 @Policy
 class DynamicBitratePolicy @Inject constructor(

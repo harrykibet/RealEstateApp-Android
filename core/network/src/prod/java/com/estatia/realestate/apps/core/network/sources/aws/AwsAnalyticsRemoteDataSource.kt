@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.model.analytics.AnalyticsEvent as Domain
 import com.estatia.realestate.apps.core.network.interfaces.IAnalyticsRemoteDataSource
 import com.estatia.realestate.apps.core.domain.analytics.IMetricsTracker
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * AWS implementation of [IAnalyticsRemoteDataSource].

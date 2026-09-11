@@ -5,7 +5,7 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 @Foundation
 class AndroidCurrencyFormatter @Inject constructor() : CurrencyFormatter {

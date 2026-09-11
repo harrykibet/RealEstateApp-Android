@@ -4,7 +4,7 @@ import com.estatia.realestate.apps.core.common.interfaces.IDeviceUtils
 import com.estatia.realestate.apps.core.domain.config.IPlayerTuningConfig
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.estatia.realestate.apps.core.architecture.annotations.Policy
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy
 
 /**
  * Adaptive policy that scales the cache ceiling based on available device storage.

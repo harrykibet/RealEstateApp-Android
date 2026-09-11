@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiPrimitiveFunction
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

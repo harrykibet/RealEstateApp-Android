@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.core.model.engagement
-import com.estatia.realestate.apps.core.architecture.annotations.DomainModel
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Data.DomainModel
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 /**
  * Result of a content safety check.

@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.localization.model
 
 import java.util.Locale
-import com.estatia.realestate.apps.core.architecture.annotations.Utility
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility
 
 /**
  * Encapsulates a locale supported by the application.

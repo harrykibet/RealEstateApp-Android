@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.database.entities.AnalyticsOutboxEntity
 import com.estatia.realestate.apps.core.database.interfaces.IAnalyticsLocalDataSource
 import com.estatia.realestate.apps.core.database.interfaces.ILocalDatabaseExecutor
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.DataSource
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource
 
 /**
  * Local data source for analytics events using an outbox pattern.

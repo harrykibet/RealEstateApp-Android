@@ -1,6 +1,6 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+import com.estatia.realestate.apps.core.architecture.annotations.Ui.UiScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

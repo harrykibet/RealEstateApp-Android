@@ -3,7 +3,7 @@ package com.estatia.realestate.apps.core.security
 import com.estatia.realestate.apps.core.model.security.SecretId
 import com.estatia.realestate.apps.core.security.interfaces.ISecureKeyProvider
 import javax.inject.Inject
-import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation
 
 /**
  * Implementation of [ISecureKeyProvider] that retrieves hardcoded keys from [BuildConfig].

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDiskIOException
 import android.database.sqlite.SQLiteFullException
 import com.estatia.realestate.apps.core.common.exceptions.DatabaseException
 import com.estatia.realestate.apps.core.database.interfaces.IRoomExceptionMapper
-import com.estatia.realestate.apps.core.architecture.annotations.Mapper
+import com.estatia.realestate.apps.core.architecture.annotations.Logic.Mapper
 import javax.inject.Inject
 
 @Mapper

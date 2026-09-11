@@ -1,9 +1,9 @@
 package com.estatia.realestate.apps.feature.search.ui
 
-import com.estatia.realestate.apps.core.architecture.annotations.UiState
+import com.estatia.realestate.apps.core.architecture.annotations.Data.UiState
 
 import com.estatia.realestate.apps.core.model.property.PropertyDomainModel
-import com.estatia.realestate.apps.core.architecture.annotations.Contract
+import com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract
 
 @Contract
 sealed interface SearchUiState {
