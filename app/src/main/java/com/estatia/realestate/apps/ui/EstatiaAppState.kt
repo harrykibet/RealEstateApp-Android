@@ -36,7 +36,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import com.estatia.realestate.apps.core.architecture.annotations.Foundation
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
 
+@UiPrimitiveFunction
 @Composable
 fun rememberEstatiaAppState(
     networkStateProvider: INetworkStateProvider,
@@ -173,6 +175,7 @@ class EstatiaAppState(
 /**
  * Stores information about navigation events to be used with JankStats **/
 
+@UiPrimitiveFunction
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavHostController) {
     TrackDisposableJank(navController) { metricsHolder ->

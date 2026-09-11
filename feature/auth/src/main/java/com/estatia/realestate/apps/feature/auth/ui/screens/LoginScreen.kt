@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -46,6 +48,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.R
 
+@UiScreen
 @Composable
 fun LoginScreen(
     email: String,
@@ -191,6 +194,7 @@ fun LoginScreen(
     widthDp = 400,
 )
 @DevicePreviews
+@UiScreen
 @Composable
 fun LoginScreenLight() {
     EstatiaTheme {
@@ -216,6 +220,7 @@ fun LoginScreenLight() {
     widthDp = 400,
 )
 @DevicePreviews
+@UiScreen
 @Composable
 fun LoginScreenDark() {
     EstatiaTheme {

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,6 +13,7 @@ import com.estatia.realestate.apps.feature.auth.events.SignUpEvent
 import com.estatia.realestate.apps.feature.auth.ui.screens.SignUpScreen
 import com.estatia.realestate.apps.feature.auth.viewModels.SignUpViewModel
 
+@UiRoute
 @Composable
 fun SignUpRoute(
     onEmailVerification: () -> Unit,

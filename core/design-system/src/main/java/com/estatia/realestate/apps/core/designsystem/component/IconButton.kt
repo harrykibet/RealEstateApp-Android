@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.material3.FilledIconToggleButton
@@ -25,6 +27,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * @param icon The icon content to show when unchecked.
  * @param checkedIcon The icon content to show when checked.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaIconToggleButton(
     checked: Boolean,
@@ -58,6 +61,7 @@ fun EstatiaIconToggleButton(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun IconButtonPreview() {
     EstatiaTheme {
@@ -81,6 +85,7 @@ fun IconButtonPreview() {
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun IconButtonPreviewUnchecked() {
     EstatiaTheme {

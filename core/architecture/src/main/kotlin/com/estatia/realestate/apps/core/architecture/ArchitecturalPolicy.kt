@@ -93,7 +93,8 @@ object ArchitecturalPolicy {
             "EntityModel", "AppEntryPoint", "UiState", "Module", "AndroidEntryPoint", 
             "HiltAndroidApp", "Contract", "Utility", "Mapper", "Policy", "Foundation", 
             "UiPrimitive", "BatteryState", "NetworkState", "EnvironmentState", 
-            "AnalyticsState", "AuthState", "PlayerState", "UiAction", "UiEvent"
+            "AnalyticsState", "AuthState", "PlayerState", "UiAction", "UiEvent",
+            "UiScreen", "UiComponent", "UiPrimitiveFunction", "UiRoute"
         )
 
         val FoundationModules = setOf(
@@ -132,7 +133,11 @@ object ArchitecturalPolicy {
             "AuthState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/common/|/core/domain/|/core/model/|/feature/auth/"),
             "PlayerState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/player-engine/|/core/player-ui/"),
             "UiAction" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/"),
-            "UiEvent" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/")
+            "UiEvent" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/"),
+            "UiScreen" to Invariant(mustBeComposable = true, pathContains = "/feature/|/app/"),
+            "UiComponent" to Invariant(mustBeComposable = true, pathContains = "/feature/|/core/ui/|/core/player-ui/|/app/"),
+            "UiPrimitiveFunction" to Invariant(mustBeComposable = true, pathContains = "/core/design-system/|/core/ui/|/app/"),
+            "UiRoute" to Invariant(mustBeComposable = true, pathContains = "/feature/|/app/")
         )
     }
 
@@ -141,7 +146,8 @@ object ArchitecturalPolicy {
         val mustInheritFrom: String? = null,
         val mustBeInterface: Boolean = false,
         val mustBeData: Boolean = false,
-        val mustBeDataSealedOrValue: Boolean = false
+        val mustBeDataSealedOrValue: Boolean = false,
+        val mustBeComposable: Boolean = false
     )
 
     data class Layer(

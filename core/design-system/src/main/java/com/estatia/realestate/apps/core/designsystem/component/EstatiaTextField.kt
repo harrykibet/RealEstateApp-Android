@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.content.res.Configuration
@@ -39,6 +41,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * Professionalized with a flat, modern design, consistent [EstatiaTextFieldDefaults.TextFieldCornerRadius],
  * and a subtle background fill.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTextField(
     value: String,
@@ -103,6 +106,7 @@ fun EstatiaTextField(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400
 )
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTextFieldLightPreview() {
     EstatiaTheme {
@@ -121,6 +125,7 @@ fun EstatiaTextFieldLightPreview() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400
 )
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTextFieldDarkPreview() {
     EstatiaTheme {
@@ -133,6 +138,7 @@ fun EstatiaTextFieldDarkPreview() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 private fun TextFieldPreviewContent() {
     var username by remember { mutableStateOf("john.doe") }

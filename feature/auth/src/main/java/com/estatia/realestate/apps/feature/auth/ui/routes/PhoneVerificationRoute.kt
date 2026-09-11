@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+
 import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +15,7 @@ import com.estatia.realestate.apps.feature.auth.state.PhoneVerificationUiState
 import com.estatia.realestate.apps.feature.auth.ui.screens.PhoneVerificationDialog
 import com.estatia.realestate.apps.feature.auth.viewModels.PhoneVerificationViewModel
 
+@UiRoute
 @Composable
 fun PhoneVerificationRoute(
     onDismiss: () -> Unit,

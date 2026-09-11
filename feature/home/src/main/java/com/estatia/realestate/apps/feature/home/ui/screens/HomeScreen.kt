@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.home.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,6 +56,7 @@ import androidx.media3.common.Player
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 import com.estatia.realestate.apps.core.localization.R as LocalizationR
 
+@UiScreen
 @Composable
 internal fun HomeRoute(
     onNavigateToPropertyDetail: (String) -> Unit,
@@ -122,6 +125,7 @@ internal fun HomeRoute(
     }
 }
 
+@UiScreen
 @Composable
 internal fun HomeScreen(
     state: HomeUiState,
@@ -172,6 +176,7 @@ internal fun HomeScreen(
     )
 }
 
+@UiScreen
 @Composable
 internal fun HomeFeedContent(
     listings: List<ListingUiModel>,
@@ -262,6 +267,7 @@ internal fun HomeFeedContent(
     }
 }
 
+@UiScreen
 @Composable
 private fun LoadingState(modifier: Modifier = Modifier) {
     Column(
@@ -275,6 +281,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
     }
 }
 
+@UiScreen
 @Composable
 private fun EmptyState(
     onRefresh: () -> Unit,
@@ -311,6 +318,7 @@ private fun EmptyState(
     }
 }
 
+@UiScreen
 @Composable
 private fun ErrorState(
     message: String,

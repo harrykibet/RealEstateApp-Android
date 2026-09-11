@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 
+@UiRoute
 @Composable
 fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(

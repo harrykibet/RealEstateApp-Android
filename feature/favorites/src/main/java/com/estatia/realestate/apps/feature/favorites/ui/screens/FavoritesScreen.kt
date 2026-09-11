@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.favorites.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -24,6 +26,7 @@ import com.estatia.realestate.apps.feature.favorites.ui.viewmodels.playback.Favo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+@UiScreen
 @Composable
 fun FavoritesRoute(
     onPropertyClick: (String) -> Unit,
@@ -60,6 +63,7 @@ fun FavoritesRoute(
     }
 }
 
+@UiScreen
 @Composable
 fun FavoritesScreen(
     favoriteProperties: List<PropertyDomainModel>,

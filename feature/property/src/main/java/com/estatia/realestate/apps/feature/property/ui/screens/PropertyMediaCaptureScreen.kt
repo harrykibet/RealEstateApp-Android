@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -37,6 +39,7 @@ import java.io.File
 import java.util.concurrent.Executor
 
 @OptIn(ExperimentalPermissionsApi::class)
+@UiScreen
 @Composable
 fun PropertyMediaCaptureScreen(
     onContinue: () -> Unit,

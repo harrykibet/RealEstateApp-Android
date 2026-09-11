@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +25,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.state.EmailVerificationUiState
 
+@UiComponent
 @Composable
 fun EmailVerificationDialog(
     uiState: EmailVerificationUiState,
@@ -55,6 +58,7 @@ fun EmailVerificationDialog(
     )
 }
 
+@UiComponent
 @Composable
 private fun EmailVerificationContent(
     uiState: EmailVerificationUiState,
@@ -143,6 +147,7 @@ private fun EmailVerificationContent(
 )
 
 @DevicePreviews
+@UiComponent
 @Composable
 fun EmailVerificationDialogLightPreview() {
     EstatiaTheme {
@@ -165,6 +170,7 @@ fun EmailVerificationDialogLightPreview() {
 )
 
 @DevicePreviews
+@UiComponent
 @Composable
 fun EmailVerificationDialogDarkPreview() {
     EstatiaTheme {

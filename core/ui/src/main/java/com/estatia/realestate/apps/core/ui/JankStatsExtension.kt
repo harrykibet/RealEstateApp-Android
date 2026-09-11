@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
  * remembers it until the View changes.
  * @see PerformanceMetricsState.getHolderForHierarchy
  */
+@UiPrimitiveFunction
 @Composable
 fun rememberMetricsStateHolder(): Holder {
     val localView = LocalView.current
@@ -32,6 +35,7 @@ fun rememberMetricsStateHolder(): Holder {
  * re-launched if any of the [keys] value is not equal to the previous composition.
  * @see TrackDisposableJank if you need to work with DisposableEffect to cleanup added state.
  */
+@UiPrimitiveFunction
 @Composable
 fun TrackJank(
     vararg keys: Any,
@@ -47,6 +51,7 @@ fun TrackJank(
  * Convenience function to work with [PerformanceMetricsState] state that needs to be cleaned up.
  * The side effect is re-launched if any of the [keys] value is not equal to the previous composition.
  */
+@UiPrimitiveFunction
 @Composable
 fun TrackDisposableJank(
     vararg keys: Any,
@@ -61,6 +66,7 @@ fun TrackDisposableJank(
 /**
  * Track jank while scrolling anything that's scrollable.
  */
+@UiPrimitiveFunction
 @Composable
 fun TrackScrollJank(scrollableState: ScrollableState, stateName: String) {
     TrackJank(scrollableState) { metricsHolder ->

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.routes
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -9,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.estatia.realestate.apps.feature.auth.ui.screens.EmailVerificationDialog
 import com.estatia.realestate.apps.feature.auth.viewModels.EmailVerificationViewModel
 
+@UiRoute
 @Composable
 fun EmailVerificationRoute(
     onVerified: () -> Unit,

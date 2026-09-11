@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -29,6 +31,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.LocalTintTheme
 /**
  * A wrapper around [AsyncImage] which determines the colorFilter based on the theme
  */
+@UiPrimitiveFunction
 @Composable
 fun DynamicAsyncImage(
     imageUrl: String,

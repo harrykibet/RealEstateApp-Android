@@ -7,14 +7,16 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertTrue
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import com.lemonappdev.konsist.api.declaration.KoInterfaceDeclaration
+import com.lemonappdev.konsist.api.declaration.KoFunctionDeclaration
+import com.lemonappdev.konsist.api.declaration.KoBaseDeclaration
 import org.junit.Test
 
 /**
  * LAW-041: Mandatory Architectural Identity.
  * 
- * authoritatively enforces that EVERY class or interface in the codebase 
+ * authoritatively enforces that EVERY class, interface, or Composable function 
  * declares its identity via annotations. This ensures that semantic detectors 
- * see the entire codebase and no contract or logic bypasses the safety system.
+ * see the entire UI and logic layers, leaving no room for "invisible" code.
  */
 class Law041_IdentityMandateTest {
 
@@ -58,12 +60,41 @@ class Law041_IdentityMandateTest {
     }
 
     @Test
+    fun `every composable function must have a formal architectural identity`() {
+        Konsist.scopeFromProject()
+            .functions()
+            .filter { it.hasAnnotation { ann -> ann.name == "Composable" } }
+            .filterNot { decl ->
+                val path = decl.path.replace("\\", "/")
+                ArchitecturalPolicy.Law041.FoundationModules.any { path.contains(it) } ||
+                path.contains("/test/") || 
+                path.contains("/androidTest/") ||
+                path.contains("/testFixtures/") ||
+                path.contains("/build/generated/") ||
+                // Previews are exempt from identity mandate
+                decl.hasAnnotation { ann -> ann.name == "Preview" }
+            }
+            .assertTrue(
+                additionalMessage = "Anonymous Composable detected. Every Composable must declare its role (e.g., @UiScreen, @UiComponent, @UiPrimitiveFunction)."
+            ) { decl ->
+                decl.annotations.any { ann -> 
+                    val name = ann.name.substringAfterLast(".")
+                    ArchitecturalPolicy.Law041.RecognizedArchitecturalAnnotations.contains(name)
+                }
+            }
+    }
+
+    @Test
     fun `architectural identity must match structural truth`() {
         val classes = Konsist.scopeFromProject().classes()
         val interfaces = Konsist.scopeFromProject().interfaces()
+        val functions = Konsist.scopeFromProject().functions()
 
-        (classes + interfaces)
-            .filter { it.isTopLevel }
+        (classes + interfaces + functions)
+            .filter { 
+                if (it is KoFunctionDeclaration) it.hasAnnotation { ann -> ann.name == "Composable" }
+                else it.isTopLevel
+            }
             .filterNot { decl ->
                 val path = decl.path.replace("\\", "/")
                 // Canary violations and testing components are allowed to "pretend" for testing purposes
@@ -84,23 +115,31 @@ class Law041_IdentityMandateTest {
                 val pathPattern = invariant.pathContains
                 if (pathPattern != null) {
                     val patterns = pathPattern.split("|")
-                    if (patterns.none { path.contains(it) }) return@assertTrue false
+                    if (patterns.none { path.contains(it) }) {
+                        println("DEBUG: Path Truth Mismatch: ${decl.name} ($claimedRole) at $path. Expected patterns: $pathPattern")
+                        return@assertTrue false
+                    }
                 }
 
                 // 2. Interface Invariant
                 if (invariant.mustBeInterface && decl !is KoInterfaceDeclaration) {
+                    println("DEBUG: Interface Truth Mismatch: ${decl.name} ($claimedRole). Expected interface.")
                     return@assertTrue false
                 }
 
                 // 3. Data Class Invariant
                 if (invariant.mustBeData && decl is KoClassDeclaration && !decl.hasDataModifier) {
+                    println("DEBUG: Data Truth Mismatch: ${decl.name} ($claimedRole). Expected data class.")
                     return@assertTrue false
                 }
 
                 // 4. Data, Sealed or Value Class Invariant
                 if (invariant.mustBeDataSealedOrValue && decl is KoClassDeclaration) {
                     val isValueClass = decl.hasModifier(KoModifier.VALUE) || decl.hasAnnotation { it.name == "JvmInline" }
-                    if (!decl.hasDataModifier && !decl.hasSealedModifier && !isValueClass) return@assertTrue false
+                    if (!decl.hasDataModifier && !decl.hasSealedModifier && !isValueClass) {
+                        println("DEBUG: Model Truth Mismatch: ${decl.name} ($claimedRole). Expected data/sealed/value class.")
+                        return@assertTrue false
+                    }
                 }
 
                 // 5. Inheritance Invariant
@@ -111,8 +150,15 @@ class Law041_IdentityMandateTest {
                     val hasIndirectParent = decl.parents().any { it.name.contains(expectedParent) }
                     
                     if (!hasDirectParent && !hasIndirectParent) {
+                        println("DEBUG: Inheritance Truth Mismatch: ${decl.name} ($claimedRole). Expected parent: $expectedParent")
                         return@assertTrue false
                     }
+                }
+
+                // 6. Composable Invariant
+                if (invariant.mustBeComposable && (decl !is KoFunctionDeclaration || !decl.hasAnnotation { it.name == "Composable" })) {
+                    println("DEBUG: Composable Truth Mismatch: ${decl.name} ($claimedRole). Expected @Composable function.")
+                    return@assertTrue false
                 }
 
                 true

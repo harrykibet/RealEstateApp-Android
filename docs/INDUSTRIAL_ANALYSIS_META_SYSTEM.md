@@ -62,7 +62,14 @@ Estatia uses a rich toolkit of specific roles to provide high-fidelity diagnosti
 | **`@DomainModel`** | Data Class | Enforces **LAW-032** (Pure Kotlin only, no Frameworks). |
 | **`@EntityModel`** | Data Class | Prevents leakage of DB/Network schemas into UI layers. |
 | **`@Manager`** | Class | Enforces strict synchronization on state-holding singletons. |
-| **`@Helper`** | Class | Audits generic logic utilities for code health and complexity. |
+| **`@Helper`** | Class | RESERVED for passive constant holders (No logic allowed). |
+| **`@Utility`** | Class | For pure functional logic, extensions, and math utilities. |
+| **`@Policy`** | Class | For algorithmic strategies (Retry, Cache, Bitrate). |
+| **`@Foundation`** | Class | For system-level abstractions (Clock, FileSystem). |
+| **`@UiScreen`** | Function | Marks a top-level Screen Composable (Target for Navigation). |
+| **`@UiComponent`** | Function | Marks a reusable UI Component with specific behavior. |
+| **`@UiPrimitiveFunction`** | Function | Marks a low-level Design System element (Must be stateless). |
+| **`@UiRoute`** | Function | Marks a Navigation Route (NavGraph entry point). |
 | **`@AppEntryPoint`**| Class | Identifies framework roots (Activities, Application). |
 
 ---

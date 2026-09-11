@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +20,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaTextField
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
+@UiComponent
 @Composable
 fun BasicDetailsForm() {
     Column(
@@ -76,6 +79,7 @@ fun BasicDetailsForm() {
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 fun BasicDetailsFormDarkPreview() {
     EstatiaTheme {
@@ -92,6 +96,7 @@ fun BasicDetailsFormDarkPreview() {
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 fun BasicDetailsFormLightPreview() {
     EstatiaTheme {

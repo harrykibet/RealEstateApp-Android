@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.foundation.gestures.Orientation
@@ -181,6 +183,7 @@ internal fun Orientation.valueOf(intOffset: IntOffset) = when (this) {
  * @param onThumbMoved an function for reacting to scroll bar displacements caused by direct
  * interactions on the scrollbar thumb by the user, for example implementing a fast scroll
  */
+@UiPrimitiveFunction
 @Composable
 fun Scrollbar(
     orientation: Orientation,

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.market.ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,7 @@ import com.estatia.realestate.apps.core.model.feature.MarketItem
 import com.estatia.realestate.apps.feature.market.MarketUiState
 import com.estatia.realestate.apps.feature.market.MarketViewModel
 
+@UiScreen
 @Composable
 fun MarketRoute(
     onItemClick: (String) -> Unit,
@@ -56,6 +59,7 @@ fun MarketRoute(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 fun MarketScreen(
     uiState: MarketUiState,
@@ -120,6 +124,7 @@ fun MarketScreen(
     }
 }
 
+@UiScreen
 @Composable
 fun MarketSection(
     title: String,
@@ -143,6 +148,7 @@ fun MarketSection(
     }
 }
 
+@UiScreen
 @Composable
 fun MarketCard(item: MarketItem, onClick: () -> Unit) {
     Card(

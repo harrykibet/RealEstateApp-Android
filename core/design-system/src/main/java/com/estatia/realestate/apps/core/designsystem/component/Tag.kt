@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTopicTag(
     modifier: Modifier = Modifier,
@@ -49,6 +52,7 @@ fun EstatiaTopicTag(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun TagPreview() {
     EstatiaTheme {

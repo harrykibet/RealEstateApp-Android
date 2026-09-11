@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.components
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.view.ViewGroup
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
@@ -15,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
+@UiComponent
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,

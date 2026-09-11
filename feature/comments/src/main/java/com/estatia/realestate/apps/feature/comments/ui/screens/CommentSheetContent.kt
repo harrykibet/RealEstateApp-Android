@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.comments.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.text.format.DateUtils
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -52,6 +54,7 @@ import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.comments.actions.CommentsAction
 import com.estatia.realestate.apps.feature.comments.state.CommentsUiState
 
+@UiComponent
 @Composable
 fun CommentSheetContent(
     state: CommentsUiState,
@@ -106,6 +109,7 @@ fun CommentSheetContent(
     }
 }
 
+@UiComponent
 @Composable
 fun CommentItem(comment: CommentDomainModel) {
     Row(
@@ -168,6 +172,7 @@ fun CommentItem(comment: CommentDomainModel) {
     }
 }
 
+@UiComponent
 @Composable
 fun CommentInputArea(
     input: String,
@@ -256,6 +261,7 @@ fun CommentInputArea(
     }
 }
 
+@UiComponent
 @Composable
 fun UserAvatar(name: String, size: androidx.compose.ui.unit.Dp = 32.dp) {
     val initial = name.firstOrNull()?.uppercase() ?: "?"

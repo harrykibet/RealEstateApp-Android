@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
@@ -33,6 +35,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
  * @param expandedText The text label content to show in compact mode.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaViewToggleButton(
     expanded: Boolean,
@@ -70,6 +73,7 @@ fun EstatiaViewToggleButton(
  * @param text The button text label content.
  * @param trailingIcon The button trailing icon content. Default is `null` for no trailing icon.
  */
+@UiPrimitiveFunction
 @Composable
 private fun EstatiaViewToggleButtonContent(
     text: @Composable () -> Unit,
@@ -97,6 +101,7 @@ private fun EstatiaViewToggleButtonContent(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun ViewTogglePreviewExpanded() {
     EstatiaTheme {

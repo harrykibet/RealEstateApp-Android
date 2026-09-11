@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 /**
  * An informative overlay shown when sustained low bandwidth is detected.
  */
+@UiComponent
 @Composable
 fun PlaybackLowBandwidthView(
     modifier: Modifier = Modifier

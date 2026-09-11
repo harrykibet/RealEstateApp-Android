@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.feature.property.ui.components.MediaThumbnail
 import com.estatia.realestate.apps.feature.property.ui.uploads.viewModels.AddPropertyViewModel
 
+@UiComponent
 @Composable
 fun MediaUploadsForm(
     viewModel: AddPropertyViewModel = hiltViewModel(
@@ -93,6 +96,7 @@ fun MediaUploadsForm(
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 fun MediaUploadsFormDarkPreview() {
     EstatiaTheme {
@@ -112,6 +116,7 @@ fun MediaUploadsFormDarkPreview() {
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 fun MediaUploadsFormLightPreview() {
     EstatiaTheme {

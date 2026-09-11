@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.theme
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -80,6 +82,7 @@ val DarkDefaultColorScheme = darkColorScheme(
  *
  * @param darkTheme Whether the theme should use a dark color scheme (follows system by default).
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

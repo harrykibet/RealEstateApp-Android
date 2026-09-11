@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.estatia.realestate.apps.core.designsystem.R
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 
+@UiPrimitiveFunction
 @Composable
 fun GoogleSignInButton(
     onClick: () -> Unit,
@@ -77,6 +80,7 @@ fun GoogleSignInButton(
     name = "Google Sign-In Button",
     showBackground = true
 )
+@UiPrimitiveFunction
 @Composable
 fun GoogleSignInButtonPreview() {
      EstatiaTheme {

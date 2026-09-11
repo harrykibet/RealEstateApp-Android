@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.components
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
+@UiComponent
 @Composable
 fun MediaOverlay(
     mediaUris: List<Uri>,
@@ -100,6 +103,7 @@ fun MediaOverlay(
     }
 }
 
+@UiComponent
 @Composable
 fun MediaThumbnail(
     uri: Uri,
@@ -121,6 +125,7 @@ fun MediaThumbnail(
     }
 }
 
+@UiComponent
 @Composable
 fun CaptureButton(
     onCaptureClick: () -> Unit,

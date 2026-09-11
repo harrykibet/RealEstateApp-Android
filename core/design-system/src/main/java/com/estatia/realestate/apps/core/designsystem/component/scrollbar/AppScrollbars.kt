@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
@@ -56,6 +58,7 @@ private const val SCROLLBAR_INACTIVE_TO_DORMANT_TIME_IN_MS = 2_000L
  * @param orientation the orientation of the scrollbar
  * @param onThumbMoved the fast scroll implementation
  */
+@UiPrimitiveFunction
 @Composable
 fun ScrollableState.DraggableScrollbar(
     state: ScrollbarState,
@@ -86,6 +89,7 @@ fun ScrollableState.DraggableScrollbar(
  * @param state the driving state for the [Scrollbar]
  * @param orientation the orientation of the scrollbar
  */
+@UiPrimitiveFunction
 @Composable
 fun ScrollableState.DecorativeScrollbar(
     state: ScrollbarState,
@@ -110,6 +114,7 @@ fun ScrollableState.DecorativeScrollbar(
 /**
  * A scrollbar thumb that is intended to also be a touch target for fast scrolling.
  */
+@UiPrimitiveFunction
 @Composable
 private fun ScrollableState.DraggableScrollbarThumb(
     interactionSource: InteractionSource,
@@ -130,6 +135,7 @@ private fun ScrollableState.DraggableScrollbarThumb(
 /**
  * A decorative scrollbar thumb used solely for communicating a user's position in a list.
  */
+@UiPrimitiveFunction
 @Composable
 private fun ScrollableState.DecorativeScrollbarThumb(
     interactionSource: InteractionSource,
@@ -150,6 +156,7 @@ private fun ScrollableState.DecorativeScrollbarThumb(
 // TODO: This lint is removed in 1.6 as the recommendation has changed
 // remove when project is upgraded
 @SuppressLint("ComposableModifierFactory")
+@UiPrimitiveFunction
 @Composable
 private fun Modifier.scrollThumb(
     scrollableState: ScrollableState,
@@ -198,6 +205,7 @@ private class ScrollThumbNode(var colorProducer: ColorProducer) : DrawModifierNo
  * The color of the scrollbar thumb as a function of its interaction state.
  * @param interactionSource source of interactions in the scrolling container
  */
+@UiPrimitiveFunction
 @Composable
 private fun scrollbarThumbColor(
     scrollableState: ScrollableState,

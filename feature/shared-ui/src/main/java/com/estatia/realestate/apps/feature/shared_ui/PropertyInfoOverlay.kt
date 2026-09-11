@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.localization.api.LocalCurrencyFormatter
 
+@UiComponent
 @Composable
 fun PropertyInfoOverlay(
     listing: ListingUiModel,

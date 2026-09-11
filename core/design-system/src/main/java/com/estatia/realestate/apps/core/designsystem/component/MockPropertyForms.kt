@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+@UiPrimitiveFunction
 @Composable
 fun MockBasicDetailsForm() {
     Column {
@@ -35,6 +38,7 @@ fun MockBasicDetailsForm() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun MockLocationInfoForm() {
     Column {
@@ -54,6 +58,7 @@ fun MockLocationInfoForm() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun MockMediaUploadsForm() {
     Column {
@@ -75,6 +80,7 @@ fun MockMediaUploadsForm() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun MockContactOwnershipForm() {
     Column {
@@ -101,6 +107,7 @@ fun MockContactOwnershipForm() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun MockExtraDetailsForm() {
     Column {
@@ -120,6 +127,7 @@ fun MockExtraDetailsForm() {
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun MockAvailabilityStatusForm() {
     Column {

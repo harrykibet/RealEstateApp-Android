@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.animation.Crossfade
@@ -60,6 +62,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 // Justification: Interacts with IPlayerManager which uses Unstable Media3 APIs for deep playback control.
 @OptIn(UnstableApi::class)
+@UiComponent
 @Composable
 fun EngineVideoPlayer(
     mediaId: String,
@@ -317,6 +320,7 @@ fun EngineVideoPlayer(
  * Recomposes when [LocalEnvironmentState] changes, but prevents the larger
  * [EngineVideoPlayer] from doing the same.
  */
+@UiComponent
 @Composable
 private fun EnvironmentAwareProgressPoller(
     player: Player?,

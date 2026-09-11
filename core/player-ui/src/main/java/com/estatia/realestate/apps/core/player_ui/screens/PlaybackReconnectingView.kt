@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +22,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
  * A specialized view shown when the player is attempting to reconnect
  * after a transient network loss.
  */
+@UiComponent
 @Composable
 fun PlaybackReconnectingView(
     modifier: Modifier = Modifier

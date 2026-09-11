@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +33,7 @@ import kotlin.math.tan
  * @param modifier Modifier to be applied to the background.
  * @param content The background content.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaBackground(
     modifier: Modifier = Modifier,
@@ -57,6 +60,7 @@ fun EstatiaBackground(
  * @param gradientColors The gradient colors to be rendered.
  * @param content The background content.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaGradientBackground(
     modifier: Modifier = Modifier,
@@ -132,6 +136,7 @@ fun EstatiaGradientBackground(
 annotation class ThemePreviews
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun BackgroundPreview() {
     EstatiaTheme {
@@ -140,6 +145,7 @@ fun BackgroundPreview() {
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun GradientBackgroundPreview() {
     EstatiaTheme {

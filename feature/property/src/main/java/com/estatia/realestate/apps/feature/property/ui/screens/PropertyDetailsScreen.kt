@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,6 +70,7 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.MediaType
 import androidx.media3.common.Player
 
+@UiScreen
 @Composable
 fun PropertyDetailsRoute(
     propertyId: String,
@@ -96,6 +99,7 @@ fun PropertyDetailsRoute(
     )
 }
 
+@UiScreen
 @Composable
 fun PropertyDetailsScreen(
     uiState: PropertyDetailsUiState,
@@ -145,6 +149,7 @@ fun PropertyDetailsScreen(
     }
 }
 
+@UiScreen
 @Composable
 private fun PropertyDetailsContent(
     property: PropertyDomainModel,
@@ -358,6 +363,7 @@ private fun PropertyDetailsContent(
     }
 }
 
+@UiScreen
 @Composable
 private fun StatItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {

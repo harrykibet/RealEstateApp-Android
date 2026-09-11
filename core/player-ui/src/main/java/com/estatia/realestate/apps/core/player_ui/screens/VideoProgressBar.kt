@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
  * An interactive progress bar for video playback.
  * Supports tap-to-seek and drag-to-scrub.
  */
+@UiComponent
 @Composable
 fun VideoProgressBar(
     progress: Float,

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.player_ui.screens.PlaybackErrorView
 import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
 
+@UiComponent
 @Composable
 fun PropertyFeedItem(
     listing: ListingUiModel,

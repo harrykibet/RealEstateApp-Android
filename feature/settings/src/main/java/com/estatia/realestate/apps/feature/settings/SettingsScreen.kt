@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.settings
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 
+@UiScreen
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
@@ -66,6 +69,7 @@ fun SettingsScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 internal fun SettingsScreen(
     settingsUiState: SettingsUiState,
@@ -144,6 +148,7 @@ internal fun SettingsScreen(
     }
 }
 
+@UiScreen
 @Composable
 private fun SettingsSectionTitle(text: String) {
     EstatiaText(
@@ -155,6 +160,7 @@ private fun SettingsSectionTitle(text: String) {
     )
 }
 
+@UiScreen
 @Composable
 private fun SettingsNavigationRow(
     text: String,
@@ -184,6 +190,7 @@ private fun SettingsNavigationRow(
     widthDp = 400,
 )
 @DevicePreviews
+@UiScreen
 @Composable
 fun SettingsScreenLightPreview() {
     EstatiaTheme {
@@ -204,6 +211,7 @@ fun SettingsScreenLightPreview() {
     widthDp = 400,
 )
 @DevicePreviews
+@UiScreen
 @Composable
 fun SettingsScreenDarkPreview() {
     EstatiaTheme {

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 
@@ -30,6 +32,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * clickable and will appear disabled to accessibility services.
  * @param text The text label content.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTab(
     selected: Boolean,
@@ -66,6 +69,7 @@ fun EstatiaTab(
  * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
  */
 
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTabRow(
     selectedTabIndex: Int,
@@ -96,6 +100,7 @@ fun EstatiaTabRow(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun TabsPreview() {
     EstatiaTheme {

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.payments.ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import com.estatia.realestate.apps.feature.payments.PaymentsScreenState
 import com.estatia.realestate.apps.feature.payments.PaymentsUiState
 import com.estatia.realestate.apps.feature.payments.PaymentsViewModel
 
+@UiScreen
 @Composable
 fun PaymentsRoute(
     onPaymentDone: (PaymentResult) -> Unit,
@@ -55,6 +58,7 @@ fun PaymentsRoute(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 fun PaymentsScreen(
     state: PaymentsScreenState,
@@ -144,6 +148,7 @@ fun PaymentsScreen(
     }
 }
 
+@UiScreen
 @Composable
 fun Spacer(modifier: Modifier) {
     Box(modifier = modifier)

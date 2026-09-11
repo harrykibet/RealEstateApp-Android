@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -50,6 +52,7 @@ import com.estatia.realestate.apps.feature.auth.R
 import com.estatia.realestate.apps.feature.auth.actions.SignUpAction
 import com.estatia.realestate.apps.feature.auth.state.SignUpFormState
 
+@UiScreen
 @Composable
 fun SignUpScreen(
     state: SignUpFormState,
@@ -159,6 +162,7 @@ fun SignUpScreen(
 }
 
 
+@UiScreen
 @Composable
 fun UserTypeDropdownMenu(
     expanded: Boolean,
@@ -261,6 +265,7 @@ fun UserTypeDropdownMenu(
 )
 
 @DevicePreviews
+@UiScreen
 @Composable
 fun SignUpScreenLightPreview() {
     EstatiaTheme {
@@ -281,6 +286,7 @@ fun SignUpScreenLightPreview() {
 )
 
 @DevicePreviews
+@UiScreen
 @Composable
 fun SignUpScreenDarkPreview() {
     EstatiaTheme {

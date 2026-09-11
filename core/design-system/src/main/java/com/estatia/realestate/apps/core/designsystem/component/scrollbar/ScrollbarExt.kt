@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -21,6 +23,7 @@ import kotlin.math.min
  * @param itemsAvailable the total amount of items available to scroll in the lazy list.
  * @param itemIndex a lookup function for index of an item in the list relative to [itemsAvailable].
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyListState.scrollbarState(
     itemsAvailable: Int,
@@ -84,6 +87,7 @@ fun LazyListState.scrollbarState(
  * @param itemsAvailable the total amount of items available to scroll in the grid.
  * @param itemIndex a lookup function for index of an item in the grid relative to [itemsAvailable].
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyGridState.scrollbarState(
     itemsAvailable: Int,
@@ -158,6 +162,7 @@ fun LazyGridState.scrollbarState(
  * @param itemIndex a lookup function for index of an item in the staggered grid relative
  * to [itemsAvailable].
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyStaggeredGridState.scrollbarState(
     itemsAvailable: Int,

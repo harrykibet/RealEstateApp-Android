@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,6 +9,7 @@ import com.estatia.realestate.apps.core.model.common.MediaReference
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 import com.estatia.realestate.apps.core.model.player.FeedNeighbor
 
+@UiComponent
 @Composable
 fun RememberFeedPlaybackCoordinator(
     pagerState: PagerState,

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.annotation.StringRes
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +20,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTopAppBar(
     modifier: Modifier = Modifier,

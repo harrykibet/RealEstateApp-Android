@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -21,6 +23,7 @@ import androidx.compose.ui.platform.testTag
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 fun PropertyFeedScreen(
     listings: List<ListingUiModel>,
@@ -117,6 +120,7 @@ fun PropertyFeedScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 private fun BoxWithBottomSheet(
     showSheet: Boolean,

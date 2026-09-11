@@ -54,7 +54,10 @@ import com.estatia.realestate.apps.core.designsystem.component.EstatiaNavigation
 import kotlin.reflect.KClass
 import com.estatia.realestate.apps.feature.settings.R as settingsR
 import com.estatia.realestate.apps.R
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
 
+@UiScreen
 @Composable
 fun EstatiaApp(
     appState: EstatiaAppState,
@@ -87,6 +90,7 @@ fun EstatiaApp(
     }
 }
 
+@UiComponent
 @Composable
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -233,6 +237,7 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     } ?: false
 
 @DevicePreviews
+@UiComponent
 @Composable
 fun EstatiaAppPreviewAuthenticated() {
     EstatiaTheme {
@@ -259,6 +264,7 @@ fun EstatiaAppPreviewAuthenticated() {
 }
 
 @DevicePreviews
+@UiComponent
 @Composable
 fun EstatiaAppPreviewUnauthenticated() {
     EstatiaTheme {
@@ -285,6 +291,7 @@ fun EstatiaAppPreviewUnauthenticated() {
 }
 
 @Preview
+@UiComponent
 @Composable
 fun EstatiaAppPreviewOffline() {
     EstatiaTheme {

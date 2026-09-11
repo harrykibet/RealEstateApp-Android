@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.annotation.SuppressLint
@@ -36,6 +38,7 @@ import com.estatia.realestate.apps.core.designsystem.icons.EstatiaIcons
  * @param content The button content.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaButton(
     onClick: () -> Unit,
@@ -61,6 +64,7 @@ fun EstatiaButton(
  * Estatia filled button with text and icon content slots.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaButton(
     onClick: () -> Unit,
@@ -90,6 +94,7 @@ fun EstatiaButton(
  * Estatia outlined button with generic content slot. Wraps Material 3 [OutlinedButton].
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaOutlinedButton(
     onClick: () -> Unit,
@@ -125,6 +130,7 @@ fun EstatiaOutlinedButton(
  * Estatia outlined button with text and icon content slots.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaOutlinedButton(
     onClick: () -> Unit,
@@ -154,6 +160,7 @@ fun EstatiaOutlinedButton(
  * Estatia text button with generic content slot. Wraps Material 3 [TextButton].
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTextButton(
     onClick: () -> Unit,
@@ -176,6 +183,7 @@ fun EstatiaTextButton(
  * Estatia text button with text and icon content slots.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaTextButton(
     onClick: () -> Unit,
@@ -199,6 +207,7 @@ fun EstatiaTextButton(
 /**
  * Internal Estatia button content layout for arranging the text label and leading icon.
  */
+@UiPrimitiveFunction
 @Composable
 private fun EstatiaButtonContent(
     text: @Composable () -> Unit,
@@ -224,6 +233,7 @@ private fun EstatiaButtonContent(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun EstatiaButtonPreview() {
     EstatiaTheme {
@@ -234,6 +244,7 @@ fun EstatiaButtonPreview() {
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun EstatiaOutlinedButtonPreview() {
     EstatiaTheme {

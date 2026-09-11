@@ -228,3 +228,35 @@ annotation class AppEntryPoint
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
 annotation class Contract
+
+/**
+ * Marks a Composable function as a top-level UI Screen.
+ * Screens are the primary targets for Navigation and typically coordinate with a ViewModel.
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiScreen
+
+/**
+ * Marks a Composable function as a reusable UI Component.
+ * Components encapsulate specific UI behavior and may depend on local state or logic.
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiComponent
+
+/**
+ * Marks a Composable function as a stateless UI Primitive (Design System element).
+ * Primitives must remain pure projections of state and free of business logic.
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiPrimitiveFunction
+
+/**
+ * Marks a Composable function as a Navigation Route.
+ * Routes act as the glue between the NavGraph and the actual Screen/ViewModel.
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class UiRoute

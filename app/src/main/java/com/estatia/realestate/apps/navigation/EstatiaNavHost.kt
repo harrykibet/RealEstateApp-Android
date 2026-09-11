@@ -29,7 +29,9 @@ import com.estatia.realestate.apps.feature.search.navigation.searchGraph
 import com.estatia.realestate.apps.feature.settings.navigation.settingsGraph
 import com.estatia.realestate.apps.feature.settings.navigation.navigateToSettings
 import com.estatia.realestate.apps.ui.EstatiaAppState
+import com.estatia.realestate.apps.core.architecture.annotations.UiRoute
 
+@UiRoute
 @Composable
 fun EstatiaNavHost(
     appState: EstatiaAppState,

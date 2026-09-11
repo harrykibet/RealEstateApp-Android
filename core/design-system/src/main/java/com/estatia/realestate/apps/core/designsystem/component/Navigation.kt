@@ -1,7 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
-
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
@@ -38,6 +38,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * Estatia navigation bar item.
  * Professionalized with minimalist animated content (no pill, scale effect).
  */
+@UiPrimitiveFunction
 @Composable
 fun RowScope.EstatiaNavigationBarItem(
     selected: Boolean,
@@ -76,6 +77,7 @@ fun RowScope.EstatiaNavigationBarItem(
 /**
  * Estatia navigation bar with content slot. Wraps Material 3 [NavigationBar].
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaNavigationBar(
     modifier: Modifier = Modifier,
@@ -93,6 +95,7 @@ fun EstatiaNavigationBar(
 /**
  * Estatia navigation rail item with icon and label content slots.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaNavigationRailItem(
     selected: Boolean,
@@ -131,6 +134,7 @@ fun EstatiaNavigationRailItem(
 /**
  * Estatia navigation rail with header and content slots. Wraps Material 3 [NavigationRail].
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaNavigationRail(
     modifier: Modifier = Modifier,
@@ -149,6 +153,7 @@ fun EstatiaNavigationRail(
 /**
  * Estatia navigation suite scaffold with item and content slots.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaNavigationSuiteScaffold(
     navigationSuiteItems: EstatiaNavigationSuiteScope.() -> Unit,
@@ -203,6 +208,7 @@ fun EstatiaNavigationSuiteScaffold(
 /**
  * Shared animated content for navigation items.
  */
+@UiPrimitiveFunction
 @Composable
 private fun EstatiaNavigationItemContent(
     selected: Boolean,
@@ -263,6 +269,7 @@ class EstatiaNavigationSuiteScope internal constructor(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun EstatiaNavigationBarPreview() {
     val items = listOf("home", "market", "add", "chats", "profile")
@@ -301,9 +308,11 @@ fun EstatiaNavigationBarPreview() {
  */
 @UiPrimitive
 object EstatiaNavigationDefaults {
+    @UiPrimitiveFunction
     @Composable
     fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
 
+    @UiPrimitiveFunction
     @Composable
     fun navigationSelectedItemColor() = MaterialTheme.colorScheme.primary
 }

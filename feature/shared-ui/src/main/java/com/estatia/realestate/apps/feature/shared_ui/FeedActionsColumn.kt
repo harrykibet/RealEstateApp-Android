@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.shared_ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
@@ -13,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.component.FeedActionButton
 import com.estatia.realestate.apps.core.model.property.ListingUiModel
 
+@UiComponent
 @Composable
 fun FeedActionsColumn(
     listing: ListingUiModel,

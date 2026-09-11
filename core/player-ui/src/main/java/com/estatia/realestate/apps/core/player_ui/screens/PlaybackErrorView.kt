@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.player_ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +32,7 @@ import com.estatia.realestate.apps.core.player_ui.state.PlayerUiState
  * @param errorState The specific error state containing the type and message.
  * @param onRetry Callback triggered when the user clicks the "Retry" button.
  */
+@UiComponent
 @Composable
 fun PlaybackErrorView(
     errorState: PlayerUiState.Error,

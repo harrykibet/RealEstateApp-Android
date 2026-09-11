@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.search.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +66,7 @@ import com.estatia.realestate.apps.feature.search.ui.viewmodels.SearchViewModel
 import com.estatia.realestate.apps.feature.search.ui.viewmodels.playback.SearchVideoPlaybackViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+@UiScreen
 @Composable
 fun SearchRoute(
     onBackClick: () -> Unit,
@@ -120,6 +123,7 @@ fun SearchRoute(
     )
 }
 
+@UiScreen
 @Composable
 fun SearchScreen(
     uiState: SearchUiState,
@@ -276,6 +280,7 @@ fun SearchScreen(
 }
 
 @OptIn(ExperimentalLayoutApi::class)
+@UiScreen
 @Composable
 private fun SearchHistorySection(
     history: List<String>,
@@ -328,6 +333,7 @@ private fun SearchHistorySection(
     }
 }
 
+@UiScreen
 @Composable
 private fun EmptySearchResults() {
     Column(

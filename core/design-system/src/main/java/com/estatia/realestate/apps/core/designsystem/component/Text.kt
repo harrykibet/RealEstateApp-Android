@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import android.annotation.SuppressLint
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -22,6 +24,7 @@ import androidx.compose.ui.unit.TextUnit
  * Used to ensure consistency and satisfy design system lint rules.
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaText(
     text: String,
@@ -67,6 +70,7 @@ fun EstatiaText(
  * Estatia text component for [AnnotatedString] that wraps Material 3 [Text].
  */
 @SuppressLint("DesignSystemUsage")
+@UiPrimitiveFunction
 @Composable
 fun EstatiaText(
     text: AnnotatedString,

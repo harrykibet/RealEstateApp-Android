@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import androidx.compose.foundation.layout.size
@@ -26,6 +28,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * clickable and will appear disabled to accessibility services.
  * @param label The text label content.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaFilterChip(
     selected: Boolean,
@@ -92,6 +95,7 @@ fun EstatiaFilterChip(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun ChipPreview() {
     EstatiaTheme {

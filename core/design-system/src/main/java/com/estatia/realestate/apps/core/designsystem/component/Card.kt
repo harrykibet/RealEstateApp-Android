@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitive
 
 import android.content.res.Configuration
@@ -27,6 +29,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
  * Estatia section card.
  * Professionalized with [EstatiaCardDefaults.CardCornerRadius] and a subtle border for a modern flat look.
  */
+@UiPrimitiveFunction
 @Composable
 fun EstatiaSectionCard(
     title: String,
@@ -61,6 +64,7 @@ fun EstatiaSectionCard(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400
 )
+@UiPrimitiveFunction
 @Composable
 fun EstatiaSectionCardLightPreview() {
     EstatiaTheme {
@@ -93,6 +97,7 @@ fun EstatiaSectionCardLightPreview() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400
 )
+@UiPrimitiveFunction
 @Composable
 fun EstatiaSectionCardDarkPreview() {
     EstatiaTheme {

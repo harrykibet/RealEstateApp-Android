@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import kotlinx.coroutines.launch
 
+@UiPrimitiveFunction
 @Composable
 fun EstatiaLoadingWheel(
     contentDesc: String,
@@ -115,6 +118,7 @@ fun EstatiaLoadingWheel(
     }
 }
 
+@UiPrimitiveFunction
 @Composable
 fun EstatiaOverlayLoadingWheel(
     contentDesc: String,
@@ -134,6 +138,7 @@ fun EstatiaOverlayLoadingWheel(
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun EstatiaLoadingWheelPreview() {
     EstatiaTheme {
@@ -144,6 +149,7 @@ fun EstatiaLoadingWheelPreview() {
 }
 
 @ThemePreviews
+@UiPrimitiveFunction
 @Composable
 fun EstatiaOverlayLoadingWheelPreview() {
     EstatiaTheme {

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.property.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,7 @@ import com.estatia.realestate.apps.core.designsystem.component.MockMediaUploadsF
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaBackground
 import com.estatia.realestate.apps.core.designsystem.component.EstatiaText
 
+@UiScreen
 @Composable
 fun PropertyFormScreen(isPreview: Boolean = false) {
     val sections = listOf(
@@ -87,6 +90,7 @@ fun PropertyFormScreen(isPreview: Boolean = false) {
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400
 )
+@UiScreen
 @Composable
 fun PropertyFormPreviewLight() {
     EstatiaTheme {
@@ -102,6 +106,7 @@ fun PropertyFormPreviewLight() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400
 )
+@UiScreen
 @Composable
 fun PropertyFormPreviewDark() {
     EstatiaTheme {

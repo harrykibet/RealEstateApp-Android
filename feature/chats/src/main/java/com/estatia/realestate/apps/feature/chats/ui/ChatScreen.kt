@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.chats.ui
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +50,7 @@ import kotlin.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+@UiScreen
 @Composable
 fun ChatsRoute(
     onChatClick: (String) -> Unit,
@@ -64,6 +67,7 @@ fun ChatsRoute(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UiScreen
 @Composable
 fun ChatScreen(
     uiState: ChatUiState,
@@ -117,6 +121,7 @@ fun ChatScreen(
     }
 }
 
+@UiScreen
 @Composable
 fun ActiveNowSection(users: List<ChatUser>) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
@@ -136,6 +141,7 @@ fun ActiveNowSection(users: List<ChatUser>) {
     }
 }
 
+@UiScreen
 @Composable
 fun ActiveUserItem(user: ChatUser) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -180,6 +186,7 @@ fun ActiveUserItem(user: ChatUser) {
     }
 }
 
+@UiScreen
 @Composable
 fun ChatItem(chat: Chat, onClick: () -> Unit) {
     Row(
@@ -236,6 +243,7 @@ fun ChatItem(chat: Chat, onClick: () -> Unit) {
     }
 }
 
+@UiScreen
 @Composable
 fun UserAvatar(imageUrl: String?, size: androidx.compose.ui.unit.Dp) {
     AsyncImage(

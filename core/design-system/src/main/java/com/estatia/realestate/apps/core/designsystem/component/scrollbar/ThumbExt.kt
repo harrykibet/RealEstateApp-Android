@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.core.designsystem.component.scrollbar
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiPrimitiveFunction
+
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -16,6 +18,7 @@ import kotlin.math.roundToInt
  * Remembers a function to react to [Scrollbar] thumb position displacements for a [LazyListState]
  * @param itemsAvailable the amount of items in the list.
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyListState.rememberDraggableScroller(
     itemsAvailable: Int,
@@ -28,6 +31,7 @@ fun LazyListState.rememberDraggableScroller(
  * Remembers a function to react to [Scrollbar] thumb position displacements for a [LazyGridState]
  * @param itemsAvailable the amount of items in the grid.
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyGridState.rememberDraggableScroller(
     itemsAvailable: Int,
@@ -41,6 +45,7 @@ fun LazyGridState.rememberDraggableScroller(
  * [LazyStaggeredGridState]
  * @param itemsAvailable the amount of items in the staggered grid.
  */
+@UiPrimitiveFunction
 @Composable
 fun LazyStaggeredGridState.rememberDraggableScroller(
     itemsAvailable: Int,
@@ -54,6 +59,7 @@ fun LazyStaggeredGridState.rememberDraggableScroller(
  * @param itemsAvailable the total amount of items available to scroll in the layout.
  * @param scroll a function to be invoked when an index has been identified to scroll to.
  */
+@UiPrimitiveFunction
 @Composable
 private inline fun rememberDraggableScroller(
     itemsAvailable: Int,

@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.profile.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiScreen
+
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +66,7 @@ import com.estatia.realestate.apps.feature.profile.ui.state.ProfileStats
 import com.estatia.realestate.apps.feature.profile.ui.state.ProfileUiState
 import com.estatia.realestate.apps.feature.profile.ui.viewmodels.ProfileViewModel
 
+@UiScreen
 @Composable
 internal fun ProfileRoute(
     onEditProfileClick: () -> Unit,
@@ -83,6 +86,7 @@ internal fun ProfileRoute(
     )
 }
 
+@UiScreen
 @Composable
 fun ProfileScreen(
     uiState: ProfileUiState,
@@ -283,6 +287,7 @@ fun ProfileScreen(
     }
 }
 
+@UiScreen
 @Composable
 fun ProfileStatItem(label: String, value: String) {
     Column(
@@ -298,6 +303,7 @@ fun ProfileStatItem(label: String, value: String) {
     }
 }
 
+@UiScreen
 @Composable
 fun UserBadge(label: String) {
     Surface(
@@ -320,6 +326,7 @@ fun UserBadge(label: String) {
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     widthDp = 400,
 )
+@UiScreen
 @Composable
 fun ProfileScreenLightPreview() {
     EstatiaTheme {
@@ -349,6 +356,7 @@ fun ProfileScreenLightPreview() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 400,
 )
+@UiScreen
 @Composable
 fun ProfileScreenDarkPreview() {
     EstatiaTheme {
@@ -378,6 +386,7 @@ fun ProfileScreenDarkPreview() {
     locale = "sw",
     widthDp = 400,
 )
+@UiScreen
 @Composable
 fun ProfileScreenSwahiliPreview() {
     EstatiaTheme {

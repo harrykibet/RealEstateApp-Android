@@ -1,5 +1,7 @@
 package com.estatia.realestate.apps.feature.auth.ui.screens
 
+import com.estatia.realestate.apps.core.architecture.annotations.UiComponent
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import com.estatia.realestate.apps.core.designsystem.theme.EstatiaTheme
 import com.estatia.realestate.apps.core.ui.DevicePreviews
 import com.estatia.realestate.apps.feature.auth.state.ForgotPasswordUiState
 
+@UiComponent
 @Composable
 fun ForgotPasswordDialog(
     state: ForgotPasswordUiState,
@@ -58,6 +61,7 @@ fun ForgotPasswordDialog(
     )
 }
 
+@UiComponent
 @Composable
 private fun ForgotPasswordContent(
     state: ForgotPasswordUiState,
@@ -107,6 +111,7 @@ private fun ForgotPasswordContent(
     }
 }
 
+@UiComponent
 @Composable
 private fun EmailInput(
     email: String,
@@ -123,6 +128,7 @@ private fun EmailInput(
     )
 }
 
+@UiComponent
 @Composable
 private fun ForgotPasswordConfirmButton(
     state: ForgotPasswordUiState,
@@ -162,6 +168,7 @@ private fun ForgotPasswordConfirmButton(
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 @DevicePreviews
 fun ForgotPasswordDialogLightPreview() {
@@ -186,6 +193,7 @@ fun ForgotPasswordDialogLightPreview() {
     widthDp = 400
 )
 
+@UiComponent
 @Composable
 @DevicePreviews
 fun ForgotPasswordDialogDarkPreview() {
