@@ -4,95 +4,83 @@
 
 The **Industrial Analysis Meta-System** is Estatia's automated governance engine. Unlike standard static analysis which relies on naming conventions and "best-effort" heuristics, Estatia uses a **Semantic-First** approach. This system ensures that 100% of the functional codebase is governed by architectural laws, leaving no room for "Shadow Layers" or accidental bypasses.
 
-## The Core Constraint: Mandatory Architectural Identity (LAW-041)
+---
 
-The foundation of this system is the **Identity Mandate**. Every top-level functional component (class, object, or interface) in governed modules **must** explicitly declare its architectural role via a recognized annotation.
+## 🛡️ The Unified Rule Contract
+
+Estatia operates on a **Single-Source-of-Truth** model for governance. All architectural laws are defined in the central **[`Law`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/core/architecture/src/main/kotlin/com/estatia/realestate/apps/core/architecture/Law.kt)** registry.
+
+### Metadata Inheritance
+To eliminate configuration drift, every diagnostic in the system (Lint, KSP, README) is **derived** from this contract:
+- **Rationales & Recommendations**: Defined once in `Law.kt`, automatically reflected in Android Studio IDE help text.
+- **Ownership**: Every law is assigned to a specific team (e.g., `@estatia/architects`), ensuring clear accountability.
+- **Automated Severity**: Severity is derived from the law's `Enforcement` tier (BLOCK $\rightarrow$ FATAL, WARN $\rightarrow$ WARNING).
+
+---
+
+## 🎯 The Core Constraint: Mandatory Architectural Identity (LAW-041)
+
+The foundation of this system is the **Identity Mandate**. Every top-level functional component in governed modules **must** explicitly declare its architectural role via a recognized annotation.
 
 ### Identity vs. Truth: Verification Invariants
-
-A critical design principle of Estatia is that **Identity requires Verification**. Claiming a role is mandatory, but that claim must be consistent with the component's structural reality.
-
-The Meta-System automatically enforces **Structural Invariants** for each role:
-- **Path Verification**: A `@Repository` must live in `:core:data`. A `@UseCase` must live in `:core:domain`.
+Claiming a role is mandatory, but that claim must satisfy **Structural Invariants**:
+- **Path Verification**: A `@Repository` must live in `:core:data`.
 - **Inheritance Verification**: A `@ViewModelMarker` must inherit from `androidx.lifecycle.ViewModel`.
-- **SSoT Verification**: ViewModels must expose exactly one canonical persistent UI-state authority (StateFlow).
 - **Contract Verification**: A `@Contract` must be an `interface`.
-- **Model Verification**: A `@DomainModel` must be a `data`, `sealed`, or `value class`. An `@EntityModel` must be a `data class`.
-- **Helper Purity**: The `@Helper` role is reserved ONLY for passive constant holders (no functions allowed). Components with logic must use `@Utility`, `@Service`, or `@Foundation`.
+- **Model Verification**: A `@DomainModel` must be a `data`, `sealed`, or `value class`.
 
-This creates a "Failure-Closed" loop:
-1.  **Declaration**: Developer claims a role (Mandatory).
-2.  **Validation**: System verifies the claim matches structural Implementation (Automatic).
-3.  **Governance**: Specific laws (Purity, Thread-Safety) activate based on the verified role.
+---
 
-### Rationale: Trading DX for Precision
+## 🚦 Governance Quality Oracle
 
-The decision to mandate annotations was a deliberate engineering trade-off. While it adds a minor step to component creation (reduced Developer Experience), it provides industrial-grade benefits to the system's safety and maintainability.
+Estatia does not just "have rules"; it **measures their trustworthiness**. The **[`GovernanceQualityOracle`](file:///C:/Users/Administrator/StudioProjects/RealEstateApp-Android/lint/src/test/kotlin/com/estatia/realestate/apps/lint/policy/GovernanceQualityOracle.kt)** provides mathematical proof of our enforcement reliability.
 
-#### 1. Deterministic Precision (Certainty vs. Guesswork)
-Standard linting often uses heuristics like `name.endsWith("Repository")`. This is fragile:
-- **False Negatives**: A developer could create `internal class SecretDataStore` and bypass every repository-specific safety check (like Result wrapping or thread-safety).
-- **False Positives**: A utility class named `RepositoryUtils` might be incorrectly flagged for violating repository laws.
+### The Quality Floor
+We enforce strict Service Level Indicators (SLIs) for our architectural detectors:
+- **Recall (Industrial Safety)**: Must be **100%** for all `BLOCK` level laws. If a detector misses a single violation in our authoritative specimens, the build fails.
+- **Precision (Developer Trust)**: Must be **100%** for "Certain" laws. This ensures zero diagnostic "noise" and prevents "suppression rot."
 
-By mandating annotations, we move from **Heuristic** (Guessing) to **Certain** (Authoritative) resolution. The analyzer knows *exactly* what a class is because the developer explicitly declared it.
+---
 
-#### 2. Analysis Efficiency (The Cost of Inference)
-Trying to "understand" the purpose of a class by scanning its methods, imports, and logic is computationally expensive and error-prone. 
-- **Scale**: As the project grows to 1,000+ modules, deep control-flow analysis would make CI build times explode.
-- **Speed**: Annotation scanning is a constant-time O(1) operation during UAST/KSP processing, allowing our safety gates to remain near-instant.
+## 🕵️ Tiered Adversarial Benchmarking
 
-#### 3. Total Layer Accountability
-In many architectures, `internal` or `private` classes are "invisible" to governance. In Estatia, visibility is for encapsulation, but annotations are for accountability. This ensures that even internal logic helpers are audited for:
-- **Dependency Purity** (No framework leakage).
-- **Thread Safety** (Mandatory synchronization in shared roles).
-- **Error Handling** (Mandated Result wrapping at the boundary).
+To achieve industrial-grade robustness, every law is stress-tested against an **Adversarial Hub** organized into three complexity tiers:
+
+| Tier | Name | Target | Bypass Techniques |
+| :--- | :--- | :--- | :--- |
+| **Tier 1** | **Syntactic** | Pattern Matching | Slightly non-standard naming or formatting. |
+| **Tier 2** | **Semantic** | Symbol Resolution | Type Aliases, Property Delegates, Extension Functions, Nested Generics. |
+| **Tier 3** | **Dynamic** | Analysis Limits | Reflection (`getDeclaredMethod`), Dynamic Proxies, Type Erasure (`Any` casts). |
+
+This benchmarking ensures that architectural boundaries cannot be bypassed via standard language trickery.
+
+---
+
+## 🏗️ Hardened Semantic Resolution
+
+Our enforcement engines are hardened to provide high-fidelity diagnostics:
+
+- **Reflection Guard**: Aggressively blocks usage of `javaClass.getDeclaredMethod`, `invoke`, or `Proxy` in governed layers when targeting architectural components.
+- **Dangerous Local Tracking**: Tracks the *origin* of local variables. If a shared field is extracted into a local `val` and then mutated, the system correctly identifies it as a thread-safety violation.
+- **Recursive Generic Audit**: Scans deeply nested generic arguments (e.g., `Map<String, Set<ArrayList<Int>>>`) to ensure implementation types never leak through boundaries.
+- **Delegate Awareness**: Automatically resolves property delegates (`by lazy`, etc.) to audit the underlying state container.
 
 ---
 
 ## The Semantic Taxonomy
 
-Estatia uses a rich toolkit of specific roles to provide high-fidelity diagnostics.
-
 | Role | Target | Key Law Enabled |
 | :--- | :--- | :--- |
 | **`@Contract`** | Interface | Enforces safety rules (Result wrapping) at the behavioral boundary. |
 | **`@Repository`** | Class | Enforces data source isolation and mandatory error handling. |
-| **`@Service`** | Class | Enforces layer-agnostic business logic standards. |
 | **`@UseCase`** | Class | Enforces constructor purity and domain-only dependencies. |
 | **`@DataSource`** | Class | Identifies IO-heavy components for mandatory thread-confinement. |
 | **`@DomainModel`** | Data Class | Enforces **LAW-032** (Pure Kotlin only, no Frameworks). |
-| **`@EntityModel`** | Data Class | Prevents leakage of DB/Network schemas into UI layers. |
 | **`@Manager`** | Class | Enforces strict synchronization on state-holding singletons. |
-| **`@Helper`** | Class | RESERVED for passive constant holders (No logic allowed). |
-| **`@Utility`** | Class | For pure functional logic, extensions, and math utilities. |
-| **`@Policy`** | Class | For algorithmic strategies (Retry, Cache, Bitrate). |
-| **`@Foundation`** | Class | For system-level abstractions (Clock, FileSystem). |
 | **`@UiScreen`** | Function | Marks a top-level Screen Composable (Target for Navigation). |
-| **`@UiComponent`** | Function | Marks a reusable UI Component with specific behavior. |
-| **`@UiPrimitiveFunction`** | Function | Marks a low-level Design System element (Must be stateless). |
-| **`@UiRoute`** | Function | Marks a Navigation Route (NavGraph entry point). |
-| **`@AppEntryPoint`**| Class | Identifies framework roots (Activities, Application). |
-
----
-
-## Enforcement Mechanics
-
-Estatia employs a multi-layered mechanical gate to ensure the mandate is followed:
-
-1.  **Konsist Layer (`LAW-041`)**: A structural test that scans the entire project. It will **BLOCK** any merge if a top-level functional class or interface is found without a valid architectural identity.
-2.  **Lint Layer**: Provides real-time feedback in the IDE. Detectors (like `ExposedMutableStateDetector`) now have 100% visibility over all governed components.
-3.  **KSP Layer**: Performs deep signature audits during compilation (e.g., ensuring every method in a `@Contract` returns an `AppResult`).
-
-## Exceptions & Exclusions
-
-To maintain focus on logic and behavior, the following types are exempt from the mandatory annotation policy:
-- **Enums**: Intrinsically passive constants.
-- **Annotation Classes**: Metadata definitions.
-- **Generated Code**: (e.g., Room `_Impl` classes, Dagger factories).
-- **Local/Inner Classes**: These inherit the architectural identity of their parent container.
 
 ---
 
 > [!IMPORTANT]
-> **Declaration of Intent is Mandatory.**
-> If you create a new logical component, the system will not guess its purpose. You must declare it. This is the contract that guarantees the safety of the entire Estatia ecosystem.
+> **Identity is Intent.**
+> In Estatia, we do not guess the purpose of code. We mandate that the developer declares it, and we mathematically verify that the declaration is true and the implementation is safe.
