@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMember
 import org.jetbrains.uast.*
@@ -72,8 +72,6 @@ class DispatcherInjectionDetector : Detector(), SourceCodeScanner {
             badExample = "withContext(Dispatchers.IO) { ... }",
             goodExample = "withContext(dispatchers.io) { ... }",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_006,
             implementation = Implementation(DispatcherInjectionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

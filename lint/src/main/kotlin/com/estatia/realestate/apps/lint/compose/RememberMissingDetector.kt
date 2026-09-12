@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 
@@ -64,8 +64,6 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
             badExample = "val count = mutableStateOf(0)",
             goodExample = "val count = remember { mutableStateOf(0) }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_002,
             implementation = Implementation(RememberMissingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

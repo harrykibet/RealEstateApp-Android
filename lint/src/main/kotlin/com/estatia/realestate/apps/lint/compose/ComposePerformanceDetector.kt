@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 
@@ -83,8 +83,6 @@ class ComposePerformanceDetector : Detector(), SourceCodeScanner {
             badExample = "@Composable fun UI() { val regex = Regex(\"...\") }",
             goodExample = "@Composable fun UI() { val regex = remember { Regex(\"...\") } }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_026,
             implementation = Implementation(ComposePerformanceDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

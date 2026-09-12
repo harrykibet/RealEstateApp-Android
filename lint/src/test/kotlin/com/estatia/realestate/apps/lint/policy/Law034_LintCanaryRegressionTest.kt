@@ -40,27 +40,17 @@ class Law034_LintCanaryRegressionTest {
         val reportFile = File(reportPath)
         assertTrue("Canary lint report not found at $reportPath", reportFile.exists())
 
-        val registeredLintIds = EstatiaPolicyGroups.all
-            .map { it.id }
-            .toSet()
-
-        // 🛡️ REFINEMENT: Use high-fidelity enforcer mapping
+        // 🛡️ REFINEMENT: Use high-fidelity enforcer mapping derived from Unified Registry
         val expectations = collectExpectations().filter { exp -> 
             if (exp.issueId == "LintCanaryActive") return@filter true
             val issue = EstatiaPolicyGroups.all.find { it.id == exp.issueId }
             
-            if (issue == null) {
-                return@filter false
-            }
+            if (issue == null) return@filter false
             
             val explanation = issue.getExplanation(TextFormat.RAW)
             val law = Law.entries.find { explanation.contains(it.id) }
             
-            if (law == null) {
-                return@filter false
-            }
-
-            law.enforcers.contains(LawEnforcer.LINT)
+            law?.enforcers?.contains(LawEnforcer.LINT) == true
         }
         
         val actualViolations = parseActualViolations(reportFile)
@@ -124,6 +114,10 @@ class Law034_LintCanaryRegressionTest {
             }
         }
 
+        val registeredLintIds = EstatiaPolicyGroups.all
+            .map { it.id }
+            .toSet()
+
         val registeredIdsForScan = registeredLintIds
             .filterNot { it == "CanaryHeartbeat" || it == "LintCanaryActive" || it == "SuppressionPolicyViolation" }
             .toSet()
@@ -179,31 +173,32 @@ class Law034_LintCanaryRegressionTest {
     }
 
     private fun collectExpectations(): List<CanaryExpectation> {
+        // 🛡️ UNIFIED REGISTRY: We now only scan files explicitly defined as Law fixtures
+        val fixtures = Law.entries.flatMap { it.fixtures }.toSet()
+        val results = mutableListOf<CanaryExpectation>()
+        
         val srcMain = File("$projectRoot/$canaryModulePath/src/main/kotlin")
         val srcTest = File("$projectRoot/$canaryModulePath/src/test/kotlin")
         
-        val results = mutableListOf<CanaryExpectation>()
-        
         listOf(srcMain, srcTest).filter { it.exists() }.forEach { root ->
             root.walkTopDown().filter { it.extension == "kt" }.forEach { file ->
-                val relativePath = toRelative(file)
-                file.readLines().forEachIndexed { index, line ->
-                    val lineNumber = index + 1
-                    
-                    // Match: [CANARY:POSITIVE:IssueId:SEVERITY:TOKEN]
-                    // Token can contain spaces, so we use a more careful regex
-                    val posRegex = Regex("""\[CANARY:POSITIVE:([^:\]]+)(?::([^:\]]+))?(?::([^:\]]+))?\]""")
-                    posRegex.findAll(line).forEach { match ->
-                        val id = match.groupValues[1]
-                        val severity = match.groupValues[2].takeIf { it.isNotEmpty() }
-                        val token = match.groupValues[3].takeIf { it.isNotEmpty() }
-                        
-                        results.add(CanaryExpectation(id, lineNumber, file, relativePath, true, severity, token))
-                    }
-                    
-                    val negRegex = Regex("""\[CANARY:NEGATIVE:([^:\]]+)\]""")
-                    negRegex.findAll(line).forEach { match ->
-                        results.add(CanaryExpectation(match.groupValues[1], lineNumber, file, relativePath, false))
+                // If it's a known fixture, or a general violation hub
+                if (fixtures.contains(file.name) || file.name == "CanarySpecHub.kt" || file.path.contains("/chaos/")) {
+                    val relativePath = toRelative(file)
+                    file.readLines().forEachIndexed { index, line ->
+                        val lineNumber = index + 1
+                        val posRegex = Regex("""\[CANARY:POSITIVE:([^:\]]+)(?::([^:\]]+))?(?::([^:\]]+))?\]""")
+                        posRegex.findAll(line).forEach { match ->
+                            results.add(CanaryExpectation(
+                                match.groupValues[1], lineNumber, file, relativePath, true, 
+                                match.groupValues[2].takeIf { it.isNotEmpty() }, 
+                                match.groupValues[3].takeIf { it.isNotEmpty() }
+                            ))
+                        }
+                        val negRegex = Regex("""\[CANARY:NEGATIVE:([^:\]]+)\]""")
+                        negRegex.findAll(line).forEach { match ->
+                            results.add(CanaryExpectation(match.groupValues[1], lineNumber, file, relativePath, false))
+                        }
                     }
                 }
             }
@@ -237,7 +232,6 @@ class Law034_LintCanaryRegressionTest {
                 val location = locationElements.item(0) as Element
                 val fileAttr = location.getAttribute("file")
                 val lineAttr = location.getAttribute("line")
-                
                 if (lineAttr.isNotEmpty()) {
                     results.add(ActualViolation(id, lineAttr.toInt(), File(fileAttr), severity, message))
                 }

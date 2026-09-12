@@ -1,4 +1,4 @@
-package com.estatia.realestate.apps.lint.policy
+package com.estatia.realestate.apps.core.architecture
 
 /**
  * Identifies the team or individual responsible for maintaining a rule.

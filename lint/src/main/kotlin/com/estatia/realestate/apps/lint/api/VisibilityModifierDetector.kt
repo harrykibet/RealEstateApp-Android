@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -69,8 +69,6 @@ class VisibilityModifierDetector : Detector(), SourceCodeScanner {
             badExample = "class UserRepo",
             goodExample = "internal class UserRepo",
             category = IssueCategory.API_DESIGN,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_008,
             implementation = Implementation(VisibilityModifierDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

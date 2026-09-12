@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -62,8 +62,6 @@ class Law023_LifecycleLeakDetector : Detector(), SourceCodeScanner {
             badExample = "class MyViewModel(val activity: Activity) : ViewModel()",
             goodExample = "class MyViewModel(val application: Application) : ViewModel()",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_023,
             implementation = Implementation(Law023_LifecycleLeakDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

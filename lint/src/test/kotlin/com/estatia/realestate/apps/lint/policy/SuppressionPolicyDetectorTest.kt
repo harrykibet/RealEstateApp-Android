@@ -4,6 +4,7 @@ import com.android.tools.lint.checks.infrastructure.LintDetectorTest.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.estatia.realestate.apps.lint.Stubs
 import com.estatia.realestate.apps.lint.api.Law009_ResultWrapperDetector
+import com.estatia.realestate.apps.lint.compose.BusinessLogicInComposeDetector
 import com.estatia.realestate.apps.lint.concurrency.ForbiddenScopeDetector
 import org.junit.Test
 
@@ -31,7 +32,7 @@ class SuppressionPolicyDetectorTest {
     }
 
     @Test
-    fun `suppression of ERROR rule without justification reports fatal`() {
+    fun `suppression of non-FATAL rule without justification reports violation`() {
         lint()
             .allowCompilationErrors()
             .allowMissingSdk()
@@ -52,7 +53,7 @@ class SuppressionPolicyDetectorTest {
     }
 
     @Test
-    fun `suppression of ERROR rule with correct justification is clean`() {
+    fun `suppression of non-FATAL rule with correct justification is clean`() {
         lint()
             .allowCompilationErrors()
             .allowMissingSdk()
@@ -84,14 +85,14 @@ class SuppressionPolicyDetectorTest {
                 kotlin(
                     """
                     package com.estatia.realestate.apps
-                    // Justification: ExposedMutableState - legacy interop
+                    // Justification: BusinessLogicInCompose - legacy code
                     // Justification: MissingResultWrapper - legacy interop
-                    @Suppress("ExposedMutableState", "MissingResultWrapper")
+                    @Suppress("BusinessLogicInCompose", "MissingResultWrapper")
                     class Good
                     """.trimIndent()
                 )
             )
-            .issues(SuppressionPolicyDetector.ISSUE, ExposedMutableStateDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
+            .issues(SuppressionPolicyDetector.ISSUE, BusinessLogicInComposeDetector.ISSUE, Law009_ResultWrapperDetector.ISSUE)
             .run()
             .expectClean()
     }

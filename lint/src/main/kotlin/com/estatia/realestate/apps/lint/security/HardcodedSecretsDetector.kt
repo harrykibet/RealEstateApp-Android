@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -52,8 +52,6 @@ class HardcodedSecretsDetector : Detector(), SourceCodeScanner {
             badExample = "val apiKey = \"12345\"",
             goodExample = "val apiKey = BuildConfig.API_KEY",
             category = IssueCategory.SECURITY,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.SECURITY,
             architectureLaw = Law.LAW_010,
             implementation = Implementation(HardcodedSecretsDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

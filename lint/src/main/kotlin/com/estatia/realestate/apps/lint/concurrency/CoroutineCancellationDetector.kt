@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor
@@ -99,8 +99,6 @@ class CoroutineCancellationDetector : Detector(), SourceCodeScanner {
             badExample = "suspend fun loop() { while(true) { ... } }",
             goodExample = "suspend fun loop() { while(isActive) { ... } }",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_013,
             implementation = Implementation(CoroutineCancellationDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

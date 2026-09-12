@@ -141,8 +141,6 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
             badExample = "fun monster() { if(a) { while(b) { if(c) { ... } } } }",
             goodExample = "fun focused() { decomposeIntoSmallFunctions() }",
             category = IssueCategory.CODE_HEALTH,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_028,
             implementation = Implementation(Law028_SpaghettiMethodDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

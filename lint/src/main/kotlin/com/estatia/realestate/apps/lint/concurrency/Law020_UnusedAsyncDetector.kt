@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.PsiMethod
 
@@ -52,8 +52,6 @@ class Law020_UnusedAsyncDetector : Detector(), SourceCodeScanner {
             badExample = "coroutineScope { async { ... } }",
             goodExample = "coroutineScope { val deferred = async { ... } }",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_020,
             implementation = Implementation(Law020_UnusedAsyncDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
@@ -38,8 +38,6 @@ class HardcodedColorDimensionDetector : Detector(), SourceCodeScanner {
             badExample = "Modifier.padding(16.dp)",
             goodExample = "Modifier.padding(EstatiaTheme.spacing.medium)",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.CONVENTION,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_022,
             implementation = Implementation(HardcodedColorDimensionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UField
 
@@ -56,8 +56,6 @@ class BackingPropertyConventionDetector : Detector(), SourceCodeScanner {
             badExample = "private val uiState = MutableStateFlow(State())",
             goodExample = "private val _uiState = MutableStateFlow(State())",
             category = IssueCategory.CODE_HEALTH,
-            tier = IssueTier.STYLE,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_017,
             implementation = Implementation(BackingPropertyConventionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

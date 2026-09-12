@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.*
 
@@ -108,8 +108,6 @@ class Law025_ComposeMutableSingletonReadDetector : Detector(), SourceCodeScanner
             badExample = "object Config { var value = 0 }\n@Composable fun UI() { Text(Config.value.toString()) }",
             goodExample = "object Config { val value = MutableStateFlow(0) }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_025,
             implementation = Implementation(Law025_ComposeMutableSingletonReadDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

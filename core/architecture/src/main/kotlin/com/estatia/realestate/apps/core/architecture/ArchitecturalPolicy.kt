@@ -3,8 +3,8 @@ package com.estatia.realestate.apps.core.architecture
 /**
  * The single source of truth for Estatia architectural boundaries.
  * 
- * 🛡️ METADATA INTEGRITY: This policy is organized by Law ID to ensure that 
- * technical constants are semantically linked to architectural intent.
+ * 🛡️ METADATA INTEGRITY: Technical constants and structural truth mapping are 
+ * unified under the authoritative [Law] registry.
  */
 object ArchitecturalPolicy {
 
@@ -109,46 +109,10 @@ object ArchitecturalPolicy {
 
         /**
          * Verifies that the claimed identity matches the structural truth.
+         * 🛡️ UNIFICATION: This mapping is now primary derived from the [Law] registry.
          */
-        val RoleInvariants = mapOf(
-            "Repository" to Invariant(pathContains = "/core/data/|/core/localization/|/app/"),
-            "DataSource" to Invariant(pathContains = "/core/network/|/core/database/|/core/config/|/core/data/|/core/datastore/|/core/security/|/core/player-engine/|/app/"),
-            "UseCase" to Invariant(pathContains = "/core/domain/"),
-            "DomainModel" to Invariant(pathContains = "/core/domain/|/core/model/|/core/analytics/|/core/common/|/core/player-engine/"),
-            "EntityModel" to Invariant(pathContains = "/core/network/|/core/database/|/core/data/", mustBeData = true),
-            "ViewModelMarker" to Invariant(mustInheritFrom = "androidx.lifecycle.ViewModel"),
-            "Contract" to Invariant(mustBeInterface = true),
-            "AppEntryPoint" to Invariant(pathContains = "/app/|/feature/"),
-            "Coordinator" to Invariant(pathContains = "/core/|/feature/"),
-            "Manager" to Invariant(pathContains = "/core/|/app/"),
-            "UiState" to Invariant(mustBeDataSealedOrValue = true),
-            "Mapper" to Invariant(pathContains = "/core/data/|/core/network/|/core/database/"),
-            "Foundation" to Invariant(pathContains = "/core/common/|/core/localization/|/app/|/core/analytics/|/core/datastore/|/core/player-engine/|/core/security/|/core/config/"),
-            "Policy" to Invariant(pathContains = "/core/network/|/core/player-engine/|/core/common/"),
-            "UiPrimitive" to Invariant(pathContains = "/core/design-system/|/core/ui/|/core/player-ui/"),
-            "BatteryState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/common/"),
-            "NetworkState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/"),
-            "EnvironmentState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/"),
-            "AnalyticsState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/model/|/core/analytics/"),
-            "AuthState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/common/|/core/domain/|/core/model/|/feature/auth/"),
-            "PlayerState" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/core/player-engine/|/core/player-ui/"),
-            "UiAction" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/"),
-            "UiEvent" to Invariant(mustBeDataSealedOrValue = true, pathContains = "/feature/"),
-            "UiScreen" to Invariant(mustBeComposable = true, pathContains = "/feature/|/app/"),
-            "UiComponent" to Invariant(mustBeComposable = true, pathContains = "/feature/|/core/ui/|/core/player-ui/|/app/"),
-            "UiPrimitiveFunction" to Invariant(mustBeComposable = true, pathContains = "/core/design-system/|/core/ui/|/app/"),
-            "UiRoute" to Invariant(mustBeComposable = true, pathContains = "/feature/|/app/")
-        )
+        val RoleInvariants: Map<String, LawInvariant> = Law.LAW_041.invariants!!
     }
-
-    data class Invariant(
-        val pathContains: String? = null,
-        val mustInheritFrom: String? = null,
-        val mustBeInterface: Boolean = false,
-        val mustBeData: Boolean = false,
-        val mustBeDataSealedOrValue: Boolean = false,
-        val mustBeComposable: Boolean = false
-    )
 
     data class Layer(
         val name: String, 

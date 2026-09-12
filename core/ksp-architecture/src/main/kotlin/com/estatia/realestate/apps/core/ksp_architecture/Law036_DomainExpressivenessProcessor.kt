@@ -14,21 +14,17 @@ class Law036_DomainExpressivenessProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val boundaryRoles = setOf("Repository", "Service", "UseCase", "Contract")
-
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getAllFiles()
-            .flatMap { it.declarations }
-            .filterIsInstance<KSClassDeclaration>()
-            .filter { clazz ->
-                clazz.annotations.any { ann -> 
-                    val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
-                    qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") &&
-                    boundaryRoles.contains(qn.substringAfterLast("."))
-                }
-            }
+        val boundaryAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract"
+        )
 
-        symbols.forEach { clazz ->
+        val symbols = boundaryAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
+
+        symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
             clazz.getDeclaredFunctions().forEach { func ->
                 if (isPublic(func)) {
                     checkType(func.returnType?.resolve(), func, "return type", clazz.simpleName.asString())

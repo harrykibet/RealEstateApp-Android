@@ -16,23 +16,17 @@ class Law008_AbstractionLeakageProcessor(
 ) : SymbolProcessor {
 
     private val forbiddenInfrastructure = ArchitecturalPolicy.Law003.InfrastructurePackages
-    
-    private val pureRoles = setOf("Repository", "Service", "UseCase", "Contract")
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getAllFiles()
-            .flatMap { it.declarations }
+        val pureArchitecturalAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract"
+        )
+
+        val symbols = pureArchitecturalAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
             .filterIsInstance<KSClassDeclaration>()
-            .filter { clazz ->
-                val annotations = clazz.annotations.mapNotNull { it.annotationType.resolve().declaration.qualifiedName?.asString() }
-                val roles = annotations.filter { it.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") }
-                    .map { it.substringAfterLast(".") }
-                
-                val hasPureRole = roles.any { pureRoles.contains(it) }
-                val isDataSource = roles.contains("DataSource")
-                
-                hasPureRole && !isDataSource
-            }
 
         symbols.forEach { auditDeclaration(it) }
         return emptyList()

@@ -44,8 +44,6 @@ class InfrastructureLeakageDetector : Detector(), SourceCodeScanner {
             badExample = "import androidx.room.Entity // In core.domain",
             goodExample = "import com.estatia.realestate.apps.core.model.User",
             category = IssueCategory.ARCHITECTURE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_003,
             implementation = Implementation(InfrastructureLeakageDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

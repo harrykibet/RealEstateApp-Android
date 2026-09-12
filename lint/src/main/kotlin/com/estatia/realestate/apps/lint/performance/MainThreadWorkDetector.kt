@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 
@@ -90,8 +90,6 @@ class MainThreadWorkDetector : Detector(), SourceCodeScanner {
             badExample = "suspend fun fetch() { Thread.sleep(1000) }",
             goodExample = "suspend fun fetch() = withContext(dispatchers.io) { Thread.sleep(1000) }",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_011,
             implementation = Implementation(MainThreadWorkDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -45,8 +45,6 @@ class Law024_ContextLeakDetector : Detector(), SourceCodeScanner {
             badExample = "object MySingleton { var context: Context? = null }",
             goodExample = "class MyRepo(@ApplicationContext val context: Context)",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_024,
             implementation = Implementation(Law024_ContextLeakDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

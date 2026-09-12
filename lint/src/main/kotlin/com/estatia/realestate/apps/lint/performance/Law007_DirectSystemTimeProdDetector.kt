@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClass
@@ -88,8 +88,6 @@ class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
             badExample = "val now = System.currentTimeMillis()",
             goodExample = "val now = timeProvider.now()",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.WARNING,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_007,
             implementation = Implementation(Law007_DirectSystemTimeProdDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

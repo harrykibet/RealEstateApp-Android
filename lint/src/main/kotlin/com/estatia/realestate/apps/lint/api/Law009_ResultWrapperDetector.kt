@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiType
 import org.jetbrains.uast.*
 
@@ -25,6 +25,12 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
         "float", "java.lang.Float", "kotlin.Float", "Float"
     )
 
+    private val targetAnnotations = setOf(
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase"
+    )
+
     override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UMethod::class.java)
 
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
@@ -32,9 +38,11 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
             if (node.isConstructor || !context.evaluator.isPublic(node)) return
             
             val containingClass = node.containingClass ?: return
-            val className = containingClass.name ?: ""
             
-            if (className.endsWith("Repository") || className.endsWith("Service") || className.endsWith("UseCase")) {
+            val isBoundaryComponent = context.evaluator.getAnnotations(containingClass, false)
+                .any { targetAnnotations.contains(it.qualifiedName) }
+
+            if (isBoundaryComponent) {
                 val returnType = node.returnType ?: return
                 
                 if (isExempt(node, returnType)) return
@@ -81,8 +89,6 @@ class Law009_ResultWrapperDetector : Detector(), SourceCodeScanner {
             badExample = "suspend fun load(): User",
             goodExample = "suspend fun load(): AppResult<User>",
             category = IssueCategory.API_DESIGN,
-            tier = IssueTier.CONVENTION,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_009,
             implementation = Implementation(Law009_ResultWrapperDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

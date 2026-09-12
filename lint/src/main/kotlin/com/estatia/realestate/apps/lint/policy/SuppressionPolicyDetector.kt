@@ -131,8 +131,6 @@ class SuppressionPolicyDetector : Detector(), SourceCodeScanner {
             badExample = "@Suppress(\"ExposedMutableState\")",
             goodExample = "// Justification: ExposedMutableState - Required for legacy data mapping\n@Suppress(\"ExposedMutableState\")",
             category = IssueCategory.ARCHITECTURE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_033,
             implementation = Implementation(SuppressionPolicyDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

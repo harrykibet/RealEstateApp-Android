@@ -17,23 +17,34 @@ class Law002_ExposedMutableStateProcessor(
 
     private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency"
     
-    private val targetArchRoles = setOf(
-        "ViewModelMarker", "Repository", "Service", "UseCase", "Manager", 
-        "Coordinator", "DataSource", "Utility", "Foundation", "Policy"
+    private val archAnnotations = listOf(
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Manager",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.Coordinator",
+        "com.estatia.realestate.apps.core.architecture.annotations.Identity.DataSource",
+        "com.estatia.realestate.apps.core.architecture.annotations.Logic.Utility",
+        "com.estatia.realestate.apps.core.architecture.annotations.Logic.Foundation",
+        "com.estatia.realestate.apps.core.architecture.annotations.Logic.Policy"
     )
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
 
-        val symbols = resolver.getAllFiles()
+        val markedSymbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
+            .filterIsInstance<KSClassDeclaration>()
+            
+        val inheritedSymbols = resolver.getAllFiles()
             .flatMap { it.declarations }
             .filterIsInstance<KSClassDeclaration>()
             .filter { clazz ->
-                val hasArchRole = clazz.annotations.any { isEstatiaArchRole(it) }
-                val isViewModel = viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
-                hasArchRole || isViewModel
+                viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
             }
+
+        val symbols = (markedSymbols + inheritedSymbols).distinct()
 
         symbols.forEach { clazz ->
             if (clazz.classKind == ClassKind.INTERFACE || clazz.modifiers.contains(Modifier.ABSTRACT)) return@forEach
@@ -62,13 +73,6 @@ class Law002_ExposedMutableStateProcessor(
             }
         }
         return emptyList()
-    }
-
-    private fun isEstatiaArchRole(ann: KSAnnotation): Boolean {
-        val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
-        if (!qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.")) return false
-        val simpleName = qn.substringAfterLast(".")
-        return targetArchRoles.contains(simpleName)
     }
 }
 

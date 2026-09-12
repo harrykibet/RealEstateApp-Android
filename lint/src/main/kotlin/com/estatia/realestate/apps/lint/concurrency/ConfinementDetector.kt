@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
@@ -93,8 +93,6 @@ class ConfinementDetector : Detector(), SourceCodeScanner {
             badExample = "fun play() { /* no check */ }",
             goodExample = "fun play() { checkConfinement(); ... }",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_014,
             implementation = Implementation(ConfinementDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

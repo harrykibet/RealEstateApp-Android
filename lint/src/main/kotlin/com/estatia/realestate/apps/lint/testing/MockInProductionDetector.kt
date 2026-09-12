@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 
@@ -43,8 +43,6 @@ class MockInProductionDetector : Detector(), SourceCodeScanner {
             badExample = "val user = mockk<User>() // In main source set",
             goodExample = "val user = User(id = \"1\")",
             category = IssueCategory.TESTING,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_016,
             implementation = Implementation(MockInProductionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

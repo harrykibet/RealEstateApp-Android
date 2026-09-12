@@ -14,7 +14,7 @@ public class Law028_Positive_Spec {
     }
 }
 
-// [CANARY:POSITIVE:OrchestrationMonsterError:ERROR:Orchestration Monster]
+// [CANARY:POSITIVE:OrchestrationMonsterError:BLOCK:Orchestration Monster]
 public class Law030_Positive_Spec(
     public val r1: PositiveStateViewModel,
     public val r2: PositiveStateViewModel,

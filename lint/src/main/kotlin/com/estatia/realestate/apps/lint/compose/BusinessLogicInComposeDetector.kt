@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UMethod
@@ -59,8 +59,6 @@ class BusinessLogicInComposeDetector : Detector(), SourceCodeScanner {
             badExample = "@Composable fun List() { repo.load().collect { ... } }",
             goodExample = "@Composable fun List(state: State) { ... }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.CONVENTION,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_001,
             implementation = Implementation(BusinessLogicInComposeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

@@ -10,7 +10,7 @@ public object CanaryConfig {
 public class Law025_Compose_Positive_Spec {
     @Composable
     public fun PositiveCanary() {
-        // [CANARY:POSITIVE:ComposeMutableSingletonRead:ERROR:mutable singleton state]
+        // [CANARY:POSITIVE:ComposeMutableSingletonRead:BLOCK:mutable singleton state]
         val x = CanaryConfig.mutableValue
     }
 }

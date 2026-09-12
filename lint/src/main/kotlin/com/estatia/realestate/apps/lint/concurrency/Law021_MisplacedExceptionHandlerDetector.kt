@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.visitor.AbstractUastVisitor
@@ -98,8 +98,6 @@ class Law021_MisplacedExceptionHandlerDetector : Detector(), SourceCodeScanner {
             badExample = "withContext(Dispatchers.IO + ceh) { ... }",
             goodExample = "CoroutineScope(Dispatchers.Main + ceh).launch { ... }",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.WARNING,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_021,
             implementation = Implementation(Law021_MisplacedExceptionHandlerDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

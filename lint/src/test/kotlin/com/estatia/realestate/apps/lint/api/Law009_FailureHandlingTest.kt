@@ -18,10 +18,14 @@ class Law009_FailureHandlingTest {
                 Stubs.RESULT,
                 Stubs.FLOW,
                 Stubs.COLLECTIONS,
+                Stubs.ESTATIA_ARCH,
                 kotlin(
                     """
                     package com.estatia.realestate.apps.core.data
                     import kotlin.collections.List
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity
+
+                    @Identity.Repository
                     class MyRepository {
                         // Non-trivial complex type requires wrapping under Estatia Convention
                         suspend fun getData(): List<String> = emptyList()

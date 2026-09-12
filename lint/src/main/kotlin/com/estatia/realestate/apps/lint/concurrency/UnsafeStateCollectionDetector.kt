@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiType
 import org.jetbrains.uast.UElement
@@ -75,8 +75,6 @@ class UnsafeStateCollectionDetector : Detector(), SourceCodeScanner {
             badExample = "val states = listOf(MutableStateFlow(0))",
             goodExample = "val state = mutableStateListOf<Int>()",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_012,
             implementation = Implementation(UnsafeStateCollectionDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

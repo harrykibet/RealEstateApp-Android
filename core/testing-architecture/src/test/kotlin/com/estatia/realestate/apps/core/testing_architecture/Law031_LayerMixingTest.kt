@@ -27,7 +27,7 @@ class Law031_LayerMixingTest {
                     |[LAW: ${Law.LAW_031.id} | RISK: ${Law.LAW_031.risk.name} | CONFIDENCE: ${Law.LAW_031.confidence.name}]
                 """.trimMargin()
             ) { file ->
-                val hasViewModel = file.classes().any { it.name.endsWith("ViewModel") }
+                val hasViewModel = file.classes().any { it.hasAnnotation { ann -> ann.name == "ViewModelMarker" } }
                 if (!hasViewModel) return@assertTrue true
                 
                 file.imports.none { import ->
@@ -56,9 +56,10 @@ class Law031_LayerMixingTest {
                 """.trimMargin()
             ) { file ->
                 val isBusinessLogic = file.classes().any { clazz ->
-                    clazz.name.endsWith("Repository") || 
-                    clazz.name.endsWith("UseCase") || 
-                    clazz.name.endsWith("Service")
+                    clazz.hasAnnotation { ann ->
+                        val name = ann.name.substringAfterLast(".")
+                        name == "Repository" || name == "UseCase" || name == "Service" || name == "Contract"
+                    }
                 }
                 if (!isBusinessLogic) return@assertTrue true
                 

@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -44,8 +44,6 @@ class HardcodedStringDetector : Detector(), SourceCodeScanner {
             badExample = "Text(\"Hello\")",
             goodExample = "Text(stringResource(R.string.hello))",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.CONVENTION,
-            owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_022,
             implementation = Implementation(HardcodedStringDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

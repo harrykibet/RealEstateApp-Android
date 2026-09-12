@@ -51,8 +51,6 @@ class FeatureCouplingDetector : Detector(), SourceCodeScanner {
             badExample = "import com.estatia.realestate.apps.feature.auth.AuthRepo // In feature.home",
             goodExample = "import com.estatia.realestate.apps.core.domain.security.IAuthRepository",
             category = IssueCategory.ARCHITECTURE,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_004,
             implementation = Implementation(FeatureCouplingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

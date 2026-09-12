@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -69,8 +69,6 @@ class Law027_ComposeArchitectureLeakageDetector : Detector(), SourceCodeScanner 
             badExample = "@Composable fun List() { repository.load() }",
             goodExample = "@Composable fun List(data: List<Item>) { ... }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_027,
             implementation = Implementation(Law027_ComposeArchitectureLeakageDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

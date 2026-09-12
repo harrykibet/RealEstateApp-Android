@@ -13,12 +13,13 @@ class Law008_InterfaceContractProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getAllFiles()
-            .flatMap { it.declarations }
+        val archAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase"
+        )
+
+        val symbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
             .filterIsInstance<KSClassDeclaration>()
-            .filter { clazz ->
-                clazz.annotations.any { isEstatiaArchRole(it) }
-            }
         
         symbols.forEach { clazz ->
             val hasInterface = clazz.superTypes.any { 
@@ -36,13 +37,6 @@ class Law008_InterfaceContractProcessor(
             }
         }
         return emptyList()
-    }
-
-    private fun isEstatiaArchRole(ann: KSAnnotation): Boolean {
-        val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
-        if (!qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.")) return false
-        val role = qn.substringAfterLast(".")
-        return role == "Repository" || role == "UseCase"
     }
 }
 

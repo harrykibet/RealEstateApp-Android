@@ -7,7 +7,7 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.uast.*
 
 /**
@@ -71,8 +71,6 @@ class ImplementationTypeDetector : Detector(), SourceCodeScanner {
             badExample = "fun getUser(): FirebaseUser",
             goodExample = "fun getUser(): UserDomainModel",
             category = IssueCategory.API_DESIGN,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_008,
             implementation = Implementation(ImplementationTypeDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

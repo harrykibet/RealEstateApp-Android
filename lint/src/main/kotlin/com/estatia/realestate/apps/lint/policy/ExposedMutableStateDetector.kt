@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.uast.UElement
@@ -83,8 +83,6 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
             badExample = "val uiState = MutableStateFlow(State())",
             goodExample = "private val _uiState = MutableStateFlow(State()); val uiState = _uiState.asStateFlow()",
             category = IssueCategory.ARCHITECTURE,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_002,
             implementation = Implementation(ExposedMutableStateDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

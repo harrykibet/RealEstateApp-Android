@@ -6,7 +6,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiModifierListOwner
 import org.jetbrains.uast.*
 
@@ -57,8 +57,6 @@ class ChaosSynchronizationDetector : Detector(), SourceCodeScanner {
             badExample = "var state = false",
             goodExample = "val state = AtomicBoolean(false)",
             category = IssueCategory.CONCURRENCY,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_012,
             implementation = Implementation(ChaosSynchronizationDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

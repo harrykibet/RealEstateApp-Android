@@ -17,19 +17,22 @@ class Law018_ViewModelSsotProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
+        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker"
         val stateFlowFqn = "kotlinx.coroutines.flow.StateFlow"
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
         val stateFlowType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(stateFlowFqn))?.asStarProjectedType()
 
-        val symbols = resolver.getAllFiles()
+        val markedSymbols = resolver.getSymbolsWithAnnotation(viewModelMarkerFqn).filterIsInstance<KSClassDeclaration>()
+        
+        val inheritedSymbols = resolver.getAllFiles()
             .flatMap { it.declarations }
             .filterIsInstance<KSClassDeclaration>()
             .filter { clazz ->
-                val hasMarker = clazz.annotations.any { isEstatiaAnnotation(it, "ViewModelMarker") }
-                val isViewModel = viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
-                hasMarker || isViewModel
+                viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
             }
+
+        val symbols = (markedSymbols + inheritedSymbols).distinct()
 
         symbols.forEach { clazz ->
             if (clazz.classKind == ClassKind.INTERFACE || clazz.modifiers.contains(Modifier.ABSTRACT)) return@forEach
@@ -68,11 +71,6 @@ class Law018_ViewModelSsotProcessor(
             }
         }
         return emptyList()
-    }
-
-    private fun isEstatiaAnnotation(ann: KSAnnotation, simpleName: String): Boolean {
-        val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
-        return qn.endsWith(".$simpleName") && qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.")
     }
 
     private fun KSPropertyDeclaration.isPublic(): Boolean {

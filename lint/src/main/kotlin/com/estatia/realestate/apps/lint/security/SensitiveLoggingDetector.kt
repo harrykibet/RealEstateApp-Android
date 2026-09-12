@@ -5,7 +5,7 @@ import com.estatia.realestate.apps.lint.policy.EstatiaIssue
 import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.lint.policy.RuleOwner
+import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor
@@ -67,8 +67,6 @@ class SensitiveLoggingDetector : Detector(), SourceCodeScanner {
             badExample = "Log.d(\"Auth\", \"Token: \$token\")",
             goodExample = "Log.d(\"Auth\", \"Token received\")",
             category = IssueCategory.SECURITY,
-            tier = IssueTier.ERROR,
-            owner = RuleOwner.SECURITY,
             architectureLaw = Law.LAW_010,
             implementation = Implementation(SensitiveLoggingDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

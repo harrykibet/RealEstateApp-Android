@@ -7,14 +7,14 @@ import android.util.Log
  */
 
 public class Law010_Positive_Spec {
-    // [CANARY:POSITIVE:HardcodedSecrets:BLOCK:hardcoded secret]
+    // [CANARY:POSITIVE:HardcodedSecrets:WARN:hardcoded secret]
     public val apiKey: String = "AKIAIOSFODNN7EXAMPLE"
     
     public fun log(password: String) {
-        // [CANARY:POSITIVE:HardcodedSecrets:BLOCK:hardcoded secret]
+        // [CANARY:POSITIVE:HardcodedSecrets:WARN:hardcoded secret]
         val secret: String = "super_secret_token"
         
-        // [CANARY:POSITIVE:SensitiveLogging:ERROR:sensitive data]
+        // [CANARY:POSITIVE:SensitiveLogging:WARN:sensitive data]
         Log.d("AUTH", "User password is: $password")
     }
 }

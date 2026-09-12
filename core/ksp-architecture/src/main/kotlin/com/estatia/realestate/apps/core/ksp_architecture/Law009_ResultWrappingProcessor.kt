@@ -31,20 +31,17 @@ class Law009_ResultWrappingProcessor(
         "kotlin.Double",
         "kotlin.Float"
     )
-    
-    private val boundaryRoles = setOf("Repository", "Service", "UseCase", "Contract")
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getAllFiles()
-            .flatMap { it.declarations }
+        val archAnnotations = listOf(
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Service",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase",
+            "com.estatia.realestate.apps.core.architecture.annotations.Identity.Contract"
+        )
+
+        val symbols = archAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
             .filterIsInstance<KSClassDeclaration>()
-            .filter { clazz ->
-                clazz.annotations.any { ann -> 
-                    val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
-                    qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") &&
-                    boundaryRoles.contains(qn.substringAfterLast("."))
-                }
-            }
 
         symbols.forEach { clazz ->
             clazz.getDeclaredFunctions().forEach { function ->

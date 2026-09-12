@@ -105,8 +105,6 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             badExample = "class EverythingManager { ... 1000 lines ... }",
             goodExample = "class FocusedComponent { ... 200 lines ... }",
             category = IssueCategory.CODE_HEALTH,
-            tier = IssueTier.FATAL,
-            owner = RuleOwner.ARCHITECTURE,
             architectureLaw = Law.LAW_029,
             implementation = Implementation(Law029_GodObjectDetector::class.java, Scope.JAVA_FILE_SCOPE)
         )

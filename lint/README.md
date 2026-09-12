@@ -52,6 +52,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-016** | Test infrastructure isolation. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:MockInProduction` |
 | **LAW-031** | Cross-layer concern separation. | `CRITICAL` | `HIGH` | `BLOCK` | `S:Law031_LayerMixingTest` |
 | **LAW-032** | Domain/Model pure-Kotlin mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `S:Law032_DomainPurityTest` |
+| **LAW-041** | Mandatory Architectural Identity. | `HIGH` | `HIGH` | `BLOCK` | `S:Law041_IdentityMandateTest`, `K:Law041_IdentityIntegrityProcessor` |
 
 ### 🏎️ Concurrency & Thread Safety
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
@@ -85,7 +86,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **LAW-007** | Clock-injected wall time. | `MEDIUM` | `CERTAIN` | `WARN` | `L:DirectSystemTimeUsage` |
-| **LAW-011** | Main-thread safety. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
+| **LAW-011** | Blocking UI thread work policy. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:BlockingMainThreadWork`, `L:UnboundedBuffer` |
 | **LAW-015** | Tests must not depend on real time. | `LOW` | `HEURISTIC` | `WARN` | `L:DirectSystemTimeUsageInTest` |
 | **LAW-023** | Component lifecycle safety. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:LifecycleLeak` |
 | **LAW-024** | Memory leak prevention (Context). | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:ContextLeak` |
@@ -94,7 +95,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 ### 🛡️ Security & Integrity
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **LAW-010** | Zero-leak application logs. | `CRITICAL` | `HEURISTIC` | `WARN` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
+| **LAW-010** | Sensitive data protection & Security integrity. | `CRITICAL` | `HEURISTIC` | `WARN` | `L:SensitiveLogging`, `L:HardcodedSecrets` |
 | **LAW-033** | Governance-compliant suppressions. | `CRITICAL` | `HIGH` | `BLOCK` | `L:SuppressionPolicyViolation`, `S:Law033_WildcardSuppressionTest`, `V:Law033_GradleSuppressionTest` |
 | **LAW-034** | High-fidelity canary verification. | `CRITICAL` | `CERTAIN` | `BLOCK` | `L:LintCanaryActive`, `V:Law034_LintCanaryRegressionTest` |
 | **LAW-035** | Structural non-baselining mandate. | `CRITICAL` | `CERTAIN` | `BLOCK` | `V:Law035_FatalBaselineIntegrityTest` |
@@ -104,13 +105,12 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **LAW-017** | Backing-property convention. | `LOW` | `HEURISTIC` | `INFO` | `L:BackingPropertyConvention` |
-| **LAW-028** | Local method complexity budget. | `HIGH` | `CERTAIN` | `BLOCK` | `L:SpaghettiMethodFatal` |
-| **LAW-029** | Global class size budget. | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
-| **LAW-030** | Orchestration dependency budget. | `MEDIUM` | `CERTAIN` | `BLOCK` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
+| **LAW-028** | Methods must be concise and focused. | `HIGH` | `CERTAIN` | `BLOCK` | `L:SpaghettiMethodFatal` |
+| **LAW-029** | Classes must have a single responsibility. | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
+| **LAW-030** | Constructors must have a limited dependency budget. | `MEDIUM` | `CERTAIN` | `BLOCK` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
 | **LAW-037** | Version catalog mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
 | **LAW-038** | Release symbol obfuscation integrity. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditReleaseSymbols` |
-| **LAW-039** | Magic literal extraction. | `LOW` | `HEURISTIC` | `INFO` | `L:MagicNumber` |
-| **LAW-041** | Mandatory Architectural Identity. | `HIGH` | `HIGH` | `BLOCK` | `S:Law041_IdentityMandateTest` |
+| **LAW-039** | Clean Code: Mandatory constant extraction. | `LOW` | `HEURISTIC` | `WARN` | `L:MagicNumber` |
 
 ---
 
