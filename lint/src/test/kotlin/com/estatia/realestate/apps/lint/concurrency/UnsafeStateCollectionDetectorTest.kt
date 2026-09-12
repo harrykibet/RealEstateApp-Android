@@ -19,9 +19,9 @@ class UnsafeStateCollectionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import kotlinx.coroutines.flow.MutableStateFlow
-                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity
                     
-                    @ViewModelMarker
+                    @Identity.ViewModelMarker
                     class Test {
                         val states: List<MutableStateFlow<String>> = emptyList()
                     }
@@ -45,9 +45,9 @@ class UnsafeStateCollectionDetectorTest {
                     """
                     package com.estatia.realestate.apps
                     import androidx.compose.runtime.MutableState
-                    import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
+                    import com.estatia.realestate.apps.core.architecture.annotations.Identity
                     
-                    @ViewModelMarker
+                    @Identity.ViewModelMarker
                     class Test {
                         val stateMap: Map<String, MutableState<Int>> = emptyMap()
                     }

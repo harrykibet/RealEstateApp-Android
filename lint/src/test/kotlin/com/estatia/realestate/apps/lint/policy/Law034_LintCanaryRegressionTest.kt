@@ -1,5 +1,8 @@
 package com.estatia.realestate.apps.lint.policy
 
+import com.android.tools.lint.detector.api.TextFormat
+import com.estatia.realestate.apps.core.architecture.Law
+import com.estatia.realestate.apps.core.architecture.LawEnforcer
 import com.estatia.realestate.apps.lint.registry.EstatiaPolicyGroups
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -41,8 +44,23 @@ class Law034_LintCanaryRegressionTest {
             .map { it.id }
             .toSet()
 
-        val expectations = collectExpectations().filter { 
-            registeredLintIds.contains(it.issueId) || it.issueId == "LintCanaryActive"
+        // 🛡️ REFINEMENT: Use high-fidelity enforcer mapping
+        val expectations = collectExpectations().filter { exp -> 
+            if (exp.issueId == "LintCanaryActive") return@filter true
+            val issue = EstatiaPolicyGroups.all.find { it.id == exp.issueId }
+            
+            if (issue == null) {
+                return@filter false
+            }
+            
+            val explanation = issue.getExplanation(TextFormat.RAW)
+            val law = Law.entries.find { explanation.contains(it.id) }
+            
+            if (law == null) {
+                return@filter false
+            }
+
+            law.enforcers.contains(LawEnforcer.LINT)
         }
         
         val actualViolations = parseActualViolations(reportFile)
@@ -64,8 +82,8 @@ class Law034_LintCanaryRegressionTest {
                 println("DEBUG: Failed to match Positive Canary [${exp.issueId}] at ${exp.relativePath}:${exp.line}")
                 if (matches.isEmpty()) {
                     println("  Reason: No structural match (IssueId, Path, Line).")
-                    actualViolations.filter { it.issueId == exp.issueId }.forEach { act ->
-                        println("    Similar Issue at: ${toRelative(act.file)}:${act.line}")
+                    actualViolations.filter { it.issueId == exp.issueId && isPathMatch(it.file, exp.file) }.forEach { act ->
+                        println("    Found similar issue at different line: ${act.line} (Actual) vs ${exp.line} (Expected)")
                     }
                 } else {
                     println("  Reason: Meta-check failed (Severity or Message Token).")

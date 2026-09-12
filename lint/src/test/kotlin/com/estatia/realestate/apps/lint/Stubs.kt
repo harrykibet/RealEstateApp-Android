@@ -60,6 +60,7 @@ object Stubs {
         interface Flow<out T>
         interface MutableStateFlow<T> : Flow<T>
         interface MutableSharedFlow<T> : Flow<T>
+        interface StateFlow<out T> : Flow<T>
         
         fun <T> flow(block: suspend () -> T): Flow<T> = error("Stub")
         fun <T> flowOf(vararg elements: T): Flow<T> = error("Stub")
@@ -131,17 +132,53 @@ object Stubs {
     val ESTATIA_ARCH = kotlin(
         """
         package com.estatia.realestate.apps.core.architecture.annotations
-        annotation class Repository
-        annotation class Service
-        annotation class UseCase
-        annotation class ViewModelMarker
-        annotation class Helper
-        annotation class DataSource
-        annotation class ErrorMapper
-        annotation class DomainModel
-        annotation class EntityModel
-        annotation class AppEntryPoint
-        annotation class UiState
+        
+        class Identity {
+            annotation class Repository
+            annotation class Service
+            annotation class UseCase
+            annotation class ViewModelMarker
+            annotation class Coordinator
+            annotation class Manager
+            annotation class DataSource
+            annotation class Contract
+            annotation class AppEntryPoint
+        }
+        
+        class Logic {
+            annotation class Utility
+            annotation class Mapper
+            annotation class Policy
+            annotation class Foundation
+            annotation class Helper
+            annotation class ErrorMapper
+        }
+        
+        class Data {
+            annotation class DomainModel
+            annotation class EntityModel
+            annotation class UiState
+            annotation class BatteryState
+            annotation class NetworkState
+            annotation class EnvironmentState
+            annotation class AnalyticsState
+            annotation class AuthState
+            annotation class PlayerState
+            annotation class UiAction
+            annotation class UiEvent
+        }
+        
+        class Ui {
+            annotation class UiScreen
+            annotation class UiComponent
+            annotation class UiPrimitiveFunction
+            annotation class UiRoute
+            annotation class UiPrimitive
+        }
+        
+        class Safety {
+            annotation class AllowedArchitectureDependency(val reason: String)
+        }
         """.trimIndent()
     )
 

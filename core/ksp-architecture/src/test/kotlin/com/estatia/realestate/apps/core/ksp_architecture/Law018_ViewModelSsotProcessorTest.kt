@@ -16,7 +16,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
             import kotlinx.coroutines.flow.StateFlow
             
             @ViewModelMarker
@@ -35,6 +35,7 @@ class Law018_ViewModelSsotProcessorTest {
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         assertTrue(result.messages.contains("LAW-018"))
+        assertTrue(result.messages.contains("Multiple persistent state authorities"))
     }
 
     @Test
@@ -43,7 +44,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
             import kotlinx.coroutines.flow.StateFlow
             import kotlinx.coroutines.flow.Flow
             
@@ -71,7 +72,7 @@ class Law018_ViewModelSsotProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
             import kotlinx.coroutines.flow.Flow
             
             @ViewModelMarker
@@ -88,7 +89,7 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("has no public StateFlow"))
+        assertTrue(result.messages.contains("no public persistent UI-state authority"))
     }
 
     @Test
@@ -113,7 +114,7 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("has no public StateFlow"))
+        assertTrue(result.messages.contains("no public persistent UI-state authority"))
     }
 
     @Test
@@ -152,7 +153,7 @@ class Law018_ViewModelSsotProcessorTest {
             providers = listOf(Law018_ViewModelSsotProcessorProvider())
         )
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        assertTrue(result.messages.contains("Multiple state authorities detected in 'ChildViewModel'"))
+        assertTrue(result.messages.contains("Multiple persistent state authorities detected"))
     }
 
     @Test

@@ -16,7 +16,7 @@ class Law009_ResultWrappingProcessorTest {
             "TestRepository.kt",
             """
             package com.estatia.realestate.apps.core.data.repositories
-            import com.estatia.realestate.apps.core.architecture.annotations.Repository
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
             import java.util.List
             
             interface ITestRepository
@@ -47,7 +47,7 @@ class Law009_ResultWrappingProcessorTest {
             "TestRepository.kt",
             """
             package com.estatia.realestate.apps.core.data.repositories
-            import com.estatia.realestate.apps.core.architecture.annotations.Repository
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
             
             interface ITestRepository
             
@@ -77,7 +77,7 @@ class Law009_ResultWrappingProcessorTest {
             "TestRepository.kt",
             """
             package com.estatia.realestate.apps.core.data.repositories
-            import com.estatia.realestate.apps.core.architecture.annotations.Repository
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
             import kotlinx.coroutines.flow.Flow
             

@@ -16,7 +16,7 @@ class Law002_ExposedMutableStateProcessorTest {
             "TestViewModel.kt",
             """
             package com.estatia.realestate.apps.feature.test
-            import com.estatia.realestate.apps.core.architecture.annotations.ViewModelMarker
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker
             import kotlinx.coroutines.flow.MutableStateFlow
             
             @ViewModelMarker

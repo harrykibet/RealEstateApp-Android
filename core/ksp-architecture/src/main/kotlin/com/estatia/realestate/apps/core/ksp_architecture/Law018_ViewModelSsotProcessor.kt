@@ -17,7 +17,6 @@ class Law018_ViewModelSsotProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val viewModelFqn = "androidx.lifecycle.ViewModel"
-        val viewModelMarkerFqn = "com.estatia.realestate.apps.core.architecture.annotations.Identity.ViewModelMarker"
         val stateFlowFqn = "kotlinx.coroutines.flow.StateFlow"
 
         val viewModelType = resolver.getClassDeclarationByName(resolver.getKSNameFromString(viewModelFqn))?.asStarProjectedType()
@@ -27,7 +26,7 @@ class Law018_ViewModelSsotProcessor(
             .flatMap { it.declarations }
             .filterIsInstance<KSClassDeclaration>()
             .filter { clazz ->
-                val hasMarker = clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == viewModelMarkerFqn }
+                val hasMarker = clazz.annotations.any { isEstatiaAnnotation(it, "ViewModelMarker") }
                 val isViewModel = viewModelType?.isAssignableFrom(clazz.asStarProjectedType()) == true
                 hasMarker || isViewModel
             }
@@ -36,14 +35,10 @@ class Law018_ViewModelSsotProcessor(
             if (clazz.classKind == ClassKind.INTERFACE || clazz.modifiers.contains(Modifier.ABSTRACT)) return@forEach
 
             // 🛡️ REFINEMENT: Use getAllProperties() to catch inherited state ownership.
-            // Filter only public properties that aren't part of the infrastructure base classes.
             val publicProperties = clazz.getAllProperties().filter { prop ->
                 prop.isPublic() && !isFromBaseViewModel(prop)
             }
 
-            // 🛡️ REFINEMENT: Identify canonical state authorities (StateFlow or subtypes).
-            // This is more semantic than literal FQN matching as it supports custom state wrappers
-            // that inherit from StateFlow.
             val stateFlows = publicProperties.filter { prop ->
                 val type = prop.type.resolve()
                 val isStateFlow = stateFlowType?.isAssignableFrom(type) == true
@@ -52,8 +47,7 @@ class Law018_ViewModelSsotProcessor(
                 isStateFlow && !isAuthorized
             }.toList()
 
-            // 1. Enforce SSoT: Multiple persistent state authorities indicate a "Bag of State" smell.
-            // This prevents the ViewModel from becoming an uncoordinated collection of state pieces.
+            // 1. Enforce SSoT
             if (stateFlows.size > 1) {
                 logger.report(
                     Law.LAW_018,
@@ -63,7 +57,7 @@ class Law018_ViewModelSsotProcessor(
                 )
             }
 
-            // 2. Enforce Presence: A ViewModel should have a persistent state authority unless authorized.
+            // 2. Enforce Presence
             if (stateFlows.isEmpty() && !clazz.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }) {
                 logger.report(
                     Law.LAW_018,
@@ -74,6 +68,11 @@ class Law018_ViewModelSsotProcessor(
             }
         }
         return emptyList()
+    }
+
+    private fun isEstatiaAnnotation(ann: KSAnnotation, simpleName: String): Boolean {
+        val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
+        return qn.endsWith(".$simpleName") && qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.")
     }
 
     private fun KSPropertyDeclaration.isPublic(): Boolean {

@@ -14,27 +14,27 @@ class Law030_ConstructorPurityProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency"
+    private val allowedAnnotation = "com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency"
     private val allowedInfrastructure = ArchitecturalPolicy.Law030.AllowedInfrastructureInConstructors
+    
+    private val functionalRoles = setOf(
+        "Repository", "Service", "UseCase", "DataSource", "Manager", 
+        "Coordinator", "ErrorMapper", "Mapper", "Utility", "Foundation", "Policy"
+    )
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val functionalRoles = listOf(
-            "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-            "com.estatia.realestate.apps.core.architecture.annotations.Service",
-            "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-            "com.estatia.realestate.apps.core.architecture.annotations.DataSource",
-            "com.estatia.realestate.apps.core.architecture.annotations.Manager",
-            "com.estatia.realestate.apps.core.architecture.annotations.Coordinator",
-            "com.estatia.realestate.apps.core.architecture.annotations.ErrorMapper",
-            "com.estatia.realestate.apps.core.architecture.annotations.Mapper",
-            "com.estatia.realestate.apps.core.architecture.annotations.Utility",
-            "com.estatia.realestate.apps.core.architecture.annotations.Foundation",
-            "com.estatia.realestate.apps.core.architecture.annotations.Policy"
-        )
+        val symbols = resolver.getAllFiles()
+            .flatMap { it.declarations }
+            .filterIsInstance<KSClassDeclaration>()
+            .filter { clazz ->
+                clazz.annotations.any { ann ->
+                    val qn = ann.annotationType.resolve().declaration.qualifiedName?.asString() ?: ""
+                    qn.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") &&
+                    functionalRoles.contains(qn.substringAfterLast("."))
+                }
+            }
 
-        val symbols = functionalRoles.flatMap { resolver.getSymbolsWithAnnotation(it) }
-
-        symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
+        symbols.forEach { clazz ->
             clazz.primaryConstructor?.parameters?.forEach { param ->
                 val type = param.type.resolve()
                 val declaration = type.declaration

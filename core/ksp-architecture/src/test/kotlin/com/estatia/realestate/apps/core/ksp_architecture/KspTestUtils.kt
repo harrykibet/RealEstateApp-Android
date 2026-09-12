@@ -11,12 +11,53 @@ object KspTestUtils {
         "ArchitectureAnnotations.kt",
         """
         package com.estatia.realestate.apps.core.architecture.annotations
-        annotation class Repository
-        annotation class Service
-        annotation class UseCase
-        annotation class ViewModelMarker
-        annotation class UiState
-        annotation class AllowedArchitectureDependency(val reason: String)
+        
+        object Identity {
+            annotation class Repository
+            annotation class Service
+            annotation class UseCase
+            annotation class ViewModelMarker
+            annotation class Coordinator
+            annotation class Manager
+            annotation class DataSource
+            annotation class Contract
+            annotation class AppEntryPoint
+        }
+        
+        object Logic {
+            annotation class Utility
+            annotation class Mapper
+            annotation class Policy
+            annotation class Foundation
+            annotation class Helper
+            annotation class ErrorMapper
+        }
+        
+        object Data {
+            annotation class DomainModel
+            annotation class EntityModel
+            annotation class UiState
+            annotation class BatteryState
+            annotation class NetworkState
+            annotation class EnvironmentState
+            annotation class AnalyticsState
+            annotation class AuthState
+            annotation class PlayerState
+            annotation class UiAction
+            annotation class UiEvent
+        }
+        
+        object Ui {
+            annotation class UiScreen
+            annotation class UiComponent
+            annotation class UiPrimitiveFunction
+            annotation class UiRoute
+            annotation class UiPrimitive
+        }
+        
+        object Safety {
+            annotation class AllowedArchitectureDependency(val reason: String)
+        }
         """.trimIndent()
     )
 
@@ -25,6 +66,7 @@ object KspTestUtils {
         """
         package com.estatia.realestate.apps.core.common.exceptions
         sealed class AppResult<out T>
+        class AppException(m: String) : Exception(m)
         """.trimIndent()
     )
 

@@ -16,7 +16,7 @@ class Law036_DomainExpressivenessProcessorTest {
             "TestUseCase.kt",
             """
             package com.estatia.realestate.apps.core.domain.usecase
-            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
             
             interface ITestUseCase

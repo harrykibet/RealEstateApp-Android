@@ -16,34 +16,25 @@ class Law008_AbstractionLeakageProcessor(
 ) : SymbolProcessor {
 
     private val forbiddenInfrastructure = ArchitecturalPolicy.Law003.InfrastructurePackages
+    
+    private val pureRoles = setOf("Repository", "Service", "UseCase", "Contract")
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val pureArchitecturalAnnotations = listOf(
-            "com.estatia.realestate.apps.core.architecture.annotations.Repository",
-            "com.estatia.realestate.apps.core.architecture.annotations.Service",
-            "com.estatia.realestate.apps.core.architecture.annotations.UseCase",
-            "com.estatia.realestate.apps.core.architecture.annotations.Contract"
-        )
-
-        val symbols = pureArchitecturalAnnotations.flatMap { resolver.getSymbolsWithAnnotation(it) }
-
-        symbols.filterIsInstance<KSClassDeclaration>().forEach { clazz ->
-            // 🛡️ REFINEMENT: Identity Integrity (Verifying the claim)
-            // If a component claims to be a pure business role, we enforce purity.
-            val annotations = clazz.annotations.map { it.annotationType.resolve().declaration.qualifiedName?.asString() }.toSet()
-            
-            val isContract = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Contract")
-            val isRepository = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Repository")
-            val isUseCase = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.UseCase")
-            val isService = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.Service")
-            
-            // 💡 DataSources are EXEMPT from LAW-008 as they are infrastructure-facing by definition.
-            val isDataSource = annotations.contains("com.estatia.realestate.apps.core.architecture.annotations.DataSource")
-
-            if ((isContract || isRepository || isUseCase || isService) && !isDataSource) {
-                auditDeclaration(clazz)
+        val symbols = resolver.getAllFiles()
+            .flatMap { it.declarations }
+            .filterIsInstance<KSClassDeclaration>()
+            .filter { clazz ->
+                val annotations = clazz.annotations.mapNotNull { it.annotationType.resolve().declaration.qualifiedName?.asString() }
+                val roles = annotations.filter { it.startsWith("com.estatia.realestate.apps.core.architecture.annotations.") }
+                    .map { it.substringAfterLast(".") }
+                
+                val hasPureRole = roles.any { pureRoles.contains(it) }
+                val isDataSource = roles.contains("DataSource")
+                
+                hasPureRole && !isDataSource
             }
-        }
+
+        symbols.forEach { auditDeclaration(it) }
         return emptyList()
     }
 

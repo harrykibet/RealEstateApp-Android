@@ -16,7 +16,7 @@ class Law030_ConstructorPurityProcessorTest {
             "TestUseCase.kt",
             """
             package com.estatia.realestate.apps.core.domain.usecase
-            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
             
             interface IUseCase
             class ConcreteDatabase
@@ -42,7 +42,7 @@ class Law030_ConstructorPurityProcessorTest {
             "TestUseCase.kt",
             """
             package com.estatia.realestate.apps.core.domain.usecase
-            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
             
             interface IUseCase
             interface IDatabase
@@ -67,7 +67,7 @@ class Law030_ConstructorPurityProcessorTest {
             "TestUseCase.kt",
             """
             package com.estatia.realestate.apps.core.domain.usecase
-            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
             
             interface UseCaseContract
             interface RepositoryAbstraction
@@ -91,8 +91,8 @@ class Law030_ConstructorPurityProcessorTest {
             "TestUseCase.kt",
             """
             package com.estatia.realestate.apps.core.domain.usecase
-            import com.estatia.realestate.apps.core.architecture.annotations.UseCase
-            import com.estatia.realestate.apps.core.architecture.annotations.AllowedArchitectureDependency
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.UseCase
+            import com.estatia.realestate.apps.core.architecture.annotations.Safety.AllowedArchitectureDependency
             
             interface IUseCase
             class ConcreteDatabase

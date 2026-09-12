@@ -16,7 +16,7 @@ class Law008_AbstractionLeakageProcessorTest {
             "TestRepository.kt",
             """
             package com.estatia.realestate.apps.core.data.repositories
-            import com.estatia.realestate.apps.core.architecture.annotations.Repository
+            import com.estatia.realestate.apps.core.architecture.annotations.Identity.Repository
             import com.estatia.realestate.apps.core.common.exceptions.AppResult
             import com.google.firebase.auth.FirebaseUser
             
