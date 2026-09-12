@@ -56,11 +56,15 @@ class GovernanceQualityOracle {
                     isPathMatch(act.file, exp.file) &&
                     isLineMatch(act.line, exp.line)
                 }
-                if (wasDetected) tp++ else fn++
+                if (wasDetected) {
+                    tp++
+                } else {
+                    fn++
+                    println("DEBUG: FN for ${law.id} [Issue: ${exp.issueId}] at ${exp.file.name}:${exp.line}")
+                }
             }
 
             // 2. Calculate FP (Based on negative expectations)
-            // A violation reported where we explicitly marked a Negative Canary
             val negativeExp = expectations.filter { !it.isPositive && it.lawId == law.id }
             negativeExp.forEach { exp ->
                 val wasIncorrectlyDetected = actualViolations.any { act -> 
@@ -68,7 +72,10 @@ class GovernanceQualityOracle {
                     isPathMatch(act.file, exp.file) &&
                     isLineMatch(act.line, exp.line)
                 }
-                if (wasIncorrectlyDetected) fp++
+                if (wasIncorrectlyDetected) {
+                    fp++
+                    println("DEBUG: FP for ${law.id} [Issue: ${exp.issueId}] at ${exp.file.name}:${exp.line}")
+                }
             }
             
             metricsMap[law.id] = LawMetrics(law.id, tp, fp, fn)

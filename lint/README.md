@@ -80,7 +80,7 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | **LAW-001** | Presentation-owned UI state. | `MEDIUM` | `HEURISTIC` | `WARN` | `L:BusinessLogicInCompose` |
 | **LAW-022** | Localization & Design consistency. | `MEDIUM` | `HEURISTIC` | `WARN` | `L:HardcodedStringInCompose`, `L:DesignSystemViolation`, `L:HardcodedDesignValue` |
 | **LAW-025** | No mutable singleton reads in UI. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ComposeMutableSingletonRead` |
-| **LAW-027** | UDF: No direct data layer calls. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ComposeArchitectureLeakage` |
+| **LAW-027** | UDF: No direct data layer calls. | `HIGH` | `CERTAIN` | `BLOCK` | `L:ComposeArchitectureLeakage`, `L:ReflectionBypass`, `AdversarialSpecs.kt` |
 
 ### ⚡ Performance & Memory
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |

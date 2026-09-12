@@ -50,6 +50,7 @@ object EstatiaPolicyGroups {
         RememberMissingDetector.ISSUE,
         StateOwnershipDetector.ISSUE,
         Law027_ComposeArchitectureLeakageDetector.ISSUE,
+        ReflectionBypassDetector.ISSUE,
         Law025_ComposeMutableSingletonReadDetector.ISSUE,
         ComposePerformanceDetector.EXPENSIVE_RECOMPOSITION_ISSUE,
         HardcodedColorDimensionDetector.ISSUE,

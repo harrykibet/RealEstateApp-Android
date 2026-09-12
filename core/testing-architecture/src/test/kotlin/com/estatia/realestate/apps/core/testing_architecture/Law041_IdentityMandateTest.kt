@@ -168,7 +168,13 @@ class Law041_IdentityMandateTest {
     fun `verified identity should be reflected in naming style`() {
         (Konsist.scopeFromProject().classes() + Konsist.scopeFromProject().interfaces())
             .filter { it.isTopLevel }
-            .filterNot { it.path.replace("\\", "/").contains("/test/") || it.path.replace("\\", "/").contains("/androidTest/") || it.path.replace("\\", "/").contains("/testFixtures/") }
+            .filterNot { 
+                val path = it.path.replace("\\", "/")
+                path.contains("/test/") || 
+                path.contains("/androidTest/") || 
+                path.contains("/testFixtures/") ||
+                path.contains("/adversarial/")
+            }
             .assertTrue(
                 additionalMessage = "Naming alignment check: Class name should match its verified architectural identity (Style convention)."
             ) { decl ->

@@ -8,15 +8,13 @@ import com.estatia.realestate.apps.lint.policy.IssueTier
 import com.estatia.realestate.apps.core.architecture.Law
 import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiModifier
+import com.intellij.psi.PsiNamedElement
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * LAW-012: State Synchronization.
  * Detects usage of non-thread-safe collections or state in multi-threaded environments.
- * 
- * This detector is mutation-aware: it flags 'var' collections immediately, but 'val'
- * collections are only flagged if they are mutated outside of initialization.
  */
 class ThreadSafetyDetector : Detector(), SourceCodeScanner {
 
@@ -24,9 +22,12 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
         "java.util.HashMap" to "ConcurrentHashMap",
         "java.util.ArrayList" to "CopyOnWriteArrayList",
         "java.util.HashSet" to "ConcurrentHashMap.newKeySet()",
-        "HashMap" to "ConcurrentHashMap",
-        "ArrayList" to "CopyOnWriteArrayList",
-        "HashSet" to "ConcurrentHashMap.newKeySet()"
+        "kotlin.collections.MutableList" to "CopyOnWriteArrayList",
+        "kotlin.collections.MutableMap" to "ConcurrentHashMap",
+        "kotlin.collections.MutableSet" to "ConcurrentHashMap.newKeySet()",
+        "java.util.List" to "CopyOnWriteArrayList",
+        "java.util.Map" to "ConcurrentHashMap",
+        "java.util.Set" to "ConcurrentHashMap.newKeySet()"
     )
 
     private val mutatingMethods = setOf(
@@ -41,53 +42,91 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
             if (node is UAnonymousClass) return
             if (!isAtRiskComponent(context, node)) return
 
-            val unsafeFields = node.fields.filter { field ->
+            val candidateUnsafeFields = node.fields.filter { field ->
+                val typeClass = context.evaluator.getTypeClass(field.type)
                 unsafeCollections.keys.any { unsafe -> 
-                    context.evaluator.inheritsFrom(context.evaluator.getTypeClass(field.type), unsafe, false)
+                    context.evaluator.inheritsFrom(typeClass, unsafe, false)
                 }
             }
 
-            if (unsafeFields.isEmpty()) return
+            if (candidateUnsafeFields.isEmpty()) return
 
-            val violations = mutableSetOf<UField>()
-            
             // 1. var fields are always violations in shared components
-            unsafeFields.filter { !it.hasModifierProperty(PsiModifier.FINAL) }.forEach { 
-                violations.add(it) 
+            candidateUnsafeFields.filter { !it.hasModifierProperty(PsiModifier.FINAL) }.forEach { field ->
+                reportViolation(context, field, field as UElement)
             }
 
             // 2. val fields are only violations if mutated post-init
-            val candidateValFields = unsafeFields.filter { it.hasModifierProperty(PsiModifier.FINAL) }
+            val candidateValFields = candidateUnsafeFields.filter { it.hasModifierProperty(PsiModifier.FINAL) }
             if (candidateValFields.isNotEmpty()) {
-                val fieldNames = candidateValFields.map { it.name }.toSet()
-                val mutatedFields = mutableSetOf<String>()
-
                 node.accept(object : AbstractUastVisitor() {
                     override fun visitCallExpression(node: UCallExpression): Boolean {
                         val methodName = node.methodName
                         if (mutatingMethods.contains(methodName)) {
-                            val receiver = node.receiver
-                            if (receiver != null) {
-                                val resolvedReceiver = receiver.tryResolve()
-                                if (resolvedReceiver != null) {
-                                    val field = candidateValFields.find { it.javaPsi == resolvedReceiver }
-                                    if (field != null && !isInsideInitialization(node)) {
-                                        mutatedFields.add(field.name)
-                                    }
-                                } else {
-                                    // Fallback for cases where resolution fails: strip parentheses from render string
-                                    val receiverName = receiver.asRenderString().replace("(", "").replace(")", "")
-                                    if (fieldNames.contains(receiverName) && !isInsideInitialization(node)) {
-                                        mutatedFields.add(receiverName)
-                                    }
-                                }
+                            checkAndReportMutation(node.receiver, node)
+                            
+                            // 🛡️ REFINEMENT: Handle implicit receivers (scope functions like apply/also)
+                            if (node.receiver == null || node.receiver is UThisExpression) {
+                                findScopeReceiver(node)?.let { checkAndReportMutation(it, node) }
                             }
                         }
                         return super.visitCallExpression(node)
                     }
 
+                    override fun visitBinaryExpression(node: UBinaryExpression): Boolean {
+                        val op = node.operator
+                        if (op.text == "+=" || op.text == "-=") {
+                            checkAndReportMutation(node.leftOperand, node)
+                        }
+                        return super.visitBinaryExpression(node)
+                    }
+
+                    private fun checkAndReportMutation(receiver: UExpression?, mutationNode: UElement) {
+                        val resolvedReceiver = receiver?.tryResolve()
+                        val field = if (resolvedReceiver != null) {
+                            candidateValFields.find { 
+                                it.javaPsi == resolvedReceiver || 
+                                it.name == (resolvedReceiver as? PsiNamedElement)?.name
+                            }
+                        } else if (receiver != null) {
+                            // 🛡️ REFINEMENT: Fallback for unresolved receivers. Strip parentheses for TestMode compatibility.
+                            val receiverText = receiver.asRenderString()
+                                .replace("(", "").replace(")", "")
+                                .removePrefix("this.")
+                            candidateValFields.find { it.name == receiverText }
+                        } else null
+
+                        if (field != null && !isInsideInitialization(mutationNode)) {
+                            reportViolation(context, field, mutationNode)
+                        }
+                    }
+
+                    private fun findScopeReceiver(node: UCallExpression): UExpression? {
+                        var current: UElement? = node.uastParent
+                        while (current != null && current !is UClass) {
+                            if (current is ULambdaExpression) {
+                                val call = findCallForLambda(current)
+                                if (call != null && isScopeFunction(call.methodName)) {
+                                    return call.receiver
+                                }
+                            }
+                            current = current.uastParent
+                        }
+                        return null
+                    }
+
+                    private fun findCallForLambda(lambda: ULambdaExpression): UCallExpression? {
+                        var p = lambda.uastParent
+                        if (p is UCallExpression) return p
+                        // In some UAST versions, lambda is wrapped in an expression list
+                        return p?.uastParent as? UCallExpression
+                    }
+
+                    private fun isScopeFunction(name: String?): Boolean =
+                        name == "apply" || name == "also" || name == "run" || name == "with"
+
                     private fun isInsideInitialization(element: UElement): Boolean {
-                        var current = element.uastParent
+                        var current: UElement? = element
                         while (current != null) {
                             if (current is UMethod && current.isConstructor) return true
                             if (current is UClassInitializer) return true
@@ -96,57 +135,40 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
                         return false
                     }
                 })
-
-                candidateValFields.filter { mutatedFields.contains(it.name) }.forEach {
-                    violations.add(it)
-                }
             }
+        }
 
-            violations.forEach { field ->
-                val unsafeType = unsafeCollections.keys.find { 
-                    context.evaluator.inheritsFrom(context.evaluator.getTypeClass(field.type), it, false)
-                } ?: "Collection"
-                val safeType = unsafeCollections[unsafeType] ?: "thread-safe alternative"
+        private fun reportViolation(context: JavaContext, field: UField, locationNode: UElement) {
+            val typeClass = context.evaluator.getTypeClass(field.type)
+            val unsafeType = typeClass?.qualifiedName ?: typeClass?.name ?: "Collection"
+            val safeType = unsafeCollections[unsafeType] ?: "thread-safe alternative"
 
-                context.report(
-                    ISSUE,
-                    field,
-                    context.getLocation(field as UElement),
-                    "Unsafe collection '$unsafeType' mutated in a multi-threaded component. " +
-                            "Use '$safeType' or wrap in a mutex (LAW-012)."
-                )
-            }
+            context.report(
+                ISSUE,
+                locationNode,
+                context.getLocation(locationNode),
+                "Unsafe collection '$unsafeType' mutated in a multi-threaded component. " +
+                        "Use '$safeType' or wrap in a mutex (LAW-012)."
+            )
         }
     }
 
     private fun isAtRiskComponent(context: JavaContext, node: UClass): Boolean {
-        // 1. ViewModels (Implicitly multi-threaded via viewModelScope)
-        if (context.evaluator.inheritsFrom(node, "androidx.lifecycle.ViewModel", false)) {
-            return true
-        }
+        if (context.evaluator.inheritsFrom(node, "androidx.lifecycle.ViewModel", false)) return true
 
-        // 2. Long-lived components marked with architectural annotations
         val annotations = context.evaluator.getAnnotations(node.javaPsi, false)
-        val isSharedComponent = annotations.any {
+        return annotations.any {
             val qn = it.qualifiedName ?: ""
             qn.contains("Singleton") || 
-            qn.contains("Repository") || 
-            qn.contains("Service") || 
-            qn.contains("UseCase") ||
-            qn.contains("Manager") ||
-            qn.contains("Coordinator") ||
-            qn.contains("DataSource")
+            qn.contains("com.estatia.realestate.apps.core.architecture.annotations.")
         }
-            
-        return isSharedComponent
     }
 
     companion object {
         val ISSUE = EstatiaIssue.create(
             id = "ThreadSafetyViolation",
             description = "Non-thread-safe state in multi-threaded component",
-            rationale = "Standard collections used in shared components (Singletons, Repositories, ViewModels) " +
-                        "lead to data races and crashes when accessed from multiple coroutines.",
+            rationale = "Standard collections used in shared components lead to data races.",
             badExample = "val map = HashMap<String, String>()",
             goodExample = "val map = ConcurrentHashMap<String, String>()",
             category = IssueCategory.CONCURRENCY,

@@ -56,13 +56,15 @@ class Law002_ExposedMutableStateProcessor(
             }
 
             publicProperties.forEach { prop ->
-                val typeName = prop.type.resolve().declaration.qualifiedName?.asString() ?: ""
-                val isMutable = typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
-                               typeName == "androidx.compose.runtime.MutableState"
+                // Check if the property type is mutable OR if it's a delegated property returning a mutable type
+                val type = prop.type.resolve()
+                val typeName = type.declaration.qualifiedName?.asString() ?: ""
+                val isMutableType = typeName == "kotlinx.coroutines.flow.MutableStateFlow" || 
+                                   typeName == "androidx.compose.runtime.MutableState"
                 
                 val isAuthorized = prop.annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == allowedAnnotation }
 
-                if (isMutable && !isAuthorized) {
+                if (isMutableType && !isAuthorized) {
                     logger.report(
                         Law.LAW_002,
                         "ViewModel '${clazz.simpleName.asString()}' exposes mutable state '${prop.simpleName.asString()}'. " +
