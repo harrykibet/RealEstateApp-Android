@@ -15,25 +15,25 @@ import javax.inject.Inject
 @Contract
 public interface ICanaryRepo
 
-// [CANARY:POSITIVE:MissingVisibilityModifier:BLOCK:explicit visibility]
+// [CANARY:POSITIVE:MissingVisibilityModifier:BLOCK:Explicit visibility]
 @Repository
 class PositiveRepository : ICanaryRepo {
-    // [CANARY:POSITIVE:ImplementationTypeInPublicApi:BLOCK:Retrofit]
+    // [CANARY:POSITIVE:ImplementationTypeInPublicApi:BLOCK:Infrastructure type]
     public fun leak(retrofit: Retrofit?): String = ""
 }
 
 @Repository
 public class PositiveFailureRepository {
-    // [CANARY:POSITIVE:MissingResultWrapper:WARN:unwrapped return type] [CANARY:POSITIVE:MissingVisibilityModifier:BLOCK:explicit visibility]
+    // [CANARY:POSITIVE:MissingResultWrapper:WARN:wrapped Result type] [CANARY:POSITIVE:MissingVisibilityModifier:BLOCK:Explicit visibility]
     fun getRawData(): List<String> = emptyList()
     
     public fun smuggled(): List<String> {
-        // [CANARY:POSITIVE:FailureSmuggling:WARN:catch block silently discards]
+        // [CANARY:POSITIVE:FailureSmuggling:WARN:failure smuggling]
         try { return listOf("a") } catch (e: Exception) { return emptyList() }
     }
     
     public fun dangerous(data: String?): List<String> {
-        // [CANARY:POSITIVE:DangerousFallback:WARN:Elvis operator uses dangerous]
+        // [CANARY:POSITIVE:DangerousFallback:WARN:Dangerous fallback]
         return data?.let { listOf(it) } ?: emptyList()
     }
 }

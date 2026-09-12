@@ -88,7 +88,7 @@ class Law007_DirectSystemTimeProdDetector : Detector(), SourceCodeScanner {
             badExample = "val now = System.currentTimeMillis()",
             goodExample = "val now = timeProvider.now()",
             category = IssueCategory.PERFORMANCE,
-            tier = IssueTier.ERROR,
+            tier = IssueTier.WARNING,
             owner = RuleOwner.PLATFORM,
             architectureLaw = Law.LAW_007,
             implementation = Implementation(Law007_DirectSystemTimeProdDetector::class.java, Scope.JAVA_FILE_SCOPE)

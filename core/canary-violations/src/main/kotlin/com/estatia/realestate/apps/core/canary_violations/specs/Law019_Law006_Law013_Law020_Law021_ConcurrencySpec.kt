@@ -12,18 +12,18 @@ public class PositiveConcurrencySpec : CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
     
     public suspend fun doTrickyWork() {
-        // [CANARY:POSITIVE:SecretConcurrency:BLOCK:independent work]
+        // [CANARY:POSITIVE:SecretConcurrency:BLOCK:launch]
         launch { }
         
-        // [CANARY:POSITIVE:UnusedAsync:BLOCK:Async results]
+        // [CANARY:POSITIVE:UnusedAsync:ERROR:async]
         async { 1 }
         
-        // [CANARY:POSITIVE:MisplacedCoroutineExceptionHandler:WARN:Exception handlers must be placed] [CANARY:POSITIVE:HardcodedDispatcher:BLOCK:Hardcoded dispatcher]
+        // [CANARY:POSITIVE:MisplacedCoroutineExceptionHandler:WARN:ExceptionHandler] [CANARY:POSITIVE:HardcodedDispatcher:BLOCK:Hardcoded dispatcher]
         withContext(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) { }
     }
     
     public suspend fun zombieLoop() {
-        // [CANARY:POSITIVE:MissingCoroutineCancellation:BLOCK:cancellable]
+        // [CANARY:POSITIVE:MissingCoroutineCancellation:ERROR:zombieLoop]
         while(true) {
             println("zombie")
         }

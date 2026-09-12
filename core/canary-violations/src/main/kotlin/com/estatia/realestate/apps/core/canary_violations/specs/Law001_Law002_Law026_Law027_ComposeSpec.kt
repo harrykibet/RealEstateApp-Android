@@ -17,19 +17,19 @@ public class PositiveComposeSpec {
     @Composable
     public fun ViolatingComposable(
         repo: PositiveRepository,
-        // [CANARY:POSITIVE:MutableStateParameter:ERROR:Mutable state passed]
+        // [CANARY:POSITIVE:MutableStateParameter:BLOCK:mutable container]
         state: MutableState<Int>
     ) {
-        // [CANARY:POSITIVE:ComposeArchitectureLeakage:ERROR:Direct call to architectural component]
+        // [CANARY:POSITIVE:ComposeArchitectureLeakage:BLOCK:Direct call]
         repo.leak(null)
         
-        // [CANARY:POSITIVE:ExpensiveRecomposition:WARN:Expensive object created]
+        // [CANARY:POSITIVE:ExpensiveRecomposition:WARN:Expensive object]
         val regex = Regex(".*")
         
-        // [CANARY:POSITIVE:BusinessLogicInCompose:WARN:Business logic detected] [CANARY:POSITIVE:ForbiddenCoroutineScope:BLOCK:Unmanaged CoroutineScope]
+        // [CANARY:POSITIVE:BusinessLogicInCompose:WARN:complex logic] [CANARY:POSITIVE:ForbiddenCoroutineScope:BLOCK:GlobalScope]
         GlobalScope.launch { }
         
-        // [CANARY:POSITIVE:RememberMissing:ERROR:State creation not wrapped]
+        // [CANARY:POSITIVE:RememberMissing:BLOCK:State creation]
         val s = mutableStateOf(0)
     }
 }

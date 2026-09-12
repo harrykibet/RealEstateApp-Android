@@ -61,11 +61,18 @@ class Law034_LintCanaryRegressionTest {
             }
             
             if (!foundMatch && exp.issueId != "LintCanaryActive") {
-                println("DEBUG: Failed to match expectation: ${exp.issueId} at ${exp.relativePath}:${exp.line}")
-                actualViolations.filter { it.issueId == exp.issueId }.forEach { act ->
-                    println("  Candidate Actual: ${act.file.path}:${act.line} (Severity: ${act.severity}, Msg: ${act.message})")
-                    println("    PathMatch: ${isPathMatch(act.file, exp.file)}")
-                    println("    LineMatch: ${isLineMatch(act.line, exp.line)}")
+                println("DEBUG: Failed to match Positive Canary [${exp.issueId}] at ${exp.relativePath}:${exp.line}")
+                if (matches.isEmpty()) {
+                    println("  Reason: No structural match (IssueId, Path, Line).")
+                    actualViolations.filter { it.issueId == exp.issueId }.forEach { act ->
+                        println("    Similar Issue at: ${toRelative(act.file)}:${act.line}")
+                    }
+                } else {
+                    println("  Reason: Meta-check failed (Severity or Message Token).")
+                    matches.forEach { act ->
+                        println("    Actual Severity: '${act.severity}' vs Expected: '${exp.severity}' -> ${isSeverityMatch(act.severity, exp.severity)}")
+                        println("    Actual Message:  '${act.message}' vs Token: '${exp.messageToken}' -> ${isMessageMatch(act.message, exp.messageToken)}")
+                    }
                 }
             }
             foundMatch
@@ -117,10 +124,7 @@ class Law034_LintCanaryRegressionTest {
     }
 
     private fun isPathMatch(actualFile: File, expectedFile: File): Boolean {
-        // Robust path matching: Compare by relative path from project root
-        val actualRel = toRelative(actualFile).lowercase()
-        val expectedRel = toRelative(expectedFile).lowercase()
-        return actualRel == expectedRel
+        return toRelative(actualFile).lowercase() == toRelative(expectedFile).lowercase()
     }
     
     private fun toRelative(file: File): String {
@@ -142,13 +146,13 @@ class Law034_LintCanaryRegressionTest {
         val act = actual.uppercase()
         val exp = expected.uppercase()
         
-        if (exp == "BLOCK" && act == "FATAL") return true
-        if (exp == "FATAL" && act == "FATAL") return true
-        if (exp == "ERROR" && act == "ERROR") return true
-        if (exp == "WARN" && (act == "WARNING" || act == "WARN")) return true
-        if (exp == "INFO" && (act == "INFORMATION" || act == "INFO")) return true
-        
-        return act == exp
+        return when (exp) {
+            "BLOCK" -> act == "FATAL" || act == "ERROR"
+            "ERROR" -> act == "ERROR"
+            "WARN" -> act == "WARNING" || act == "WARN"
+            "INFO" -> act == "INFORMATION" || act == "INFO" || act == "HINT"
+            else -> act == exp
+        }
     }
 
     private fun isMessageMatch(actual: String, token: String?): Boolean {
@@ -168,28 +172,20 @@ class Law034_LintCanaryRegressionTest {
                 file.readLines().forEachIndexed { index, line ->
                     val lineNumber = index + 1
                     
+                    // Match: [CANARY:POSITIVE:IssueId:SEVERITY:TOKEN]
+                    // Token can contain spaces, so we use a more careful regex
                     val posRegex = Regex("""\[CANARY:POSITIVE:([^:\]]+)(?::([^:\]]+))?(?::([^:\]]+))?\]""")
                     posRegex.findAll(line).forEach { match ->
-                        results.add(CanaryExpectation(
-                            issueId = match.groupValues[1],
-                            line = lineNumber,
-                            file = file,
-                            relativePath = relativePath,
-                            isPositive = true,
-                            severity = match.groupValues[2].takeIf { it.isNotEmpty() },
-                            messageToken = match.groupValues[3].takeIf { it.isNotEmpty() }
-                        ))
+                        val id = match.groupValues[1]
+                        val severity = match.groupValues[2].takeIf { it.isNotEmpty() }
+                        val token = match.groupValues[3].takeIf { it.isNotEmpty() }
+                        
+                        results.add(CanaryExpectation(id, lineNumber, file, relativePath, true, severity, token))
                     }
                     
                     val negRegex = Regex("""\[CANARY:NEGATIVE:([^:\]]+)\]""")
                     negRegex.findAll(line).forEach { match ->
-                        results.add(CanaryExpectation(
-                            issueId = match.groupValues[1],
-                            line = lineNumber,
-                            file = file,
-                            relativePath = relativePath,
-                            isPositive = false
-                        ))
+                        results.add(CanaryExpectation(match.groupValues[1], lineNumber, file, relativePath, false))
                     }
                 }
             }

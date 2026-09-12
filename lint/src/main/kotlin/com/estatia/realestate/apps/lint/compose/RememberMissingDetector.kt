@@ -64,7 +64,7 @@ class RememberMissingDetector : Detector(), SourceCodeScanner {
             badExample = "val count = mutableStateOf(0)",
             goodExample = "val count = remember { mutableStateOf(0) }",
             category = IssueCategory.COMPOSE,
-            tier = IssueTier.WARNING,
+            tier = IssueTier.ERROR,
             owner = RuleOwner.PRODUCT,
             architectureLaw = Law.LAW_002,
             implementation = Implementation(RememberMissingDetector::class.java, Scope.JAVA_FILE_SCOPE)

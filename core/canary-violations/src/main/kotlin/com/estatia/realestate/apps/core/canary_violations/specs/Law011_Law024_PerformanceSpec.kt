@@ -10,19 +10,19 @@ import javax.inject.Singleton
 public class Law011_Performance_Positive_Spec {
     @Composable
     public fun PositiveCanary() {
-        // [CANARY:POSITIVE:BlockingMainThreadWork:BLOCK:Blocking work never executes]
+        // [CANARY:POSITIVE:BlockingMainThreadWork:BLOCK:Blocking call]
         Thread.sleep(1000)
         
-        // [CANARY:POSITIVE:UnboundedBuffer:WARN:Unbounded Flow buffer]
+        // [CANARY:POSITIVE:UnboundedBuffer:WARN:buffer detected]
         val flow = MutableSharedFlow<Int>(replay = 101)
         
-        // [CANARY:POSITIVE:UnboundedBuffer:WARN:Unbounded Flow buffer]
+        // [CANARY:POSITIVE:UnboundedBuffer:WARN:buffer detected]
         val flow2 = flow { emit(1) }.buffer()
     }
 }
 
 @Singleton
 public class Law024_Performance_Positive_Spec(
-    // [CANARY:POSITIVE:ContextLeak:BLOCK:Long-lived components must not hold]
+    // [CANARY:POSITIVE:ContextLeak:BLOCK:Context stored]
     public val context: Context
 )

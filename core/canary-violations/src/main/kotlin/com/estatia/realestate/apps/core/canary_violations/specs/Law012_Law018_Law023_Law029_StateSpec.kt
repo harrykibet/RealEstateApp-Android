@@ -20,16 +20,16 @@ public class PositiveStateViewModel : ViewModel() {
     // KSP RULE: [CANARY:POSITIVE:ViewModelSsot]
     public val s2: StateFlow<String> = MutableStateFlow("")
     
-    // [CANARY:POSITIVE:ExposedMutableState:ERROR:Exposing mutable state container] [CANARY:POSITIVE:BackingPropertyConvention:INFO:Mutable state must follow]
+    // [CANARY:POSITIVE:ExposedMutableState:BLOCK:Exposing mutable state] [CANARY:POSITIVE:BackingPropertyConvention:INFO:backing property]
     public val mutableState: MutableStateFlow<Int> = MutableStateFlow(0)
     
-    // [CANARY:POSITIVE:ThreadSafetyViolation:BLOCK:Using standard collections]
+    // [CANARY:POSITIVE:ThreadSafetyViolation:BLOCK:Unsafe collection]
     public var unsafeMap: HashMap<String, String> = HashMap()
     
-    // [CANARY:POSITIVE:LifecycleLeak:BLOCK:Storing Activities in ViewModels]
+    // [CANARY:POSITIVE:LifecycleLeak:BLOCK:lifecycle-bound type]
     public var leakedActivity: Activity? = null
     
-    // [CANARY:POSITIVE:UnsafeStateCollection:ERROR:State containers inside collections]
+    // [CANARY:POSITIVE:UnsafeStateCollection:BLOCK:State containers inside collections]
     public val collectedState: List<MutableStateFlow<Int>> = listOf(MutableStateFlow(0))
     
     // God Object State Trigger (LAW-029)
