@@ -60,7 +60,6 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
                     if (mutatingMethods.contains(methodName)) {
                         checkAndReportMutation(node.receiver, node)
                         
-                        // 🛡️ REFINEMENT: Handle implicit receivers (scope functions like apply/also)
                         if (node.receiver == null || node.receiver is UThisExpression) {
                             findScopeReceiver(node)?.let { checkAndReportMutation(it, node) }
                         }
@@ -81,24 +80,20 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
                     if (isUnsafeType(type)) {
                         val resolved = receiver.tryResolve()
                         
-                        // 1. Check if it's a known field
                         val isField = candidateValFields.any { it.javaPsi == resolved } ||
                                      (receiver is UQualifiedReferenceExpression && receiver.receiver is UThisExpression) ||
                                      (resolved == null && candidateValFields.any { it.name == receiver.asRenderString() })
 
-                        // 2. 🛡️ ADVERSARIAL HARDENING: Check local variable origins
+                        // 🛡️ ADVERSARIAL HARDENING: Check local variable origins
                         var isDangerousLocal = false
                         if (resolved is ULocalVariable) {
                             val init = resolved.uastInitializer
-                            // If it's initialized from a field, method call, reflection, or a cast from Any, it's dangerous
-                            isDangerousLocal = init is UQualifiedReferenceExpression || 
-                                              init is UCallExpression || 
-                                              init is UBinaryExpression ||
-                                              init?.asRenderString()?.contains("field.get") == true
+                            // If it's NOT a direct safe constructor call, it's dangerous (potentially shared)
+                            isDangerousLocal = !isSafeFreshInstance(init)
                         }
 
-                        // 3. Fallback for unresolved or complex receivers
-                        val isUnresolvedDangerous = resolved == null && !isLocalScope(receiver)
+                        // Fallback for unresolved or complex receivers
+                        val isUnresolvedDangerous = (resolved == null || resolved !is ULocalVariable) && !isField
 
                         if ((isField || isDangerousLocal || isUnresolvedDangerous) && !isInsideInitialization(mutationNode)) {
                             reportViolation(context, type, mutationNode)
@@ -106,10 +101,20 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
                     }
                 }
                 
-                private fun isLocalScope(node: UElement): Boolean {
-                    // Check if the expression is a purely local variable (not a field)
-                    val resolved = (node as? UExpression)?.tryResolve()
-                    return resolved is ULocalVariable && resolved.uastInitializer is ULiteralExpression
+                private fun isSafeFreshInstance(init: UExpression?): Boolean {
+                    if (init == null) return false
+                    if (init is UCallExpression) {
+                        val method = init.resolve()
+                        // If it's a constructor call of a collection, it's safe (fresh instance)
+                        if (method != null && method.isConstructor) return true
+                    }
+                    // Handle casts: check the operand
+                    val src = init.asSourceString()
+                    if (src.contains(" as ")) {
+                        // Casts are usually dangerous as they come from Any or other types
+                        return false
+                    }
+                    return false
                 }
 
                 private fun findScopeReceiver(node: UCallExpression): UExpression? {
@@ -148,9 +153,11 @@ class ThreadSafetyDetector : Detector(), SourceCodeScanner {
         }
 
         private fun isUnsafeType(type: PsiType): Boolean {
-            val typeClass = context.evaluator.getTypeClass(type) ?: return false
+            val typeClass = context.evaluator.getTypeClass(type)
+            val qualifiedName = type.canonicalText.substringBefore("<")
+            
             return unsafeCollections.keys.any { unsafe -> 
-                context.evaluator.inheritsFrom(typeClass, unsafe, false)
+                qualifiedName == unsafe || context.evaluator.inheritsFrom(typeClass, unsafe, false)
             }
         }
 

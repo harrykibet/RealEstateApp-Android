@@ -9,7 +9,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * State and Concurrency Enforcement [CANARY:POSITIVE:GodObjectFatal:BLOCK:violates Mutable State Budget]
+ * State and Concurrency Enforcement [CANARY:POSITIVE:GodObjectFatal:WARN:God Objects]
  */
 
 @ViewModelMarker

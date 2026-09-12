@@ -78,9 +78,9 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
         val wLimit = context.getOption(ISSUE, "${optionPrefix}Warning", warn)
 
         when {
-            value > fLimit -> report(context, node, label, value, "FATAL", fLimit)
-            value > eLimit -> report(context, node, label, value, "ERROR", eLimit)
-            value > wLimit -> report(context, node, label, value, "WARNING", wLimit)
+            value > fLimit -> report(context, node, label, value, "CRITICAL", fLimit)
+            value > eLimit -> report(context, node, label, value, "HIGH", eLimit)
+            value > wLimit -> report(context, node, label, value, "MEDIUM", wLimit)
         }
     }
 
@@ -89,7 +89,7 @@ class Law029_GodObjectDetector : Detector(), SourceCodeScanner {
             ISSUE,
             node,
             context.getLocation(node as UElement),
-            "Class '${node.name}' violates $type Budget ($value). $level limit is $limit (LAW-029)."
+            "Class '${node.name}' has $level $type Risk ($value). Recommended limit is $limit. 'God Objects' are harder to maintain and test (LAW-029)."
         )
     }
 

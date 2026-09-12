@@ -13,7 +13,6 @@ import org.jetbrains.uast.visitor.AbstractUastVisitor
 
 /**
  * LAW-002: Mutable state never crosses an ownership boundary.
- * Enforces that ViewModels, Repositories, UseCases, Managers and Services do not expose mutable state containers.
  */
 class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
 
@@ -37,25 +36,30 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext) = object : UElementHandler() {
         override fun visitField(node: UField) {
             val containingClass = node.containingClass ?: return
-            if (isGovernedComponent(containingClass)) {
-                checkType(node, node.type, node.name)
+            if (isGovernedComponent(containingClass) && isEffectivelyPublic(node)) {
+                checkMutableType(node, node.type, node.name)
             }
         }
 
         override fun visitMethod(node: UMethod) {
-            if (node.isConstructor) return
+            if (node.isConstructor || !context.evaluator.isPublic(node)) return
             val containingClass = node.containingClass ?: return
             if (!isGovernedComponent(containingClass)) return
 
             val returnType = node.returnType ?: return
-            val name = if (node.name.startsWith("get")) node.name.removePrefix("get").lowercase() else node.name
-            checkType(node, returnType, name)
+            
+            // Only check property getters for direct signature leaks
+            if (node.name.startsWith("get") && node.uastParameters.isEmpty()) {
+                val name = node.name.removePrefix("get").lowercase()
+                checkMutableType(node, returnType, name)
+            }
             
             // 🕵️ ADVERSARIAL HARDENING: Check return expressions for erasure bypass (casting to Any)
             node.accept(object : AbstractUastVisitor() {
                 override fun visitReturnExpression(returnNode: UReturnExpression): Boolean {
-                    returnNode.returnExpression?.getExpressionType()?.let { 
-                        checkType(returnNode, it, "returned value") 
+                    val exprType = returnNode.returnExpression?.getExpressionType()
+                    if (exprType != null) {
+                        checkMutableType(returnNode, exprType, "returned value")
                     }
                     return super.visitReturnExpression(returnNode)
                 }
@@ -71,15 +75,10 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
             return hasTargetAnnotation || context.evaluator.inheritsFrom(clazz, "androidx.lifecycle.ViewModel", false)
         }
 
-        private fun checkType(node: UElement, type: PsiType, name: String) {
-            // Check visibility
-            if (!isEffectivelyPublic(node)) return
-
-            // 🛡️ REFINEMENT: Use canonicalText for strict FQN checking
+        private fun checkMutableType(node: UElement, type: PsiType, name: String) {
             val canonicalText = type.canonicalText.substringBefore("<")
-            
-            val isOfficialMutable = canonicalText == "kotlinx.coroutines.flow.MutableStateFlow" || 
-                                   canonicalText == "androidx.compose.runtime.MutableState"
+            val isOfficialMutable = (canonicalText == "kotlinx.coroutines.flow.MutableStateFlow" || 
+                                    canonicalText == "androidx.compose.runtime.MutableState")
 
             if (isOfficialMutable) {
                 context.report(
@@ -92,22 +91,17 @@ class ExposedMutableStateDetector : Detector(), SourceCodeScanner {
             }
         }
 
-        private fun isProjectClass(clazz: PsiClass): Boolean {
-            val qn = clazz.qualifiedName ?: return false
-            return qn.startsWith("com.estatia.realestate.apps")
-        }
-
-        private fun isEffectivelyPublic(node: UElement): Boolean {
-            val declaration = node as? UDeclaration ?: return true
-            if (context.evaluator.isPrivate(declaration) || context.evaluator.isInternal(declaration)) return false
+        private fun isEffectivelyPublic(node: UDeclaration): Boolean {
+            if (node is ULocalVariable) return false 
+            if (context.evaluator.isPrivate(node) || context.evaluator.isInternal(node) || context.evaluator.isProtected(node)) return false
             
-            val source = declaration.sourcePsi
+            val source = node.sourcePsi
             if (source is KtProperty) {
                 if (source.hasModifier(KtTokens.PRIVATE_KEYWORD) || 
                     source.hasModifier(KtTokens.INTERNAL_KEYWORD) ||
                     source.hasModifier(KtTokens.PROTECTED_KEYWORD)) return false
             }
-            return context.evaluator.isPublic(declaration)
+            return context.evaluator.isPublic(node)
         }
     }
 

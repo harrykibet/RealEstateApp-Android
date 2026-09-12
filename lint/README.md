@@ -105,9 +105,9 @@ Every detector in this module enforces a rule defined in the central [`Law`](fil
 | Law ID | Law Description | Risk | Confidence | Enforcement | Enforcement Rule(s) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **LAW-017** | Backing-property convention. | `LOW` | `HEURISTIC` | `INFO` | `L:BackingPropertyConvention` |
-| **LAW-028** | Methods must be concise and focused. | `HIGH` | `CERTAIN` | `BLOCK` | `L:SpaghettiMethodFatal` |
-| **LAW-029** | Classes must have a single responsibility. | `HIGH` | `CERTAIN` | `BLOCK` | `L:GodObjectFatal` |
-| **LAW-030** | Constructors must have a limited dependency budget. | `MEDIUM` | `CERTAIN` | `BLOCK` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
+| **LAW-028** | Methods must be concise and focused. | `HIGH` | `HEURISTIC` | `WARN` | `L:SpaghettiMethodFatal` |
+| **LAW-029** | Classes must have a single responsibility. | `HIGH` | `HEURISTIC` | `WARN` | `L:GodObjectFatal` |
+| **LAW-030** | Constructors must have a limited dependency budget. | `MEDIUM` | `HEURISTIC` | `WARN` | `L:OrchestrationMonsterError`, `K:Law030_ConstructorPurityProcessor` |
 | **LAW-037** | Version catalog mandate. | `CRITICAL` | `HIGH` | `BLOCK` | `T:checkDependencyDrift` |
 | **LAW-038** | Release symbol obfuscation integrity. | `CRITICAL` | `CERTAIN` | `BLOCK` | `T:auditReleaseSymbols` |
 | **LAW-039** | Clean Code: Mandatory constant extraction. | `LOW` | `HEURISTIC` | `WARN` | `L:MagicNumber` |

@@ -56,9 +56,9 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
         val wLimit = context.getOption(ISSUE, "${optionPrefix}Warning", warn)
 
         when {
-            value > fLimit -> report(context, node, label, value, "FATAL", fLimit)
-            value > eLimit -> report(context, node, label, value, "ERROR", eLimit)
-            value > wLimit -> report(context, node, label, value, "WARNING", wLimit)
+            value > fLimit -> report(context, node, label, value, "CRITICAL", fLimit)
+            value > eLimit -> report(context, node, label, value, "HIGH", eLimit)
+            value > wLimit -> report(context, node, label, value, "MEDIUM", wLimit)
         }
     }
 
@@ -125,7 +125,7 @@ class Law028_SpaghettiMethodDetector : Detector(), SourceCodeScanner {
             ISSUE,
             node,
             context.getLocation(node as UElement),
-            "Method '${node.name}' violates $type Budget ($value). $level limit is $limit (LAW-028)."
+            "Method '${node.name}' has $level $type Risk ($value). Recommended limit is $limit. High complexity increases maintenance risk (LAW-028)."
         )
     }
 

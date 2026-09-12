@@ -61,8 +61,7 @@ class Law030_ConstructorPurityProcessor(
                     logger.report(
                         Law.LAW_030,
                         "Constructor parameter '${param.name?.asString()}' in ${clazz.simpleName.asString()} " +
-                        "must be an interface, a pure Data Model, or explicitly authorized via @AllowedArchitectureDependency. " +
-                        "Found: $qualifiedName",
+                        "is an external dependency ($qualifiedName). To maintain architectural purity, prefer interfaces or data models. (LAW-030).",
                         param
                     )
                 }

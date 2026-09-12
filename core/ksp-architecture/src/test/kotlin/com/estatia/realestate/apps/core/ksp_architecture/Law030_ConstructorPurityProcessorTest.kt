@@ -11,7 +11,7 @@ import org.junit.Test
 class Law030_ConstructorPurityProcessorTest {
 
     @Test
-    fun `LAW-030 Constructor must only accept abstractions`() {
+    fun `LAW-030 Constructor accepts non-abstraction and reports warning`() {
         val source = SourceFile.kotlin(
             "TestUseCase.kt",
             """
@@ -32,8 +32,10 @@ class Law030_ConstructorPurityProcessorTest {
             source,
             providers = listOf(Law030_ConstructorPurityProcessorProvider())
         )
-        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        // [REF] Softened Law Policy: Statistical risks are now WARNINGS
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         assertTrue(result.messages.contains("LAW-030"))
+        assertTrue(result.messages.contains("Architecture Warning"))
     }
 
     @Test

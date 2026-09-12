@@ -9,7 +9,7 @@ import org.junit.Test
 class ComplexityBudgetDetectorTest {
 
     @Test
-    fun `long method reports length fatal`() {
+    fun `long method reports length smell`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -27,11 +27,12 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("violates Length Budget")
+            .expectContains("Length Risk (312)")
+            .expectContains("Recommended limit is 300")
     }
 
     @Test
-    fun `deeply nested method reports nesting depth error`() {
+    fun `deeply nested method reports nesting depth smell`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -60,12 +61,12 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("violates Nesting Depth Budget (6)")
-            .expectContains("ERROR limit is 5")
+            .expectContains("Nesting Depth Risk (6)")
+            .expectContains("Recommended limit is 5")
     }
 
     @Test
-    fun `method with too many calls reports fan-out error`() {
+    fun `method with too many calls reports fan-out smell`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -84,11 +85,11 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law028_SpaghettiMethodDetector.ISSUE)
             .run()
-            .expectContains("violates Fan-out Budget (25)")
+            .expectContains("Fan-out Risk (25)")
     }
 
     @Test
-    fun `class with too much mutable state reports error`() {
+    fun `class with too much mutable state reports smell`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -112,12 +113,12 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law029_GodObjectDetector.ISSUE)
             .run()
-            .expectContains("violates Mutable State Budget (9)")
-            .expectContains("ERROR limit is 8")
+            .expectContains("Mutable State Risk (9)")
+            .expectContains("Recommended limit is 8")
     }
 
     @Test
-    fun `class with large public surface reports fatal`() {
+    fun `class with large public surface reports smell`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowMissingSdk()
@@ -133,8 +134,8 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law029_GodObjectDetector.ISSUE)
             .run()
-            .expectContains("violates Public Surface Area Budget (45)")
-            .expectContains("FATAL limit is 40")
+            .expectContains("Public Surface Area Risk (45)")
+            .expectContains("Recommended limit is 40")
     }
 
     @Test
@@ -163,7 +164,7 @@ class ComplexityBudgetDetectorTest {
             )
             .issues(Law029_GodObjectDetector.ISSUE)
             .run()
-            .expectContains("Mutable State Budget (3)")
-            .expectContains("ERROR limit is 2")
+            .expectContains("Mutable State Risk (3)")
+            .expectContains("Recommended limit is 2")
     }
 }

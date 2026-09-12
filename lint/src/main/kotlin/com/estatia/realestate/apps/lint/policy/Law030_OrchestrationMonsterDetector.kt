@@ -35,11 +35,11 @@ class Law030_OrchestrationMonsterDetector : Detector(), SourceCodeScanner {
             when {
                 paramsCount >= errorThreshold -> {
                     context.report(ISSUE, node, context.getLocation(node as UElement),
-                        "Orchestration Monster detected: Constructor has $paramsCount dependencies. ERROR limit is $errorThreshold (LAW-030).")
+                        "Orchestration Monster detected: Constructor has $paramsCount dependencies. HIGH risk limit is $errorThreshold (LAW-030).")
                 }
                 paramsCount >= warningThreshold -> {
                     context.report(ISSUE, node, context.getLocation(node as UElement),
-                        "Constructor is accumulating too many dependencies ($paramsCount). WARNING limit is $warningThreshold (LAW-030).")
+                        "Constructor is accumulating too many dependencies ($paramsCount). MEDIUM risk limit is $warningThreshold (LAW-030).")
                 }
             }
         }

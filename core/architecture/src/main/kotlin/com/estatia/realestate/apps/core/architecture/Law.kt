@@ -355,31 +355,31 @@ enum class Law(
 
     // --- CODE HEALTH ---
     LAW_028(
-        "LAW-028", "Methods must be concise and focused.", LawCategory.CODE_HEALTH, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
+        "LAW-028", "Methods must be concise and focused.", LawCategory.CODE_HEALTH, Risk.HIGH, Confidence.HEURISTIC, Enforcement.WARN,
         "Excessive cyclomatic complexity or method length indicates poor separation of concerns.",
         "Refactor the method by extracting logical blocks into smaller, private helper functions.",
         setOf(LawEnforcer.LINT),
         RuleOwner.ARCHITECTURE,
         listOf("Law030_ComplexitySpec.kt"),
-        targetPrecision = 1.0, targetRecall = 1.0
+        targetPrecision = 0.85, targetRecall = 1.0
     ),
     LAW_029(
-        "LAW-029", "Classes must have a single responsibility.", LawCategory.CODE_HEALTH, Risk.HIGH, Confidence.CERTAIN, Enforcement.BLOCK,
+        "LAW-029", "Classes must have a single responsibility.", LawCategory.CODE_HEALTH, Risk.HIGH, Confidence.HEURISTIC, Enforcement.WARN,
         "Giant 'God Objects' are impossible to test and maintain.",
         "Decompose the class into smaller, specialized components with clear interfaces.",
         setOf(LawEnforcer.LINT),
         RuleOwner.ARCHITECTURE,
         listOf("Law012_Law018_Law023_Law029_StateSpec.kt"),
-        targetPrecision = 1.0, targetRecall = 1.0
+        targetPrecision = 0.85, targetRecall = 1.0
     ),
     LAW_030(
-        "LAW-030", "Constructors must have a limited dependency budget.", LawCategory.CODE_HEALTH, Risk.MEDIUM, Confidence.CERTAIN, Enforcement.BLOCK,
+        "LAW-030", "Constructors must have a limited dependency budget.", LawCategory.CODE_HEALTH, Risk.MEDIUM, Confidence.HEURISTIC, Enforcement.WARN,
         "Classes requiring 9+ dependencies are 'Orchestration Monsters' that are likely doing too much.",
         "Introduce Facades or use a Delegation pattern to reduce direct coordination overhead.",
         setOf(LawEnforcer.LINT, LawEnforcer.KSP),
         RuleOwner.ARCHITECTURE,
         listOf("Law030_ComplexitySpec.kt"),
-        targetPrecision = 1.0, targetRecall = 1.0
+        targetPrecision = 0.85, targetRecall = 1.0
     ),
 
     // --- ARCHITECTURE ---

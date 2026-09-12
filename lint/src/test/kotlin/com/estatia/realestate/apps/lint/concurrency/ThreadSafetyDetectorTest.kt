@@ -9,7 +9,7 @@ import org.junit.Test
 class ThreadSafetyDetectorTest {
 
     @Test
-    fun `unsafe collection in singleton reports fatal`() {
+    fun `unsafe collection in singleton reports warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
@@ -31,11 +31,11 @@ class ThreadSafetyDetectorTest {
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' mutated in a multi-threaded component")
+            .expectContains("Unsafe collection 'HashMap' mutated in a multi-threaded component")
     }
 
     @Test
-    fun `unsafe collection in ViewModel reports fatal`() {
+    fun `unsafe collection in ViewModel reports warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
@@ -56,11 +56,11 @@ class ThreadSafetyDetectorTest {
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' mutated in a multi-threaded component")
+            .expectContains("Unsafe collection 'HashMap' mutated in a multi-threaded component")
     }
 
     @Test
-    fun `unsafe collection in Repository suffix class reports fatal`() {
+    fun `unsafe collection in Repository suffix class reports warning`() {
         lint()
             .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
@@ -82,7 +82,7 @@ class ThreadSafetyDetectorTest {
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.ArrayList' mutated in a multi-threaded component")
+            .expectContains("Unsafe collection 'ArrayList' mutated in a multi-threaded component")
     }
 
     @Test
@@ -114,6 +114,7 @@ class ThreadSafetyDetectorTest {
     @Test
     fun `read-only val hashmap is clean`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -144,8 +145,9 @@ class ThreadSafetyDetectorTest {
     }
 
     @Test
-    fun `mutated val hashmap reports fatal`() {
+    fun `mutated val hashmap reports warning`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -170,12 +172,13 @@ class ThreadSafetyDetectorTest {
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' mutated")
+            .expectContains("Unsafe collection 'HashMap' mutated")
     }
 
     @Test
-    fun `var hashmap always reports fatal`() {
+    fun `var hashmap always reports warning`() {
         lint()
+            .testModes(TestMode.DEFAULT)
             .allowCompilationErrors()
             .allowMissingSdk()
             .files(
@@ -196,6 +199,6 @@ class ThreadSafetyDetectorTest {
             )
             .issues(ThreadSafetyDetector.ISSUE)
             .run()
-            .expectContains("Unsafe collection 'java.util.HashMap' mutated")
+            .expectContains("Unsafe collection 'HashMap' mutated")
     }
 }

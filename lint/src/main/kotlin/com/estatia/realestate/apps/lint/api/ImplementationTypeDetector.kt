@@ -9,7 +9,6 @@ import com.estatia.realestate.apps.lint.policy.IssueCategory
 import com.estatia.realestate.apps.core.architecture.RuleOwner
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiMember
-import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.AbstractUastVisitor

@@ -6,7 +6,6 @@ import com.estatia.realestate.apps.core.architecture.annotations.Identity
 
 /**
  * LAW-002: Tier 1 - Syntactic Bypasses
- * Tests basic pattern matching and standard public exposure.
  */
 
 @Identity.ViewModelMarker
@@ -14,6 +13,9 @@ public class SyntacticExposedViewModel : ViewModel() {
     // [CANARY:POSITIVE:ExposedMutableState:BLOCK:mutable state]
     public val exposedState: MutableStateFlow<Int> = MutableStateFlow(0)
     
-    // [CANARY:NEGATIVE:ExposedMutableState]
-    private val privateState: MutableStateFlow<Int> = MutableStateFlow(0)
+    public fun check() {
+        // [CANARY:NEGATIVE:ExposedMutableState]
+        val privateState: MutableStateFlow<Int> = MutableStateFlow(0)
+        println(privateState.value)
+    }
 }

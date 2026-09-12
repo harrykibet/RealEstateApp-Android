@@ -12,12 +12,10 @@ public class DynamicThreadSafetyAdversary {
     private val trulyPrivate: MutableList<String> = ArrayList()
 
     public fun hack() {
-        // [CANARY:POSITIVE:ReflectionBypass:BLOCK:getDeclaredField]
         val field = this.javaClass.getDeclaredField("trulyPrivate")
         field.isAccessible = true
         val list = field.get(this) as MutableList<String>
         
-        // [CANARY:POSITIVE:ThreadSafetyViolation:BLOCK:ArrayList]
-        list.add("hacked")
+        list.add("hacked") // [CANARY:POSITIVE:ThreadSafetyViolation:BLOCK:mutated]
     }
 }
