@@ -92,7 +92,7 @@ enum class Law(
         "Expose as a read-only StateFlow and use lambda callbacks for mutations.",
         setOf(LawEnforcer.LINT, LawEnforcer.KSP),
         RuleOwner.ARCHITECTURE,
-        listOf("Law001_Law002_Law026_Law027_ComposeSpec.kt", "Law012_Law018_Law023_Law029_StateSpec.kt", "AdversarialSpecs.kt"),
+        listOf("Law001_Law002_Law026_Law027_ComposeSpec.kt", "Law012_Law018_Law023_Law029_StateSpec.kt", "LAW_002_Tier1_Syntactic.kt", "LAW_002_Tier2_Semantic.kt", "LAW_002_Tier3_Dynamic.kt"),
         targetPrecision = 1.0, targetRecall = 1.0
     ),
     LAW_003(
@@ -121,7 +121,7 @@ enum class Law(
         "Use provided scopes (viewModelScope, lifeCycleScope) or inject a managed scope.",
         setOf(LawEnforcer.LINT),
         RuleOwner.PLATFORM,
-        listOf("Law019_Law006_Law013_Law020_Law021_ConcurrencySpec.kt", "Law001_Law002_Law026_Law027_ComposeSpec.kt", "AdversarialSpecs.kt"),
+        listOf("Law019_Law006_Law013_Law020_Law021_ConcurrencySpec.kt", "Law001_Law002_Law026_Law027_ComposeSpec.kt", "LAW_005_Tier1_Syntactic.kt", "LAW_005_Tier2_Semantic.kt"),
         targetPrecision = 1.0, targetRecall = 1.0
     ),
     LAW_006(
@@ -152,7 +152,7 @@ enum class Law(
         "Use interfaces and standard Kotlin collection types in public signatures.",
         setOf(LawEnforcer.LINT, LawEnforcer.KSP),
         RuleOwner.ARCHITECTURE,
-        listOf("Law008_Law009_ApiDesignSpec.kt", "CanaryPlayerEngine.kt", "DomainViolations.kt", "HomeViolations.kt", "FakeChaos.kt", "AdversarialSpecs.kt"),
+        listOf("Law008_Law009_ApiDesignSpec.kt", "CanaryPlayerEngine.kt", "DomainViolations.kt", "HomeViolations.kt", "FakeChaos.kt", "LAW_008_Tier1_Syntactic.kt", "LAW_008_Tier2_Semantic.kt", "LAW_008_Tier3_Dynamic.kt"),
         targetPrecision = 1.0, targetRecall = 1.0
     ),
     LAW_009(
@@ -194,7 +194,7 @@ enum class Law(
         "Use ConcurrentHashMap, Mutex, or AtomicReference for shared mutable state.",
         setOf(LawEnforcer.LINT),
         RuleOwner.PLATFORM,
-        listOf("Law012_Law018_Law023_Law029_StateSpec.kt", "FakeChaos.kt", "AdversarialSpecs.kt"),
+        listOf("Law012_Law018_Law023_Law029_StateSpec.kt", "FakeChaos.kt", "LAW_012_Tier1_Syntactic.kt", "LAW_012_Tier2_Semantic.kt"),
         targetPrecision = 1.0, targetRecall = 1.0
     ),
     LAW_013(
@@ -349,7 +349,7 @@ enum class Law(
         "Expose a UI state from the ViewModel and trigger actions via lambda events.",
         setOf(LawEnforcer.LINT),
         RuleOwner.ARCHITECTURE,
-        listOf("Law001_Law002_Law026_Law027_ComposeSpec.kt", "AdversarialSpecs.kt"),
+        listOf("Law001_Law002_Law026_Law027_ComposeSpec.kt", "LAW_027_Tier1_Syntactic.kt", "LAW_027_Tier2_Semantic.kt"),
         targetPrecision = 1.0, targetRecall = 1.0
     ),
 

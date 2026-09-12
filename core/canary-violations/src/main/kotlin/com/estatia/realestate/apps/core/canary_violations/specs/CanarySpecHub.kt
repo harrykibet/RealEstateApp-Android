@@ -2,8 +2,11 @@ package com.estatia.realestate.apps.core.canary_violations.specs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-
-import com.estatia.realestate.apps.core.canary_violations.adversarial.*
+import com.estatia.realestate.apps.core.canary_violations.adversarial.LAW_002.*
+import com.estatia.realestate.apps.core.canary_violations.adversarial.LAW_005.*
+import com.estatia.realestate.apps.core.canary_violations.adversarial.LAW_008.*
+import com.estatia.realestate.apps.core.canary_violations.adversarial.LAW_012.*
+import com.estatia.realestate.apps.core.canary_violations.adversarial.LAW_027.*
 
 /**
  * Hub to ensure all specs are visible to the compiler and analyzer.
@@ -17,13 +20,8 @@ public fun CanarySpecHub(
     complexity: Law030_Positive_Spec,
     perf: Law011_Performance_Positive_Spec,
     security: Law010_Positive_Spec,
-    adversary: AliasingViewModel,
-    trickyRepo: FqnBypassRepository,
-    reflection: PrivateBypassRepository,
-    delegateAdversary: DelegateAdversary,
-    erasureAdversary: ErasureAdversary,
-    deepAdversary: DeepNestingUseCase,
-    extensionTarget: ExtensionTargetRepo
+    adversaryHub1: AdversaryHub1,
+    adversaryHub2: AdversaryHub2
 ) {
     // API
     api.getRawData()
@@ -45,12 +43,45 @@ public fun CanarySpecHub(
     // Environment
     Environment_Positive_Spec().now()
 
-    // Adversaries
-    adversary.leak()
-    trickyRepo.doWork()
-    ReflectionAdversary(reflection)
-    delegateAdversary.trickyState
-    erasureAdversary.getDataHacked()
-    deepAdversary.superDeep()
-    extensionTarget.leakedData()
+    // Adversaries Delegated
+    adversaryHub1.trigger()
+    adversaryHub2.trigger()
+}
+
+public class AdversaryHub1(
+    public val l2t2: SemanticExposedViewModel,
+    public val l5t2: SemanticScopeAdversary,
+    public val l8t2: DeepNestingAdversary,
+    public val l8t2ext: SemanticAbstractionAdversary,
+    public val l12t2: SemanticThreadSafetyAdversary,
+    public val l27t1: DirectRepository,
+    public val l27t2: ReflectionRepository
+) {
+    @Composable
+    public fun trigger() {
+        l2t2.aliasedState
+        l5t2.leak()
+        l8t2.superDeep()
+        l8t2ext.leakedExtension()
+        l12t2.mutate()
+        SyntacticDataLeakage(l27t1)
+        SemanticReflectionLeakage(l27t2)
+    }
+}
+
+public class AdversaryHub2(
+    public val l27t3: SecretRepository,
+    public val l2t3: DynamicExposedViewModel,
+    public val l5t3: DynamicScopeAdversary,
+    public val l8t3: DynamicAbstractionAdversary,
+    public val l12t3: DynamicThreadSafetyAdversary
+) {
+    @Composable
+    public fun trigger() {
+        DynamicReflectionLeakage(l27t3)
+        l2t3.getSecretState()
+        l5t3.reflect()
+        l8t3.getErasedData()
+        l12t3.hack()
+    }
 }
