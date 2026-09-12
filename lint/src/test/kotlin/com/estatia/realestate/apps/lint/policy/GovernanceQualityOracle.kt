@@ -2,7 +2,7 @@ package com.estatia.realestate.apps.lint.policy
 
 import com.android.tools.lint.detector.api.TextFormat
 import com.estatia.realestate.apps.core.architecture.Law
-import com.estatia.realestate.apps.core.architecture.LawEnforcer
+import com.estatia.realestate.apps.core.architecture.Enforcement
 import com.estatia.realestate.apps.lint.registry.EstatiaPolicyGroups
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -26,17 +26,26 @@ class GovernanceQualityOracle {
         val truePositives: Int = 0,
         val falsePositives: Int = 0,
         val falseNegatives: Int = 0,
-        val trueNegatives: Int = 0
+        val t1Count: Int = 0,
+        val t2Count: Int = 0,
+        val t3Count: Int = 0
     ) {
         val precision: Double get() = if (truePositives + falsePositives == 0) 1.0 else truePositives.toDouble() / (truePositives + falsePositives)
         val recall: Double get() = if (truePositives + falseNegatives == 0) 1.0 else truePositives.toDouble() / (truePositives + falseNegatives)
+        
+        val robustness: String get() = when {
+            t3Count > 0 && falseNegatives == 0 -> "HARDENED (T3)"
+            t2Count > 0 && falseNegatives == 0 -> "SEMANTIC (T2)"
+            t1Count > 0 && falseNegatives == 0 -> "SYNTACTIC (T1)"
+            else -> "UNVERIFIED"
+        }
     }
 
     @Test
     fun `verify governance quality metrics`() {
         val reportPath = "$projectRoot/$canaryModulePath/build/reports/lint-results.xml"
         val reportFile = File(reportPath)
-        assertTrue("Governance Quality Error: Canary lint report not found at $reportPath", reportFile.exists())
+        assertTrue("Governance Quality Error: Canary lint report not found at $reportPath. Run :core:canary-violations:lintAnalyzeDemoDebug first.", reportFile.exists())
 
         val actualViolations = parseActualViolations(reportFile)
         val expectations = collectExpectations()
@@ -47,10 +56,19 @@ class GovernanceQualityOracle {
             var tp = 0
             var fp = 0
             var fn = 0
+            var t1 = 0
+            var t2 = 0
+            var t3 = 0
 
             // 1. Calculate TP and FN (Based on positive expectations)
             val positiveExp = expectations.filter { it.isPositive && it.lawId == law.id }
             positiveExp.forEach { exp ->
+                when (exp.tier) {
+                    1 -> t1++
+                    2 -> t2++
+                    3 -> t3++
+                }
+
                 val wasDetected = actualViolations.any { act -> 
                     act.issueId == exp.issueId && 
                     isPathMatch(act.file, exp.file) &&
@@ -60,7 +78,7 @@ class GovernanceQualityOracle {
                     tp++
                 } else {
                     fn++
-                    println("DEBUG: FN for ${law.id} [Issue: ${exp.issueId}] at ${exp.file.name}:${exp.line}")
+                    println("DEBUG: FN for ${law.id} [Tier: T${exp.tier}] [Issue: ${exp.issueId}] at ${exp.file.name}:${exp.line}")
                 }
             }
 
@@ -78,16 +96,15 @@ class GovernanceQualityOracle {
                 }
             }
             
-            metricsMap[law.id] = LawMetrics(law.id, tp, fp, fn)
+            metricsMap[law.id] = LawMetrics(law.id, tp, fp, fn, t1, t2, t3)
         }
 
+        generateReport(metricsMap.values.toList())
+
         // 🛡️ REFINEMENT: Industrial Quality Floor Enforcement
-        // If a rule falls below its mathematical quality target, the verification fails.
         val failures = metricsMap.values.filter { it.precision < Law.valueOf(it.lawId.replace("-", "_")).targetPrecision || 
                                                  it.recall < Law.valueOf(it.lawId.replace("-", "_")).targetRecall }
         
-        generateReport(metricsMap.values.toList())
-
         if (failures.isNotEmpty()) {
             val msg = failures.joinToString("\n") { 
                 val law = Law.valueOf(it.lawId.replace("-", "_"))
@@ -141,6 +158,13 @@ class GovernanceQualityOracle {
         val srcMain = File("$projectRoot/$canaryModulePath/src/main/kotlin")
         
         srcMain.walkTopDown().filter { it.extension == "kt" }.forEach { file ->
+            val tier = when {
+                file.name.contains("Tier1") -> 1
+                file.name.contains("Tier2") -> 2
+                file.name.contains("Tier3") -> 3
+                else -> 1 // Default to Syntactic for legacy canaries
+            }
+
             file.readLines().forEachIndexed { index, line ->
                 val lineNumber = index + 1
                 val posRegex = Regex("""\[CANARY:POSITIVE:([^:\]]+)""")
@@ -148,7 +172,7 @@ class GovernanceQualityOracle {
                     val issueId = match.groupValues[1]
                     val law = findLawForIssueId(issueId)
                     if (law != null) {
-                        results.add(CanaryExpectation(law.id, issueId, lineNumber, file, true))
+                        results.add(CanaryExpectation(law.id, issueId, lineNumber, file, true, tier))
                     }
                 }
                 val negRegex = Regex("""\[CANARY:NEGATIVE:([^:\]]+)""")
@@ -156,7 +180,7 @@ class GovernanceQualityOracle {
                     val issueId = match.groupValues[1]
                     val law = findLawForIssueId(issueId)
                     if (law != null) {
-                        results.add(CanaryExpectation(law.id, issueId, lineNumber, file, false))
+                        results.add(CanaryExpectation(law.id, issueId, lineNumber, file, false, tier))
                     }
                 }
             }
@@ -175,14 +199,42 @@ class GovernanceQualityOracle {
     }
 
     private fun generateReport(metrics: List<LawMetrics>) {
-        val report = StringBuilder("# Estatia — Governance Quality Report\n\n")
-        report.append("| Law ID | Precision | Recall | TP | FP | FN |\n")
-        report.append("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
+        val report = StringBuilder("# Estatia — Governance Integrity Report\n\n")
+        report.append("This report authoritatively measures the **Precision**, **Recall**, and **Robustness** of Estatia's architectural enforcement system.\n\n")
+        
+        report.append("## Summary Statistics\n")
+        val totalLaws = metrics.size
+        val hardenedLaws = metrics.count { it.robustness.startsWith("HARDENED") }
+        val failedRecall = metrics.count { it.recall < 1.0 && Law.valueOf(it.lawId.replace("-", "_")).enforcement == Enforcement.BLOCK }
+        
+        report.append("- **Total Laws Governed**: $totalLaws\n")
+        report.append("- **Hardened Laws (Tier 3 Verified)**: $hardenedLaws\n")
+        report.append("- **Industrial Recall Failures**: ${if (failedRecall == 0) "✅ 0" else "❌ $failedRecall"}\n\n")
+
+        report.append("## Detailed Quality Matrix\n\n")
+        report.append("| Law ID | Status | Precision | Recall | Robustness | TP | FP | FN | Specimens |\n")
+        report.append("| :--- | :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n")
         
         metrics.sortedBy { it.lawId }.forEach { m ->
-            report.append("| **${m.lawId}** | ${(m.precision * 100).toInt()}% | ${(m.recall * 100).toInt()}% | ${m.truePositives} | ${m.falsePositives} | ${m.falseNegatives} |\n")
+            val law = Law.valueOf(m.lawId.replace("-", "_"))
+            val status = when {
+                m.recall < law.targetRecall -> "❌"
+                m.precision < law.targetPrecision -> "⚠️"
+                else -> "✅"
+            }
+            val specimens = "T1:${m.t1Count}, T2:${m.t2Count}, T3:${m.t3Count}"
+            report.append("| **${m.lawId}** | $status | ${(m.precision * 100).toInt()}% | ${(m.recall * 100).toInt()}% | ${m.robustness} | ${m.truePositives} | ${m.falsePositives} | ${m.falseNegatives} | $specimens |\n")
         }
 
+        report.append("\n---\n*Report generated automatically by `GovernanceQualityOracle`*")
+
+        // Authoritative Doc Output
+        val docsDir = File("$projectRoot/docs")
+        if (docsDir.exists()) {
+            File(docsDir, "GOVERNANCE_INTEGRITY_REPORT.md").writeText(report.toString())
+        }
+
+        // IDE Artifact Output
         val artifactDir = File("$projectRoot/.artifacts/b2fbff85-3b1f-49b1-9c69-a8b322c659ee")
         if (artifactDir.exists()) {
             File(artifactDir, "governance_quality_report.artifact.md").writeText(report.toString())
@@ -190,5 +242,5 @@ class GovernanceQualityOracle {
     }
 
     private data class ActualViolation(val issueId: String, val line: Int, val file: File)
-    private data class CanaryExpectation(val lawId: String, val issueId: String, val line: Int, val file: File, val isPositive: Boolean)
+    private data class CanaryExpectation(val lawId: String, val issueId: String, val line: Int, val file: File, val isPositive: Boolean, val tier: Int)
 }
