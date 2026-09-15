@@ -6,7 +6,7 @@ workflows:
   pr-check:
     name: Estatia PR Check
     max_build_duration: 30
-    instance_type: mac_mini_m2
+    instance_type: mac_studio_m4_max
     triggering:
       events:
         - pull_request
