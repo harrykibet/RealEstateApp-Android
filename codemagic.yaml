@@ -75,37 +75,50 @@ workflows:
       - app/build/outputs/apk/prod/release/*.apk
 
   # ------------------------------------------------------------------------------
-  # 🔨 NIGHTLY (Stress & Audit)
-  # ------------------------------------------------------------------------------
-  nightly-optimization:
-    name: Estatia Nightly Optimization
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    triggering:
-      schedule:
-        - cron: "0 0 * * *"
-          branch: main
-    environment:
-      vars:
-        CI: "true"
-    scripts:
-      - name: Set Permissions
-        script: chmod +x ./gradlew
-      - name: Multi-Variant Architecture Audit
-        script: ./gradlew verifyArchitecture lint --no-daemon
-      - name: Binary Purity Audit (R8)
-        script: |
-          ./gradlew :app:assembleProdRelease --no-daemon
-          ./gradlew auditBinaryPurity --no-daemon
-      - name: Chaos Tests
-        script: ./gradlew :app:pixel6Api31ProdDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
-      - name: Performance Optimization (Baseline Profiles)
-        script: ./gradlew :app:generateProdBaselineProfile --no-daemon
-      - name: Run Benchmarks
-        script: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-daemon
-      - name: Code Quality & Mutation Testing
-        script: |
-          ./gradlew jacocoProdDebugReport --no-daemon
-    artifacts:
-      - benchmark/build/outputs/connected_android_test_additional_output/*
-      - "**/build/reports/jacoco/**"
+# 🔨 NIGHTLY (Stress & Audit)
+# ------------------------------------------------------------------------------
+nightly-optimization:
+  name: Estatia Nightly Optimization
+  max_build_duration: 120
+  instance_type: mac_mini_m2
+
+  triggering:
+    schedule:
+      - cron: "0 0 * * *"
+    branch_patterns:
+      - pattern: main
+        include: true
+        source: true
+
+  environment:
+    vars:
+      CI: "true"
+
+  scripts:
+    - name: Set Permissions
+      script: chmod +x ./gradlew
+
+    - name: Multi-Variant Architecture Audit
+      script: ./gradlew verifyArchitecture lint --no-daemon
+
+    - name: Binary Purity Audit (R8)
+      script: |
+        ./gradlew :app:assembleProdRelease --no-daemon
+        ./gradlew auditBinaryPurity --no-daemon
+
+    - name: Chaos Tests
+      script: ./gradlew :app:pixel6Api31ProdDebugAndroidTest \
+        -Pandroid.testInstrumentationRunnerArguments.class=com.estatia.realestate.apps.chaos.FeedGestureChaosTest
+
+    - name: Performance Optimization (Baseline Profiles)
+      script: ./gradlew :app:generateProdBaselineProfile --no-daemon
+
+    - name: Run Benchmarks
+      script: ./gradlew :benchmark:pixel6Api31ProdDebugAndroidTest --no-daemon
+
+    - name: Code Quality & Mutation Testing
+      script: ./gradlew jacocoProdDebugReport --no-daemon
+
+  artifacts:
+    - benchmark/build/outputs/connected_android_test_additional_output/*
+    - "**/build/reports/jacoco/**"
